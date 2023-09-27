@@ -1,0 +1,37 @@
+# Compiled
+*.elc
+
+# Packaging
+.cask
+
+# Backup files
+*~
+\#*\#
+.\#*\#
+.#*
+
+#emacs folders
+url/**
+auto-save-list/**
+elpaca/**
+elpa/**
+eshell/**
+tree-sitter/**
+transient/**
+var/**
+
+#emacs files
+projects
+recentf
+bookmarks
+projectile-bookmarks.eld
+.cache
+tramp
+forge-database.sqlite
+
+# Undo-tree save-files
+*.~undo-tree
+
+# Undo-tree save-files
+*.~undo-tree
+
