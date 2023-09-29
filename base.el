@@ -18,9 +18,7 @@
 (tab-bar-mode 1)
 (visual-line-mode -1)
 
-;; (setq-default indent-line-function 'insert-tab)
-(add-hook 'before-save-hook
-	  #'delete-trailing-whitespace)
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
 
 ;; theme configurations
 ;; (use-package sonokai-theme
@@ -63,42 +61,42 @@
 
 (defun config/set-custom-faces ()
   (set-face-attribute 'default nil
-		      :font "FiraMono Nerd Font Mono"
-		      :height settings/default-font-size
-		      :weight 'normal)
+                      :font "FiraMono Nerd Font Mono"
+                      :height settings/default-font-size
+                      :weight 'normal)
   (set-face-attribute 'fixed-pitch nil
-		      :font "FiraMono Nerd Font Mono"
-		      :height settings/default-font-size
-		      :weight 'normal)
+                      :font "FiraMono Nerd Font Mono"
+                      :height settings/default-font-size
+                      :weight 'normal)
   (set-face-attribute 'variable-pitch nil
-		      :font "Fira Sans"
-		      :height settings/default-font-size
-		      :weight 'normal)
+                      :font "Fira Sans"
+                      :height settings/default-font-size
+                      :weight 'normal)
   (set-face-attribute 'font-lock-comment-face nil
-		      :slant 'italic)
+                      :slant 'italic)
   (set-face-attribute 'font-lock-keyword-face nil
-		      :slant 'italic)
+                      :slant 'italic)
 
   (set-face-attribute 'tab-bar nil
-		      :font "FiraMono Nerd Font Mono"
-		      :height settings/tab-font-size
-		      :weight 'bold)
+		              :font "FiraMono Nerd Font Mono"
+		              :height settings/tab-font-size
+		              :weight 'bold)
   (set-face-attribute 'tab-bar-tab nil
-		      :font "FiraMono Nerd Font Mono"
-		      :height settings/tab-font-size
-		      :weight 'bold
+                      :font "FiraMono Nerd Font Mono"
+                      :height settings/tab-font-size
+                      :weight 'bold
                       :box '(:line-width (5 . 5) :style flat-button)
                       :underline `(:inherit tab-bar-tab :style line :position 0))
   (set-face-attribute 'tab-bar-tab-inactive nil
-		      :font "FiraMono Nerd Font Mono"
-		      :height settings/tab-font-size
-		      :weight 'light
+		              :font "FiraMono Nerd Font Mono"
+		              :height settings/tab-font-size
+		              :weight 'light
                       :box '(:line-width (5 . 5) :style flat-button)
                       :underline `(:inherit tab-bar-tab :style line :position 0)))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
-	      (lambda (frame) (with-selected-frame frame (config/set-custom-faces))))
+              (lambda (frame) (with-selected-frame frame (config/set-custom-faces))))
   (config/set-custom-faces))
 
 (provide 'config-base)

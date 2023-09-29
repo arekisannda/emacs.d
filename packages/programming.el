@@ -22,11 +22,11 @@
   :ensure t
   :init
   (setq flycheck-indication-mode nil
-	flycheck-mode-line nil)
+	    flycheck-mode-line nil)
   :config
   (if (daemonp)
       (add-hook 'after-make-frame-functions
-		(lambda (frame) (with-selected-frame frame (config/load-flycheck-popup))))
+		        (lambda (frame) (with-selected-frame frame (config/load-flycheck-popup))))
     (config/load-flycheck-popup))
   (global-flycheck-mode 1))
 
@@ -34,7 +34,7 @@
 (use-package company
   :init
   (setq company-idle-delay nil
-	company-manual-begin t)
+	    company-manual-begin t)
   :config
   (add-hook 'after-init-hook 'global-company-mode))
 
@@ -46,7 +46,7 @@
 (use-package company-quickhelp
   :init
   (setq company-quickhelp-delay 0.5
-	company-quickhelp-max-lines 20)
+	    company-quickhelp-max-lines 20)
   :config
   (company-quickhelp-mode))
 

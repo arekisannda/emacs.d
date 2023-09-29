@@ -1,5 +1,6 @@
 ;;; keybind/init --- summary:
 ;;; Emacs keybind configurations
+;;; commentary:
 
 
 ;;; code:
@@ -29,10 +30,10 @@
   "C-\\" #'switch-to-prev-buffer
   "M-]"  #'tab-bar-switch-to-next-tab
 
- (kbd "C-<left>")  #'evil-window-left
- (kbd "C-<right>")  #'evil-window-right
- (kbd "C-<up>")  #'evil-window-up
- (kbd "C-<down>")  #'evil-window-down)
+  (kbd "C-<left>")  #'evil-window-left
+  (kbd "C-<right>") #'evil-window-right
+  (kbd "C-<up>")    #'evil-window-up
+  (kbd "C-<down>")  #'evil-window-down)
 
 
 (general-def minibuffer-local-map
@@ -74,12 +75,14 @@
 
 (general-def evil-normal-state-map
   ;; bind evil-forward/backward-args
-  "L" #'evil-forward-arg
-  "H" #'evil-backwards-arg
-  "K" #'evil-jump-out-args
-  ;; undo keybinds
-  "u" #'undo-fu-only-undo
-  "U" #'undo-fu-only-redo)
+  "L"  #'evil-forward-arg
+  "H"  #'evil-backwards-arg
+  "K"  #'evil-jump-out-args
+  "u"  #'undo-fu-only-undo
+  "U"  #'undo-fu-only-redo
+
+  "]g" #'diff-hl-next-hunk
+  "[g" #'diff-hl-previous-hunk)
 
 (general-def evil-motion-state-map
   ;; bind evil-forward/backward-args
@@ -108,7 +111,7 @@
 ;; tab management keybinds
 (kb/leader-key
   "t"  '(:ignore t :wk "tabs")
-  "tt" '(tab-bar-new-tab :wk "new tab")
+  "tt" '((lambda () (interactive)(tab-bar-new-tab)(dashboard-open)) :wk "new tab")
   "tk" '(tab-bar-close-tab :wk "kill tab")
   "tK" '(tab-bar-close-other-tabs :wk "kill other tabs")
   "tr" '(tab-bar-rename-tab :wk "rename tab"))
@@ -143,10 +146,10 @@
   ",S" '(embrace-change :wk "surround change")
   ",d" '(embrace-delete :wk "surround delete"))
 
-;; documentation / popup
+;; lsp
 (kb/local-leader-key
   "d" '(:ignore t :wk "lsp")
-  )
+  "dr" '(lsp-rename :wk "rename"))
 
 ;; editor motion keybinds
 (kb/local-leader-key
@@ -170,14 +173,14 @@
   ("s" #'diff-hl-show-hunk-stage-hunk :hint nil)
   ("d" #'diff-hl-show-hunk-revert-hunk :hint nil)
   ("c" #'diff-hl-show-hunk-copy-original-text :hint nil))
-  (hydra-set-property 'hydra-git-hunk :verbosity 0)
+(hydra-set-property 'hydra-git-hunk :verbosity 0)
 
 ;; git keybinds
 (kb/local-leader-key
   "g"  '(:ignore t :wk "git")
   "gi" '(hydra-git-hunk/diff-hl-show-hunk :wk "inspect")
-  "gj" '(diff-hl-hunk-next :wk "next hunk")
-  "gk" '(diff-hl-hunk-previous :wk "prev hunk")
+  "gj" '(diff-hl-next-hunk :wk "next hunk")
+  "gk" '(diff-hl-previous-hunk :wk "prev hunk")
   "gs" '(diff-hl-stage-current-hunk :wk "stage")
   "gd" '(diff-hl-revert-hunk :wk "revert"))
 

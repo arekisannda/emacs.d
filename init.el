@@ -61,8 +61,8 @@
 (load-file (expand-file-name "packages/init.el" user-emacs-directory))
 (load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
 
-(setq project-vc-merge-submodules t)
-(setq project-vc-extra-root-markers '(".project.el" ".projectile" ".project" ".git"))
+;; (setq project-vc-merge-submodules t)
+(setq project-vc-extra-root-markers '(".project.el" ".projectile" ".project"))
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 (defalias 'yes-or-no-p 'y-or-n-p)
 

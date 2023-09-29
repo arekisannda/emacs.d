@@ -8,13 +8,13 @@
   :after general
   :init
   (setq evil-want-integration t
-	evil-want-keybinding nil
-	evil-default-state 'normal
-	evil-want-C-u-jump nil
-	evil-want-C-u-scroll t
-	evil-want-keybinding nil
-	evil-undo-system 'undo-fu
-	evil-want-minibuffer nil)
+	    evil-want-keybinding nil
+	    evil-default-state 'normal
+	    evil-want-C-u-jump nil
+	    evil-want-C-u-scroll t
+	    evil-want-keybinding nil
+	    evil-undo-system 'undo-fu
+	    evil-want-minibuffer nil)
   :config
   (general-evil-setup t)
   (evil-mode 1))
@@ -27,12 +27,12 @@
   :after evil
   :init
   (setq evil-collection-mode-list
-	'(dashboard
-	  info
-	  dired
-	  ibuffer
-	  magit
-	  ediff))
+	    '(dashboard
+	      info
+	      dired
+	      ibuffer
+	      magit
+	      ediff))
   :config
   (evil-collection-init))
 
@@ -61,8 +61,8 @@
   :ensure t
   :init
   (setq evil-lion-squeeze-spaces t
-	evil-lion-left-align-key nil
-	evil-lion-right-align-key nil)
+	    evil-lion-left-align-key nil
+	    evil-lion-right-align-key nil)
   :config
   (evil-lion-mode 1))
 

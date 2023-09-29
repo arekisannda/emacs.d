@@ -23,26 +23,26 @@
 
 ;; diminish mode-lines
 (dolist (mode '(evil-collection-unimpaired-mode
-		auto-revert-mode
-		projectile-mode
-		disable-mouse-mode
-		company-mode))
+		        auto-revert-mode
+		        projectile-mode
+		        disable-mouse-mode
+		        company-mode))
   (diminish mode))
 
 ;; set mode configurations
 ;; add disable line-number hooks for the following modes
 (dolist (mode '(vterm-mode-hook
-		ranger-mode-hook))
+		        ranger-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; use emacs-mode for the following modes
 (dolist (mode '(vterm-mode
-		ranger-mode
-		elpaca-ui-mode
-		dashboard-mode
-		message-mode
-		eglot-list-connections-mode
-		))
+		        ranger-mode
+		        elpaca-ui-mode
+		        dashboard-mode
+		        message-mode
+		        eglot-list-connections-mode
+		        ))
   (add-to-list 'evil-emacs-state-modes mode))
 
 ;;Turns off elpaca-use-package-mode current declartion

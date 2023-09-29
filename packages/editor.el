@@ -4,21 +4,40 @@
 
 ;;; code:
 
+;; additional icons
+(use-package nerd-icons)
+
 (use-package dashboard
   :ensure t
   :init
   (setq dashboard-banner-logo-title nil
-	dashboard-startup-banner nil
-	dashboard-center-content t
-	dashboard-show-shortcuts t
-	dashboard-set-footer nil)
+        dashboard-startup-banner "/home/arekisannda/Downloads/logo_128.png"
+        dashboard-center-content t
+        dashboard-show-shortcuts t
+        dashboard-set-footer nil
+        dashboard-display-icons-p t
+        dashboard-icon-type 'nerd-icons
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-projects-backend 'project-el
+        dashboard-items '((agenda . 8)  (bookmarks . 8) (projects . 16) (recents . 32)))
+
   :config
-  ;;(add-to-list 'evil-emacs-state-modes )
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
   (dashboard-setup-startup-hook))
 
-;; additional icons
-(use-package all-the-icons
-  :if (display-graphic-p))
+(use-package editorconfig
+  :ensure t
+  :init
+  (setq editorconfig-lisp-use-default-indent t)
+  :config
+  (editorconfig-mode 1))
+
+(use-package ibuffer-project
+  :config
+  (add-hook 'ibuffer-hook
+            (lambda ()
+              (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups)))))
 
 ;; window nvaigation
 (use-package ace-window

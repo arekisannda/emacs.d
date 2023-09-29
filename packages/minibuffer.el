@@ -24,8 +24,8 @@
   :ensure t
   :init
   (setq completion-styles '(orderless basic)
-	completion-category-defaults nil
-	completion-category-overrides '((file (styles partial-completion)))))
+	    completion-category-defaults nil
+	    completion-category-overrides '((file (styles partial-completion)))))
 
 ;; description in margins
 (use-package marginalia
@@ -45,10 +45,10 @@
   (completion-list-mode . consult-preview-at-point-mode)
   :init
   (setq consult-narrow-key "<"
-	register-preview-delay 0.5
-	register-preview-function #'consult-register-format
-	xref-show-xrefs-function #'consult-xref
-	xref-show-definitions-function #'consult-xref))
+	    register-preview-delay 0.5
+	    register-preview-function #'consult-register-format
+	    xref-show-xrefs-function #'consult-xref
+	    xref-show-definitions-function #'consult-xref))
 
 ;; (use-package consult-ls-git
 ;;   :after consult)
