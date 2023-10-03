@@ -49,6 +49,7 @@
   ;; Assume :elpaca t unless otherwise specified.
   (setq elpaca-use-package-by-default t))
 (setq elpaca-hide-initial-build t)
+(setq elpaca-hide-status-during-build t)
 
 ;; Block until current queue processed.
 (elpaca-wait)
@@ -62,6 +63,8 @@
 (load-file (expand-file-name "packages/init.el" user-emacs-directory))
 (load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
 
+(setq-default message-log-max nil)
+(kill-buffer "*Messages*")
 ;; (setq project-vc-merge-submodules t)
 (setq project-vc-extra-root-markers '(".project.el" ".projectile" ".project"))
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))

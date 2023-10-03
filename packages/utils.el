@@ -53,24 +53,27 @@
   :init
   ;; set list of ephemeral buffers
   (setq popper-reference-buffers
-	    '("\\*Messages\\*"
-	      "\\*Warnings\\*"
-	      "\\*Customize.*\\*$"
-	      "\\*scratch\\*"
-	      "\\*info.*\\*"
-	      "\\*Man.*\\*$"
-	      "\\*elpaca-.*\\*"
-	      "\\*Flycheck.*\\*$"
-	      "\\*Ediff Control.*\\*$"
-	      "\\*evil-marks\\*$"
-	      "^magit.*$"
-	      "\\*Asyn*c Shell Command\\*"
-	      "\\*EGLOT.*\\*$"
-	      "Output\\*$"
-	      compilation-!mode
-	      help-mode))
+        '("\\*Messages\\*"
+          "\\*Warnings\\*"
+          "\\*Backtrace\\*"
+          "\\*Customize.*\\*$"
+          "\\*lsp-help\\*"
+          "\\*vterm\\*"
+          "\\*scratch\\*"
+          "\\*info.*\\*"
+          "\\*Man.*\\*$"
+          "\\*elpaca-manager*\\*"
+          "\\*elpaca-logs*\\*"
+          "\\*Flycheck.*\\*$"
+          "\\*Ediff Control.*\\*$"
+          "\\*evil-marks\\*$"
+          "^magit.*$"
+          "\\*Asyn*c Shell Command\\*"
+          "\\*EGLOT.*\\*$"
+          "Output\\*$"
+          help-mode))
   (setq popper-window-height 30
-	    popper-mode-line "")
+        popper-mode-line "")
   :config
   (popper-mode +1))
 ;; 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
