@@ -27,6 +27,11 @@
   :after magit
   :init)
 
+(defun config/set-vc-diff-hl-mode ()
+  "Config method to set diff-hl mode on frame create."
+  (unless (display-graphic-p)
+      (diff-hl-margin-mode 1)))
+
 (use-package diff-hl
   :ensure t
   :elpaca(:type git :host github :repo "arekisannda/diff-hl")
@@ -34,10 +39,13 @@
   ;; clear diff-hl default keybinds
   (setq diff-hl-show-hunk-map (make-sparse-keymap))
   (setq diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
+  (setq diff-hl-side-margin-width 3)
   :config
-  (if (display-graphic-p)
-      (diff-hl-margin-mode 1))
-  (global-diff-hl-mode 1))
+  (if (daemonp)
+    (add-hook 'after-make-frame-functions
+              (lambda (frame) (with-selected-frame frame (config/set-vc-diff-hl-mode)))))
+  (diff-hl-flydiff-mode 1)
+  (global-diff-hl-mode nil))
 
 ;; diff tool configurations
 ;; (defun ediff-setup-windows-custom (buffer-A buffer-B buffer-C control-buffer))
