@@ -33,8 +33,8 @@
 ;; completion
 (use-package company
   :init
-  (setq company-idle-delay nil
-	    company-manual-begin t)
+  (setq company-manual-begin t
+        company-idle-delay nil)
   :config
   (add-hook 'after-init-hook 'global-company-mode))
 
@@ -43,12 +43,12 @@
   :config
   (company-flx-mode +1))
 
-(use-package company-quickhelp
-  :init
-  (setq company-quickhelp-delay 0.5
-	    company-quickhelp-max-lines 20)
-  :config
-  (company-quickhelp-mode))
+;; (use-package company-quickhelp
+;;   :init
+;;   (setq company-quickhelp-delay 0.5
+;; 	    company-quickhelp-max-lines 20)
+;;   :config
+;;   (company-quickhelp-mode))
 
 (provide 'packages-programming)
 ;;; programming.el ends here

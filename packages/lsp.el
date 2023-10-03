@@ -53,27 +53,53 @@
         (sh-mode . bash-ts-mode)
         (js-json-mode . json-ts-mode)))
 
+(defun config/lsp-config ()
+  "Config method for lsp general configurations."
+  ;; feature disable
+  (setq lsp-keymap-prefix nil
+        lsp-enable-indentation nil
+        lsp-enable-symbol-highlighting nil
+        lsp-headerline-breadcrumb-enable nil
+        lsp-ui-doc-show-with-mouse nil
+        lsp-lens-enable nil
+        lsp-ui-sideline-enable nil
+        lsp-eldoc-enable-hover nil
+        lsp-signature-auto-activate nil
+        lsp-completion-show-detail nil
+        lsp-completion-show-kind nil
+        lsp-ui-doc-enable nil
+        lsp-enable-on-type-formatting nil)
+  ;; performance tuning
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  (setq gc-cons-threshold 100000000))
+
+(defun config/lsp-go-config ()
+  "Config method for golang lsp configurations."
+  (setq lsp-go-analyses '((shadow . t)
+                          (simplifycompositelit . :json-false))))
+
+;; (defun config/lsp-python-config ()
+;;   "Config method for python lsp configurations."
+;;   (setq lsp-clients-pylsp-library-directories))
+
 (use-package lsp-mode
   :ensure t
   :init
-  ;;; lsp-mode configs
-  (setq lsp-keymap-prefix nil
-        lsp-enable-indentation nil
-        lsp-enable-on-type-formatting nil)
-
-  ;;; golang
-  (setq lsp-go-analyses '((shadow . t)
-                          (simplifycompositelit . :json-false)))
+  (config/lsp-config)
+  (config/lsp-go-config)
+  ;; (config/lsp-python-config)
 
   :hook
   (go-ts-mode . lsp-deferred)
   :commands (lsp lsp-mode lsp-deferred)
   :config
+  (setq lsp-command-map (make-sparse-keymap))
   (add-hook 'before-save-hook #'lsp-format-buffer)
   (add-hook 'before-save-hook #'lsp-organize-imports))
 
-(use-package lsp-ui
-  :commands lsp-ui-mode)
+(use-package dap-mode
+  :config
+  (dap-mode 1))
 
 (provide 'packages-lsp)
 ;;; lsp.el ends here
