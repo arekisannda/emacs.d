@@ -60,6 +60,7 @@
 (add-to-list 'default-frame-alist '(font . "FiraMono Nerd Font Mono-8"))
 
 (defun config/set-custom-faces ()
+  "Config method to set faces on frame create."
   (set-face-attribute 'default nil
                       :font "FiraMono Nerd Font Mono"
                       :height settings/default-font-size

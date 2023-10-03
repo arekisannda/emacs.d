@@ -4,8 +4,6 @@
 
 ;;; code:
 
-;; language mode
-
 ;; tree-sitter language grammar
 (setq treesit-language-source-alist
       '((bash . ("https://github.com/tree-sitter/tree-sitter-bash.git"))
@@ -25,17 +23,14 @@
 	    (rust . ("https://github.com/tree-sitter/tree-sitter-rust.git"))
 	    (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript.git" nil "tsx/src"))
 	    (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript.git" nil "typescript/src"))
-	    (yaml . ("https://github.!com/ikatyang/tree-sitter-yaml.git"))))
+	    (yaml . ("https://github.com/ikatyang/tree-sitter-yaml.git"))))
 
 (defun install-treesit-grammar (language)
+  "Helper method to install treesit grammar that are not installed."
   (unless (treesit-language-available-p language)
     (treesit-install-language-grammar language)))
 
 (mapcar #'install-treesit-grammar (mapcar #'car treesit-language-source-alist))
-
-(defun dedup-add-to-list (list-var element &optional append compare-fn)
-  (unless (member element (symbol-value list-var))
-    (add-to-list list-var element append compare-fn)))
 
 (dedup-add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
 (dedup-add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))

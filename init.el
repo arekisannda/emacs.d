@@ -57,6 +57,7 @@
 (defvar user-emacs-directory "~/.config/emacs")
 (defvar user-code-directory "~/Code")
 
+(load-file (expand-file-name "utils/init.el" user-emacs-directory))
 (load-file (expand-file-name "base.el" user-emacs-directory))
 (load-file (expand-file-name "packages/init.el" user-emacs-directory))
 (load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
