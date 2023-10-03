@@ -19,6 +19,7 @@ eshell/**
 tree-sitter/**
 transient/**
 var/**
+eln-cache/**
 
 #emacs files
 projects
