@@ -10,6 +10,7 @@
 (setq-default confirm-kill-processes nil)
 (setq-default auto-save-default nil)
 (setq-default make-backup-files nil)
+(setq-default create-lockfiles nil)
 
 (global-eldoc-mode -1)
 (tool-bar-mode -1)
