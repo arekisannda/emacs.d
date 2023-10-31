@@ -11,7 +11,7 @@
   :ensure t
   :init
   (setq dashboard-banner-logo-title nil
-        dashboard-startup-banner "/home/arekisannda/Downloads/logo_128.png"
+        dashboard-startup-banner (expand-file-name "logo.png" user-emacs-directory)
         dashboard-center-content t
         dashboard-show-shortcuts t
         dashboard-set-footer nil
