@@ -39,9 +39,7 @@
 (dolist (mode '(vterm-mode
                 ranger-mode
                 elpaca-ui-mode
-                dashboard-mode
                 message-mode
-                special-mode
                 eglot-list-connections-mode))
   (add-to-list 'evil-emacs-state-modes mode))
 
