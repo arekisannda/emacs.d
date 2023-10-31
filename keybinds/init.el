@@ -91,6 +91,7 @@
 
 (general-define-key
  :keymaps '(evil-window-map)
+ "q" (lambda () (interactive)(if (one-window-p)(tab-bar-close-tab)(delete-window)))
  "V" #'split-window-horizontally
  "v" (lambda () (interactive)(split-window-horizontally)(other-window 1))
  "S" #'split-window-vertically
@@ -100,7 +101,7 @@
  :keymaps '(evil-normal-state-map)
  ;; bind evil-forward/backward-args
  "L"  #'evil-forward-arg
- "H"  #'evil-backwards-arg
+ "H"  #'evil-backward-arg
  "K"  #'evil-jump-out-args
  "u"  #'undo-fu-only-undo
  "U"  #'undo-fu-only-redo
@@ -219,8 +220,8 @@
   ;; consult keybinds
   "g" #'consult-ripgrep
   "r" #'consult-recent-file
-  "f" #'project-find-file
-  "F" #'find-file
+  "F" #'project-find-file
+  "f" #'find-file
   "c" #'consult-mode-command
   "h" #'consult-history
   "k" #'consult-kmacro
