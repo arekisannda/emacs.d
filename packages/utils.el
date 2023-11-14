@@ -40,6 +40,7 @@
   (setq diff-hl-show-hunk-map (make-sparse-keymap))
   (setq diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
   (setq diff-hl-side-margin-width 3)
+  (setq diff-hl-flydiff-delay 0.1)
   :config
   (if (daemonp)
     (add-hook 'after-make-frame-functions
@@ -67,6 +68,7 @@
           "\\*Customize.*\\*$"
           "\\*lsp-help\\*"
           "\\*vterm\\*"
+          "\\*compilation\\*"
           "\\*scratch\\*"
           "\\*info.*\\*"
           "\\*Man.*\\*$"

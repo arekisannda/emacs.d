@@ -71,7 +71,8 @@
         lsp-enable-on-type-formatting nil)
   ;; performance tuning
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
-  (setq gc-cons-threshold 100000000))
+  (setq gc-cons-threshold (* 100 1024 1024))
+  (setq lsp-idle-delay 0.1))
 
 (defun config/lsp-go-config ()
   "Config method for golang lsp configurations."
@@ -82,7 +83,17 @@
 ;;   "Config method for python lsp configurations."
 ;;   (setq lsp-clients-pylsp-library-directories))
 
+;; (defun config/lsp-cpp-config ()
+;;   "Config method for c++ lsp configurations"
+;;   ())
+
+(use-package dap-mode
+  :ensure t
+  :config
+  (dap-mode 1))
+
 (use-package lsp-mode
+  :after dap-mode
   :ensure t
   :init
   (config/lsp-config)
@@ -91,15 +102,14 @@
 
   :hook
   (go-ts-mode . lsp-deferred)
+  (c++-ts-mode . lsp-deferred)
+  (c-ts-mode . lsp-deferred)
+  (c-or-c++-ts-mode . lsp-deferred)
   :commands (lsp lsp-mode lsp-deferred)
   :config
   (setq lsp-command-map (make-sparse-keymap))
   (add-hook 'before-save-hook #'lsp-format-buffer)
   (add-hook 'before-save-hook #'lsp-organize-imports))
-
-(use-package dap-mode
-  :config
-  (dap-mode 1))
 
 (provide 'packages-lsp)
 ;;; lsp.el ends here
