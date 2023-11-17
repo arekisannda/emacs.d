@@ -87,13 +87,7 @@
 ;;   "Config method for c++ lsp configurations"
 ;;   ())
 
-(use-package dap-mode
-  :ensure t
-  :config
-  (dap-mode 1))
-
 (use-package lsp-mode
-  :after dap-mode
   :ensure t
   :init
   (config/lsp-config)
@@ -110,6 +104,15 @@
   (setq lsp-command-map (make-sparse-keymap))
   (add-hook 'before-save-hook #'lsp-format-buffer)
   (add-hook 'before-save-hook #'lsp-organize-imports))
+
+(use-package dap-mode
+  :ensure t
+  :init
+  (setq dap-print-io nil)
+  (setq dap-auto-configure-features '())
+  :config
+  (require 'dap-lldb)
+  (require 'dap-dlv-go))
 
 (provide 'packages-lsp)
 ;;; lsp.el ends here

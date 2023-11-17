@@ -40,6 +40,7 @@
                 ranger-mode
                 elpaca-ui-mode
                 message-mode
+                dap-ui-breakpoints-ui-list-mode
                 eglot-list-connections-mode))
   (add-to-list 'evil-emacs-state-modes mode))
 

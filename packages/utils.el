@@ -81,6 +81,11 @@
           "\\*Asyn*c Shell Command\\*"
           "\\*EGLOT.*\\*$"
           "Output\\*$"
+          treemacs-mode
+          dap-server-log-mode
+          dap-ui-sessions-mode
+          dap-ui-breakpoints-ui-list-mode
+          compilation-mode
           help-mode))
   (setq popper-window-height 30
         popper-mode-line "")

@@ -115,6 +115,18 @@
  "L" #'evil-forward-arg
  "H" #'evil-backwards-arg)
 
+(defhydra hydra-dap-motion (:foreign-key exit :exit nil :timeout nil)
+  "dap motion"
+  ("i" #'dap-step-in "step-in")
+  ("o" #'dap-step-out "step-out")
+  ("n" #'dap-next "next")
+  ("C" #'dap-continue "continue"))
+
+(defhydra hydra-dap-session (:foreign-key exit :exit nil :timeout nil)
+  "dap session"
+  ("S" #'dap-ui-sessions "sessions")
+  ("d" #'dap-ui-delete-session "delete session"))
+
 (kb/leader-key
   "M-\\" '(vterm :wk "open vterm")
   "M-|"  '(multi-vterm :wk "new multi-vterm")
@@ -143,6 +155,22 @@
   "bn" '(next-buffer :wk "next buffer")
   "bp" '(previous-buffer :wk "previous buffer")
   "br" '(revert-buffer :wk "reload buffer")
+
+  ;; dap debugger
+  "d"  '(:ignore t :wk "debug")
+  "dD" '(dap-debug :wk "start debug")
+  "dR" '(dap-debug-restart :wk "restart debug")
+  "dK" '(dap-breakpoint-delete-all :wk "delete breakpoints")
+  "dl" '(dap-ui-breakpoints-list :wk "list breakpoint")
+  "dd" '(dap-breakpoint-toggle :wk "toggle breakpoint")
+  "dm" '(dap-breakpoint-log-message :wk "breakpoint message")
+  "dc" '(dap-breakpoint-condition :wk "breakpoint condition")
+  "dh" '(dap-breakpoint-hit-condition :wk "breakpoint hit condition")
+  "di" '(hydra-dap-motion/dap-step-in :wk "step-in")
+  "do" '(hydra-dap-motion/dap-step-out :wk "step-out")
+  "dn" '(hydra-dap-motion/dap-next :wk "next")
+  "dC" '(hydra-dap-motion/dap-continue :wk "continue")
+  "dS" '(hydra-dap-session/dap-ui-sessions :wk "session")
 
   ;; quick window switcher keybinds
   "s"  '(:ignore t :wk "switcher")
@@ -220,8 +248,8 @@
   ;; consult keybinds
   "g" #'consult-ripgrep
   "r" #'consult-recent-file
-  "F" #'project-find-file
-  "f" #'find-file
+  "f" #'project-find-file
+  "F" #'find-file
   "c" #'consult-mode-command
   "h" #'consult-history
   "k" #'consult-kmacro
