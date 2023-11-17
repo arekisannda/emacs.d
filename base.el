@@ -20,6 +20,8 @@
 (visual-line-mode -1)
 (electric-pair-mode 1)
 
+;; (setq-default warning-minimum-level :emergency)
+
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 
 ;; theme configurations
