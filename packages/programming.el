@@ -1,8 +1,8 @@
-;;; packages/programming --- summary:
-;;; Emacs programming packages and configurations
-;;; commentary:
+;;; programming.el --- Emacs programming editor packages and configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
+
 ;; syntax check
 (use-package flycheck-pos-tip
   :ensure t)
@@ -51,4 +51,5 @@
 ;;   (company-quickhelp-mode))
 
 (provide 'packages-programming)
+
 ;;; programming.el ends here

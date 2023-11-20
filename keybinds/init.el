@@ -1,9 +1,9 @@
-;;; keybind/init --- summary:
-;;; Emacs keybind configurations
-;;; commentary:
+;;; init.el --- Emacs keybinding configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
+;;; Emacs keybinds configurations using general.el and hydra.el
 
-;;; code:
+;;; Code:
 
 (general-define-key
  (kbd "<escape>")  #'keyboard-escape-quit
@@ -27,10 +27,7 @@
  "C-|"  #'popper-toggle-type
 
  "M-["  #'tab-bar-switch-to-prev-tab
- "M-]"  #'tab-bar-switch-to-next-tab
-
- "C-," #'company-capf
- "C-." #'company-show-doc-buffer)
+ "M-]"  #'tab-bar-switch-to-next-tab)
 
 ;; vterm keybinds
 (general-define-key
@@ -79,6 +76,12 @@
   :keymaps       'override
   :prefix        ";"
   :global-prefix "M-;")
+
+(general-create-definer kb/completion-leader-key
+  :states        '(insert)
+  :keymaps       'override
+  :prefix        "C-,"
+  :global-prefix "C-,")
 
 ;; bind evil-args text objects
 (general-define-key
@@ -180,7 +183,8 @@
 
   ;; tab management keybinds
   "t"  '(:ignore t :wk "tabs")
-  "tt" '((lambda () (interactive)(tab-bar-new-tab)(dashboard-open)) :wk "new tab")
+  "tt" '(tab-bar-new-tab :wk "new tab")
+  "tT" '((lambda () (interactive)(tab-bar-new-tab)(dashboard-open)) :wk "new fresh tab")
   "tk" '(tab-bar-close-tab :wk "kill tab")
   "to" '(tab-bar-close-other-tabs :wk "kill other tabs")
   "tr" '(tab-bar-rename-tab :wk "rename tab")
@@ -256,5 +260,11 @@
   "m" #'consult-man
   "i" #'consult-info)
 
-(provide 'keybinds-init)
+(kb/completion-leader-key
+  "s"   #'company-yasnippet
+  "C-," #'company-capf
+  "."   #'company-show-doc-buffer)
+
+(provide 'keybind-init)
+
 ;;; init.el ends here

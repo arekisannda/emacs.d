@@ -1,8 +1,7 @@
-;;; packages/lsp --- Summary:
-;;; Emacs lsp/languages packages and configurations
-;;; commentary:
+;;; lsp.el --- Emacs lsp/language package and configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
 
 ;; tree-sitter language grammar
 (setq treesit-language-source-alist
@@ -116,4 +115,5 @@
   (require 'dap-dlv-go))
 
 (provide 'packages-lsp)
+
 ;;; lsp.el ends here

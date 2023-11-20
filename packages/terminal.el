@@ -1,8 +1,7 @@
-;;; packages/terminal --- summary:
-;;; Emacs terminal packages and configurations
-;;; commentary:
+;;; terminal.el --- Emacs terminal packages and configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
 
 (defvar disable-vterm-mode-map (make-sparse-keymap)
   "Empty keymap to disable vterm-mode keybindings.")
@@ -42,4 +41,5 @@
 ;; 		 (window-height . 0.3))))
 
 (provide 'packages-terminal)
+
 ;;; terminal.el ends here

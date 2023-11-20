@@ -1,9 +1,7 @@
-;;; packages/minibuffer --- summary:
-;;; Emacs minibuffer packages and configurations
-;;; commentary:
+;;; minibuffer.el --- Emacs minibuffer packages and configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
-
+;;; Code:
 
 (defun sort-directories-first (files)
   (setq files (vertico-sort-history-length-alpha files))
@@ -58,4 +56,5 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (provide 'packages-minibuffer)
+
 ;;; minibuffer.el ends here

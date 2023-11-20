@@ -1,8 +1,7 @@
-;;; packages/init --- summary:
-;;; Emacs packages init
-;;; commentary:
+;;; init.el --- Emacs packages init -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
 
 (setq config-directory (expand-file-name "packages" user-emacs-directory))
 
@@ -53,4 +52,5 @@
 (elpaca nil (message "deferred"))
 
 (provide 'packages-init)
+
 ;;; init.el ends here

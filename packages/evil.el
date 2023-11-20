@@ -1,8 +1,7 @@
-;;; packages/evil --- summary:
-;;; Emacs evil-mode packages and configurations
-;;; commentary:
+;;; evil.el --- evil-mode configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
 
 (use-package evil
   :after general
@@ -67,4 +66,5 @@
   (evil-lion-mode 1))
 
 (provide 'packages-evil)
+
 ;;; evil.el ends here

@@ -1,8 +1,7 @@
-;;; init --- summary:
-;;; Emacs configurations init
-;;; commentary:
+;;; init.el --- Emacs configuration init -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
 
 ;; setup elpaca package manager
 (defvar elpaca-installer-version 0.5)
@@ -55,6 +54,7 @@
 (elpaca-wait)
 
 ;; set directories
+(defvar user-configs-directory "~/.config")
 (defvar user-emacs-directory "~/.config/emacs")
 (defvar user-code-directory "~/Code")
 
@@ -71,4 +71,5 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (provide 'config-init)
+
 ;;; init.el ends here

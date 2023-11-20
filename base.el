@@ -1,9 +1,9 @@
-;;; base --- summary:
-;;; Emacs base configurations
-;;; manage fonts and configure Emacs GUI features
-;;; commentary:
+;;; base.el --- Emacs base configuration -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; manages fonts and configure Emacs GUI features
+
+;;; Code:
 
 ;; disable features
 (setq-default inhibit-startup-screen t)

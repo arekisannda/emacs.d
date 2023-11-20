@@ -1,8 +1,7 @@
-;;; packages/editor --- summary:
-;;; Emacs editor related packages and configurations
-;;; commentary:
+;;; editor.el --- Emacs editor related packages and configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
 
 ;; additional icons
 (use-package nerd-icons)
@@ -59,4 +58,5 @@
   (telephone-line-mode 1))
 
 (provide 'packages-editor)
+
 ;;; editor.el ends here

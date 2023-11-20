@@ -1,8 +1,7 @@
-;;; packages/utils --- summary:
-;;; Emacs utility packages and configurations
-;;; commentary:
+;;; utils.el --- Emacs utlity packages and configurations -*- lexical-binding: t -*-
+;;; Commentary:
 
-;;; code:
+;;; Code:
 
 (use-package no-littering)
 
@@ -57,6 +56,16 @@
   :init
   (setq embrace-show-help-p nil))
 
+(use-package yasnippet
+  :ensure t
+  :init
+  (setq yas-snippet-dirs '("~/.config/emacs-snippets"))
+  :config
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
+
 ;; transient buffer management utils
 (use-package popper
   :init
@@ -94,4 +103,5 @@
 ;; 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
 
 (provide 'packages-utils)
+
 ;;; utils.el ends here

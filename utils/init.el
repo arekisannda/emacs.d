@@ -1,6 +1,5 @@
-;;; init --- summary:
-;;; Emacs configuration utility methods
-;;; commentary:
+;;; init.el --- Emacs configuration tility methods -*- lexical-binding: t -*-
+;;; Commentary:
 
 ;;; Code:
 
@@ -10,4 +9,5 @@
     (add-to-list list-var element append compare-fn)))
 
 (provide 'config-utils)
+
 ;;; init.el ends here
