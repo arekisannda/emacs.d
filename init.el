@@ -60,6 +60,7 @@
 
 (load-file (expand-file-name "utils/init.el" user-emacs-directory))
 (load-file (expand-file-name "base.el" user-emacs-directory))
+(load-file (expand-file-name "locale.el" user-emacs-directory))
 (load-file (expand-file-name "packages/init.el" user-emacs-directory))
 (load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
 
