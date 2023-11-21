@@ -220,6 +220,7 @@
   ",S" '(embrace-change :wk "surround change")
   ",d" '(embrace-delete :wk "surround delete")
   ",r" '(lsp-rename :wk "rename symbol")
+  ",t" '(ispell-word :wk "fix spelling typo")
 
   ;; lsp
   "d"  '(:ignore t :wk "lsp")
@@ -250,20 +251,21 @@
 
 (kb/search-leader-key
   ;; consult keybinds
-  "g" #'consult-ripgrep
-  "r" #'consult-recent-file
-  "f" #'project-find-file
-  "F" #'find-file
-  "c" #'consult-mode-command
-  "h" #'consult-history
-  "k" #'consult-kmacro
-  "m" #'consult-man
-  "i" #'consult-info)
+  "g" '(consult-ripgrep :wk "find text in project")
+  "r" '(consult-recent-file :wk "find recent file")
+  "f" '(project-find-file :wk "find project file")
+  "F" '(find-file :wk "find file")
+  "c" '(consult-mode-command :wk "find recent commands")
+  "h" '(consult-history :wk "find history")
+  "k" '(consult-kmacro :wk "find keyboard macro")
+  "m" '(consult-man :wk "find man page")
+  "i" '(consult-info :wk "find emacs info"))
 
 (kb/completion-leader-key
-  "s"   #'company-yasnippet
-  "C-," #'company-capf
-  "."   #'company-show-doc-buffer)
+  "s" '(company-ispell :wk "suggest word")
+  "d" '(company-yasnippet :wk "suggest snippet")
+  "," '(company-capf :wk "suggest code completion")
+  "." '(company-show-doc-buffer :wk "show code completion doc"))
 
 (provide 'keybind-init)
 
