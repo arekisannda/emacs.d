@@ -3,6 +3,7 @@
 
 ;;; Code:
 
+(use-package shut-up)
 (use-package no-littering)
 
 ;; keybinding utils
@@ -54,7 +55,7 @@
 ;; editor utils
 (use-package embrace
   :init
-  (setq embrace-show-help-p nil))
+  (setq embrace-show-help-p t))
 
 (use-package yasnippet
   :ensure t
