@@ -1,4 +1,4 @@
-;;; base.el --- Emacs base configuration -*- lexical-binding: t -*-
+;;; gui.el --- Emacs GUI configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 
 ;;; manages fonts and configure Emacs GUI features
@@ -6,12 +6,6 @@
 ;;; Code:
 
 ;; disable features
-(setq-default inhibit-startup-screen t)
-(setq-default confirm-kill-processes nil)
-(setq-default auto-save-default nil)
-(setq-default make-backup-files nil)
-(setq-default create-lockfiles nil)
-
 (global-eldoc-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -104,5 +98,5 @@
               (lambda (frame) (with-selected-frame frame (config/set-custom-faces))))
   (config/set-custom-faces))
 
-(provide 'config-base)
-;;; base.el ends here
+(provide 'configs-gui)
+;;; gui.el ends here
