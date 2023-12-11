@@ -42,7 +42,7 @@
 (setq-default fringe-indicator-alist nil)
 
 ;; font/line configurations
-(defvar settings/default-font-size 80)
+(defvar settings/default-font-size 90)
 (defvar settings/tab-font-size 100)
 
 (setq-default line-spacing 0)
@@ -55,7 +55,7 @@
 (setq-default tab-bar-auto-width-min '(20 2))
 
 ;; font configuration
-(add-to-list 'default-frame-alist '(font . "FiraMono Nerd Font Mono-8"))
+(add-to-list 'default-frame-alist '(font . "FiraMono Nerd Font Mono-9"))
 
 (defun config/set-custom-faces ()
   "Config method to set faces on frame create."
