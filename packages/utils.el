@@ -88,8 +88,10 @@
           "\\*Ediff Control.*\\*$"
           "\\*evil-marks\\*$"
           "^magit.*$"
-          "\\*Asyn*c Shell Command\\*"
+          "\\*Async Shell Command\\*"
           "\\*EGLOT.*\\*$"
+          "\\*Bookmark List\\*"
+          "\\*Buffer List\\*"
           "Output\\*$"
           treemacs-mode
           dap-server-log-mode

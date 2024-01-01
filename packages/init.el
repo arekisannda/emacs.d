@@ -1,20 +1,23 @@
-;;; init.el --- Emacs packages init -*- lexical-binding: t -*-
+;; init.el --- Emacs packages init -*- lexical-binding: t -*-
 ;;; Commentary:
 
 ;;; Code:
 
-(setq config-directory (expand-file-name "packages" user-emacs-directory))
+(defvar packages-directory (expand-file-name "packages" user-emacs-directory))
 
 ;; load-packages
 
-(load-file (expand-file-name "utils.el" config-directory))
-(load-file (expand-file-name "evil.el" config-directory))
-(load-file (expand-file-name "editor.el" config-directory))
-(load-file (expand-file-name "minibuffer.el" config-directory))
-(load-file (expand-file-name "programming.el" config-directory))
-(load-file (expand-file-name "terminal.el" config-directory))
-(load-file (expand-file-name "modes.el" config-directory))
-(load-file (expand-file-name "lsp.el" config-directory))
+(load-file (expand-file-name "utils.el" packages-directory))
+(load-file (expand-file-name "projects.el" packages-directory))
+(load-file (expand-file-name "editor.el" packages-directory))
+(load-file (expand-file-name "minibuffer.el" packages-directory))
+(load-file (expand-file-name "evil.el" packages-directory))
+(load-file (expand-file-name "terminal.el" packages-directory))
+(load-file (expand-file-name "modes.el" packages-directory))
+(load-file (expand-file-name "lsp.el" packages-directory))
+(load-file (expand-file-name "programming.el" packages-directory))
+(load-file (expand-file-name "lang.el" packages-directory))
+(load-file (expand-file-name "org.el" packages-directory))
 
 ;; end load packages
 

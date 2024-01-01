@@ -31,9 +31,6 @@
   :config
   (marginalia-mode 1))
 
-;; project management utils
-(use-package project)
-
 (use-package embark
   :ensure t)
 

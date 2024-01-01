@@ -38,7 +38,7 @@
             (lambda ()
               (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups)))))
 
-;; window nvaigation
+;; window navigation
 (use-package ace-window
   :init
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
@@ -56,6 +56,42 @@
 (use-package telephone-line
   :config
   (telephone-line-mode 1))
+
+;; syntax check
+(use-package flycheck
+  :ensure t
+  :init
+  (setq flycheck-indication-mode nil
+	    flycheck-mode-line nil
+        flycheck-display-errors-delay 0.9)
+  :config
+  (global-flycheck-mode 1))
+
+(use-package flycheck-posframe
+  :after flycheck
+  :ensure t)
+
+(use-package flycheck-popup-tip
+  :after flycheck
+  :ensure t)
+
+;; completion
+(use-package company
+  :init
+  (setq company-manual-begin t
+        company-idle-delay nil
+        company-tooltip-minimum-width 40
+        company-tooltip-align-annotations t)
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+(use-package company-posframe
+  :after company)
+
+(use-package company-flx
+  :after company
+  :config
+  (company-flx-mode +1))
 
 (provide 'packages-editor)
 
