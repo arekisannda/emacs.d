@@ -55,7 +55,6 @@
   (setq elpaca-hide-initial-build t)
   (setq elpaca-hide-status-during-build t))
 
-
 ;; Block until current queue processed.
 (elpaca-wait)
 
@@ -64,20 +63,14 @@
 (load-file (expand-file-name "packages/init.el" user-emacs-directory))
 (load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
 
-(setq-default confirm-nonexistent-file-or-buffer nil)
-(setq-default inhibit-startup-screen t)
-(setq-default confirm-kill-processes nil)
-(setq-default auto-save-default nil)
-(setq-default make-backup-files nil)
-(setq-default create-lockfiles nil)
+;;Turns off elpaca-use-package-mode current declartion
+;;Note this will cause the declaration to be interpreted immediately (not deferred).
+;;Useful for configuring built-in emacs features.
+(use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
 
-;; (setq project-vc-merge-submodules t)
-(setq project-vc-extra-root-markers '(".project.el" ".projectile" ".project"))
-(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-(defalias 'yes-or-no-p 'y-or-n-p)
+;; Don't install anything. Defer execution of BODY
+(elpaca nil (message "deferred"))
 
-(setq-default message-log-max 2000)
-(kill-buffer "*Messages*")
-(provide 'config-init)
+(provide 'init)
 
 ;;; init.el ends here
