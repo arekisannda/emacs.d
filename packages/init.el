@@ -20,6 +20,40 @@
 
 (elpaca-wait)
 
+;; popup configuration
+(defun config/enable-posframe ()
+  "Use posframe."
+  (add-hook 'flycheck-mode-hook 'flycheck-posframe-mode)
+  (ace-window-posframe-mode 1)
+  (company-posframe-mode 1)
+
+  (require 'mozc-cand-posframe)
+  (setq mozc-candidate-style 'posframe))
+
+(defun config/enable-popup ()
+  "Use popup."
+  (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode))
+
+(defun config/get-popup-type ()
+  "Retrieve popup dependency package."
+  (if (display-graphic-p)
+      'posframe
+    'popup))
+
+(defun config/load-deferred-configurations ()
+  "Load deferred package configurations."
+  (let ((popup-type (config/get-popup-type)))
+    (cl-case popup-type
+      (posframe (config/enable-posframe))
+      (popup (config/enable-popup))
+      (otherwise (message "Unable to configure popup")))))
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+              (lambda (frame) (with-selected-frame frame (config/load-deferred-configurations))))
+  (config/load-deferred-configurations))
+
+
 ;; diminish mode-lines
 (dolist (mode '(evil-collection-unimpaired-mode
                 auto-revert-mode
@@ -43,14 +77,6 @@
                 dap-ui-breakpoints-ui-list-mode
                 eglot-list-connections-mode))
   (add-to-list 'evil-emacs-state-modes mode))
-
-;;Turns off elpaca-use-package-mode current declartion
-;;Note this will cause the declaration to be interpreted immediately (not deferred).
-;;Useful for configuring built-in emacs features.
-(use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
-
-;; Don't install anything. Defer execution of BODY
-(elpaca nil (message "deferred"))
 
 (provide 'packages-init)
 

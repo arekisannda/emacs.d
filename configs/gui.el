@@ -28,10 +28,6 @@
 (load-file "~/Code/sonokai-emacs/sonokai-theme.el")
 (load-theme 'sonokai t)
 
-;; pos-tip tooltip configurations
-(setq-default pos-tip-internal-border-width 5)
-(setq-default pos-tip-border-width 0)
-
 ;; line-number configurations
 (setq-default display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
