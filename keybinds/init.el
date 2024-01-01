@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'packages-lang)
+
 (general-define-key
  (kbd "<escape>")  #'keyboard-escape-quit
  (kbd "C-q")       #'keyboard-quit
@@ -53,35 +55,47 @@
 
 (general-define-key
  :keymaps '(popper-mode-map)
- (kbd "M-<prior>") #'popper-cycle-backwards
- (kbd "M-<next>")  #'popper-cycle)
+ (kbd "M-<prior>")  #'popper-cycle-backwards
+ (kbd "M-<next>")   #'popper-cycle
+ (kbd "M-<delete>") #'kill-current-buffer)
 
 ;;;;
 ;; vim-mode keybinds
 ;;;;
-(general-create-definer kb/leader-key
+;; global level
+(general-create-definer kb/global-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        "\\"
+  :prefix        "M-\\"
   :global-prefix "M-\\")
 
+;; local/buffer level
 (general-create-definer kb/local-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        ","
+  :prefix        "M-,"
   :global-prefix "M-,")
 
+;; search level
 (general-create-definer kb/search-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        ";"
+  :prefix        "M-;"
   :global-prefix "M-;")
 
+;; auto completion
 (general-create-definer kb/completion-leader-key
   :states        '(insert)
   :keymaps       'override
   :prefix        "C-,"
   :global-prefix "C-,")
+
+;; input method
+(general-create-definer kb/im-leader-key
+  :states        '(normal insert visual emacs motion)
+  :keymaps       'override
+  :prefix        "M-i"
+  :global-prefix "M-i")
 
 ;; bind evil-args text objects
 (general-define-key
@@ -113,6 +127,10 @@
  "[g" #'diff-hl-previous-hunk)
 
 (general-define-key
+ :keymaps '(company-active-map)
+ (kbd "<escape>")  #'company-abort)
+
+(general-define-key
  :keymaps '(evil-motion-state-map)
  ;; bind evil-forward/backward-args
  "L" #'evil-forward-arg
@@ -130,7 +148,7 @@
   ("S" #'dap-ui-sessions "sessions")
   ("d" #'dap-ui-delete-session "delete session"))
 
-(kb/leader-key
+(kb/global-leader-key
   "M-\\" '(vterm :wk "open vterm")
   "M-|"  '(multi-vterm :wk "new multi-vterm")
 
@@ -150,11 +168,13 @@
 
   ;; buffer management keybinds
   "b"  '(:ignore t :wk "buffer")
+  "bl" '(list-buffers :wk "list buffers")
   "bb" '(consult-project-buffer :wk "switch buffer")
   "bB" '(consult-buffer :wk "switch buffer (all)")
   "bX" '(kill-buffer :wk "kill buffer")
   "bk" '(kill-this-buffer :wk "kill current buffer")
   "bK" '(project-kill-buffers :wk "kill current buffer")
+  "bQ" '(kill-buffer-and-window :wk "kill buffer and window")
   "bn" '(next-buffer :wk "next buffer")
   "bp" '(previous-buffer :wk "previous buffer")
   "br" '(revert-buffer :wk "reload buffer")
@@ -213,7 +233,7 @@
   ",=" '(sort-lines :wk "sort lines")
   ",k" '(align :wk "basic align")
   ",l" '(evil-lion-left :wk "align left")
-  ",L" '(evil-lion-right :wk "align righ")
+  ",L" '(evil-lion-right :wk "align right")
   ",c" '(evilnc-comment-or-uncomment-lines :wk "comment-line")
   ",C" '(evilnc-comment-or-uncomment-paragraphs :wk "comment-paragraph")
   ",s" '(embrace-add :wk "surround add")
@@ -263,9 +283,20 @@
 
 (kb/completion-leader-key
   "s" '(company-ispell :wk "suggest word")
-  "d" '(company-yasnippet :wk "suggest snippet")
-  "," '(company-capf :wk "suggest code completion")
-  "." '(company-show-doc-buffer :wk "show code completion doc"))
+  "." '(company-yasnippet :wk "suggest snippet")
+  "," '(company-complete :wk "completion")
+  "<" '(company-show-doc-buffer :wk "show code completion doc"))
+
+(kb/im-leader-key
+  ;; input methods
+  "i"  '(:ignore t :wk "input method")
+  "ii" '(config/set-default-input-method :wk "English input ")
+  "ij" '(config/set-japanese-input-method :wk "Japanese input ")
+
+  ;; translate
+  "t"  '(:ignore t :wk "translate")
+  "tt" '(google-translate-at-point :wk "translate source -> target")
+  "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
 
 (provide 'keybind-init)
 
