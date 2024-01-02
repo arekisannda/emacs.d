@@ -22,7 +22,11 @@
   (ranger-override-dired-mode t))
 
 ;; version control utils
-(use-package magit)
+(use-package seq)
+(use-package transient
+  :after seq)
+(use-package magit
+  :after transient)
 (use-package forge
   :after magit
   :init)
