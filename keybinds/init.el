@@ -66,21 +66,21 @@
 (general-create-definer kb/global-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        "M-\\"
+  :prefix        "\\"
   :global-prefix "M-\\")
 
 ;; local/buffer level
 (general-create-definer kb/local-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        "M-,"
+  :prefix        ","
   :global-prefix "M-,")
 
 ;; search level
 (general-create-definer kb/search-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        "M-;"
+  :prefix        ";"
   :global-prefix "M-;")
 
 ;; auto completion
@@ -94,8 +94,8 @@
 (general-create-definer kb/im-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        "M-i"
-  :global-prefix "M-i")
+  :prefix        "C-i"
+  :global-prefix "C-i")
 
 ;; bind evil-args text objects
 (general-define-key
