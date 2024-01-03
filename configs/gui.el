@@ -28,6 +28,9 @@
 (load-file "~/Code/sonokai-emacs/sonokai-theme.el")
 (load-theme 'sonokai t)
 
+;; indentation configuration
+(setq-default indent-tabs-mode nil)
+
 ;; line-number configurations
 (setq-default display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
