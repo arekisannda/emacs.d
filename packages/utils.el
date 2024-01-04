@@ -22,14 +22,9 @@
   (ranger-override-dired-mode t))
 
 ;; version control utils
-(use-package seq)
-(use-package transient
-  :after seq)
-(use-package magit
-  :after transient)
+(use-package magit)
 (use-package forge
-  :after magit
-  :init)
+  :after magit)
 
 (defun config/set-vc-diff-hl-mode ()
   "Config method to set diff-hl mode on frame create."
