@@ -62,7 +62,7 @@
   :ensure t
   :init
   (setq flycheck-indication-mode nil
-	    flycheck-mode-line nil
+	flycheck-mode-line nil
         flycheck-display-errors-delay 0.9)
   :config
   (global-flycheck-mode 1))

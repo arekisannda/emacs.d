@@ -12,7 +12,7 @@
 (menu-bar-mode -1)
 (tab-bar-mode 1)
 (visual-line-mode -1)
-(electric-pair-mode 1)
+(electric-pair-mode -1)
 
 ;; (setq-default warning-minimum-level :emergency)
 
