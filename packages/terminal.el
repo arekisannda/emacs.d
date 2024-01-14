@@ -19,6 +19,29 @@
 (use-package multi-vterm
   :after vterm)
 
+
+(elpaca-wait)
+
+(defun config/create-workspace-term ()
+  ())
+
+
+;;;###autoload
+(defun multi-vterm-project ()
+  "Create new vterm buffer."
+  (interactive)
+  (if (multi-vterm-project-root)
+      (if (buffer-live-p (get-buffer (multi-vterm-project-get-buffer-name)))
+          (if (string-equal (buffer-name (current-buffer)) (multi-vterm-project-get-buffer-name))
+              (delete-window (selected-window))
+            (switch-to-buffer-other-window (multi-vterm-project-get-buffer-name)))
+        (let* ((vterm-buffer (multi-vterm-get-buffer 'project))
+               (multi-vterm-buffer-list (nconc multi-vterm-buffer-list (list vterm-buffer))))
+          (set-buffer vterm-buffer)
+          (multi-vterm-internal)
+          (switch-to-buffer-other-window vterm-buffer)))
+    (message "This file is not in a project")))
+
 ;; (use-package eterm-256color
 ;;   :hook (vterm-mode . eterm-256color-mode))
 

@@ -66,44 +66,6 @@
 (use-package yasnippet-snippets
   :after yasnippet)
 
-;; transient buffer management utils
-(use-package popper
-  :init
-  ;; set list of ephemeral buffers
-  (setq popper-reference-buffers
-        '("\\*Messages\\*"
-          "\\*Warnings\\*"
-          "\\*Backtrace\\*"
-          "\\*Customize.*\\*$"
-          "\\*lsp-help\\*"
-          "\\*vterm\\*"
-          "\\*compilation\\*"
-          "\\*scratch\\*"
-          "\\*info.*\\*"
-          "\\*Man.*\\*$"
-          "\\*elpaca-manager*\\*"
-          "\\*elpaca-logs*\\*"
-          "\\*Flycheck.*\\*$"
-          "\\*Ediff Control.*\\*$"
-          "\\*evil-marks\\*$"
-          "^magit.*$"
-          "\\*Async Shell Command\\*"
-          "\\*EGLOT.*\\*$"
-          "\\*Bookmark List\\*"
-          "\\*Buffer List\\*"
-          "Output\\*$"
-          treemacs-mode
-          dap-server-log-mode
-          dap-ui-sessions-mode
-          dap-ui-breakpoints-ui-list-mode
-          compilation-mode
-          help-mode))
-  (setq popper-window-height 30
-        popper-mode-line "")
-  :config
-  (popper-mode +1))
-;; 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
-
 (provide 'packages-utils)
 
 ;;; utils.el ends here

@@ -25,8 +25,8 @@
 ;; general keybinds
 ;;;;
 (general-define-key
- "C-\\" #'popper-toggle
- "C-|"  #'popper-toggle-type
+ "M-\\" #'popper-toggle
+ "M-|"  #'popper-toggle-type
 
  "M-["  #'tab-bar-switch-to-prev-tab
  "M-]"  #'tab-bar-switch-to-next-tab)
@@ -34,7 +34,7 @@
 ;; vterm keybinds
 (general-define-key
  :keymaps '(vterm-mode-map)
- "C-\\" #'popper-toggle
+ "M-\\" #'popper-toggle
  "M-]"  #'tab-bar-switch-to-next-tab
 
  (kbd "C-<left>")  #'evil-window-left
@@ -67,21 +67,21 @@
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
   :prefix        "\\"
-  :global-prefix "M-\\")
+  :global-prefix "C-\\")
 
 ;; local/buffer level
 (general-create-definer kb/local-leader-key
-  :states        '(normal insert visual emacs motion)
+  :states        '(normal visual emacs motion)
   :keymaps       'override
   :prefix        ","
-  :global-prefix "M-,")
+  :global-prefix "C-,")
 
 ;; search level
 (general-create-definer kb/search-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
   :prefix        ";"
-  :global-prefix "M-;")
+  :global-prefix "C-;")
 
 ;; auto completion
 (general-create-definer kb/completion-leader-key
@@ -149,8 +149,8 @@
   ("d" #'dap-ui-delete-session "delete session"))
 
 (kb/global-leader-key
-  "M-\\" '(vterm :wk "open vterm")
-  "M-|"  '(multi-vterm :wk "new multi-vterm")
+  "C-\\" #'multi-vterm-project
+  "C-|"  #'multi-vterm
 
   ;; terminal keybinds
   "vr" '(multi-vterm-rename-buffer :wk "rename terminal")
@@ -165,6 +165,12 @@
   "pF" '(ranger :wk "ranger")
   "ps" '(scratch-buffer :wk "scratch buffer")
   "pk" '((lambda () (interactive)(project-kill-buffers)(delete-other-windows)(dashboard-open)) :wk "kill project buffers")
+  "pK" '((lambda () (interactive)(project-kill-buffers)(persp-kill)) :wk "kill project frame")
+
+  ;; workspaces/perspective
+  "w"  '(:ignore t :wk "workspace")
+  "ww" '(persp-switch :wk "switch perspective")
+  "wk" '(persp-kill :wk "kill perspective")
 
   ;; buffer management keybinds
   "b"  '(:ignore t :wk "buffer")
