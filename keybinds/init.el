@@ -25,7 +25,6 @@
 ;; general keybinds
 ;;;;
 (general-define-key
- "M-\\" #'popper-toggle
  "M-|"  #'popper-toggle-type
 
  "M-["  #'tab-bar-switch-to-prev-tab
@@ -34,7 +33,9 @@
 ;; vterm keybinds
 (general-define-key
  :keymaps '(vterm-mode-map)
- "M-\\" #'popper-toggle
+ "M-|"  #'popper-toggle-type
+
+ "M-["  #'tab-bar-switch-to-prev-tab
  "M-]"  #'tab-bar-switch-to-next-tab
 
  (kbd "C-<left>")  #'evil-window-left
@@ -66,12 +67,12 @@
 (general-create-definer kb/global-leader-key
   :states        '(normal insert visual emacs motion)
   :keymaps       'override
-  :prefix        "\\"
+  :prefix        "C-\\"
   :global-prefix "C-\\")
 
 ;; local/buffer level
 (general-create-definer kb/local-leader-key
-  :states        '(normal visual emacs motion)
+  :states        '(normal insert visual emacs motion)
   :keymaps       'override
   :prefix        ","
   :global-prefix "C-,")
@@ -87,15 +88,8 @@
 (general-create-definer kb/completion-leader-key
   :states        '(insert)
   :keymaps       'override
-  :prefix        "C-,"
-  :global-prefix "C-,")
-
-;; input method
-(general-create-definer kb/im-leader-key
-  :states        '(normal insert visual emacs motion)
-  :keymaps       'override
-  :prefix        "C-i"
-  :global-prefix "C-i")
+  :prefix        "C-."
+  :global-prefix "C-.")
 
 ;; bind evil-args text objects
 (general-define-key
@@ -149,8 +143,8 @@
   ("d" #'dap-ui-delete-session "delete session"))
 
 (kb/global-leader-key
-  "C-\\" #'multi-vterm-project
-  "C-|"  #'multi-vterm
+  "C-\\" #'popper-toggle
+  "C-|"  #'configs--multi-vterm
 
   ;; terminal keybinds
   "vr" '(multi-vterm-rename-buffer :wk "rename terminal")
@@ -275,7 +269,17 @@
   "gj" '(diff-hl-next-hunk :wk "next hunk")
   "gk" '(diff-hl-previous-hunk :wk "prev hunk")
   "gs" '(diff-hl-stage-current-hunk :wk "stage")
-  "gd" '(diff-hl-revert-hunk :wk "revert"))
+  "gd" '(diff-hl-revert-hunk :wk "revert")
+
+  ;; input methods
+  "i"  '(:ignore t :wk "input method")
+  "ii" '(configs--set-default-input-method :wk "English input ")
+  "ij" '(configs--set-japanese-input-method :wk "Japanese input ")
+
+  ;; translate
+  "t"  '(:ignore t :.k "translate")
+  "tt" '(google-translate-at-point :wk "translate source -> target")
+  "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
 
 (kb/search-leader-key
   ;; consult keybinds
@@ -291,20 +295,10 @@
 
 (kb/completion-leader-key
   "s" '(company-ispell :wk "suggest word")
-  "." '(company-yasnippet :wk "suggest snippet")
-  "," '(company-complete :wk "completion")
-  "<" '(company-show-doc-buffer :wk "show code completion doc"))
-
-(kb/im-leader-key
-  ;; input methods
-  "i"  '(:ignore t :wk "input method")
-  "ii" '(configs--set-default-input-method :wk "English input ")
-  "ij" '(configs--set-japanese-input-method :wk "Japanese input ")
-
-  ;; translate
-  "t"  '(:ignore t :wk "translate")
-  "tt" '(google-translate-at-point :wk "translate source -> target")
-  "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
+  "," '(company-yasnippet :wk "suggest snippet")
+  "." '(company-complete :wk "suggest completion")
+  ">" '(company-show-doc-buffer :wk "show code completion doc")
+  "!" '(flycheck-display-error-at-point :wk "show error at point"))
 
 (provide 'keybind-init)
 
