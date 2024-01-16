@@ -3,10 +3,11 @@
 
 ;;; Code:
 
-(defvar configs-directory (expand-file-name "configs" user-emacs-directory))
+(defvar user-configs-directory (expand-file-name "configs" user-emacs-directory))
 
-(load-file (expand-file-name "gui.el" configs-directory))
-(load-file (expand-file-name "ispell.el" configs-directory))
+(load-file (expand-file-name "gui.el" user-configs-directory))
+(load-file (expand-file-name "ispell.el" user-configs-directory))
+(load-file (expand-file-name "permissions.el" user-configs-directory))
 
 (setq-default confirm-nonexistent-file-or-buffer nil)
 (setq-default inhibit-startup-screen t)
@@ -23,6 +24,6 @@
 (setq-default message-log-max 2000)
 (kill-buffer "*Messages*")
 
-(provide 'config-init)
+(provide 'configs-init)
 
 ;;; init.el ends here

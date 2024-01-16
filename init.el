@@ -4,9 +4,8 @@
 ;;; Code:
 
 ;; set directories
-(defvar user-configs-directory "~/.config")
-(defvar user-emacs-directory "~/.config/emacs")
-(defvar user-code-directory "~/Code")
+(defvar user-emacs-directory (expand-file-name "~/.config/emacs"))
+(defvar user-code-directory (expand-file-name "~/Code"))
 
 ;; setup elpaca package manager
 (defvar elpaca-installer-version 0.6)
