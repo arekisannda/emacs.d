@@ -171,6 +171,8 @@
   "w"  '(:ignore t :wk "workspace")
   "ww" '(persp-switch :wk "switch perspective")
   "wk" '(persp-kill :wk "kill perspective")
+  "wr" '(persp-rename :wk "rename perspective")
+  "wb" '(persp-remove-buffer :wk "remove buffer from perspective")
 
   ;; buffer management keybinds
   "b"  '(:ignore t :wk "buffer")
