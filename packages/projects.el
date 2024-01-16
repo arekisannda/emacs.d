@@ -6,8 +6,6 @@
 ;; project management utils
 (use-package project)
 
-(defun configs--project-find-file ())
-
 ;; Update the frame name to include the current perspective
 (use-package persp-mode
   :init
@@ -59,7 +57,6 @@ Please install `persp-mode' or customize \
           "\\*Backtrace\\*"
           "\\*Customize.*\\*$"
           "\\*lsp-help\\*"
-          "\\*vterm\\*"
           "\\*compilation\\*"
           "\\*scratch\\*"
           "\\*info.*\\*"
@@ -75,8 +72,8 @@ Please install `persp-mode' or customize \
           "\\*Bookmark List\\*"
           "\\*Buffer List\\*"
           "Output\\*$"
-          "\\*vterminal.*\\*"
           "\\*diff-hl\\*"
+          vterm-mode
           treemacs-mode
           dap-server-log-mode
           dap-ui-sessions-mode
