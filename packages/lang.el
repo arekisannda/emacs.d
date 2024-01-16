@@ -28,7 +28,8 @@
   (interactive)
   (setq google-translate-default-source-language "en")
   (setq google-translate-default-target-language nil)
-  (set-input-method nil))
+  (deactivate-input-method)
+  (evil-deactivate-input-method))
 
 (provide 'packages-lang)
 ;;; lang.el ends here
