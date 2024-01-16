@@ -4,7 +4,7 @@
 ;;; Code:
 
 ;; tree-sitter language grammar
-(setq treesit-language-source-alist
+(setq configs--treesit-language-source-alist
       '((bash . ("https://github.com/tree-sitter/tree-sitter-bash.git"))
         (c . ("https://github.com/tree-sitter/tree-sitter-c.git"))
         (cmake . ("https://github.com/uyha/tree-sitter-cmake.git"))
@@ -25,12 +25,12 @@
         (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript.git" nil "typescript/src"))
         (yaml . ("https://github.com/ikatyang/tree-sitter-yaml.git"))))
 
-(defun install-treesit-grammar (language)
+(defun configs--install-treesit-grammar (language)
   "Helper method to install treesit grammar that are not installed."
   (unless (treesit-language-available-p language)
-    (treesit-install-language-grammar language)))
+    (configs--treesit-install-language-grammar language)))
 
-(mapcar #'install-treesit-grammar (mapcar #'car treesit-language-source-alist))
+(mapcar #'configs--install-treesit-grammar (mapcar #'car configs--treesit-language-source-alist))
 
 (dedup-add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
 (dedup-add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
@@ -53,7 +53,7 @@
         (sh-mode . bash-ts-mode)
         (js-json-mode . json-ts-mode)))
 
-(defun config/lsp-config ()
+(defun configs--lsp-config ()
   "Config method for lsp general configurations."
   ;; feature disable
   (setq lsp-keymap-prefix nil
@@ -74,25 +74,25 @@
   (setq gc-cons-threshold (* 100 1024 1024))
   (setq lsp-idle-delay 0.1))
 
-(defun config/lsp-go-config ()
+(defun configs--lsp-go-config ()
   "Config method for golang lsp configurations."
   (setq lsp-go-analyses '((shadow . t)
                           (simplifycompositelit . :json-false))))
 
-;; (defun config/lsp-python-config ()
+;; (defun configs--lsp-python-config ()
 ;;   "Config method for python lsp configurations."
 ;;   (setq lsp-clients-pylsp-library-directories))
 
-;; (defun config/lsp-cpp-config ()
+;; (defun configs--lsp-cpp-config ()
 ;;   "Config method for c++ lsp configurations"
 ;;   ())
 
 (use-package lsp-mode
   :ensure t
   :init
-  (config/lsp-config)
-  (config/lsp-go-config)
-  ;; (config/lsp-python-config)
+  (configs--lsp-config)
+  (configs--lsp-go-config)
+  ;; (configs--lsp-python-config)
 
   :hook
   (go-ts-mode . lsp-deferred)

@@ -24,7 +24,7 @@
 (elpaca-wait)
 
 ;; popup configuration
-(defun config/enable-posframe ()
+(defun configs--enable-posframe ()
   "Use posframe."
   (add-hook 'flycheck-mode-hook 'flycheck-posframe-mode)
   (ace-window-posframe-mode 1)
@@ -33,28 +33,28 @@
   (require 'mozc-cand-posframe)
   (setq mozc-candidate-style 'posframe))
 
-(defun config/enable-popup ()
+(defun configs--enable-popup ()
   "Use popup."
   (add-hook 'flycheck-mode-hook 'flycheck-popup-tip-mode))
 
-(defun config/get-popup-type ()
+(defun configs--get-popup-type ()
   "Retrieve popup dependency package."
   (if (display-graphic-p)
       'posframe
     'popup))
 
-(defun config/load-deferred-configurations ()
+(defun configs--load-deferred-configurations ()
   "Load deferred package configurations."
-  (let ((popup-type (config/get-popup-type)))
+  (let ((popup-type (configs--get-popup-type)))
     (cl-case popup-type
-      (posframe (config/enable-posframe))
-      (popup (config/enable-popup))
+      (posframe (configs--enable-posframe))
+      (popup (configs--enable-popup))
       (otherwise (message "Unable to configure popup")))))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
-              (lambda (frame) (with-selected-frame frame (config/load-deferred-configurations))))
-  (config/load-deferred-configurations))
+              (lambda (frame) (with-selected-frame frame (configs--load-deferred-configurations))))
+  (configs--load-deferred-configurations))
 
 
 ;; diminish mode-lines

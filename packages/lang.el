@@ -16,14 +16,14 @@
 (elpaca-wait)
 
 ;; set input methods
-(defun config/set-japanese-input-method ()
+(defun configs--set-japanese-input-method ()
   "Load japanese-mozc input method"
   (interactive)
   (setq google-translate-default-source-language "ja")
   (setq google-translate-default-target-language "en")
   (set-input-method 'japanese-mozc))
 
-(defun config/set-default-input-method ()
+(defun configs--set-default-input-method ()
   "Load default (English) input method"
   (interactive)
   (setq google-translate-default-source-language "en")

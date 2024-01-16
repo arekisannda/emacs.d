@@ -296,8 +296,8 @@
 (kb/im-leader-key
   ;; input methods
   "i"  '(:ignore t :wk "input method")
-  "ii" '(config/set-default-input-method :wk "English input ")
-  "ij" '(config/set-japanese-input-method :wk "Japanese input ")
+  "ii" '(configs--set-default-input-method :wk "English input ")
+  "ij" '(configs--set-japanese-input-method :wk "Japanese input ")
 
   ;; translate
   "t"  '(:ignore t :wk "translate")

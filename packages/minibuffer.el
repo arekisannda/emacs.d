@@ -40,10 +40,10 @@
   (completion-list-mode . consult-preview-at-point-mode)
   :init
   (setq consult-narrow-key "<"
-	    register-preview-delay 0.5
-	    register-preview-function #'consult-register-format
-	    xref-show-xrefs-function #'consult-xref
-	    xref-show-definitions-function #'consult-xref))
+        register-preview-delay 0.5
+        register-preview-function #'consult-register-format
+        xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
 
 ;; (use-package consult-ls-git
 ;;   :after consult)

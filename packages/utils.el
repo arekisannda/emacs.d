@@ -26,7 +26,7 @@
 (use-package forge
   :after magit)
 
-(defun config/set-vc-diff-hl-mode ()
+(defun configs--set-vc-diff-hl-mode ()
   "Config method to set diff-hl mode on frame create."
   (unless (display-graphic-p)
       (diff-hl-margin-mode 1)))
@@ -43,7 +43,7 @@
   :config
   (if (daemonp)
     (add-hook 'after-make-frame-functions
-              (lambda (frame) (with-selected-frame frame (config/set-vc-diff-hl-mode)))))
+              (lambda (frame) (with-selected-frame frame (configs--set-vc-diff-hl-mode)))))
   (diff-hl-flydiff-mode 1)
   (global-diff-hl-mode nil))
 

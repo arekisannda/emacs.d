@@ -22,9 +22,8 @@
 
 (elpaca-wait)
 
-(defun config/create-workspace-term ()
+(defun configs--create-workspace-term ()
   ())
-
 
 ;;;###autoload
 (defun multi-vterm-project ()

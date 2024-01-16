@@ -5,9 +5,8 @@
 
 ;; project management utils
 (use-package project)
-(require 'project)
 
-(defun config/project-find-file ())
+(defun configs--project-find-file ())
 
 ;; Update the frame name to include the current perspective
 (use-package persp-mode
@@ -34,13 +33,13 @@
   (add-hook 'persp-activated-functions
             (defun +workspace-set-frame-name (_)
               (let ((current (safe-persp-name (get-current-persp))))
-                (if (eq current "none")
+                (if (string= current "none")
                     (set-frame-name "main")
                   (set-frame-name current)))))
 
-  (persp-mode 1))
+  (add-hook 'window-setup-hook #'(lambda () (persp-mode 1))))
 
-(defun config/popper-group-by-perspective ()
+(defun configs--popper-group-by-perspective ()
   "Return an identifier to group popups.
 
 This returns the name of the perspective."
@@ -85,7 +84,7 @@ Please install `persp-mode' or customize \
           help-mode))
   (setq popper-window-height 30
         popper-mode-line ""
-        popper-group-function #'config/popper-group-by-perspective)
+        popper-group-function #'configs--popper-group-by-perspective)
   :config
   (popper-mode +1))
 ;; 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
