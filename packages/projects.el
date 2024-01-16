@@ -76,6 +76,7 @@ Please install `persp-mode' or customize \
           "\\*Buffer List\\*"
           "Output\\*$"
           "\\*vterminal.*\\*"
+          "\\*diff-hl\\*"
           treemacs-mode
           dap-server-log-mode
           dap-ui-sessions-mode
