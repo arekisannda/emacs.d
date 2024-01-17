@@ -4,7 +4,7 @@
 ;;; Code:
 
 ;; tree-sitter language grammar
-(setq configs--treesit-language-source-alist
+(setq treesit-language-source-alist
       '((bash . ("https://github.com/tree-sitter/tree-sitter-bash.git"))
         (c . ("https://github.com/tree-sitter/tree-sitter-c.git"))
         (cmake . ("https://github.com/uyha/tree-sitter-cmake.git"))
@@ -28,9 +28,9 @@
 (defun configs--install-treesit-grammar (language)
   "Helper method to install treesit grammar that are not installed."
   (unless (treesit-language-available-p language)
-    (configs--treesit-install-language-grammar language)))
+    (treesit-install-language-grammar language)))
 
-(mapcar #'configs--install-treesit-grammar (mapcar #'car configs--treesit-language-source-alist))
+(mapcar #'configs--install-treesit-grammar (mapcar #'car treesit-language-source-alist))
 
 (dedup-add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
 (dedup-add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
