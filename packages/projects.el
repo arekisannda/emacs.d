@@ -9,46 +9,12 @@
 ;; Update the frame name to include the current perspective
 (use-package persp-mode
   :init
-  (setq wg-morph-on nil)
-  (setq persp-autokill-buffer-on-remove 'kill-weak)
-  :config
-  (add-hook 'persp-before-deactivate-functions
-            (defun +workspaces-save-tab-bar-data-h (_)
-              (when (get-current-persp)
-                (set-persp-parameter
-                 'tab-bar-tabs (tab-bar-tabs)))))
-
-  (add-hook 'persp-activated-functions
-            (defun +workspaces-load-tab-bar-data-h (_)
-              (tab-bar-tabs-set (persp-parameter 'tab-bar-tabs))
-              (tab-bar--update-tab-bar-lines t)))
-
-  (add-hook 'persp-before-save-state-to-file-functions
-            (defun +workspaces-save-tab-bar-data-to-file-h (&rest _)
-              (when (get-current-persp)
-                (set-persp-parameter 'tab-bar-tabs (frameset-filter-tabs (tab-bar-tabs) nil nil t)))))
-
-  (add-hook 'persp-activated-functions
-            (defun +workspace-set-frame-name (_)
-              (let ((current (safe-persp-name (get-current-persp))))
-                (if (string= current "none")
-                    (set-frame-name "main")
-                  (set-frame-name current)))))
-
-  (add-hook 'window-setup-hook #'(lambda () (persp-mode 1))))
-
-(defun configs--popper-group-by-perspective ()
-  "Return an identifier to group popups.
-
-This returns the name of the perspective."
-  (unless (fboundp 'get-current-persp)
-    (user-error "Cannot find perspective name to group popups. \
-Please install `persp-mode' or customize \
-`popper-group-function'"))
-  (safe-persp-name (get-current-persp)))
+  (setq wg-morph-on nil
+        persp-autokill-buffer-on-remove 'kill-weak))
 
 ;; transient buffer management utils
 (use-package popper
+  :after persp-mode
   :init
   ;; set list of ephemeral buffers
   (setq popper-reference-buffers
@@ -82,10 +48,41 @@ Please install `persp-mode' or customize \
           help-mode))
   (setq popper-window-height 30
         popper-mode-line ""
-        popper-group-function #'configs--popper-group-by-perspective)
+        popper-group-function #'(lambda () (safe-persp-name (get-current-persp))))
   :config
   (popper-mode +1))
 ;; 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
+
+(elpaca-wait)
+
+;; persp-mode hooks
+;; modify frame title on perspective activation
+(add-hook 'persp-activated-functions
+          (defun +workspace-set-frame-name (_)
+            (let ((current (safe-persp-name (get-current-persp))))
+              (if (string= current "none")
+                  (set-frame-name "main")
+                (set-frame-name current)))))
+
+;; save tab-bar tabs
+(add-hook 'persp-before-deactivate-functions
+          (defun +workspaces-save-tab-bar-data-h (_)
+            (when (get-current-persp)
+              (set-persp-parameter
+               'tab-bar-tabs (tab-bar-tabs)))))
+
+(add-hook 'persp-activated-functions
+          (defun +workspaces-load-tab-bar-data-h (_)
+            (tab-bar-tabs-set (persp-parameter 'tab-bar-tabs))
+            (tab-bar--update-tab-bar-lines t)))
+
+(add-hook 'persp-before-save-state-to-file-functions
+          (defun +workspaces-save-tab-bar-data-to-file-h (&rest _)
+            (when (get-current-persp)
+              (set-persp-parameter 'tab-bar-tabs (frameset-filter-tabs (tab-bar-tabs) nil nil t)))))
+
+;; enable persp-mode after setup
+(add-hook 'window-setup-hook #'(lambda () (persp-mode 1)))
 
 (provide 'packages-projects)
 
