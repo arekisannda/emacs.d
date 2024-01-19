@@ -8,31 +8,10 @@
 (require 'packages-lang)
 
 (general-define-key
+ :keymaps '(override)
  (kbd "<escape>")  #'keyboard-escape-quit
  (kbd "C-q")       #'keyboard-quit
 
- (kbd "C-<left>")  #'evil-window-left
- (kbd "C-<right>") #'evil-window-right
- (kbd "C-<up>")    #'evil-window-up
- (kbd "C-<down>")  #'evil-window-down
-
- (kbd "S-<left>") (lambda () (interactive)(evil-scroll-column-left 5))
- (kbd "S-<right>") (lambda () (interactive)(evil-scroll-column-right 5))
- (kbd "S-<up>") (lambda () (interactive)(evil-scroll-line-up 10))
- (kbd "S-<down>") (lambda () (interactive)(evil-scroll-line-down 10)))
-
-;;;;
-;; general keybinds
-;;;;
-(general-define-key
- "M-|"  #'popper-toggle-type
-
- "M-["  #'tab-bar-switch-to-prev-tab
- "M-]"  #'tab-bar-switch-to-next-tab)
-
-;; vterm keybinds
-(general-define-key
- :keymaps '(vterm-mode-map)
  "M-|"  #'popper-toggle-type
 
  "M-["  #'tab-bar-switch-to-prev-tab
@@ -58,7 +37,7 @@
  :keymaps '(popper-mode-map)
  (kbd "M-<prior>")  #'popper-cycle-backwards
  (kbd "M-<next>")   #'popper-cycle
- (kbd "M-<delete>") #'kill-current-buffer)
+ (kbd "M-<delete>") #'popper-kill-latest-popup)
 
 ;;;;
 ;; vim-mode keybinds
@@ -66,28 +45,24 @@
 ;; global level
 (general-create-definer kb/global-leader-key
   :states        '(normal insert visual emacs motion)
-  :keymaps       'override
   :prefix        "C-\\"
   :global-prefix "C-\\")
 
 ;; local/buffer level
 (general-create-definer kb/local-leader-key
   :states        '(normal insert visual emacs motion)
-  :keymaps       'override
   :prefix        ","
   :global-prefix "C-,")
 
 ;; search level
 (general-create-definer kb/search-leader-key
   :states        '(normal insert visual emacs motion)
-  :keymaps       'override
   :prefix        ";"
   :global-prefix "C-;")
 
 ;; auto completion
 (general-create-definer kb/completion-leader-key
   :states        '(insert)
-  :keymaps       'override
   :prefix        "C-."
   :global-prefix "C-.")
 
@@ -143,6 +118,7 @@
   ("d" #'dap-ui-delete-session "delete session"))
 
 (kb/global-leader-key
+  :keymaps '(override)
   "C-\\" #'popper-toggle
   "C-|"  #'configs--multi-vterm
 
@@ -208,7 +184,7 @@
   "tt" '(tab-bar-new-tab :wk "new tab")
   "tT" '((lambda () (interactive)(tab-bar-new-tab)(dashboard-open)) :wk "new fresh tab")
   "tk" '(tab-bar-close-tab :wk "kill tab")
-  "to" '(tab-bar-close-other-tabs :wk "kill other tabs")
+  "tK" '(tab-bar-close-other-tabs :wk "kill other tabs")
   "tr" '(tab-bar-rename-tab :wk "rename tab")
 
   ;; mode management keybinds
@@ -230,6 +206,7 @@
 (hydra-set-property 'hydra-git-hunk :verbosity 0)
 
 (kb/local-leader-key
+  :keymaps '(override)
   ;; editor keybinds
   ","  '(:ignore t :wk "editor")
   ",=" '(sort-lines :wk "sort lines")
@@ -243,6 +220,7 @@
   ",d" '(embrace-delete :wk "surround delete")
   ",r" '(lsp-rename :wk "rename symbol")
   ",t" '(ispell-word :wk "fix spelling typo")
+  ",!" '(flycheck-display-error-at-point :wk "show error at point")
 
   ;; lsp
   "d"  '(:ignore t :wk "lsp")
@@ -281,24 +259,31 @@
   "tt" '(google-translate-at-point :wk "translate source -> target")
   "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
 
+
+;; search-leader-key general keybinds
 (kb/search-leader-key
-  ;; consult keybinds
+  :keymaps '(override)
   "g" '(consult-ripgrep :wk "find text in project")
   "r" '(consult-recent-file :wk "find recent file")
   "f" '(project-find-file :wk "find project file")
   "F" '(find-file :wk "find file")
-  "c" '(consult-mode-command :wk "find recent commands")
-  "h" '(consult-history :wk "find history")
-  "k" '(consult-kmacro :wk "find keyboard macro")
-  "m" '(consult-man :wk "find man page")
-  "i" '(consult-info :wk "find emacs info"))
+  "M" '(consult-man :wk "find man page")
+  "K" '(consult-kmacro :wk "find keyboard macro")
+  "C" '(consult-mode-command :wk "find recent commands")
+  "H" '(consult-history :wk "find history")
+  "I" '(consult-info :wk "find emacs info"))
+
+;; search leader key org-mode keybinds
+(kb/search-leader-key
+  :keymaps '(org-mode-map)
+  "h" '(consult-org-heading :wk "find org heading"))
 
 (kb/completion-leader-key
+  :keymaps '(override)
   "s" '(company-ispell :wk "suggest word")
-  "," '(company-yasnippet :wk "suggest snippet")
-  "." '(company-complete :wk "suggest completion")
-  ">" '(company-show-doc-buffer :wk "show code completion doc")
-  "!" '(flycheck-display-error-at-point :wk "show error at point"))
+  "C-," '(company-yasnippet :wk "suggest snippet")
+  "C-." '(company-complete :wk "suggest completion")
+  ">" '(company-show-doc-buffer :wk "show code completion doc"))
 
 (provide 'keybind-init)
 
