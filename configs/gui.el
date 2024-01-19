@@ -41,8 +41,9 @@
 (setq-default fringe-indicator-alist nil)
 
 ;; font/line configurations
-(defvar settings/default-font-size 90)
-(defvar settings/tab-font-size 100)
+(defvar configs--fixed-pitch-font-size 90)
+(defvar configs--variable-pitch-font-size 100)
+(defvar configs--tab-font-size 100)
 
 (setq-default line-spacing 0)
 (setq-default truncate-lines t)
@@ -60,16 +61,19 @@
   "Config method to set faces on frame create."
   (set-face-attribute 'default nil
                       :font "FiraMono Nerd Font Mono"
-                      :height settings/default-font-size
+                      :height configs--fixed-pitch-font-size
                       :weight 'normal)
   (set-face-attribute 'fixed-pitch nil
                       :font "FiraMono Nerd Font Mono"
-                      :height settings/default-font-size
+                      :height configs--fixed-pitch-font-size
                       :weight 'normal)
   (set-face-attribute 'variable-pitch nil
                       :font "Fira Sans"
-                      :height settings/default-font-size
+                      :height configs--variable-pitch-font-size
                       :weight 'normal)
+  (set-face-attribute 'italic nil
+                      :slant 'italic
+                      :underline nil)
   (set-face-attribute 'font-lock-comment-face nil
                       :slant 'italic)
   (set-face-attribute 'font-lock-keyword-face nil
@@ -77,17 +81,17 @@
 
   (set-face-attribute 'tab-bar nil
 		              :font "FiraMono Nerd Font Mono"
-		              :height settings/tab-font-size
+		              :height configs--tab-font-size
 		              :weight 'bold)
   (set-face-attribute 'tab-bar-tab nil
                       :font "FiraMono Nerd Font Mono"
-                      :height settings/tab-font-size
+                      :height configs--tab-font-size
                       :weight 'bold
                       :box '(:line-width (5 . 5) :style flat-button)
                       :underline `(:inherit tab-bar-tab :style line :position 0))
   (set-face-attribute 'tab-bar-tab-inactive nil
 		              :font "FiraMono Nerd Font Mono"
-		              :height settings/tab-font-size
+		              :height configs--tab-font-size
 		              :weight 'light
                       :box '(:line-width (5 . 5) :style flat-button)
                       :underline `(:inherit tab-bar-tab :style line :position 0)))
