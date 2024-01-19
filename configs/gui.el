@@ -33,7 +33,7 @@
 
 ;; line-number configurations
 (setq-default display-line-numbers-type 'relative)
-(global-display-line-numbers-mode)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 ;; fringe configurations
 (fringe-mode 5)

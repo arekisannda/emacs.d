@@ -25,14 +25,15 @@
 (use-package evil-collection
   :after evil
   :init
-  (setq evil-collection-mode-list
-	    '(dashboard
-	      info
-	      dired
-	      ibuffer
-	      magit
-          edebug
-	      ediff))
+  (setq evil-collection-mode-list '(dashboard
+                                    info
+                                    dired
+                                    ibuffer
+                                    magit
+                                    edebug
+                                    org
+                                    org-roam
+                                    ediff))
   :config
   (evil-collection-init))
 
