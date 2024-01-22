@@ -3,7 +3,9 @@
 
 ;;; Code:
 
-(use-package i3wm-config-mode)
+(use-package i3wm-config-mode
+  :hook
+  (i3wm-config-mode . display-line-numbers-mode))
 
 (elpaca-wait)
 
