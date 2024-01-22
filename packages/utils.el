@@ -28,9 +28,9 @@
   (and (featurep 'seq) (unload-feature 'seq t))
   (elpaca--continue-build e))
 (elpaca `(seq :build ,(append (butlast (if (file-exists-p (expand-file-name "seq" elpaca-builds-directory))
-                                          elpaca--pre-built-steps
-                                        elpaca-build-steps))
-                             (list 'configs--elpaca-unload-seq 'elpaca--activate-package))))
+                                           elpaca--pre-built-steps
+                                         elpaca-build-steps))
+                              (list 'configs--elpaca-unload-seq 'elpaca--activate-package))))
 
 (use-package magit)
 (use-package forge
@@ -39,7 +39,7 @@
 (defun configs--set-vc-diff-hl-mode ()
   "Config method to set diff-hl mode on frame create."
   (unless (display-graphic-p)
-      (diff-hl-margin-mode 1)))
+    (diff-hl-margin-mode 1)))
 
 (use-package diff-hl
   :ensure t
@@ -52,8 +52,8 @@
   (setq diff-hl-flydiff-delay 0.1)
   :config
   (if (daemonp)
-    (add-hook 'after-make-frame-functions
-              (lambda (frame) (with-selected-frame frame (configs--set-vc-diff-hl-mode)))))
+      (add-hook 'after-make-frame-functions
+                (lambda (frame) (with-selected-frame frame (configs--set-vc-diff-hl-mode)))))
   (diff-hl-flydiff-mode 1)
   (global-diff-hl-mode nil))
 

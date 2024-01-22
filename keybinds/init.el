@@ -280,10 +280,10 @@
 
 (kb/completion-leader-key
   :keymaps '(override)
-  "s" '(company-ispell :wk "suggest word")
+  "s"   '(company-ispell :wk "suggest word")
   "C-," '(company-yasnippet :wk "suggest snippet")
   "C-." '(company-complete :wk "suggest completion")
-  ">" '(company-show-doc-buffer :wk "show code completion doc"))
+  ">"   '(company-show-doc-buffer :wk "show code completion doc"))
 
 (provide 'keybind-init)
 
