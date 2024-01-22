@@ -4,6 +4,8 @@
 ;;; Code:
 
 (use-package org
+  :defer t
+  :elpaca nil
   :hook
   (org-mode . visual-line-mode)
   :init
@@ -44,8 +46,44 @@
   :hook
   (org-mode . mixed-pitch-mode)
   :init
-  (setq mixed-pitch-set-height 80)
-  )
+  (setq mixed-pitch-set-height 90))
+
+;; latex configurations
+(use-package latex
+  :demand t
+  :elpaca (auctex
+           :version (lambda (_) (require 'tex-site) AUCTeX-version)
+           :files ("*.el" "*.info" "dir" "doc" "etc" "images" "latex" "style")
+           :pre-build (("./autogen.sh")
+                       ("./configure"
+                        "--with-texmf-dir=$EMACS_USER_DIRECTORY/var")
+                       ("make")))
+  :hook
+  (latex-mode . visual-line-mode)
+  :custom
+  (TeX-engine 'xetex)
+  (TeX-electric-math (cons "$" "$"))
+  (TeX-master nil)
+  (TeX-save-query nil)
+  (TeX-auto-save nil)
+  (TeX-parse-self t))
+
+(use-package company-auctex
+  :after (auctex company)
+  :config
+  (company-auctex-init))
+
+(use-package company-math
+  :after company)
+
+(use-package company-reftex
+  :after company)
+
+(use-package latex-preview-pane
+  :config
+  (latex-preview-pane-enable))
+
+(use-package latex-math-preview)
 
 (provide 'packages-org)
 

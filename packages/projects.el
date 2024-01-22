@@ -4,7 +4,8 @@
 ;;; Code:
 
 ;; project management utils
-(use-package project)
+(use-package project
+  :elpaca nil)
 
 ;; Update the frame name to include the current perspective
 (use-package persp-mode
