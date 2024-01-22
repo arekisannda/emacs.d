@@ -57,18 +57,20 @@
 ;; Block until current queue processed.
 (elpaca-wait)
 
-(load-file (expand-file-name "utils/init.el" user-emacs-directory))
-(load-file (expand-file-name "configs/init.el" user-emacs-directory))
-(load-file (expand-file-name "packages/init.el" user-emacs-directory))
-(load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
-
 ;;Turns off elpaca-use-package-mode current declartion
 ;;Note this will cause the declaration to be interpreted immediately (not deferred).
 ;;Useful for configuring built-in emacs features.
 (use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
 
+(load-file (expand-file-name "utils/init.el" user-emacs-directory))
+(load-file (expand-file-name "configs/init.el" user-emacs-directory))
+(load-file (expand-file-name "packages/init.el" user-emacs-directory))
+(load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
+
 ;; Don't install anything. Defer execution of BODY
 (elpaca nil (message "deferred"))
+
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (provide 'init)
 
