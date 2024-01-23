@@ -22,7 +22,8 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq-default message-log-max 2000)
-(kill-buffer "*Messages*")
+;; (kill-buffer "*Messages*")
+(setq-default warning-minimum-level :emergency)
 
 (provide 'configs-init)
 
