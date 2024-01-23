@@ -68,17 +68,6 @@
   (TeX-auto-save nil)
   (TeX-parse-self t))
 
-(use-package company-auctex
-  :after (auctex company)
-  :config
-  (company-auctex-init))
-
-(use-package company-math
-  :after company)
-
-(use-package company-reftex
-  :after company)
-
 (use-package latex-preview-pane
   :config
   (latex-preview-pane-enable))

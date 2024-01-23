@@ -94,6 +94,17 @@
   :config
   (company-flx-mode +1))
 
+(use-package company-auctex
+  :after (auctex company)
+  :config
+  (company-auctex-init))
+
+(use-package company-math
+  :after company)
+
+(use-package company-reftex
+  :after company)
+
 (provide 'packages-editor)
 
 ;;; editor.el ends here

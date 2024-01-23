@@ -3,7 +3,8 @@
 
 ;;; Code:
 
-(defun sort-directories-first (files)
+(defun configs--sort-directories-first (files)
+  "Sort FILES by first by directories."
   (setq files (vertico-sort-history-length-alpha files))
   (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
          (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
@@ -12,7 +13,7 @@
   :ensure t
   :init
   (setq savehist-file "/tmp/emacs/savehist")
-  (setq vertico-sort-override-function #'sort-directories-first)
+  (setq vertico-sort-override-function #'configs--sort-directories-first)
   :config
   (vertico-mode 1)
   (savehist-mode 1))

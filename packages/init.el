@@ -8,16 +8,16 @@
 ;; load-packages
 
 (load-file (expand-file-name "utils.el" user-packages-directory))
-(load-file (expand-file-name "projects.el" user-packages-directory))
-(load-file (expand-file-name "editor.el" user-packages-directory))
-(load-file (expand-file-name "minibuffer.el" user-packages-directory))
 (load-file (expand-file-name "evil.el" user-packages-directory))
-(load-file (expand-file-name "terminal.el" user-packages-directory))
 (load-file (expand-file-name "modes.el" user-packages-directory))
 (load-file (expand-file-name "lsp.el" user-packages-directory))
+(load-file (expand-file-name "org.el" user-packages-directory))
 (load-file (expand-file-name "programming.el" user-packages-directory))
 (load-file (expand-file-name "lang.el" user-packages-directory))
-(load-file (expand-file-name "org.el" user-packages-directory))
+(load-file (expand-file-name "projects.el" user-packages-directory))
+(load-file (expand-file-name "terminal.el" user-packages-directory))
+(load-file (expand-file-name "minibuffer.el" user-packages-directory))
+(load-file (expand-file-name "editor.el" user-packages-directory))
 
 ;; end load packages
 
