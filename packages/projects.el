@@ -3,15 +3,31 @@
 
 ;;; Code:
 
-;; project management utils
 (use-package project
-  :elpaca nil)
+  :elpaca nil
+  :init
+  (setq project-vc-extra-root-markers '(".project.el" ".projectile" ".project")
+        project-vc-include-untracked nil
+        project-vc-merge-submodules nil))
 
-;; Update the frame name to include the current perspective
+;; buffer by projects
+(use-package ibuffer-project
+  :config
+  (add-hook 'ibuffer-hook
+            (lambda ()
+              (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups)))))
+
+;; perspectives
 (use-package persp-mode
   :init
   (setq wg-morph-on nil
-        persp-autokill-buffer-on-remove 'kill-weak))
+        persp-nil-name "main"
+        persp-autokill-buffer-on-remove 'kill-weak
+        persp-set-last-persp-for-new-frames nil
+        persp-emacsclient-init-frame-behaviour-override nil
+        persp-init-new-frame-behaviour-override nil)
+  :config
+  (persp-hide '("main")))
 
 ;; transient buffer management utils
 (use-package popper
@@ -61,9 +77,7 @@
 (add-hook 'persp-activated-functions
           (defun +workspace-set-frame-name (_)
             (let ((current (safe-persp-name (get-current-persp))))
-              (if (string= current "none")
-                  (set-frame-name "main")
-                (set-frame-name current)))))
+              (set-frame-name (format "%s" current)))))
 
 ;; save tab-bar tabs
 (add-hook 'persp-before-deactivate-functions

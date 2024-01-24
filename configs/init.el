@@ -16,8 +16,6 @@
 (setq-default make-backup-files nil)
 (setq-default create-lockfiles nil)
 
-;; (setq project-vc-merge-submodules t)
-(setq project-vc-extra-root-markers '(".project.el" ".projectile" ".project"))
 (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
 (defalias 'yes-or-no-p 'y-or-n-p)
 

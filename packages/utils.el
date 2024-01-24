@@ -9,7 +9,6 @@
 ;; keybinding utils
 (use-package diminish
   :ensure t)
-(elpaca-wait)
 
 (use-package general)
 (use-package hydra

@@ -53,9 +53,25 @@
         (sh-mode . bash-ts-mode)
         (js-json-mode . json-ts-mode)))
 
-(defun configs--lsp-config ()
-  "Config method for lsp general configurations."
-  ;; feature disable
+(defun configs--lsp-go-config ()
+  "Config method for golang lsp configurations."
+  (setq lsp-go-analyses '((shadow . t)
+                          (simplifycompositelit . :json-false)))
+
+  (add-hook 'before-save-hook #'lsp-format-buffer)
+  (add-hook 'before-save-hook #'lsp-organize-imports))
+
+;; (defun configs--lsp-python-config ()
+;;   "Config method for python lsp configurations."
+;;   (setq lsp-clients-pylsp-library-directories))
+
+;; (defun configs--lsp-cpp-config ()
+;;   "Config method for c++ lsp configurations"
+;;   ())
+
+(use-package lsp-mode
+  :ensure t
+  :init
   (setq lsp-keymap-prefix nil
         lsp-enable-indentation nil
         lsp-enable-symbol-highlighting nil
@@ -72,27 +88,7 @@
   ;; performance tuning
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
   (setq gc-cons-threshold (* 100 1024 1024))
-  (setq lsp-idle-delay 0.1))
-
-(defun configs--lsp-go-config ()
-  "Config method for golang lsp configurations."
-  (setq lsp-go-analyses '((shadow . t)
-                          (simplifycompositelit . :json-false))))
-
-;; (defun configs--lsp-python-config ()
-;;   "Config method for python lsp configurations."
-;;   (setq lsp-clients-pylsp-library-directories))
-
-;; (defun configs--lsp-cpp-config ()
-;;   "Config method for c++ lsp configurations"
-;;   ())
-
-(use-package lsp-mode
-  :ensure t
-  :init
-  (configs--lsp-config)
-  (configs--lsp-go-config)
-  ;; (configs--lsp-python-config)
+  (setq lsp-idle-delay 0.1)
 
   :hook
   (go-ts-mode . lsp-deferred)
@@ -102,8 +98,7 @@
   :commands (lsp lsp-mode lsp-deferred)
   :config
   (setq lsp-command-map (make-sparse-keymap))
-  (add-hook 'before-save-hook #'lsp-format-buffer)
-  (add-hook 'before-save-hook #'lsp-organize-imports))
+  (add-hook 'go-ts-mode #'configs--lsp-go-config))
 
 (use-package dap-mode
   :ensure t

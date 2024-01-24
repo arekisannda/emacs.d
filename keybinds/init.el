@@ -135,7 +135,7 @@
   "pF" '(ranger :wk "ranger")
   "ps" '(scratch-buffer :wk "scratch buffer")
   "pk" '((lambda () (interactive)(project-kill-buffers t)(delete-other-windows)(dashboard-open)) :wk "kill project buffers")
-  "pK" '((lambda () (interactive)(project-kill-buffers t)(persp-kill (safe-persp-name (get-current-persp)))) :wk "kill project frame")
+  "pK" '((lambda () (interactive)(persp-kill (safe-persp-name (get-current-persp)))) :wk "kill project frame")
 
   ;; workspaces/perspective
   "w"  '(:ignore t :wk "workspace")

@@ -63,8 +63,8 @@
 (use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
 
 (load-file (expand-file-name "utils/init.el" user-emacs-directory))
-(load-file (expand-file-name "configs/init.el" user-emacs-directory))
 (load-file (expand-file-name "packages/init.el" user-emacs-directory))
+(load-file (expand-file-name "configs/init.el" user-emacs-directory))
 (load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
 
 ;; Don't install anything. Defer execution of BODY
