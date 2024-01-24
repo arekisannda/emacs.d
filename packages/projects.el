@@ -83,8 +83,7 @@
 (add-hook 'persp-before-deactivate-functions
           (defun +workspaces-save-tab-bar-data-h (_)
             (when (get-current-persp)
-              (set-persp-parameter
-               'tab-bar-tabs (tab-bar-tabs)))))
+              (set-persp-parameter 'tab-bar-tabs (tab-bar-tabs)))))
 
 (add-hook 'persp-activated-functions
           (defun +workspaces-load-tab-bar-data-h (_)

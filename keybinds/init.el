@@ -4,7 +4,6 @@
 ;;; Emacs keybinds configurations using general.el and hydra.el
 
 ;;; Code:
-
 (require 'packages-lang)
 
 (general-define-key
