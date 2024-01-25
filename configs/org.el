@@ -1,8 +1,9 @@
-;;; org.el --- Emacs org-mode configurations -*- lexical-binding: t -*-
+;;; org.el --- Emacs org-mode configurations -*- lexical-binding: t; origami-fold-style: triple-braces; -*-
 ;;; Commentary:
 
 ;;; Code:
 
+;;; org-mode {{{
 (use-package org
   :defer t
   :elpaca nil
@@ -40,15 +41,9 @@
   :hook (org-mode . org-bullets-mode)
   :init
   (setq org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+;;; }}}
 
-(use-package mixed-pitch
-  :ensure t
-  :hook
-  (org-mode . mixed-pitch-mode)
-  :init
-  (setq mixed-pitch-set-height 90))
-
-;; latex configurations
+;;; latex {{{
 (use-package latex
   :demand t
   :elpaca (auctex
@@ -73,7 +68,7 @@
   (latex-preview-pane-enable))
 
 (use-package latex-math-preview)
+;;; }}}
 
-(provide 'packages-org)
-
+(provide 'configs-org)
 ;;; org.el ends here

@@ -1,13 +1,36 @@
-;;; init.el --- Emacs keybinding configurations -*- lexical-binding: t -*-
+;;; init.el --- Emacs keybinding configurations -*- lexical-binding: t; origami-fold-style: triple-braces; -*-
 ;;; Commentary:
-
 ;;; Emacs keybinds configurations using general.el and hydra.el
 
 ;;; Code:
-(require 'packages-lang)
+(require 'configs-languages)
+(require 'configs-terminal)
 
-(general-define-key
- :keymaps '(override)
+(defvar configs--vim-states '(normal insert visual emacs motion))
+
+;;; general definers
+(general-create-definer kb/global-leader-key
+  :states        configs--vim-states
+  :prefix        "C-\\"
+  :global-prefix "C-\\")
+
+(general-create-definer kb/local-leader-key
+  :states        configs--vim-states
+  :prefix        ","
+  :global-prefix "C-,")
+
+(general-create-definer kb/search-leader-key
+  :states        configs--vim-states
+  :prefix        ";"
+  :global-prefix "C-;")
+
+(general-create-definer kb/completion-leader-key
+  :states        'insert
+  :prefix        "C-."
+  :global-prefix "C-.")
+
+;;; global {{{
+(general-define-key :keymaps '(override)
  (kbd "<escape>")  #'keyboard-escape-quit
  (kbd "C-q")       #'keyboard-quit
 
@@ -25,65 +48,45 @@
  (kbd "S-<right>") (lambda () (interactive)(evil-scroll-column-right 5))
  (kbd "S-<up>") (lambda () (interactive)(evil-scroll-line-up 10))
  (kbd "S-<down>") (lambda () (interactive)(evil-scroll-line-down 10)))
+;;; }}}
 
-(general-define-key
- :keymaps '(minibuffer-local-map)
+;;; company-mode {{{
+(general-define-key :keymaps '(company-active-map)
+ (kbd "<escape>")  #'company-abort)
+;;; }}}
+
+;;; minibuffer {{{
+(general-define-key :keymaps '(minibuffer-local-map)
  "M-A" #'marginalia-cycle
  "M-s" #'consult-history
  "M-r" #'consult-history)
+;;; }}}
 
-(general-define-key
- :keymaps '(popper-mode-map)
+;;; popper-mode {{{
+(general-define-key :keymaps '(popper-mode-map)
  (kbd "M-<prior>")  #'popper-cycle-backwards
  (kbd "M-<next>")   #'popper-cycle
  (kbd "M-<delete>") #'popper-kill-latest-popup)
+;;; }}}
 
-;;;;
-;; vim-mode keybinds
-;;;;
-;; global level
-(general-create-definer kb/global-leader-key
-  :states        '(normal insert visual emacs motion)
-  :prefix        "C-\\"
-  :global-prefix "C-\\")
-
-;; local/buffer level
-(general-create-definer kb/local-leader-key
-  :states        '(normal insert visual emacs motion)
-  :prefix        ","
-  :global-prefix "C-,")
-
-;; search level
-(general-create-definer kb/search-leader-key
-  :states        '(normal insert visual emacs motion)
-  :prefix        ";"
-  :global-prefix "C-;")
-
-;; auto completion
-(general-create-definer kb/completion-leader-key
-  :states        '(insert)
-  :prefix        "C-."
-  :global-prefix "C-.")
-
-;; bind evil-args text objects
-(general-define-key
- :keymaps '(evil-inner-text-objects-map)
+;;; evil-mode {{{
+(general-define-key :keymaps '(evil-inner-text-objects-map)
  "a" #'evil-inner-arg)
 
-(general-define-key
- :keymaps '(evil-outer-text-objects-map)
+(general-define-key :keymaps '(evil-outer-text-objects-map)
  "a" #'evil-outer-arg)
 
-(general-define-key
- :keymaps '(evil-window-map)
+(general-define-key :keymaps '(evil-window-map)
  "q" (lambda () (interactive)(if (one-window-p)(tab-bar-close-tab)(delete-window)))
+ "Q" (lambda () (interactive)(if (one-window-p)(tab-bar-close-tab)(kill-buffer-and-window)))
  "V" #'split-window-horizontally
  "v" (lambda () (interactive)(split-window-horizontally)(other-window 1))
  "S" #'split-window-vertically
- "s" (lambda () (interactive)(split-window-vertically)(other-window 1)))
+ "s" (lambda () (interactive)(split-window-vertically)(other-window 1))
+ "u" #'winner-undo
+ "U" #'winner-redo)
 
-(general-define-key
- :keymaps '(evil-normal-state-map)
+(general-define-key :keymaps '(evil-normal-state-map)
  ;; bind evil-forward/backward-args
  "L"  #'evil-forward-arg
  "H"  #'evil-backward-arg
@@ -94,37 +97,39 @@
  "]g" #'diff-hl-next-hunk
  "[g" #'diff-hl-previous-hunk)
 
-(general-define-key
- :keymaps '(company-active-map)
- (kbd "<escape>")  #'company-abort)
-
-(general-define-key
- :keymaps '(evil-motion-state-map)
+(general-define-key :keymaps '(evil-motion-state-map)
  ;; bind evil-forward/backward-args
  "L" #'evil-forward-arg
  "H" #'evil-backwards-arg)
+;;; }}}
 
+;;; global leader {{{
+;;; dap commands {{{
 (defhydra hydra-dap-motion (:foreign-key exit :exit nil :timeout nil)
-  "dap motion"
-  ("i" #'dap-step-in "step-in")
-  ("o" #'dap-step-out "step-out")
-  ("n" #'dap-next "next")
-  ("C" #'dap-continue "continue"))
+"dap motion"
+("i" #'dap-step-in "step-in")
+("o" #'dap-step-out "step-out")
+("n" #'dap-next "next")
+("C" #'dap-continue "continue"))
 
 (defhydra hydra-dap-session (:foreign-key exit :exit nil :timeout nil)
-  "dap session"
-  ("S" #'dap-ui-sessions "sessions")
-  ("d" #'dap-ui-delete-session "delete session"))
+"dap session"
+("S" #'dap-ui-sessions "sessions")
+("d" #'dap-ui-delete-session "delete session"))
+;;; }}}
 
-(kb/global-leader-key
-  :keymaps '(override)
-  "C-\\" #'popper-toggle
-  "C-|"  #'configs--multi-vterm
+(kb/global-leader-key :keymaps '(override)
+  ;;; popup window {{{
+  "C-\\"   #'popper-toggle
+  "C-M-\\" #'multi-vterm-project
+  "C-|"    #'configs--multi-vterm
+  ;;; }}}
 
-  ;; terminal keybinds
+  ;;; terminal {{{
   "vr" '(multi-vterm-rename-buffer :wk "rename terminal")
+  ;;; }}}
 
-  ;; utility/tool keybinds
+  ;;; tools {{{
   "p"  '(:ignore t :wk "tools")
   "pe" '(eval-region :wk "eval-region")
   "pE" '(eval-buffer :wk "eval-buffer")
@@ -135,17 +140,20 @@
   "ps" '(scratch-buffer :wk "scratch buffer")
   "pk" '((lambda () (interactive)(project-kill-buffers t)(delete-other-windows)(dashboard-open)) :wk "kill project buffers")
   "pK" '((lambda () (interactive)(persp-kill (safe-persp-name (get-current-persp)))) :wk "kill project frame")
+  ;;; }}}
 
-  ;; workspaces/perspective
+  ;;; workspaces/perspective management {{{
   "w"  '(:ignore t :wk "workspace")
   "ww" '(persp-switch :wk "switch perspective")
   "wk" '(persp-kill :wk "kill perspective")
   "wr" '(persp-rename :wk "rename perspective")
   "wb" '(persp-remove-buffer :wk "remove buffer from perspective")
+  ;;; }}}
 
-  ;; buffer management keybinds
+  ;;; buffer management {{{
   "b"  '(:ignore t :wk "buffer")
-  "bl" '(list-buffers :wk "list buffers")
+  "bl" '(project-list-buffers :wk "list buffers")
+  "bL" '(list-buffers :wk "list buffers (all)")
   "bb" '(consult-project-buffer :wk "switch buffer")
   "bB" '(consult-buffer :wk "switch buffer (all)")
   "bX" '(kill-buffer :wk "kill buffer")
@@ -155,8 +163,9 @@
   "bn" '(next-buffer :wk "next buffer")
   "bp" '(previous-buffer :wk "previous buffer")
   "br" '(revert-buffer :wk "reload buffer")
+  ;;; }}}
 
-  ;; dap debugger
+  ;;; dap debugger {{{
   "d"  '(:ignore t :wk "debug")
   "dD" '(dap-debug :wk "start debug")
   "dR" '(dap-debug-restart :wk "restart debug")
@@ -171,29 +180,35 @@
   "dn" '(hydra-dap-motion/dap-next :wk "next")
   "dC" '(hydra-dap-motion/dap-continue :wk "continue")
   "dS" '(hydra-dap-session/dap-ui-sessions :wk "session")
+  ;;; }}}
 
-  ;; quick window switcher keybinds
+  ;;; window management {{{
   "s"  '(:ignore t :wk "switcher")
   "ss" '(ace-window :wk "select")
   "sS" '(ace-swap-window :wk "swap")
   "sd" '(ace-delete-window :wk "delete")
+  ;;; }}}
 
-  ;; tab management keybinds
+  ;;; tab management {{{
   "t"  '(:ignore t :wk "tabs")
   "tt" '(tab-bar-new-tab :wk "new tab")
   "tT" '((lambda () (interactive)(tab-bar-new-tab)(dashboard-open)) :wk "new fresh tab")
   "tk" '(tab-bar-close-tab :wk "kill tab")
   "tK" '(tab-bar-close-other-tabs :wk "kill other tabs")
   "tr" '(tab-bar-rename-tab :wk "rename tab")
+  "tu" '(tab-bar-undo-close-tab :wk "undo tab close")
+  ;;; }}}
 
-  ;; mode management keybinds
+  ;;; mode management {{{
   "m"  '(:ignore t :wk "modes")
   "mI" '(image-mode :wk "image mode")
   "mf" '(fundamental-mode :wk "fundamental mode")
   "mr" '(rainbow-mode :wk "rainbow mode"))
+  ;;; }}}
+;;; }}}
 
-(setq diff-hl-show-hunk--current-footer
-      "(q)Quit  (j)Next  (k)Previous  (s)Stage  (d)Revert  (c)Copy original")
+;;; local leader {{{
+;;; git commands {{{
 (defhydra hydra-git-hunk (:foreign-key exit :exit nil :timeout nil :hint nil)
   "git"
   ("i" #'diff-hl-show-hunk :hint nil)
@@ -203,10 +218,10 @@
   ("d" #'diff-hl-show-hunk-revert-hunk :hint nil)
   ("c" #'diff-hl-show-hunk-copy-original-text :hint nil))
 (hydra-set-property 'hydra-git-hunk :verbosity 0)
+;;; }}}
 
-(kb/local-leader-key
-  :keymaps '(override)
-  ;; editor keybinds
+(kb/local-leader-key :keymaps '(override)
+  ;;; general editor {{{
   ","  '(:ignore t :wk "editor")
   ",=" '(sort-lines :wk "sort lines")
   ",k" '(align :wk "basic align")
@@ -220,16 +235,33 @@
   ",r" '(lsp-rename :wk "rename symbol")
   ",t" '(ispell-word :wk "fix spelling typo")
   ",!" '(flycheck-display-error-at-point :wk "show error at point")
+  ;;; }}}
 
-  ;; lsp
+  ;;; lsp {{{
   "d"  '(:ignore t :wk "lsp")
   "di" '(lsp-describe-thing-at-point :wk "find definition")
   "dI" '(lsp-find-implementation :wk "find implementation")
   "dt" '(lsp-find-type-definition :wk "find type definition")
   "dd" '(lsp-find-definition :wk "find definition")
   "dr" '(lsp-find-references :wk "find reference")
+  ;;; }}}
 
-  ;; editor motion keybinds
+  ;;; code folding {{{
+  "o" '(:ignore t :wk "origami")
+  "ox" '(origami-open-node-recursively :wk "open")
+  "oX" '(origami-open-all-nodes :wk "open all")
+  "oc" '(origami-close-node-recursively :wk "close")
+  "oC" '(origami-close-all-nodes :wk "close all")
+  "oo" '(origami-recursively-toggle-node :wk "toggle")
+  "oO" '(origami-toggle-all-nodes :wk "toggle all")
+  "ok" '(origami-previous-fold :wk "prev")
+  "o]" '(origami-fold-prev-sibling :wk "prev sibling")
+  "ol" '(origami-next-fold :wk "next")
+  "o]" '(origami-fold-next-sibling :wk "next sibling")
+  "o!" '(origami-show-only-node :wk "open only")
+  ;;; }}}
+
+  ;;; editor motion {{{
   "m"  '(:ignore t :wk "motion")
   "mj" '(evilem-motion-find-char :wk "fowards motion")
   "mk" '(evilem-motion-find-char-backward :wk "backwards motion")
@@ -239,29 +271,30 @@
   "mS" '(evil-snipe-S :wk "backwards inclusive snipe")
   "mx" '(evil-snipe-x :wk "forwards exclusive snipe")
   "mX" '(evil-snipe-X :wk "backwards exclusive snipe")
+  ;;; }}}
 
-  ;; git keybinds
+  ;;; git {{{
   "g"  '(:ignore t :wk "git")
   "gi" '(hydra-git-hunk/diff-hl-show-hunk :wk "inspect")
   "gj" '(diff-hl-next-hunk :wk "next hunk")
   "gk" '(diff-hl-previous-hunk :wk "prev hunk")
   "gs" '(diff-hl-stage-current-hunk :wk "stage")
   "gd" '(diff-hl-revert-hunk :wk "revert")
+  ;;; }}}
 
-  ;; input methods
+  ;;; languages/translations {{{
   "i"  '(:ignore t :wk "input method")
   "ii" '(configs--set-default-input-method :wk "English input ")
   "ij" '(configs--set-japanese-input-method :wk "Japanese input ")
 
-  ;; translate
   "t"  '(:ignore t :.k "translate")
   "tt" '(google-translate-at-point :wk "translate source -> target")
   "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
+  ;;; }}}
+;;; }}}
 
-
-;; search-leader-key general keybinds
-(kb/search-leader-key
-  :keymaps '(override)
+;;; search keybindings {{{
+(kb/search-leader-key :keymaps '(override)
   "g" '(consult-ripgrep :wk "find text in project")
   "r" '(consult-recent-file :wk "find recent file")
   "f" '(project-find-file :wk "find project file")
@@ -272,18 +305,17 @@
   "H" '(consult-history :wk "find history")
   "I" '(consult-info :wk "find emacs info"))
 
-;; search leader key org-mode keybinds
-(kb/search-leader-key
-  :keymaps '(org-mode-map)
+(kb/search-leader-key :keymaps '(org-mode-map)
   "h" '(consult-org-heading :wk "find org heading"))
+;;; }}}
 
-(kb/completion-leader-key
-  :keymaps '(override)
+;;; completion {{{
+(kb/completion-leader-key :keymaps '(override)
   "s"   '(company-ispell :wk "suggest word")
   "C-," '(company-yasnippet :wk "suggest snippet")
   "C-." '(company-complete :wk "suggest completion")
   ">"   '(company-show-doc-buffer :wk "show code completion doc"))
+;;; }}}
 
 (provide 'keybind-init)
-
 ;;; init.el ends here

@@ -1,15 +1,36 @@
-;;; init.el --- Emacs configuration init -*- lexical-binding: t -*-
+;;; init.el --- Emacs configuration init -*- lexical-binding: t; origami-fold-style: triple-braces; -*-
 ;;; Commentary:
 
 ;;; Code:
 
-;; set directories
-(defvar user-emacs-directory (expand-file-name "~/.config/emacs"))
-(defvar user-code-directory (expand-file-name "~/Code"))
+;;; config variaables {{{
+(defvar configs--debug-theme-enable nil
+  "Flag to set to enable the debugging of theme.")
 
-;; setup elpaca package manager
+(defvar configs--fixed-pitch-font-face  "FiraMono Nerd Font Mono"
+  "Fixed pitch font face.")
+
+(defvar configs--variable-pitch-font-face "Fira Sans"
+  "Variable pitch font face.")
+
+(defvar configs--fixed-pitch-font-size 90
+  "Fixed pitch font size.")
+
+(defvar configs--variable-pitch-font-size 100
+  "Variable pitch font size.")
+
+(defvar configs--tab-font-size 100
+  "Tab bar font size.")
+
+(defvar configs--user-emacs-directory (expand-file-name "~/.config/emacs")
+  "User Emacs directory.")
+
+(setq-default custom-file (expand-file-name "custom.el" configs--user-emacs-directory))
+;;; }}}
+
+;; setup elpaca package manager {{{
 (defvar elpaca-installer-version 0.6)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-directory (expand-file-name "elpaca/" configs--user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
@@ -56,22 +77,15 @@
 
 ;; Block until current queue processed.
 (elpaca-wait)
+;;; }}}
 
-;;Turns off elpaca-use-package-mode current declartion
-;;Note this will cause the declaration to be interpreted immediately (not deferred).
-;;Useful for configuring built-in emacs features.
-(use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
-
-(load-file (expand-file-name "utils/init.el" user-emacs-directory))
-(load-file (expand-file-name "packages/init.el" user-emacs-directory))
-(load-file (expand-file-name "configs/init.el" user-emacs-directory))
-(load-file (expand-file-name "keybinds/init.el" user-emacs-directory))
+(load-file (expand-file-name "utils/init.el" configs--user-emacs-directory))
+(load-file (expand-file-name "configs/init.el" configs--user-emacs-directory))
+(load-file (expand-file-name "keybinds/init.el" configs--user-emacs-directory))
+(load custom-file)
 
 ;; Don't install anything. Defer execution of BODY
 (elpaca nil (message "deferred"))
 
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
 (provide 'init)
-
 ;;; init.el ends here

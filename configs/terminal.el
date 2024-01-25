@@ -1,4 +1,4 @@
-;;; terminal.el --- Emacs terminal packages and configurations -*- lexical-binding: t -*-
+;;; terminal.el --- Emacs terminal packages and configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
@@ -51,6 +51,5 @@
     (multi-vterm-internal)
     (switch-to-buffer-other-window vterm-buffer)))
 
-(provide 'packages-terminal)
-
+(provide 'configs-terminal)
 ;;; terminal.el ends here

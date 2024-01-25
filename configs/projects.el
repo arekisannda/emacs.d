@@ -1,4 +1,4 @@
-;;; projects.el --- Emeacs project management configurations -*- lexical-binding: t -*-
+;;; projects.el --- Emeacs project management configurations -*- lexical-binding: t; origami-fold-style: triple-braces; -*-
 ;;; Commentary:
 
 ;;; Code:
@@ -29,7 +29,7 @@
   :config
   (persp-hide '("main")))
 
-;; transient buffer management utils
+;;; popper
 (use-package popper
   :after persp-mode
   :init
@@ -44,8 +44,7 @@
           "\\*scratch\\*"
           "\\*info.*\\*"
           "\\*Man.*\\*$"
-          "\\*elpaca-manager*\\*"
-          "\\*elpaca-logs*\\*"
+          "\\*elpaca.*\\*"
           "\\*Flycheck.*\\*$"
           "\\*Ediff Control.*\\*$"
           "\\*evil-marks\\*$"
@@ -70,16 +69,14 @@
   (popper-mode +1))
 ;; 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
 
-(elpaca-wait)
-
-;; persp-mode hooks
-;; modify frame title on perspective activation
+;; persp-mode modify title on switch {{{
 (add-hook 'persp-activated-functions
           (defun +workspace-set-frame-name (_)
             (let ((current (safe-persp-name (get-current-persp))))
               (set-frame-name (format "%s" current)))))
+;;; }}}
 
-;; save tab-bar tabs
+;;; persp-mode tab-bar support {{{
 (add-hook 'persp-before-deactivate-functions
           (defun +workspaces-save-tab-bar-data-h (_)
             (when (get-current-persp)
@@ -94,10 +91,10 @@
           (defun +workspaces-save-tab-bar-data-to-file-h (&rest _)
             (when (get-current-persp)
               (set-persp-parameter 'tab-bar-tabs (frameset-filter-tabs (tab-bar-tabs) nil nil t)))))
+;;; }}}
 
-;; enable persp-mode after setup
+;;; run persp-mode after window-setup
 (add-hook 'window-setup-hook #'(lambda () (persp-mode 1)))
 
-(provide 'packages-projects)
-
+(provide 'configs-projects)
 ;;; projects.el ends here

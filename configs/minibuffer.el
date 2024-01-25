@@ -1,4 +1,4 @@
-;;; minibuffer.el --- Emacs minibuffer packages and configurations -*- lexical-binding: t -*-
+;;; minibuffer.el --- Emacs minibuffer packages and configurations -*- lexical-binding: t; origami-fold-style: triple-braces; -*-
 ;;; Commentary:
 
 ;;; Code:
@@ -53,6 +53,5 @@
   :ensure t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
-(provide 'packages-minibuffer)
-
+(provide 'configs-minibuffer)
 ;;; minibuffer.el ends here
