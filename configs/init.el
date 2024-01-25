@@ -64,47 +64,6 @@
 
 (elpaca-wait)
 
-(setq-default display-line-numbers-type 'relative)
-(setq-default find-file-visit-truename t)
-(setq-default inhibit-startup-screen t)
-(setq-default confirm-nonexistent-file-or-buffer nil)
-(setq-default confirm-kill-processes nil)
-(setq-default auto-save-default nil)
-(setq-default make-backup-files nil)
-(setq-default create-lockfiles nil)
-
-(global-eldoc-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(menu-bar-mode -1)
-(visual-line-mode -1)
-(electric-pair-mode -1)
-(indent-tabs-mode 1)
-(winner-mode 1)
-
-;; log level settings
-(setq-default message-log-max 2000)
-(setq-default warning-minimum-level :emergency)
-;; (kill-buffer "*Messages*")
-
-;; line settings
-(setq-default line-spacing 0)
-(setq-default truncate-lines t)
-
-;; fringe
-(setq-default fringe-styles 'default
-              fringe-indicator-alist nil)
-(fringe-mode 5)
-
-;; tab-bar
-(tab-bar-mode 1)
-(setq-default tab-bar-close-button-show nil)
-(setq-default tab-bar-new-button-show nil)
-(setq-default tab-bar-auto-width-max '(150 20))
-(setq-default tab-bar-auto-width-min '(20 2))
-
-(defalias 'yes-or-no-p 'y-or-n-p)
-
 ;;; deferred popup configurations {{{
 (defun configs--enable-posframe ()
   "Use posframe."
