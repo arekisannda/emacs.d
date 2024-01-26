@@ -34,7 +34,7 @@
 (menu-bar-mode -1)
 (visual-line-mode -1)
 (electric-pair-mode -1)
-(indent-tabs-mode 1)
+(indent-tabs-mode -1)
 (winner-mode 1)
 
 ;; log level settings
@@ -47,8 +47,8 @@
 (setq-default truncate-lines t)
 
 ;; fringe
-(setq-default fringe-styles 'default
-              fringe-indicator-alist nil)
+(setq-default fringe-styles 'default)
+(setq-default fringe-indicator-alist nil)
 (fringe-mode 5)
 
 ;; tab-bar
@@ -77,9 +77,7 @@
 
 (defun configs--get-popup-type ()
   "Retrieve popup dependency package."
-  (if (display-graphic-p)
-      'posframe
-    'popup))
+  (if (display-graphic-p) 'posframe 'popup))
 
 (defun configs--load-deferred-configurations ()
   "Load deferred package configurations."
@@ -148,11 +146,6 @@
                 (sh-mode . bash-ts-mode)
                 (js-json-mode . json-ts-mode)))
 
-;; ;; add disable line-number hooks for the following modes
-;; (dolist (mode '(vterm-mode-hook
-;; 		        ranger-mode-hook))
-;;   (add-hook mode (lambda () (display-line-numbers-mode 0))))
-
 ;;; use emacs-mode for non prog-modes
 (dolist (mode '(vterm-mode
                 ranger-mode
@@ -165,27 +158,18 @@
 
 
 ;;; set read-only files
-;; (defvar configs--read-only-prefixes-list (list (expand-file-name elpaca-directory)
-;;                                                (expand-file-name package-user-dir))
-;;   "List of read-only file prefixes.")
+(defvar configs--read-only-prefixes-list (list (expand-file-name elpaca-directory)
+                                               (expand-file-name package-user-dir))
+  "List of read-only file prefixes.")
 
-;; (defun configs--set-read-only-mode ()
-;;   "Enable read-only mode for files."
-;;   (when (and buffer-file-name
-;;              (or (cl-loop for prefix in configs--read-only-prefixes-list
-;;                           thereis (string-prefix-p prefix buffer-file-name))))
-;;     (read-only-mode 1)))
+(defun configs--set-read-only-mode ()
+  "Enable read-only mode for files."
+  (when (and buffer-file-name
+             (or (cl-loop for prefix in configs--read-only-prefixes-list
+                          thereis (string-prefix-p prefix buffer-file-name))))
+    (read-only-mode 1)))
 
-;; (add-hook 'find-file-hook #'configs--set-read-only-mode)
-
-(add-hook 'find-file-hook
-          (lambda ()
-            (when (and buffer-file-name
-                       (cl-some (lambda (prefix)
-                                  (string-prefix-p prefix buffer-file-name))
-                                (list (expand-file-name elpaca-directory)
-                                      (expand-file-name package-user-dir))))
-              (read-only-mode 1))))
+(add-hook 'find-file-hook #'configs--set-read-only-mode)
 ;;; }}}
 
 ;; font configurations {{{
@@ -215,8 +199,8 @@
 
   (set-face-attribute 'tab-bar nil
                       :font configs--fixed-pitch-font-face
-		              :height configs--tab-font-size
-		              :weight 'bold)
+		      :height configs--tab-font-size
+		      :weight 'bold)
   (set-face-attribute 'tab-bar-tab nil
                       :font configs--fixed-pitch-font-face
                       :height configs--tab-font-size
@@ -225,8 +209,8 @@
                       :underline `(:inherit tab-bar-tab :style line :position 0))
   (set-face-attribute 'tab-bar-tab-inactive nil
                       :font configs--fixed-pitch-font-face
-		              :height configs--tab-font-size
-		              :weight 'light
+		      :height configs--tab-font-size
+		      :weight 'light
                       :box '(:line-width (5 . 5) :style flat-button)
                       :underline `(:inherit tab-bar-tab :style line :position 0)))
 

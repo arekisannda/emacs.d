@@ -3,7 +3,7 @@
 
 ;;; Code:
 
-;;; config variaables {{{
+;;; config variables {{{
 (defvar configs--debug-theme-enable nil
   "Flag to set to enable the debugging of theme.")
 
