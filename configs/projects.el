@@ -20,14 +20,36 @@
 ;; perspectives
 (use-package persp-mode
   :init
-  (setq wg-morph-on nil
-        persp-nil-name "main"
-        persp-autokill-buffer-on-remove 'kill-weak
-        persp-set-last-persp-for-new-frames nil
-        persp-emacsclient-init-frame-behaviour-override nil
-        persp-init-new-frame-behaviour-override nil)
+  (setq-default wg-morph-on nil
+		persp-nil-name "main"
+		persp-autokill-buffer-on-remove 'kill-weak
+		persp-set-last-persp-for-new-frames nil
+		persp-emacsclient-init-frame-behaviour-override nil
+		persp-init-new-frame-behaviour-override nil)
   :config
-  (persp-hide '("main")))
+  (add-hook 'persp-activated-functions
+	    (defun +workspace-set-frame-name (_)
+	      (let ((current (safe-persp-name (get-current-persp))))
+		(set-frame-name (format "%s" current)))))
+
+  (add-hook 'persp-before-deactivate-functions
+	    (defun +workspaces-save-tab-bar-data-h (_)
+	      (when (get-current-persp)
+		(set-persp-parameter 'tab-bar-tabs (tab-bar-tabs)))))
+
+  (add-hook 'persp-activated-functions
+            (defun +workspaces-load-tab-bar-data-h (_)
+              (tab-bar-tabs-set (persp-parameter 'tab-bar-tabs))
+              (tab-bar--update-tab-bar-lines t)))
+
+  (add-hook 'persp-before-save-state-to-file-functions
+            (defun +workspaces-save-tab-bar-data-to-file-h (&rest _)
+              (when (get-current-persp)
+		(set-persp-parameter
+		 'tab-bar-tabs
+		 (frameset-filter-tabs (tab-bar-tabs) nil nil t)))))
+
+  (add-hook 'window-setup-hook #'(lambda () (persp-mode 1))))
 
 ;;; popper
 (use-package popper
@@ -68,33 +90,6 @@
   :config
   (popper-mode +1))
 ;; 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
-
-;; persp-mode modify title on switch {{{
-(add-hook 'persp-activated-functions
-          (defun +workspace-set-frame-name (_)
-            (let ((current (safe-persp-name (get-current-persp))))
-              (set-frame-name (format "%s" current)))))
-;;; }}}
-
-;;; persp-mode tab-bar support {{{
-(add-hook 'persp-before-deactivate-functions
-          (defun +workspaces-save-tab-bar-data-h (_)
-            (when (get-current-persp)
-              (set-persp-parameter 'tab-bar-tabs (tab-bar-tabs)))))
-
-(add-hook 'persp-activated-functions
-          (defun +workspaces-load-tab-bar-data-h (_)
-            (tab-bar-tabs-set (persp-parameter 'tab-bar-tabs))
-            (tab-bar--update-tab-bar-lines t)))
-
-(add-hook 'persp-before-save-state-to-file-functions
-          (defun +workspaces-save-tab-bar-data-to-file-h (&rest _)
-            (when (get-current-persp)
-              (set-persp-parameter 'tab-bar-tabs (frameset-filter-tabs (tab-bar-tabs) nil nil t)))))
-;;; }}}
-
-;;; run persp-mode after window-setup
-(add-hook 'window-setup-hook #'(lambda () (persp-mode 1)))
 
 (provide 'configs-projects)
 ;;; projects.el ends here
