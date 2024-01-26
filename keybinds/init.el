@@ -148,6 +148,7 @@
   "wk" '(persp-kill :wk "kill perspective")
   "wr" '(persp-rename :wk "rename perspective")
   "wb" '(persp-remove-buffer :wk "remove buffer from perspective")
+  "wl" '(consult-layouts :wk "switch layouts")
   ;;; }}}
 
   ;;; buffer management {{{
