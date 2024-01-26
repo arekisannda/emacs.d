@@ -17,8 +17,9 @@
 (elpaca-wait)
 
 ;;; emacs built-in configurations {{{
-(setq-default ring-bell-function #'ignore)
+(defalias 'yes-or-no-p 'y-or-n-p)
 
+(setq-default ring-bell-function #'ignore)
 (setq-default display-line-numbers-type 'relative)
 (setq-default find-file-visit-truename t)
 (setq-default inhibit-startup-screen t)
@@ -27,24 +28,18 @@
 (setq-default auto-save-default nil)
 (setq-default make-backup-files nil)
 (setq-default create-lockfiles nil)
+(setq-default indent-tabs-mode nil)
+(setq-default line-spacing 0)
+(setq-default truncate-lines t)
 
+;; feature configurations
 (global-eldoc-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (menu-bar-mode -1)
 (visual-line-mode -1)
 (electric-pair-mode -1)
-(indent-tabs-mode -1)
 (winner-mode 1)
-
-;; log level settings
-(setq-default message-log-max 2000)
-(setq-default warning-minimum-level :emergency)
-;; (kill-buffer "*Messages*")
-
-;; line settings
-(setq-default line-spacing 0)
-(setq-default truncate-lines t)
 
 ;; fringe
 (setq-default fringe-styles 'default)
@@ -58,7 +53,11 @@
 (setq-default tab-bar-auto-width-max '(150 20))
 (setq-default tab-bar-auto-width-min '(20 2))
 
-(defalias 'yes-or-no-p 'y-or-n-p)
+;; log level settings
+(setq-default message-log-max 2000)
+(setq-default warning-minimum-level :emergency)
+;; (kill-buffer "*Messages*")
+
 ;;; }}}
 
 ;;; deferred popup configurations {{{
@@ -125,15 +124,16 @@
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'i3wm-config-mode #'display-line-numbers-mode)
 
-(dedup-add-to-list 'auto-mode-alist '("\\.ya?ml\\'" . yaml-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("\\.tsx\\'" . tsx-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("\\.dockerfile\\'" . dockerfile-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("\\.jsonc\\'" . json-ts-mode))
-(dedup-add-to-list 'auto-mode-alist '("\\.sway\\'" . i3wm-config-mode))
+(dolist (modes '(("\\.ya?ml\\'" . yaml-ts-mode)
+                 ("\\.rs\\'" . rust-ts-mode)
+                 ("\\.go\\'" . go-ts-mode)
+                 ("\\.tsx\\'" . tsx-ts-mode)
+                 ("\\.ts\\'" . typescript-ts-mode)
+                 ("Dockerfile\\'" . dockerfile-ts-mode)
+                 ("\\.dockerfile\\'" . dockerfile-ts-mode)
+                 ("\\.jsonc\\'" . json-ts-mode)
+                 ("\\.sway\\'" . i3wm-config-mode)))
+  (configs--dedup-add-to-list 'auto-mode-alist modes))
 
 (setq-default major-mode-remap-alist
               '((c++-mode . c++-ts-mode)
@@ -173,7 +173,9 @@
 ;;; }}}
 
 ;; font configurations {{{
-(dedup-add-to-list 'default-frame-alist `(font . ,(concat configs--fixed-pitch-font-face "-9")))
+(configs--dedup-add-to-list
+ 'default-frame-alist
+ `(font . ,(concat configs--fixed-pitch-font-face "-9")))
 
 (defun configs--set-custom-faces ()
   "Config method to set faces on frame create."
