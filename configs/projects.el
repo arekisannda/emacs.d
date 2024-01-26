@@ -58,7 +58,7 @@
   :after persp-mode
   :init
   ;; set list of ephemeral buffers
-  (setq popper-reference-buffers
+  (setq popper-reference-buffers ;;; {{{
         '("\\*Messages\\*"
           "\\*Warnings\\*"
           "\\*Backtrace\\*"
@@ -86,6 +86,7 @@
           dap-ui-breakpoints-ui-list-mode
           compilation-mode
           help-mode))
+          ;;; }}}
   (setq popper-window-height 30
         popper-mode-line ""
         popper-group-function #'(lambda () (safe-persp-name (get-current-persp))))

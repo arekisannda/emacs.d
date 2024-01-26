@@ -29,8 +29,7 @@
   :prefix        "C-."
   :global-prefix "C-.")
 
-;;; global {{{
-(general-define-key
+(general-define-key ;;; global general keybinds{{{
  :keymaps '(override)
  (kbd "<escape>")  #'keyboard-escape-quit
  (kbd "C-q")       #'keyboard-quit
@@ -51,38 +50,36 @@
  (kbd "S-<down>") (lambda () (interactive)(evil-scroll-line-down 10)))
 ;;; }}}
 
-;;; company-mode {{{
-(general-define-key
+(general-define-key ;;; company-mode {{{
  :keymaps '(company-active-map)
  (kbd "<escape>")  #'company-abort)
 ;;; }}}
 
-;;; minibuffer {{{
-(general-define-key
+(general-define-key ;;; minibuffer {{{
  :keymaps '(minibuffer-local-map)
  "M-A" #'marginalia-cycle
  "M-s" #'consult-history
  "M-r" #'consult-history)
 ;;; }}}
 
-;;; popper-mode {{{
-(general-define-key
+(general-define-key ;;; popper-mode {{{
  :keymaps '(popper-mode-map)
  (kbd "M-<prior>")  #'popper-cycle-backwards
  (kbd "M-<next>")   #'popper-cycle
  (kbd "M-<delete>") #'popper-kill-latest-popup)
 ;;; }}}
 
-;;; evil-mode {{{
-(general-define-key
+(general-define-key ;;; evil inner object {{{
  :keymaps '(evil-inner-text-objects-map)
  "a" #'evil-inner-arg)
+;;; }}}
 
-(general-define-key
+(general-define-key ;;; evil outer object {{{
  :keymaps '(evil-outer-text-objects-map)
  "a" #'evil-outer-arg)
+;;; }}}
 
-(general-define-key
+(general-define-key ;;; evil window {{{
  :keymaps '(evil-window-map)
  "q" (lambda () (interactive)(if (one-window-p)(tab-bar-close-tab)(delete-window)))
  "Q" (lambda () (interactive)(if (one-window-p)(tab-bar-close-tab)(kill-buffer-and-window)))
@@ -92,9 +89,9 @@
  "s" (lambda () (interactive)(split-window-vertically)(other-window 1))
  "u" #'winner-undo
  "U" #'winner-redo)
+;;; }}}
 
-;; bind evil-forward/backward-args
-(general-define-key
+(general-define-key ;;; evil normal {{{
  :keymaps '(evil-normal-state-map)
  "L"  #'evil-forward-arg
  "H"  #'evil-backward-arg
@@ -104,239 +101,231 @@
 
  "]g" #'diff-hl-next-hunk
  "[g" #'diff-hl-previous-hunk)
+;;; }}}
 
-(general-define-key
+(general-define-key ;;; evil motion {{{
  :keymaps '(evil-motion-state-map)
  "L" #'evil-forward-arg
  "H" #'evil-backwards-arg)
 ;;; }}}
 
 ;;; global leader
-
-;;; dap commands {{{
-(defhydra hydra-dap-motion (:foreign-key exit :exit nil :timeout nil)
-    "dap motion"
-    ("i" #'dap-step-in "step-in")
-    ("o" #'dap-step-out "step-out")
-    ("n" #'dap-next "next")
-    ("C" #'dap-continue "continue"))
-
-(defhydra hydra-dap-session (:foreign-key exit :exit nil :timeout nil)
-    "dap session"
-    ("S" #'dap-ui-sessions "sessions")
-    ("d" #'dap-ui-delete-session "delete session"))
+(defhydra hydra-dap-motion (:foreign-key exit :exit nil :timeout nil) ;;; {{{
+  "dap motion"
+  ("i" #'dap-step-in "step-in")
+  ("o" #'dap-step-out "step-out")
+  ("n" #'dap-next "next")
+  ("C" #'dap-continue "continue"))
 ;;; }}}
 
-(kb/global-leader-key
+(defhydra hydra-dap-session (:foreign-key exit :exit nil :timeout nil) ;;; {{{
+  "dap session"
+  ("S" #'dap-ui-sessions "sessions")
+  ("d" #'dap-ui-delete-session "delete session"))
+;;; }}}
+
+(kb/global-leader-key ;;; {{{
   :keymaps '(override)
   ;;; popup window {{{
-    "C-\\"   #'popper-toggle
-    "C-M-\\" #'multi-vterm-project
-    "C-|"    #'configs--multi-vterm
+  "C-\\"   #'popper-toggle
+  "C-M-\\" #'multi-vterm-project
+  "C-|"    #'configs--multi-vterm
   ;;; }}}
 
   ;;; terminal {{{
-    "vr" '(multi-vterm-rename-buffer :wk "rename terminal")
+  "vr" '(multi-vterm-rename-buffer :wk "rename terminal")
   ;;; }}}
 
   ;;; tools {{{
-    "p"  '(:ignore t :wk "tools")
-    "pe" '(eval-region :wk "eval-region")
-    "pE" '(eval-buffer :wk "eval-buffer")
-    "pp" '(elpaca-try :wk "elpaca-try")
-    "pP" '(elpaca-manager :wk "elpaca-manager")
-    "pf" '(project-switch-project :wk "projects")
-    "pF" '(ranger :wk "ranger")
-    "ps" '(scratch-buffer :wk "scratch buffer")
-    "pk" '((lambda () (interactive)(project-kill-buffers t)(delete-other-windows)(dashboard-open)) :wk "kill project buffers")
-    "pK" '((lambda () (interactive)(persp-kill (safe-persp-name (get-current-persp)))) :wk "kill project frame")
+  "p"  '(:ignore t :wk "tools")
+  "pe" '(eval-region :wk "eval-region")
+  "pE" '(eval-buffer :wk "eval-buffer")
+  "pp" '(elpaca-try :wk "elpaca-try")
+  "pP" '(elpaca-manager :wk "elpaca-manager")
+  "pf" '(project-switch-project :wk "projects")
+  "pF" '(ranger :wk "ranger")
+  "ps" '(scratch-buffer :wk "scratch buffer")
+  "pk" '((lambda () (interactive)(project-kill-buffers t)(delete-other-windows)(dashboard-open)) :wk "kill project buffers")
+  "pK" '((lambda () (interactive)(persp-kill (safe-persp-name (get-current-persp)))) :wk "kill project frame")
   ;;; }}}
 
   ;;; workspaces/perspective management {{{
-    "w"  '(:ignore t :wk "workspace")
-    "ww" '(persp-switch :wk "switch perspective")
-    "wk" '(persp-kill :wk "kill perspective")
-    "wr" '(persp-rename :wk "rename perspective")
-    "wb" '(persp-remove-buffer :wk "remove buffer from perspective")
-    "wl" '(consult-layouts :wk "switch layouts")
+  "w"  '(:ignore t :wk "workspace")
+  "ww" '(persp-switch :wk "switch perspective")
+  "wk" '(persp-kill :wk "kill perspective")
+  "wr" '(persp-rename :wk "rename perspective")
+  "wb" '(persp-remove-buffer :wk "remove buffer from perspective")
+  "wl" '(consult-layouts :wk "switch layouts")
   ;;; }}}
 
   ;;; buffer management {{{
-    "b"  '(:ignore t :wk "buffer")
-    "bl" '(project-list-buffers :wk "list buffers")
-    "bL" '(list-buffers :wk "list buffers (all)")
-    "bb" '(consult-project-buffer :wk "switch buffer")
-    "bB" '(consult-buffer :wk "switch buffer (all)")
-    "bX" '(kill-buffer :wk "kill buffer")
-    "bk" '(kill-this-buffer :wk "kill current buffer")
-    "bK" '(project-kill-buffers :wk "kill current buffer")
-    "bQ" '(kill-buffer-and-window :wk "kill buffer and window")
-    "bn" '(next-buffer :wk "next buffer")
-    "bp" '(previous-buffer :wk "previous buffer")
-    "br" '(revert-buffer :wk "reload buffer")
+  "b"  '(:ignore t :wk "buffer")
+  "bl" '(project-list-buffers :wk "list buffers")
+  "bL" '(list-buffers :wk "list buffers (all)")
+  "bb" '(consult-project-buffer :wk "switch buffer")
+  "bB" '(consult-buffer :wk "switch buffer (all)")
+  "bX" '(kill-buffer :wk "kill buffer")
+  "bk" '(kill-this-buffer :wk "kill current buffer")
+  "bK" '(project-kill-buffers :wk "kill current buffer")
+  "bQ" '(kill-buffer-and-window :wk "kill buffer and window")
+  "bn" '(next-buffer :wk "next buffer")
+  "bp" '(previous-buffer :wk "previous buffer")
+  "br" '(revert-buffer :wk "reload buffer")
   ;;; }}}
 
   ;;; dap debugger {{{
-    "d"  '(:ignore t :wk "debug")
-    "dD" '(dap-debug :wk "start debug")
-    "dR" '(dap-debug-restart :wk "restart debug")
-    "dK" '(dap-breakpoint-delete-all :wk "delete breakpoints")
-    "dl" '(dap-ui-breakpoints-list :wk "list breakpoint")
-    "dd" '(dap-breakpoint-toggle :wk "toggle breakpoint")
-    "dm" '(dap-breakpoint-log-message :wk "breakpoint message")
-    "dc" '(dap-breakpoint-condition :wk "breakpoint condition")
-    "dh" '(dap-breakpoint-hit-condition :wk "breakpoint hit condition")
-    "di" '(hydra-dap-motion/dap-step-in :wk "step-in")
-    "do" '(hydra-dap-motion/dap-step-out :wk "step-out")
-    "dn" '(hydra-dap-motion/dap-next :wk "next")
-    "dC" '(hydra-dap-motion/dap-continue :wk "continue")
-    "dS" '(hydra-dap-session/dap-ui-sessions :wk "session")
+  "d"  '(:ignore t :wk "debug")
+  "dD" '(dap-debug :wk "start debug")
+  "dR" '(dap-debug-restart :wk "restart debug")
+  "dK" '(dap-breakpoint-delete-all :wk "delete breakpoints")
+  "dl" '(dap-ui-breakpoints-list :wk "list breakpoint")
+  "dd" '(dap-breakpoint-toggle :wk "toggle breakpoint")
+  "dm" '(dap-breakpoint-log-message :wk "breakpoint message")
+  "dc" '(dap-breakpoint-condition :wk "breakpoint condition")
+  "dh" '(dap-breakpoint-hit-condition :wk "breakpoint hit condition")
+  "di" '(hydra-dap-motion/dap-step-in :wk "step-in")
+  "do" '(hydra-dap-motion/dap-step-out :wk "step-out")
+  "dn" '(hydra-dap-motion/dap-next :wk "next")
+  "dC" '(hydra-dap-motion/dap-continue :wk "continue")
+  "dS" '(hydra-dap-session/dap-ui-sessions :wk "session")
   ;;; }}}
 
   ;;; window management {{{
-    "s"  '(:ignore t :wk "switcher")
-    "ss" '(ace-window :wk "select")
-    "sS" '(ace-swap-window :wk "swap")
-    "sd" '(ace-delete-window :wk "delete")
+  "s"  '(:ignore t :wk "switcher")
+  "ss" '(ace-window :wk "select")
+  "sS" '(ace-swap-window :wk "swap")
+  "sd" '(ace-delete-window :wk "delete")
   ;;; }}}
 
   ;;; tab management {{{
-    "t"  '(:ignore t :wk "tabs")
-    "tt" '(tab-bar-new-tab :wk "new tab")
-    "tT" '((lambda () (interactive)(tab-bar-new-tab)(dashboard-open)) :wk "new fresh tab")
-    "tk" '(tab-bar-close-tab :wk "kill tab")
-    "tK" '(tab-bar-close-other-tabs :wk "kill other tabs")
-    "tr" '(tab-bar-rename-tab :wk "rename tab")
-    "tu" '(tab-bar-undo-close-tab :wk "undo tab close")
+  "t"  '(:ignore t :wk "tabs")
+  "tt" '(tab-bar-new-tab :wk "new tab")
+  "tT" '((lambda () (interactive)(tab-bar-new-tab)(dashboard-open)) :wk "new fresh tab")
+  "tk" '(tab-bar-close-tab :wk "kill tab")
+  "tK" '(tab-bar-close-other-tabs :wk "kill other tabs")
+  "tr" '(tab-bar-rename-tab :wk "rename tab")
+  "tu" '(tab-bar-undo-close-tab :wk "undo tab close")
   ;;; }}}
 
   ;;; mode management {{{
-    "m"  '(:ignore t :wk "modes")
-    "mI" '(image-mode :wk "image mode")
-    "mf" '(fundamental-mode :wk "fundamental mode")
-    "mr" '(rainbow-mode :wk "rainbow mode"))
+  "m"  '(:ignore t :wk "modes")
+  "mI" '(image-mode :wk "image mode")
+  "mf" '(fundamental-mode :wk "fundamental mode")
+  "mr" '(rainbow-mode :wk "rainbow mode"))
   ;;; }}}
+;;; }}}
 
 ;;; local leader
-
-;;; git commands {{{
-(defhydra hydra-git-hunk (:foreign-key exit :exit nil :timeout nil :hint nil)
-    "git"
-    ("i" #'diff-hl-show-hunk :hint nil)
-    ("j" #'diff-hl-show-hunk-next :hint nil)
-    ("k" #'diff-hl-show-hunk-previous :hint nil)
-    ("s" #'diff-hl-show-hunk-stage-hunk :hint nil)
-    ("d" #'diff-hl-show-hunk-revert-hunk :hint nil)
-    ("c" #'diff-hl-show-hunk-copy-original-text :hint nil))
+(defhydra hydra-git-hunk (:foreign-key exit :exit nil :timeout nil :hint nil) ;;; {{{
+  "git"
+  ("i" #'diff-hl-show-hunk :hint nil)
+  ("j" #'diff-hl-show-hunk-next :hint nil)
+  ("k" #'diff-hl-show-hunk-previous :hint nil)
+  ("s" #'diff-hl-show-hunk-stage-hunk :hint nil)
+  ("d" #'diff-hl-show-hunk-revert-hunk :hint nil)
+  ("c" #'diff-hl-show-hunk-copy-original-text :hint nil))
 (hydra-set-property 'hydra-git-hunk :verbosity 0)
 ;;; }}}
 
-(kb/local-leader-key
+(kb/local-leader-key ;;; {{{
   :keymaps '(override)
   ;;; general editor {{{
-    ","  '(:ignore t :wk "editor")
-    ",=" '(sort-lines :wk "sort lines")
-    ",k" '(align :wk "basic align")
-    ",l" '(evil-lion-left :wk "align left")
-    ",L" '(evil-lion-right :wk "align right")
-    ",c" '(evilnc-comment-or-uncomment-lines :wk "comment-line")
-    ",C" '(evilnc-comment-or-uncomment-paragraphs :wk "comment-paragraph")
-    ",s" '(embrace-add :wk "surround add")
-    ",S" '(embrace-change :wk "surround change")
-    ",d" '(embrace-delete :wk "surround delete")
-    ",r" '(lsp-rename :wk "rename symbol")
-    ",t" '(ispell-word :wk "fix spelling typo")
-    ",!" '(flycheck-display-error-at-point :wk "show error at point")
+  ","  '(:ignore t :wk "editor")
+  ",=" '(sort-lines :wk "sort lines")
+  ",k" '(align :wk "basic align")
+  ",l" '(evil-lion-left :wk "align left")
+  ",L" '(evil-lion-right :wk "align right")
+  ",c" '(evilnc-comment-or-uncomment-lines :wk "comment-line")
+  ",C" '(evilnc-comment-or-uncomment-paragraphs :wk "comment-paragraph")
+  ",s" '(embrace-add :wk "surround add")
+  ",S" '(embrace-change :wk "surround change")
+  ",d" '(embrace-delete :wk "surround delete")
+  ",r" '(lsp-rename :wk "rename symbol")
+  ",t" '(ispell-word :wk "fix spelling typo")
+  ",!" '(flycheck-display-error-at-point :wk "show error at point")
   ;;; }}}
 
   ;;; lsp {{{
-    "d"  '(:ignore t :wk "lsp")
-    "di" '(lsp-describe-thing-at-point :wk "find definition")
-    "dI" '(lsp-find-implementation :wk "find implementation")
-    "dt" '(lsp-find-type-definition :wk "find type definition")
-    "dd" '(lsp-find-definition :wk "find definition")
-    "dr" '(lsp-find-references :wk "find reference")
+  "d"  '(:ignore t :wk "lsp")
+  "di" '(lsp-describe-thing-at-point :wk "find definition")
+  "dI" '(lsp-find-implementation :wk "find implementation")
+  "dt" '(lsp-find-type-definition :wk "find type definition")
+  "dd" '(lsp-find-definition :wk "find definition")
+  "dr" '(lsp-find-references :wk "find reference")
   ;;; }}}
 
   ;;; code folding {{{
-    "o" '(:ignore t :wk "origami")
-    "ox" '(origami-open-node-recursively :wk "open")
-    "oX" '(origami-open-all-nodes :wk "open all")
-    "oc" '(origami-close-node-recursively :wk "close")
-    "oC" '(origami-close-all-nodes :wk "close all")
-    "oo" '(origami-recursively-toggle-node :wk "toggle")
-    "oO" '(origami-toggle-all-nodes :wk "toggle all")
-    "ok" '(origami-previous-fold :wk "prev")
-    "o]" '(origami-fold-prev-sibling :wk "prev sibling")
-    "ol" '(origami-next-fold :wk "next")
-    "o]" '(origami-fold-next-sibling :wk "next sibling")
-    "o!" '(origami-show-only-node :wk "open only")
+  "o" '(:ignore t :wk "origami")
+  "ox" '(origami-open-node-recursively :wk "open")
+  "oX" '(origami-open-all-nodes :wk "open all")
+  "oc" '(origami-close-node-recursively :wk "close")
+  "oC" '(origami-close-all-nodes :wk "close all")
+  "oo" '(origami-recursively-toggle-node :wk "toggle")
+  "oO" '(origami-toggle-all-nodes :wk "toggle all")
+  "ok" '(origami-previous-fold :wk "prev")
+  "o]" '(origami-fold-prev-sibling :wk "prev sibling")
+  "ol" '(origami-next-fold :wk "next")
+  "o]" '(origami-fold-next-sibling :wk "next sibling")
+  "o!" '(origami-show-only-node :wk "open only")
   ;;; }}}
 
   ;;; editor motion {{{
-    "m"  '(:ignore t :wk "motion")
-    "mj" '(evilem-motion-find-char :wk "fowards motion")
-    "mk" '(evilem-motion-find-char-backward :wk "backwards motion")
-    "mJ" '(evilem-motion-find-char-to :wk "forwards motion to")
-    "mK" '(evilem-motion-find-char-to-backward :wk "backwards motion to")
-    "ms" '(evil-snipe-s :wk "forwards inclusive snipe")
-    "mS" '(evil-snipe-S :wk "backwards inclusive snipe")
-    "mx" '(evil-snipe-x :wk "forwards exclusive snipe")
-    "mX" '(evil-snipe-X :wk "backwards exclusive snipe")
+  "m"  '(:ignore t :wk "motion")
+  "mj" '(evilem-motion-find-char :wk "fowards motion")
+  "mk" '(evilem-motion-find-char-backward :wk "backwards motion")
+  "mJ" '(evilem-motion-find-char-to :wk "forwards motion to")
+  "mK" '(evilem-motion-find-char-to-backward :wk "backwards motion to")
+  "ms" '(evil-snipe-s :wk "forwards inclusive snipe")
+  "mS" '(evil-snipe-S :wk "backwards inclusive snipe")
+  "mx" '(evil-snipe-x :wk "forwards exclusive snipe")
+  "mX" '(evil-snipe-X :wk "backwards exclusive snipe")
   ;;; }}}
 
   ;;; git {{{
-    "g"  '(:ignore t :wk "git")
-    "gi" '(hydra-git-hunk/diff-hl-show-hunk :wk "inspect")
-    "gj" '(diff-hl-next-hunk :wk "next hunk")
-    "gk" '(diff-hl-previous-hunk :wk "prev hunk")
-    "gs" '(diff-hl-stage-current-hunk :wk "stage")
-    "gd" '(diff-hl-revert-hunk :wk "revert")
+  "g"  '(:ignore t :wk "git")
+  "gi" '(hydra-git-hunk/diff-hl-show-hunk :wk "inspect")
+  "gj" '(diff-hl-next-hunk :wk "next hunk")
+  "gk" '(diff-hl-previous-hunk :wk "prev hunk")
+  "gs" '(diff-hl-stage-current-hunk :wk "stage")
+  "gd" '(diff-hl-revert-hunk :wk "revert")
   ;;; }}}
 
   ;;; languages/translations {{{
-    "i"  '(:ignore t :wk "input method")
-    "ii" '(configs--set-default-input-method :wk "English input ")
-    "ij" '(configs--set-japanese-input-method :wk "Japanese input ")
+  "i"  '(:ignore t :wk "input method")
+  "ii" '(configs--set-default-input-method :wk "English input ")
+  "ij" '(configs--set-japanese-input-method :wk "Japanese input ")
 
-    "t"  '(:ignore t :.k "translate")
-    "tt" '(google-translate-at-point :wk "translate source -> target")
-    "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
+  "t"  '(:ignore t :.k "translate")
+  "tt" '(google-translate-at-point :wk "translate source -> target")
+  "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
   ;;; }}}
+;;; }}}
 
-;;; search keybindings
-
-(kb/search-leader-key
+(kb/search-leader-key ;;; general search {{{
   :keymaps '(override)
-  ;;; general search {{{
-    "g" '(consult-ripgrep :wk "find text in project")
-    "r" '(consult-recent-file :wk "find recent file")
-    "f" '(project-find-file :wk "find project file")
-    "F" '(find-file :wk "find file")
-    "M" '(consult-man :wk "find man page")
-    "K" '(consult-kmacro :wk "find keyboard macro")
-    "C" '(consult-mode-command :wk "find recent commands")
-    "H" '(consult-history :wk "find history")
-    "I" '(consult-info :wk "find emacs info"))
-  ;;; }}}
+  "g" '(consult-ripgrep :wk "find text in project")
+  "r" '(consult-recent-file :wk "find recent file")
+  "f" '(project-find-file :wk "find project file")
+  "F" '(find-file :wk "find file")
+  "M" '(consult-man :wk "find man page")
+  "K" '(consult-kmacro :wk "find keyboard macro")
+  "C" '(consult-mode-command :wk "find recent commands")
+  "H" '(consult-history :wk "find history")
+  "I" '(consult-info :wk "find emacs info"))
+;;; }}}
 
-(kb/search-leader-key
+(kb/search-leader-key ;;; org-mode search {{{
   :keymaps '(org-mode-map)
-  ;;; org-mode search {{{
-    "h" '(consult-org-heading :wk "find org heading"))
-  ;;; }}}
+  "h" '(consult-org-heading :wk "find org heading"))
+;;; }}}
 
-
-;;; completion keybindings
-
-(kb/completion-leader-key
+(kb/completion-leader-key ;;; {{{
   :keymaps '(override)
-  ;;; completion {{{
-    "s"   '(company-ispell :wk "suggest word")
-    "C-," '(company-yasnippet :wk "suggest snippet")
-    "C-." '(company-complete :wk "suggest completion")
-    ">"   '(company-show-doc-buffer :wk "show code completion doc"))
-  ;;; }}}
+  "s"   '(company-ispell :wk "suggest word")
+  "C-," '(company-yasnippet :wk "suggest snippet")
+  "C-." '(company-complete :wk "suggest completion")
+  ">"   '(company-show-doc-buffer :wk "show code completion doc"))
+;;; }}}
 
 (provide 'keybind-init)
 ;;; init.el ends here
