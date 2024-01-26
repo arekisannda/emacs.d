@@ -199,8 +199,8 @@
 
   (set-face-attribute 'tab-bar nil
                       :font configs--fixed-pitch-font-face
-		      :height configs--tab-font-size
-		      :weight 'bold)
+		              :height configs--tab-font-size
+		              :weight 'bold)
   (set-face-attribute 'tab-bar-tab nil
                       :font configs--fixed-pitch-font-face
                       :height configs--tab-font-size
@@ -209,8 +209,8 @@
                       :underline `(:inherit tab-bar-tab :style line :position 0))
   (set-face-attribute 'tab-bar-tab-inactive nil
                       :font configs--fixed-pitch-font-face
-		      :height configs--tab-font-size
-		      :weight 'light
+		              :height configs--tab-font-size
+		              :weight 'light
                       :box '(:line-width (5 . 5) :style flat-button)
                       :underline `(:inherit tab-bar-tab :style line :position 0)))
 
