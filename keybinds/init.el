@@ -103,8 +103,8 @@
  "H" #'evil-backwards-arg)
 ;;; }}}
 
-;;; global leader {{{
-;;; dap commands {{{
+;;; global leader
+  ;;; dap commands {{{
 (defhydra hydra-dap-motion (:foreign-key exit :exit nil :timeout nil)
 "dap motion"
 ("i" #'dap-step-in "step-in")
@@ -116,7 +116,7 @@
 "dap session"
 ("S" #'dap-ui-sessions "sessions")
 ("d" #'dap-ui-delete-session "delete session"))
-;;; }}}
+  ;;; }}}
 
 (kb/global-leader-key :keymaps '(override)
   ;;; popup window {{{
@@ -206,10 +206,9 @@
   "mf" '(fundamental-mode :wk "fundamental mode")
   "mr" '(rainbow-mode :wk "rainbow mode"))
   ;;; }}}
-;;; }}}
 
-;;; local leader {{{
-;;; git commands {{{
+;;; local leader
+  ;;; git commands {{{
 (defhydra hydra-git-hunk (:foreign-key exit :exit nil :timeout nil :hint nil)
   "git"
   ("i" #'diff-hl-show-hunk :hint nil)
@@ -219,7 +218,7 @@
   ("d" #'diff-hl-show-hunk-revert-hunk :hint nil)
   ("c" #'diff-hl-show-hunk-copy-original-text :hint nil))
 (hydra-set-property 'hydra-git-hunk :verbosity 0)
-;;; }}}
+  ;;; }}}
 
 (kb/local-leader-key :keymaps '(override)
   ;;; general editor {{{
@@ -292,10 +291,10 @@
   "tt" '(google-translate-at-point :wk "translate source -> target")
   "tT" '(google-translate-at-point-reverse :wk "translate target -> source"))
   ;;; }}}
-;;; }}}
 
-;;; search keybindings {{{
+;;; search keybindings
 (kb/search-leader-key :keymaps '(override)
+  ;;; general search {{{
   "g" '(consult-ripgrep :wk "find text in project")
   "r" '(consult-recent-file :wk "find recent file")
   "f" '(project-find-file :wk "find project file")
@@ -305,18 +304,20 @@
   "C" '(consult-mode-command :wk "find recent commands")
   "H" '(consult-history :wk "find history")
   "I" '(consult-info :wk "find emacs info"))
+  ;;; }}}
 
 (kb/search-leader-key :keymaps '(org-mode-map)
+  ;;; org-mode search {{{
   "h" '(consult-org-heading :wk "find org heading"))
-;;; }}}
+  ;;; }}}
 
-;;; completion {{{
 (kb/completion-leader-key :keymaps '(override)
+  ;;; completion {{{
   "s"   '(company-ispell :wk "suggest word")
   "C-," '(company-yasnippet :wk "suggest snippet")
   "C-." '(company-complete :wk "suggest completion")
   ">"   '(company-show-doc-buffer :wk "show code completion doc"))
-;;; }}}
+  ;;; }}}
 
 (provide 'keybind-init)
 ;;; init.el ends here
