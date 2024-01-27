@@ -3,7 +3,7 @@
 
 ;;; Code:
 
-;;; config variables {{{
+;; config variables {{{
 (defvar configs--debug-theme-enable nil
   "Flag to set to enable the debugging of theme.")
 
@@ -26,7 +26,7 @@
   "User Emacs directory.")
 
 (setq-default custom-file (expand-file-name "custom.el" configs--user-emacs-directory))
-;;; }}}
+;; }}}
 
 ;; setup elpaca package manager {{{
 (defvar elpaca-installer-version 0.6)
@@ -75,17 +75,13 @@
   (setq elpaca-hide-initial-build t)
   (setq elpaca-hide-status-during-build t))
 
-;; Block until current queue processed.
 (elpaca-wait)
-;;; }}}
+;; }}}
 
 (load-file (expand-file-name "utils/init.el" configs--user-emacs-directory))
 (load-file (expand-file-name "configs/init.el" configs--user-emacs-directory))
 (load-file (expand-file-name "keybinds/init.el" configs--user-emacs-directory))
 (load custom-file)
-
-;; Don't install anything. Defer execution of BODY
-(elpaca nil (message "deferred"))
 
 (provide 'init)
 ;;; init.el ends here

@@ -1,4 +1,4 @@
-;; init.el --- Emacs packages init -*- lexical-binding: t; origami-fold-style: triple-braces; -*-
+;;; init.el --- Emacs packages init -*- lexical-binding: t; origami-fold-style: triple-braces; -*-
 ;;; Commentary:
 
 ;;; Code:
@@ -16,7 +16,7 @@
 
 (elpaca-wait)
 
-;;; emacs built-in configurations {{{
+;; Emacs built-in configurations {{{
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq-default ring-bell-function #'ignore)
@@ -56,11 +56,9 @@
 ;; log level settings
 (setq-default message-log-max 2000)
 (setq-default warning-minimum-level :emergency)
-;; (kill-buffer "*Messages*")
+;; }}}
 
-;;; }}}
-
-;;; deferred popup configurations {{{
+;; popup deferred load {{{
 (defun configs--enable-posframe ()
   "Use posframe."
   (add-hook 'flycheck-mode-hook 'flycheck-posframe-mode)
@@ -90,10 +88,10 @@
     (add-hook 'after-make-frame-functions
               (lambda (frame) (with-selected-frame frame (configs--load-deferred-configurations))))
   (configs--load-deferred-configurations))
-;;; }}}
+;; }}}
 
-;;; tree-sitter {{{
-(setq-default treesit-language-source-alist
+;; tree-sitter {{{
+(setq-default treesit-language-source-alist ;; {{{
               '((bash . ("https://github.com/tree-sitter/tree-sitter-bash.git"))
                 (c . ("https://github.com/tree-sitter/tree-sitter-c.git"))
                 (cmake . ("https://github.com/uyha/tree-sitter-cmake.git"))
@@ -113,13 +111,14 @@
                 (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript.git" nil "tsx/src"))
                 (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript.git" nil "typescript/src"))
                 (yaml . ("https://github.com/ikatyang/tree-sitter-yaml.git"))))
+;; }}}
 
 (dolist (lang (mapcar #'car treesit-language-source-alist))
   (unless (treesit-language-available-p lang)
     (treesit-install-language-grammar lang)))
-;;; }}}
+;; }}}
 
-;;; additional hook/mode configurations {{{
+;; additional hook/mode configurations {{{
 (add-hook 'before-save-hook #'delete-trailing-whitespace)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'i3wm-config-mode #'display-line-numbers-mode)
@@ -146,7 +145,7 @@
                 (sh-mode . bash-ts-mode)
                 (js-json-mode . json-ts-mode)))
 
-;;; use emacs-mode for non prog-modes
+;; use emacs-mode for non prog-modes
 (dolist (mode '(vterm-mode
                 ranger-mode
                 elpaca-ui-mode
@@ -157,7 +156,7 @@
   (add-to-list 'evil-emacs-state-modes mode))
 
 
-;;; set read-only files
+;; set read-only files
 (defvar configs--read-only-prefixes-list (list (expand-file-name elpaca-directory)
                                                (expand-file-name package-user-dir))
   "List of read-only file prefixes.")
@@ -170,14 +169,14 @@
     (read-only-mode 1)))
 
 (add-hook 'find-file-hook #'configs--set-read-only-mode)
-;;; }}}
+;; }}}
 
 ;; font configurations {{{
 (configs--dedup-add-to-list
  'default-frame-alist
  `(font . ,(concat configs--fixed-pitch-font-face "-9")))
 
-(defun configs--set-custom-faces ()
+(defun configs--set-custom-faces () ;; {{{
   "Config method to set faces on frame create."
   (set-face-attribute 'default nil
                       :font configs--fixed-pitch-font-face
@@ -198,29 +197,33 @@
                       :slant 'italic)
   (set-face-attribute 'font-lock-keyword-face nil
                       :slant 'italic)
-
   (set-face-attribute 'tab-bar nil
                       :font configs--fixed-pitch-font-face
-		              :height configs--tab-font-size
-		              :weight 'bold)
+		      :height configs--tab-font-size
+		      :weight 'bold)
   (set-face-attribute 'tab-bar-tab nil
                       :font configs--fixed-pitch-font-face
                       :height configs--tab-font-size
                       :weight 'bold
                       :box '(:line-width (5 . 5) :style flat-button)
-                      :underline `(:inherit tab-bar-tab :style line :position 0))
+                      :underline '(:inherit tab-bar-tab :style line :position 0))
   (set-face-attribute 'tab-bar-tab-inactive nil
                       :font configs--fixed-pitch-font-face
-		              :height configs--tab-font-size
-		              :weight 'light
+                      :height configs--tab-font-size
+                      :weight 'light
                       :box '(:line-width (5 . 5) :style flat-button)
-                      :underline `(:inherit tab-bar-tab :style line :position 0)))
+                      :underline '(:inherit tab-bar-tab :style line :position 0))
+  (set-face-attribute 'origami-fold-header-face nil
+                      :inherit 'highlight
+                      :underline nil
+                      :box nil))
+;; }}}
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
               (lambda (frame) (with-selected-frame frame (configs--set-custom-faces))))
   (configs--set-custom-faces))
-;;; }}}
+;; }}}
 
 (provide 'configs-init)
 ;;; init.el ends here

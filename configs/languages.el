@@ -6,44 +6,43 @@
 
 (use-package google-translate)
 (use-package mozc :ensure t)
-(use-package mozc-cand-posframe
-  :after mozc
-  :defer t
-  :ensure t)
+(use-package mozc-cand-posframe :after mozc :defer t :ensure t)
 
 (elpaca-wait)
 
-;; translations {{{
-(defun configs--set-japanese-input-method ()
+;; translations
+(defun configs--set-japanese-input-method () ;; {{{
   "Load japanese-mozc input method"
   (interactive)
   (setq google-translate-default-source-language "ja")
   (setq google-translate-default-target-language "en")
   (set-input-method 'japanese-mozc))
+;; }}}
 
-(defun configs--set-default-input-method ()
+(defun configs--set-default-input-method () ;; {{{
   "Load default (English) input method"
   (interactive)
   (setq google-translate-default-source-language "en")
   (setq google-translate-default-target-language nil)
   (deactivate-input-method)
   (evil-deactivate-input-method))
-;;; }}}
+;; }}}
 
-;;; ispell configurations {{{
-(setq ispell-complete-word-dict
-      (cond ((file-readable-p "/usr/dict/web2") "/usr/dict/web2")
-            ((file-readable-p "/usr/share/dict/web2") "/usr/share/dict/web2")
-            ((file-readable-p "/usr/dict/words") "/usr/dict/words")
-            ((file-readable-p "/usr/lib/dict/words") "/usr/lib/dict/words")
-            ((file-readable-p "/usr/share/dict/words") "/usr/share/dict/words")
-            ((file-readable-p "/usr/share/lib/dict/words")
-             "/usr/share/lib/dict/words")
-            ((file-readable-p "/sys/dict") "/sys/dict")))
+;; ispell configurations
+(defvar configs--ispell-check-backend nil)
+(setq-default ispell-complete-word-dict ;; {{{
+              (cond ((file-readable-p "/usr/dict/web2") "/usr/dict/web2")
+                    ((file-readable-p "/usr/share/dict/web2") "/usr/share/dict/web2")
+                    ((file-readable-p "/usr/dict/words") "/usr/dict/words")
+                    ((file-readable-p "/usr/lib/dict/words") "/usr/lib/dict/words")
+                    ((file-readable-p "/usr/share/dict/words") "/usr/share/dict/words")
+                    ((file-readable-p "/usr/share/lib/dict/words")
+                     "/usr/share/lib/dict/words")
+                    ((file-readable-p "/sys/dict") "/sys/dict")))
+;; }}}
 
-;; find aspell and hunspell automatically
-(cond
- ((executable-find "hunspell")
+(defun configs--load-hunspell-configs () ;; {{{
+  "Load hunspell spelling backend."
   (setq ispell-program-name "/usr/bin/hunspell")
   (setq ispell-dictionary "en_US")
   (setq ispell-local-dictionary "en_US")
@@ -55,14 +54,22 @@
   ;; new variable `ispell-hunspell-dictionary-alist' is defined in Emacs
   ;; If it's nil, Emacs tries to automatically set up the dictionaries.
   (when (boundp 'ispell-hunspell-dictionary-alist)
-    (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)))
+    (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist))
+  (setq configs--ispell-check-backend "hunspell"))
+;; }}}
 
- ((executable-find "aspell")
+(defun configs--load-aspell-configs () ;; {{{
+  "Load aspell spelling backend."
   (setq ispell-program-name "/usr/bin/aspell")
   ;; Please note ispell-extra-args contains ACTUAL parameters passed to aspell
-  (setq ispell-extra-args '("-a" "soundslike" "--sug-mode=ultra" "--lang=en_US"))))
+  (setq ispell-extra-args '("-a" "soundslike" "--sug-mode=ultra" "--lang=en_US"))
+  (setq configs--ispell-check-backend "aspell"))
+;; }}}
 
-(defun ispell-display-buffer (buffer)
+(cond ((executable-find "hunspell") (configs--load-hunspell-configs))
+      ((executable-find "aspell") (configs--load-aspell-configs)))
+
+(defun ispell-display-buffer (buffer) ;; {{{
   "Show BUFFER in new window above selected one.
 Also position fit window to BUFFER and select it."
   (let* ((unsplittable
@@ -98,7 +105,7 @@ Also position fit window to BUFFER and select it."
       (set-window-buffer window buffer)
       (set-window-point window (point-min))
       (fit-window-to-buffer window nil nil nil nil t))))
-;;; }}}
+;; }}}
 
 (provide 'configs-languages)
 ;;; languages.el ends here
