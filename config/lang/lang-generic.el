@@ -21,6 +21,7 @@
 (defun lang/generic--conf-setup ()
   "Setup to run for conf major modes."
   (setq truncate-lines t)
+  (visual-line-mode -1)
   (hs-minor-mode 1)
   (display-line-numbers-mode 1)
   (rainbow-delimiters-mode 1))
