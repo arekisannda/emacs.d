@@ -9,12 +9,14 @@
 (require 'ui-fonts)
 (require 'ui-tooltip)
 (require 'ui-tab-bar)
+(require 'ui-mode-line)
 
 (setq-default ui/config--logo-path (expand-file-name "logo.png" user-emacs-directory))
 
 (defun ui/config--dashboard-setup ()
   "Set up dashboard configuations."
   (setq dashboard-startup-banner ui/config--logo-path
+        dashboard-banner-logo-title nil
         dashboard-projects-backend 'project-el
         dashboard-center-content t
         dashboard-show-shortcuts t
@@ -32,13 +34,14 @@
   "Disable features."
   (setq-default truncate-lines t)
   (setq-default line-spacing 0)
+  (setq-default indent-tabs-mode nil)
+  (setq-default visual-line-mode nil)
 
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (scroll-bar-mode -1)
   (menu-bar-mode -1)
   (global-eldoc-mode -1)
-  (indent-tabs-mode -1)
   (electric-pair-mode -1)
   (disable-mouse-global-mode 1)
 
@@ -122,11 +125,25 @@
   (which-key-mode 1)
 
   (vertico-mode 1)
+  (vertico-multiform-mode 1)
   (savehist-mode 1)
   (marginalia-mode 1)
 
   (add-hook 'completion-list-mode-hook #'consult-preview-at-point-mode)
   (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
+
+(defun ui/config--telephone-line-setup ()
+  "Set up `telephone-line` configurations."
+  (setq telephone-line-lhs
+	'((evil   . (ui/mode-line--popper-tag-segment
+		     telephone-line-evil-tag-segment))
+	  (accent . (telephone-line-vc-segment
+		     telephone-line-erc-modified-channels-segment
+		     telephone-line-process-segment))
+	  (nil    . (telephone-line-projectile-segment
+		     telephone-line-buffer-segment))))
+
+  (telephone-line-mode 1))
 
 (defun ui/config-setup ()
   "Set up Emacs UI configurations."
@@ -140,9 +157,9 @@
   (ui/config--dashboard-setup)
   (ui/config--treemacs-setup)
   (ui/config--fringe-setup)
+  (ui/config--telephone-line-setup)
 
-  (ranger-override-dired-mode 1)
-  (telephone-line-mode 1))
+  (ranger-override-dired-mode 1))
 
 (ui/config-setup)
 

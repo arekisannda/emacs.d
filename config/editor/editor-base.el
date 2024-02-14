@@ -20,12 +20,16 @@
 
 (defun editor/base--evil-mode-setup ()
   "Set up evil-mode packages."
-  (evil-mode 1)
-  (evil-collection-init)
-  (evil-snipe-override-mode +1)
-  (global-evil-matchit-mode 1)
-  (evil-lion-mode 1)
-  (global-evil-mc-mode t)
+  (setq evil-collection-mode-list
+        '(dashboard
+          info
+          dired
+          ibuffer
+          magit
+          edebug
+          org
+          org-roam
+          ediff))
 
   (dolist (mode '(vterm-mode
                   ranger-mode
@@ -34,19 +38,25 @@
                   special-mode
                   dap-ui-breakpoints-ui-list-mode
                   eglot-list-connections-mode))
-    (add-to-list 'evil-emacs-state-modes mode)))
+    (add-to-list 'evil-emacs-state-modes mode))
 
-(defun editor/base--non-prog-mode-setup ()
+  (evil-mode 1)
+  (evil-collection-init)
+  (evil-snipe-override-mode +1)
+  (global-evil-matchit-mode 1)
+  (evil-lion-mode 1)
+  (global-evil-mc-mode t))
+
+(defun editor/base--visual-line-mode-setup ()
   "Setup to run for non `prog-mode` major modes."
-  (unless (derived-mode-p 'prog-mode)
-    (setq truncate-lines nil)
-    (visual-line-mode 1)))
+  (setq truncate-lines nil)
+  (visual-line-mode 1))
 
 (defun editor/base--general-buffer-setup ()
   "Set up general buffer configurations."
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
   (add-hook 'find-file-hook #'editor/base--read-only-by-prefix)
-  (add-hook 'after-change-major-mode-hook 'editor/base--non-prog-mode-setup))
+  (add-hook 'help-mode-hook #'editor/base--visual-line-mode-setup))
 
 (defun editor/base--editorconfig-setup ()
   "Set up editorconfig tool configurations."
@@ -56,11 +66,11 @@
 
 (defun editor/base-setup ()
   "Set up editor configurations."
+  (setq-default display-line-numbers-type 'relative)
+
   (editor/base--general-buffer-setup)
   (editor/base--editorconfig-setup)
   (editor/base--evil-mode-setup)
-
-  (setq-default display-line-numbers-type 'relative)
   (editor/input--set-english-input-method))
 
 (editor/base-setup)
