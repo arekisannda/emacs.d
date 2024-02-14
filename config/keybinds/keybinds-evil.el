@@ -3,29 +3,9 @@
 
 ;;; Code:
 (require 'packages-init)
-(require 'packages-evil)
 (require 'keybinds-custom)
 
-(general-create-definer keybinds/evil-window
-  :keymaps 'evil-window-map)
-
-(general-create-definer keybinds/evil-normal
-  :keymaps 'evil-normal-state-map)
-
-(general-create-definer keybinds/evil-emacs
-  :keymaps 'evil-emacs-state-map)
-
-(general-create-definer keybinds/evil-motion
-  :keymaps 'evil-motions-state-map)
-
-(general-create-definer keybinds/evil-visual
-  :keymaps 'evil-visual-state-map)
-
-(general-create-definer keybinds/evil-inner-text-object
-  :keymaps 'evil-inner-text-objects-map)
-
-(general-create-definer keybinds/evil-outer-text-object
-  :keymaps 'evil-outer-text-objects-map)
+(general-create-definer keybinds/evil)
 
 (general-create-definer keybinds/evil-all-states
   :keymaps '(evil-normal-state-map
@@ -33,7 +13,7 @@
 	     evil-motion-state-map
 	     evil-visual-state-map))
 
-(keybinds/evil-normal
+(keybinds/evil evil-normal-state-map
   "L"        '("next arg"        . evil-forward-arg)
   "H"        '("prev arg"        . evil-backward-arg)
 
@@ -45,25 +25,22 @@
   "[ g"      '("prev hunk"       . hydra-git-motion/diff-hl-previous-hunk)
   "] g"      '("next hunk"       . hydra-git-motion/diff-hl-next-hunk))
 
-(keybinds/evil-emacs
+(keybinds/evil evil-emacs-state-map
   "<escape>" '("quit"            . keyboard-quit))
 
-(keybinds/evil-motion
+(keybinds/evil evil-motion-state-map
   "<escape>" '("quit"            . keyboard-quit)
 
   "L"        '("next arg"        . evil-forward-arg)
   "H"        '("prev arg"        . evil-backward-arg))
 
-(keybinds/evil-inner-text-object
+(keybinds/evil evil-inner-text-objects-map
   "a"        '("inner arg"       . evil-inner-arg))
 
-(keybinds/evil-outer-text-object
+(keybinds/evil evil-outer-text-objects-map
   "a"        '("outer arg"       . evil-outer-arg))
 
-(keybinds/evil-all-states
-  "C-w"      '("evil-window"     . evil-window-map))
-
-(keybinds/evil-window
+(keybinds/evil evil-window-map
   "="        '("balance windows" . balance-windows)
   "O"        '("clear windows"   . keybinds/custom--clear-windows)
 
@@ -77,6 +54,9 @@
   "v"        `("vsplit focus"    . ,(keybinds/custom--split-focus-other-window split-window-horizontally))
   "S"        '("ssplit"          . split-window-vertically)
   "s"        `("ssplit focus"    . ,(keybinds/custom--split-focus-other-window split-window-vertically)))
+
+(keybinds/evil-all-states
+  "C-w"      '("evil-window"     . evil-window-map))
 
 (provide 'keybinds-evil)
 
