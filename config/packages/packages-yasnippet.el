@@ -2,19 +2,16 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 (use-package yasnippet
   :ensure t
   :init
-  (setq-default yas-snippet-dirs '("~/.config/emacs-snippets"))
+  (setq-default yas-snippet-dirs
+		`(,(expand-file-name "emacs-snippets" configs/user-config-dir)))
   :config
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets :ensure t :after yasnippet)
-
-
-
 
 (provide 'packages-yasnippet)
 

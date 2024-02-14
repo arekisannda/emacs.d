@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 (use-package i3wm-config-mode :ensure t)
 

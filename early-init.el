@@ -2,10 +2,13 @@
 ;;; Commentary:
 
 ;;; Code:
+
 ;; Prevent package.el loading packages prior to their init-file loading.
 (setq package-enable-at-startup nil)
 (setq load-prefer-newer t)
 (setq gc-cons-threshold (* 1024 1024 100))
+
+(setq configs/user-config-dir (expand-file-name "~/.config"))
 
 (when (getenv-internal "DEBUG")
   (setq init-file-debug t

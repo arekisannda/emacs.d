@@ -2,9 +2,8 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
-(use-package google-translate)
+(use-package google-translate :ensure t)
 
 (use-package mozc :ensure t)
 

@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 (use-package latex
   :demand t

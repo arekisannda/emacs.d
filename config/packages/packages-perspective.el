@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 ;; (use-package perspective
 ;;   :ensure t)

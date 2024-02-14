@@ -2,29 +2,14 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 (require 'keymap)
 (require 'cl-seq)
 (require 'util-helpers)
 
-(defun packages/vertico--sort-directories-first (files)
-  (setq files (vertico-sort-history-length-alpha files))
-  (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
-         (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
-
 (use-package vertico
   :ensure t
   :init
-  (setq savehist-file (expand-file-name "var/savehist" user-emacs-directory))
-  (setq vertico-multiform-commands
-        '((describe-symbol (vertico-sort-function . vertico-sort-alpha))
-          (project-switch-project (vertico-sort-function . packages/vertico--sort-directories-first))
-          (consult-layouts (vertico-sort-function . vertico-sort-alpha))))
-
-  (setq vertico-multiform-categories
-        '((symbol (vertico-sort-function . vertico-sort-alpha))
-          (file (vertico-sort-function . packages/vertico--sort-directories-first))
-          (directories (vertico-sort-function . packages/vertico--sort-directories-first)))))
+  (setq savehist-file (expand-file-name "var/savehist" user-emacs-directory)))
 
 (use-package orderless
   :ensure t
@@ -51,6 +36,29 @@
 (use-package consult-dir :ensure t :after consult)
 
 (use-package affe :ensure t :after consult)
+
+(elpaca-wait)
+
+(defun packages/vertico--sort-directories-first (files)
+  "Sort FILES by directories first."
+  (setq files (vertico-sort-history-length-alpha files))
+  (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
+         (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
+
+(setq vertico-multiform-commands
+      `((find-file (vertico-sort-override-function . vertico-sort-alpha))
+	(project-switch-project (vertico-sort-override-function . packages/vertico--sort-directories-first))
+	(project-kill-buffers (vertico-sort-override-function . packages/vertico--sort-directories-first))
+	(project-find-file (vertico-sort-override-function . packages/vertico--sort-directories-first))
+	(project-find-dir (vertico-sort-override-function . packages/vertico--sort-directories-first))
+	(describe-symbol (vertico-sort-override-function . vertico-sort-alpha))))
+
+(setq vertico-multiform-categories
+      `((file (vertico-sort-override-function . packages/vertico--sort-directories-first))
+	(consult-grep buffer (vertico-buffer-display-action . (display-buffer-same-window)))))
+
+;; Disable preview for consult-grep commands
+(consult-customize consult-ripgrep consult-git-grep consult-grep :preview-key nil)
 
 ;; embark ace-window
 (defvar packages/vertico-embark-prompter-map (make-sparse-keymap)
@@ -122,18 +130,6 @@ Passes on ARGS to `embark-act`"
 (packages/vertico--embark-ace-action switch-to-buffer)
 (packages/vertico--embark-ace-action bookmark-jump)
 
-(setq read-file-name-function #'consult-find-file-with-preview)
-
-(defun consult-find-file-with-preview (prompt &optional dir default mustmatch initial pred)
-  (interactive)
-  (let ((default-directory (or dir default-directory))
-        (minibuffer-completing-file-name t))
-    (consult--read #'read-file-name-internal :state (consult--file-preview)
-                   :prompt prompt
-                   :initial initial
-                   :require-match mustmatch
-                   :predicate pred)))
-
 (defun consult--orderless-regexp-compiler (input type &rest _config)
   (setq input (orderless-pattern-compiler input))
   (cons
@@ -153,9 +149,9 @@ Passes on ARGS to `embark-act`"
 
 (keymap-substitute project-prefix-map #'project-find-regexp #'consult-ripgrep)
 (cl-nsubstitute-if
-  '(consult-ripgrep "Find regexp")
-  (pcase-lambda (`(,cmd _)) (eq cmd #'project-find-regexp))
-  project-switch-commands)
+ '(consult-ripgrep "Find regexp")
+ (pcase-lambda (`(,cmd _)) (eq cmd #'project-find-regexp))
+ project-switch-commands)
 
 (provide 'packages-vertico)
 

@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 (elpaca `(sonokai-theme
           :ensure t

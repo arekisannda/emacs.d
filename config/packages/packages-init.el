@@ -2,8 +2,8 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'packages-manager)
 (require 'packages-base)
-(require 'elpaca)
 (require 'packages-themes)
 (require 'packages-interface)
 (require 'packages-evil)
