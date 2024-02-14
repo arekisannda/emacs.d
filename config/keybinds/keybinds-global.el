@@ -12,21 +12,7 @@
 
 (general-create-definer keybinds/global)
 
-(general-create-definer keybinds/global-help
-  :keymaps 'help-map)
-
-(general-create-definer keybinds/global-minibuffer-local
-  :keymaps 'minibuffer-local-map)
-
-(general-create-definer keybinds/global-veritco
-  :keymaps 'vertico-map)
-
-(general-create-definer keybinds/global-veritco-embark
-  :keymaps 'packages/vertico-embark-prompter-map)
-
-(general-create-definer keybinds/global-embark)
-
-(keybinds/global
+(keybinds/global override
   "C-<left>"  '("focus left"               . evil-window-left)
   "C-<right>" '("focus right"              . evil-window-right)
   "C-<up>"    '("focus up"                 . evil-window-up)
@@ -47,14 +33,13 @@
   "M-\\"      '("ace-window"               . ace-window)
   "M-0"       '("focus treemacs"           . treemacs-select-window))
 
-(keybinds/global-help
+(keybinds/global help-map
   "g"         '("Emacs Docs"               . keybinds/custom--emacs-doc))
 
-(keybinds/global-minibuffer-local
+(keybinds/global minibuffer-local-map
   "<escape>"  '("abort"                    . abort-minibuffers))
 
-(keybinds/global-minibuffer-local
-  :prefix "C-,"
+(keybinds/global minibuffer-local-map :prefix "C-,"
   "C-a"       '("cycle annotators"         . marginalia-cycle)
   "C-r"       '("history"                  . consult-history)
   "C-,"       '("embark-act"               . embark-act)
@@ -62,26 +47,27 @@
   "C-e"       '("embark-export"            . embark-export)
   "C-d"       '("insert dir"               . consult-dir)
   "C-D"       '("goto file"                . consult-dir-jump-file)
-  "C-f"       '("insert file"              . consult-find))
+  "C-f"       '("insert file"              . consult-find)
+  "C-."       '("consult narrow"           . consult-narrow))
 
-(keybinds/global-veritco-embark
+(keybinds/global packages/vertico-embark-prompter-map
  "<escape>"   '("abort"                    . abort-minibuffers)
  "C-<tab>"    '("toggle prompter"          . abort-recursive-edit))
 
-(keybinds/global-veritco
+(keybinds/global vertico-map
   "<escape>"  '("abort"                    . abort-minibuffers)
   "C-<tab>"   '("toggle prompter"          . packages/vertico-embark-act-with-completing-read))
 
-(keybinds/global-embark embark-file-map
+(keybinds/global embark-file-map
   "o"         '("embark-ace file"          . packages/vertico--embark-ace-find-file))
 
-(keybinds/global-embark embark-buffer-map
+(keybinds/global embark-buffer-map
   "o"         '("embark-ace buffer"        . packages/vertico--embark-ace-switch-to-buffer))
 
-(keybinds/global-embark embark-bookmark-map
+(keybinds/global embark-bookmark-map
   "o"         '("embark-ace bookmark"      . packages/vertico--embark-ace-bookmark-jump))
 
-(keybinds/global-embark embark-general-map
+(keybinds/global embark-general-map
   "M-r"       '("project find and replace" . project-query-replace-regexp))
 
 (provide 'keybinds-global)
