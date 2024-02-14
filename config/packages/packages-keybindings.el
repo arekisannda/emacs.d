@@ -2,11 +2,11 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 (use-package general :ensure t)
 
-(use-package hydra :ensure t
+(use-package hydra
+  :ensure t
   :init (setq-default hydra-key-doc-function nil))
 
 (provide 'packages-keybindings)

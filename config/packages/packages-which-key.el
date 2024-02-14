@@ -3,7 +3,7 @@
 
 ;;; Code:
 
-(use-package which-key :ensure t :after packages-keybindings)
+(use-package which-key :ensure t)
 
 (use-package which-key-posframe :ensure t :after which-key)
 

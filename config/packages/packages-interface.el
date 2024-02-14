@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 (use-package nerd-icons :ensure t)
 
@@ -10,7 +9,7 @@
 
 (use-package ranger :ensure t)
 
-(use-package rainbow-mode)
+(use-package rainbow-mode :ensure t)
 
 (use-package rainbow-delimiters :ensure t)
 
@@ -27,6 +26,7 @@
   :elpaca (:type git :host github :repo "arekisannda/diff-hl" :branch "master")
   :init
   ;; clear diff-hl default keybinds
+  (setq diff-hl-show-staged-changes nil)
   (setq diff-hl-show-hunk-map (make-sparse-keymap))
   (setq diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
   (setq diff-hl-side-margin-width 3)

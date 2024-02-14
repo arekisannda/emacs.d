@@ -2,9 +2,8 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
-(use-package org-bullets :ensure t :after org)
+(use-package org-bullets :ensure t)
 
 (provide 'packages-org-mode)
 

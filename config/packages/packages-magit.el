@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 (require 'util-helpers)
 
 ;; Unload seq before continuing the elpaca build,

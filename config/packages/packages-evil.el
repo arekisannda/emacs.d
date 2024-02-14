@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'elpaca)
 
 (use-package evil
   :ensure t
@@ -14,23 +13,11 @@
         evil-undo-system 'undo-fu
         evil-want-minibuffer nil))
 
-(use-package evil-collection
-  :ensure t
-  :after evil
-  (setq evil-collection-mode-list
-        '(dashboard
-          info
-          dired
-          ibuffer
-          magit
-          edebug
-          org
-          org-roam
-          ediff)))
+(use-package evil-collection :ensure t :after evil)
 
-(use-package evil-nerd-commenter :ensure t)
+(use-package evil-nerd-commenter :ensure t :after evil)
 
-(use-package evil-args :ensure t)
+(use-package evil-args :ensure t :after evil)
 
 (use-package evil-snipe
   :ensure t
@@ -58,6 +45,7 @@
         evil-mc-key-map (make-sparse-keymap)))
 
 (use-package embrace
+  :ensure t
   :init
   (setq embrace-show-help-p t))
 
