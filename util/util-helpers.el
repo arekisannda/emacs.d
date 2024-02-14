@@ -14,6 +14,16 @@
   (setq alist (assoc-delete-all element alist))
   (setq alist (cons (cons element value) alist)))
 
+(defun util/alist-contains-value (alist value)
+  "Check if ALIST contain VALUE."
+  (let ((found nil))
+    (catch 'found
+	(dolist (pair alist)
+	(when (equal (cdr pair) value)
+	  (setq found t)
+	  (throw 'found nil))))
+    found))
+
 (defun util/with-minibuffer-keymap (keymap)
   "Create function with minibuffer KEYMAP."
   (lambda (fn &rest args)
