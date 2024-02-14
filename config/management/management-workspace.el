@@ -90,12 +90,15 @@
 
   (add-hook 'persp-activated-functions
             (lambda (_) ; set frame title
-              (let ((current (safe-persp-name (get-current-persp))))
-                (set-frame-name (format "%s" current)))))
+              (let ((current (safe-persp-name (get-current-persp)))
+		    (debug-prefix (if init-file-debug "DEBUG: " "")))
+                (set-frame-name (format "%s%s" debug-prefix current)))))
 
   (add-hook 'persp-renamed-functions
             (lambda (_ _ new) ; set frame title
-              (set-frame-name (format "%s" new)))))
+              (let ((debug-prefix (if init-file-debug "DEBUG: " "")))
+                (set-frame-name (format "%s%s" debug-prefix new)))))
+  )
 
 (defun management/workspace-setup ()
   "Set up workspace configurations."
