@@ -1,23 +1,37 @@
-;;; tools-org.el --- Emacs Org-mode/LaTeX Configurations -*- lexical-binding: t; -*-
+;;; lang-org.el --- Org-mode/LaTeX Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
 (require 'org)
 (require 'packages-init)
 (require 'ui-fonts)
+(require 'lang-utils)
 
-(defun tools/org--org-mode-setup ()
+(defun lang/org--org-mode-setup ()
   "Setup to run for `org-mode` major modes."
   (mixed-pitch-mode)
-  (org-bullets-mode))
+  (org-bullets-mode)
+  (display-line-numbers-mode 1)
 
-(defun tools/org--latex-mode-setup ()
+  (lang/utils--add-to-capf-list (list #'cape-dabbrev
+                                      #'cape-file
+                                      #'cape-tex
+                                      #'cape-elisp-block
+                                      #'cape-keyword))
+  )
+
+(defun lang/org--latex-mode-setup ()
   "Setup to run for latex major modes."
-  (setq truncate-lines nil)
-  (visual-line-mode 1)
-  (latex-preview-pane-mode))
+  ;; (latex-preview-pane-mode)
+  (corfu-candidate-overlay-mode 1)
+  (display-line-numbers-mode 1)
 
-(defun tools/org--setup ()
+  (lang/utils--add-to-capf-list (list #'cape-dabbrev
+                                      #'cape-file
+                                      #'cape-tex
+                                      #'cape-keyword)))
+
+(defun lang/org--setup ()
   "Set up `org-mode` configurations."
   (setq-default  org-startup-with-inline-images t
                  org-startup-indented t
@@ -46,19 +60,22 @@
                           '(("^ *\\([-]\\) "
                              (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "▪"))))))
 
-  (add-hook 'org-mode-hook #'tools/org--org-mode-setup))
+  (add-hook 'org-mode-hook #'lang/org--org-mode-setup))
 
-(defun tools/org--latex-setup ()
+(defun lang/org--latex-setup ()
   "Set up latex configurations."
-  (add-hook 'latex-mode-hook #'tools/org--latex-mode-setup))
+  (add-hook 'latex-mode-hook #'lang/org--latex-mode-setup)
+  (add-hook 'TeX-mode-hook #'lang/org--latex-mode-setup)
+  (add-hook 'LaTeX-mode-hook #'lang/org--latex-mode-setup)
+  )
 
-(defun tools/org-setup ()
+(defun lang/org-setup ()
   "Set up org configurations."
-  (tools/org--setup)
-  (tools/org--latex-setup))
+  (lang/org--setup)
+  (lang/org--latex-setup))
 
-(tools/org-setup)
+(lang/org-setup)
 
-(provide 'tools-org)
+(provide 'lang-org)
 
-;;; tools-org.el ends here
+;;; lang-org.el ends here

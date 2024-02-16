@@ -1,24 +1,22 @@
-;;; editor-base.el --- Emacs Base Editor Configurations -*- lexical-binding: t; -*-
+;;; ui-base-editor.el --- Emacs Base Editor Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
 (require 'packages-init)
 
-(require 'editor-input)
-
-(defvar editor/base--read-only-prefixes-list
+(defvar ui/base-editor--read-only-prefixes-list
   (list (expand-file-name elpaca-directory)
         (expand-file-name package-user-dir))
   "List of read-only file prefixes.")
 
-(defun editor/base--read-only-by-prefix ()
-  "Enable `read-only-mode` if buffer includes one of `editor/base--read-only-prefixes-list`"
+(defun ui/base-editor--read-only-by-prefix ()
+  "Enable `read-only-mode` if buffer includes one of `ui/base-editor--read-only-prefixes-list`"
   (when (and buffer-file-name
-             (or (cl-loop for prefix in editor/base--read-only-prefixes-list
+             (or (cl-loop for prefix in ui/base-editor--read-only-prefixes-list
                           thereis (string-prefix-p prefix buffer-file-name))))
     (read-only-mode 1)))
 
-(defun editor/base--evil-mode-setup ()
+(defun ui/base-editor--evil-mode-setup ()
   "Set up evil-mode packages."
   (setq evil-collection-mode-list
         '(dashboard
@@ -47,34 +45,38 @@
   (evil-lion-mode 1)
   (global-evil-mc-mode t))
 
-(defun editor/base--visual-line-mode-setup ()
+(defun ui/base-editor--visual-line-mode-setup ()
   "Setup to run for non `prog-mode` major modes."
   (setq truncate-lines nil)
   (visual-line-mode 1))
 
-(defun editor/base--general-buffer-setup ()
-  "Set up general buffer configurations."
-  (add-hook 'before-save-hook #'delete-trailing-whitespace)
-  (add-hook 'find-file-hook #'editor/base--read-only-by-prefix)
-  (add-hook 'help-mode-hook #'editor/base--visual-line-mode-setup))
+(defun ui/base-editor--exec-on-save ()
+  "Operations to be executed on buffer save."
+  (delete-trailing-whitespace)
+  (untabify (point-min) (point-max)))
 
-(defun editor/base--editorconfig-setup ()
+(defun ui/base-editor--general-buffer-setup ()
+  "Set up general buffer configurations."
+  (add-hook 'before-save-hook #'ui/base-editor--exec-on-save)
+  (add-hook 'find-file-hook #'ui/base-editor--read-only-by-prefix)
+  (add-hook 'help-mode-hook #'ui/base-editor--visual-line-mode-setup))
+
+(defun ui/base-editor--editorconfig-setup ()
   "Set up editorconfig tool configurations."
   (setq-default editorconfig-lisp-use-default-indent t)
 
   (editorconfig-mode 1))
 
-(defun editor/base-setup ()
+(defun ui/base-editor-setup ()
   "Set up editor configurations."
   (setq-default display-line-numbers-type 'relative)
+  (setq-default hscroll-step 5)
+  (setq-default scroll-step 5)
 
-  (editor/base--general-buffer-setup)
-  (editor/base--editorconfig-setup)
-  (editor/base--evil-mode-setup)
-  (editor/input--set-english-input-method))
+  (ui/base-editor--general-buffer-setup)
+  (ui/base-editor--editorconfig-setup)
+  (ui/base-editor--evil-mode-setup))
 
-(editor/base-setup)
+(provide 'ui-base-editor)
 
-(provide 'editor-base)
-
-;;; editor-base.el ends here
+;;; ui-base-editor.el ends here

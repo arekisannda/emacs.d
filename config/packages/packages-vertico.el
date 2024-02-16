@@ -6,8 +6,7 @@
 (require 'cl-seq)
 (require 'util-helpers)
 
-(use-package vertico
-  :ensure t
+(use-package vertico :ensure t
   :init
   (setq savehist-file (expand-file-name "var/savehist" user-emacs-directory)))
 
@@ -20,8 +19,7 @@
 
 (use-package marginalia :ensure t)
 
-(use-package consult
-  :ensure t
+(use-package consult :ensure t
   :init
   (setq consult-narrow-key "<"
         register-preview-delay 0.5
@@ -38,27 +36,6 @@
 (use-package affe :ensure t :after consult)
 
 (elpaca-wait)
-
-(defun packages/vertico--sort-directories-first (files)
-  "Sort FILES by directories first."
-  (setq files (vertico-sort-history-length-alpha files))
-  (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
-         (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
-
-(setq vertico-multiform-commands
-      `((find-file (vertico-sort-override-function . vertico-sort-alpha))
-	(project-switch-project (vertico-sort-override-function . packages/vertico--sort-directories-first))
-	(project-kill-buffers (vertico-sort-override-function . packages/vertico--sort-directories-first))
-	(project-find-file (vertico-sort-override-function . packages/vertico--sort-directories-first))
-	(project-find-dir (vertico-sort-override-function . packages/vertico--sort-directories-first))
-	(describe-symbol (vertico-sort-override-function . vertico-sort-alpha))))
-
-(setq vertico-multiform-categories
-      `((file (vertico-sort-override-function . packages/vertico--sort-directories-first))
-	(consult-grep buffer (vertico-buffer-display-action . (display-buffer-same-window)))))
-
-;; Disable preview for consult-grep commands
-(consult-customize consult-ripgrep consult-git-grep consult-grep :preview-key nil)
 
 ;; embark ace-window
 (defvar packages/vertico-embark-prompter-map (make-sparse-keymap)

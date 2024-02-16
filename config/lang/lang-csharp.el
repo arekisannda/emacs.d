@@ -14,10 +14,8 @@
   (add-hook 'csharp-mode #'lang/csharp--setup)
   (add-hook 'csharp-ts-mode #'lang/csharp--setup)
 
-  (setq mode-remap-alist
-        '((csharp-mode . csharp-ts-mode)))
-
-  (lang/utils--remap-major-mode mode-remap-alist))
+  (lang/utils--remap-major-mode
+   '((csharp-mode . csharp-ts-mode))))
 
 (lang/csharp-setup)
 

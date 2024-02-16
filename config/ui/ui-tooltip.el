@@ -8,7 +8,6 @@
   "Use posframe."
   (add-hook 'flycheck-mode-hook 'flycheck-posframe-mode)
   (ace-window-posframe-mode 1)
-  (company-posframe-mode 1)
 
   (require 'mozc-cand-posframe)
   (setq mozc-candidate-style 'posframe))
@@ -28,6 +27,15 @@
       (posframe (ui/tooltip--enable-posframe))
       (popup (ui/tooltip--enable-popup))
       (otherwise (message "Unable to configure popup")))))
+
+(defun ui/tooltip-setup ()
+  "Set up tooltip configurations."
+  (global-flycheck-mode 1)
+
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lambda (frame) (with-selected-frame frame (ui/tooltip--load-deferred-configurations))))
+    (ui/tooltip--load-deferred-configurations)))
 
 (provide 'ui-tooltip)
 

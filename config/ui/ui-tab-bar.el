@@ -95,6 +95,16 @@
   (add-hook 'management/workspace-project-update-hook #'ui/tab-bar--project-bar-update)
   (add-hook 'management/workspace-project-clear-hook #'ui/tab-bar--project-bar-update))
 
+(defun ui/tab-bar-setup ()
+  "Set up tab-bar configurations."
+  (ui/tab-bar--persp-mode-setup)
+  (ui/tab-bar-project-bar-mode)
+
+  (setq-default tab-bar-close-button-show nil)
+  (setq-default tab-bar-new-button-show nil)
+  (setq-default tab-bar-auto-width-max '(150 20))
+  (setq-default tab-bar-auto-width-min '(20 2)))
+
 (provide 'ui-tab-bar)
 
 ;;; ui-tab-bar.el ends here

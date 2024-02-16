@@ -15,12 +15,10 @@
   (add-hook 'c-ts-mode-hook #'lang/clang--setup)
   (add-hook 'c-or-c++-ts-mode-hook #'lang/clang--setup)
 
-  (setq mode-remap-alist
-        '((c-mode . c-ts-mode)
-          (c++-mode . c++-ts-mode)
-          (c-or-c++-mode . c-or-c++-ts-mode)))
-
-  (lang/utils--remap-major-mode mode-remap-alist))
+  (lang/utils--remap-major-mode
+   '((c-mode . c-ts-mode)
+     (c++-mode . c++-ts-mode)
+     (c-or-c++-mode . c-or-c++-ts-mode))))
 
 (lang/clang-setup)
 

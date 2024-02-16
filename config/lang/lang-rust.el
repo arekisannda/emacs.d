@@ -13,10 +13,8 @@
   "Configurations for rust."
   (add-hook 'rust-ts-mode-hook #'lang/rust--setup)
 
-  (setq mode-auto-alist
-        '(("\\.rs\\'" . rust-ts-mode)))
-
-  (lang/utils--set-auto-mode mode-auto-alist))
+  (lang/utils--set-auto-mode
+   '(("\\.rs\\'" . rust-ts-mode))))
 
 (lang/rust-setup)
 

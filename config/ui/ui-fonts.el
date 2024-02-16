@@ -4,6 +4,8 @@
 ;;; Code:
 (require 'packages-init)
 
+(require 'util-helpers)
+
 (defvar ui/fonts-fixed-pitch-face "FiraMono Nerd Font Mono")
 (defvar ui/fonts-variable-pitch-face "Fira Sans")
 (defvar ui/fonts-fixed-pitch-size 90)
@@ -13,6 +15,7 @@
 
 (defun ui/fonts--custom-faces ()
   "Set up custom font configurations."
+
   (set-face-attribute 'default nil
                       :font ui/fonts-fixed-pitch-face
                       :height ui/fonts-fixed-pitch-size
@@ -48,6 +51,17 @@
                       :weight 'light
                       :box '(:line-width (5 . 5) :style flat-button)
                       :underline '(:inherit tab-bar-tab :style line :position 0)))
+
+(defun ui/fonts-setup ()
+  "Set up fonts configurations."
+  (util/dedup-add-to-list
+   'default-frame-alist
+   `(font . ,(concat ui/fonts-fixed-pitch-face
+                     (format "-%d" (/ ui/fonts-fixed-pitch-size 10)))))
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lambda (frame) (with-selected-frame frame (ui/fonts--custom-faces))))
+    (ui/fonts--custom-faces)))
 
 (provide 'ui-fonts)
 

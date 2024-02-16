@@ -18,10 +18,8 @@
   "Configurations for go."
   (add-hook 'go-ts-mode-hook #'lang/go--setup)
 
-  (setq mode-auto-alist
-        '(("\\.go\\'" . go-ts-mode)))
-
-  (lang/utils--set-auto-mode mode-auto-alist))
+  (lang/utils--set-auto-mode
+   '(("\\.go\\'" . go-ts-mode))))
 
 (lang/go-setup)
 

@@ -18,10 +18,10 @@
   "Check if ALIST contain VALUE."
   (let ((found nil))
     (catch 'found
-	(dolist (pair alist)
-	(when (equal (cdr pair) value)
-	  (setq found t)
-	  (throw 'found nil))))
+      (dolist (pair alist)
+        (when (equal (cdr pair) value)
+          (setq found t)
+          (throw 'found nil))))
     found))
 
 (defun util/with-minibuffer-keymap (keymap)
@@ -43,8 +43,7 @@
   (save-excursion
     (if hs-minor-mode
         (hs-show-all))
-    (mark-whole-buffer)
-    (indent-region (region-beginning) (region-end))))
+    (indent-region (point-min) (point-max))))
 
 (provide 'util-helpers)
 

@@ -32,7 +32,7 @@
   "C-h" '("find history" . consult-history)
   "C-i" '("find info"    . consult-info))
 
-(keybinds/search org-mode-map
+(keybinds/search :major-mode 'org-mode
   "h"   '("find heading" . consult-org-heading))
 
 (provide 'keybinds-search)

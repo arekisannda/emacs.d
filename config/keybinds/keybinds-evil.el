@@ -9,9 +9,9 @@
 
 (general-create-definer keybinds/evil-all-states
   :keymaps '(evil-normal-state-map
-	     evil-emacs-state-map
-	     evil-motion-state-map
-	     evil-visual-state-map))
+             evil-emacs-state-map
+             evil-motion-state-map
+             evil-visual-state-map))
 
 (keybinds/evil evil-normal-state-map
   "L"        '("next arg"        . evil-forward-arg)
