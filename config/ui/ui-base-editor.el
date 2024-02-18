@@ -10,7 +10,7 @@
   "List of read-only file prefixes.")
 
 (defun ui/base-editor--read-only-by-prefix ()
-  "Enable `read-only-mode` if buffer includes one of `ui/base-editor--read-only-prefixes-list`"
+  "Enable `read-only-mode` if buffer includes one of `ui/base-editor--read-only-prefixes-list`."
   (when (and buffer-file-name
              (or (cl-loop for prefix in ui/base-editor--read-only-prefixes-list
                           thereis (string-prefix-p prefix buffer-file-name))))
@@ -52,6 +52,7 @@
 
 (defun ui/base-editor--exec-on-save ()
   "Operations to be executed on buffer save."
+  (util/indent-buffer)
   (delete-trailing-whitespace)
   (untabify (point-min) (point-max)))
 

@@ -19,10 +19,15 @@
   "Set up corfu configurations."
   (setq-default corfu-cycle nil
                 corfu-auto nil
+                corfu-on-exact-match 'show
                 corfu-popupinfo-delay (cons nil 0.5)
-                corfu-min-width 40)
-  (setq completion-cycle-threshold nil)
-  (setq tab-always-indent 'complete)
+                corfu-min-width 40
+                corfu-max-width 100
+                corfu-left-margin-width 1.0
+                corfu-right-margin-width 1.0
+                corfu-scroll-margin 2
+                corfu-bar-width 0.5)
+  (setq-default completion-cycle-threshold nil)
 
   (global-corfu-mode 1)
   (corfu-popupinfo-mode 1))

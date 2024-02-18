@@ -19,6 +19,13 @@
 
 (use-package epkg :ensure t :after llama)
 
+(use-package general :ensure t)
+
+(use-package hydra :ensure t
+  :init (setq-default hydra-key-doc-function nil))
+
+(elpaca-wait)
+
 (provide 'packages-base)
 
 ;;; packages-base.el ends here

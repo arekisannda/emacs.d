@@ -45,15 +45,17 @@
 (defun ui/config-setup ()
   "Set up Emacs UI configurations."
   (ui/config--feature-disable)
+
+  (ui/base-editor-setup)
+  (ui/code-editor-setup)
+  (ui/minibuffer-setup)
+  (ui/completion-setup)
+
   (ui/config--theme-setup)
   (ui/fonts-setup)
   (ui/tab-bar-setup)
   (ui/tooltip-setup)
   (ui/mode-line-setup)
-  (ui/minibuffer-setup)
-  (ui/completion-setup)
-  (ui/base-editor-setup)
-  (ui/code-editor-setup)
   (ui/extra-setup))
 
 (ui/config-setup)

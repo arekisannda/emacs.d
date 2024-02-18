@@ -4,7 +4,6 @@
 ;;; Code:
 (require 'packages-init)
 
-
 (defun lang/elisp--setup ()
   "Setup to run for `emacs-lisp-mode` major-modes."
   (corfu-candidate-overlay-mode 1)

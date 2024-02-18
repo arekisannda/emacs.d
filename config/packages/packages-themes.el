@@ -3,12 +3,8 @@
 
 ;;; Code:
 
-(elpaca `(sonokai-theme
-          :ensure t
-          :host ,(unless init-file-debug 'github)
-          :repo ,(if init-file-debug
-                     "~/Code/sonokai-emacs"
-                   "arekisannda/sonokai-emacs")))
+(use-package sonokai-theme :ensure t
+  :elpaca (:host github :repo "arekisannda/sonokai-emacs"))
 
 (provide 'packages-themes)
 

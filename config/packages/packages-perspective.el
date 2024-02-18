@@ -17,8 +17,7 @@
                 persp-remove-buffers-from-nil-persp-behaviour nil
                 persp-autokill-buffer-on-remove 'kill
                 persp-kill-foreign-buffer-behaviour 'kill
-                persp-nil-name "system"
-                persp-inhibit-switch-for '("system")))
+                persp-nil-name "main"))
 
 (provide 'packages-perspective)
 

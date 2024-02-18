@@ -27,9 +27,15 @@
   "Set up Code folding."
   (setq hs-set-up-overlay ui/code-editor--overlay-fold-function))
 
+(defun ui/code-editor--rainbow-mode-setup ()
+  "Setup to run for `rainbow-mode`."
+  (setq-local rainbow-r-colors-alist '())
+  (setq-local rainbow-html-colors-alist '()))
+
 (defun ui/code-editor-setup ()
   "Set up code configurations."
   (ui/code-editor--fold-setup)
+  (add-hook 'rainbow-mode-hook #'ui/code-editor--rainbow-mode-setup)
 
   (require 'lang-generic)
   (require 'lang-elisp)

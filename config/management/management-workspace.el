@@ -81,21 +81,23 @@
     (add-hook 'window-setup-hook
               #'(lambda () (unless persp-mode (persp-mode 1)))))
 
-  (add-hook 'persp-mode-hook #'(lambda ()
-                                 (persp-hide "system")
-                                 (persp-switch "main")))
-
   (add-hook 'persp-mode-hook #'management/workspace--persp-mode-project-setup)
   (add-hook 'persp-mode-hook #'management/workspace--persp-mode-tab-bar-setup)
 
+  (add-hook 'persp-mode-hook
+            (lambda () ; set frame title
+              (let ((current (safe-persp-name (get-current-persp)))
+                    (debug-prefix (if init-file-debug "DEBUG: " "")))
+                (set-frame-name (format "%s%s" debug-prefix current)))))
+
   (add-hook 'persp-activated-functions
-            (lambda (_) ; set frame title
+            #'(lambda (_) ; set frame title
               (let ((current (safe-persp-name (get-current-persp)))
                     (debug-prefix (if init-file-debug "DEBUG: " "")))
                 (set-frame-name (format "%s%s" debug-prefix current)))))
 
   (add-hook 'persp-renamed-functions
-            (lambda (_ _ new) ; set frame title
+            #'(lambda (_ _ new) ; set frame title
               (let ((debug-prefix (if init-file-debug "DEBUG: " "")))
                 (set-frame-name (format "%s%s" debug-prefix new)))))
   )

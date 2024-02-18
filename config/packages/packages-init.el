@@ -3,7 +3,6 @@
 
 ;;; Code:
 (require 'packages-manager)
-(require 'packages-keybindings)
 (require 'packages-base)
 (require 'packages-themes)
 (require 'packages-interface)

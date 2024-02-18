@@ -19,13 +19,16 @@
 (general-create-definer keybinds/completion-info
   :prefix-command 'keybinds/completion--info-command)
 
+(general-create-definer keybinds/completion-minibuffer
+  :keymaps 'minibuffer-local-map)
+
 (keybinds/completion-active
   [remap next-line]                          #'corfu-next
   [remap previous-line]                      #'corfu-previous
-  [remap keybinds/custom--scroll-other-down] #'corfu-popupinfo-scroll-down
-  [remap keybinds/custom--scroll-other-up]   #'corfu-popupinfo-scroll-up
-  [remap scroll-down-command]                #'corfu-scroll-down
-  [remap scroll-up-command]                  #'corfu-scroll-up
+  [remap keybinds/custom--scroll-other-up]   #'corfu-popupinfo-scroll-down
+  [remap keybinds/custom--scroll-other-down] #'corfu-popupinfo-scroll-up
+  [remap keybinds/custom--scroll-up]         #'corfu-scroll-down
+  [remap keybinds/custom--scroll-down]       #'corfu-scroll-up
   [remap beginning-of-buffer]                #'corfu-first
   [remap end-of-buffer]                      #'corfu-last
   [remap move-beginning-of-line]             #'corfu-prompt-beginning
@@ -56,8 +59,8 @@
   "C-,"      '("complete overlay" . corfu-candidate-overlay-complete-at-point)
   "C-."      '("capf"             . completion-at-point))
 
-(keybinds/completion :major-modes 'TeX-mode
-  "C-y"      `("capf math"        . cape-math-symbols-latex))
+(keybinds/completion-minibuffer :prefix "C-."
+  "C-."      '("capf"             . completion-at-point))
 
 (provide 'keybinds-completion)
 
