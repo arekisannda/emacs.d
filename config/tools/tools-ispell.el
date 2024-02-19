@@ -5,6 +5,7 @@
 (require 'ispell)
 
 (defvar tools/ispell--check-backend nil)
+
 (setq-default ispell-complete-word-dict
               (cond ((file-readable-p "/usr/dict/web2") "/usr/dict/web2")
                     ((file-readable-p "/usr/share/dict/web2") "/usr/share/dict/web2")
@@ -41,7 +42,7 @@
 (cond ((executable-find "hunspell") (tools/ispell--load-hunspell-configs))
       ((executable-find "aspell") (tools/ispell--load-aspell-configs)))
 
-(defun ispell-display-buffer (buffer)
+(defun tools/ispell-display-buffer (buffer)
   "Show BUFFER in new window below selected one.
 Also position fit window to BUFFER and select it."
   (let* ((unsplittable
@@ -77,6 +78,8 @@ Also position fit window to BUFFER and select it."
       (set-window-buffer window buffer)
       (set-window-point window (point-min))
       (fit-window-to-buffer window nil nil nil nil t))))
+
+(advice-add #'ispell-display-buffer :override #'tools/ispell-display-buffer)
 
 (provide 'tools-ispell)
 

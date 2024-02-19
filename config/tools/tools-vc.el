@@ -9,6 +9,8 @@
   (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
 
+(tools/vc--diff-hl-magit-setup)
+
 (provide 'tools-vc)
 
 ;;; tools-vc.el ends here

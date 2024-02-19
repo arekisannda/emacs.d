@@ -24,12 +24,12 @@
 
 (require 'tools-treesit)
 (require 'tools-ispell)
-(require 'tools-org)
 (require 'tools-diff)
+(require 'tools-vc)
+(require 'tools-input-method)
 
 (require 'management-init)
 (require 'ui-init)
-(require 'editor-init)
 (require 'keybinds-init)
 
 (provide 'config/init)

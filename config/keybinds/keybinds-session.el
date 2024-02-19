@@ -6,7 +6,7 @@
 (require 'keybinds-custom)
 
 (general-define-key
- :states        '(normal insert visual emacs motion)
+ :states        '(normal visual emacs motion)
  :prefix-map    'keybinds/session--map
  :prefix        "C-\\"
  :global-prefix "C-\\")
@@ -84,8 +84,9 @@
   "u"    '("undo close tab"      . tab-bar-undo-close-tab))
 
 (keybinds/session-mode
+  "!"    '("normal-mode"         . normal-mode)
+  "@"    '("fundamental-mode"    . fundamental-mode)
   "I"    '("image-mode"          . image-mode)
-  "f"    '("fundamental-mode"    . fundamental-mode)
   "r"    '("rainbow-mode"        . rainbow-mode))
 
 (keybinds/session-debugger

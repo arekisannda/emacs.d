@@ -32,32 +32,26 @@
   (add-hook 'bash-ts-mode #'lang/generic--sh-setup)
   (add-hook 'sh-mode #'lang/generic--sh-setup)
 
-  (setq mode-remap-alist
-        '((sh-mode . bash-ts-mode)))
+  (lang/utils--remap-major-mode
+   '((sh-mode . bash-ts-mode)))
 
-  (setq mode-auto-alist
-        '(("Dockerfile\\'" . dockerfile-ts-mode)
-          ("\\.dockerfile\\'" . dockerfile-ts-mode)))
-
-  (lang/utils--remap-major-mode mode-remap-alist)
-  (lang/utils--set-auto-mode mode-auto-alist))
+  (lang/utils--set-auto-mode
+   '(("Dockerfile\\'" . dockerfile-ts-mode)
+     ("\\.dockerfile\\'" . dockerfile-ts-mode))))
 
 (defun lang/generic-conf-mode-setup ()
   "Configurations for `conf-mode`."
   (add-hook 'i3wm-config-mode-hook #'lang/generic--conf-setup)
   (add-hook 'conf-mode-hook #'lang/generic--conf-setup)
 
-  (setq mode-remap-alist
-        '((css-mode . css-ts-mode)
-          (js-json-mode . json-ts-mode)))
+  (lang/utils--remap-major-mode
+   '((css-mode . css-ts-mode)
+     (js-json-mode . json-ts-mode)))
 
-  (setq mode-auto-alist
-        '(("\\.ya?ml\\'" . yaml-ts-mode)
-          ("\\.sway\\'" . i3wm-config-mode)
-          ("\\.jsonc\\'" . json-ts-mode)))
-
-  (lang/utils--remap-major-mode mode-remap-alist)
-  (lang/utils--set-auto-mode mode-auto-alist))
+  (lang/utils--set-auto-mode
+   '(("\\.ya?ml\\'" . yaml-ts-mode)
+     ("\\.sway\\'" . i3wm-config-mode)
+     ("\\.jsonc\\'" . json-ts-mode))))
 
 (lang/generic-conf-mode-setup)
 (lang/generic-prog-mode-setup)

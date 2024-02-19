@@ -3,8 +3,7 @@
 
 ;;; Code:
 
-(use-package latex
-  :demand t
+(use-package latex :demand t
   :elpaca
   (auctex :version (lambda (_) (require 'tex-site) AUCTeX-version)
           :files ("*.el" "*.info" "dir" "doc" "etc" "images" "latex" "style")

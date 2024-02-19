@@ -3,8 +3,7 @@
 
 ;;; Code:
 
-(use-package flycheck
-  :ensure t
+(use-package flycheck :ensure t
   :init
   (setq flycheck-indication-mode nil
         flycheck-mode-line nil

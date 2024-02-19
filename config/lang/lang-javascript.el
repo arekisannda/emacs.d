@@ -7,10 +7,8 @@
 (defun lang/javascript-setup ()
   "Configurations for javascript."
 
-  (setq mode-remap-alist
-        '((javascript-mode . js-ts-mode)))
-
-  (lang/utils--remap-major-mode mode-remap-alist))
+  (lang/utils--remap-major-mode
+   '((javascript-mode . js-ts-mode))))
 
 (lang/javascript-setup)
 

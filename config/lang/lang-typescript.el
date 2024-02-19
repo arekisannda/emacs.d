@@ -1,4 +1,4 @@
-;;; lang-typescript.el --- Typescript Configurations -*- lexical-binding: t; -*-
+;;; lang-typescript.el --- typescript configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
@@ -6,11 +6,10 @@
 
 (defun lang/typescript-setup ()
   "Configurations for typescript."
-  (setq mode-auto-alist
-        '(("\\.tsx\\'" . tsx-ts-mode)
-          ("\\.ts\\'" . typescript-ts-mode)))
 
-  (lang/utils--set-auto-mode mode-auto-alist))
+  (lang/utils--set-auto-mode
+   '(("\\.tsx\\'" . tsx-ts-mode)
+     ("\\.ts\\'" . typescript-ts-mode))))
 
 (lang/typescript-setup)
 

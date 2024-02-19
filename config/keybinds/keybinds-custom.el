@@ -61,6 +61,49 @@
   (tab-bar-new-tab)
   (dashboard-open))
 
+(defvar keybinds/custom--scroll-lines 5)
+(defvar keybinds/custom--hscroll-lines 5)
+
+(defun keybinds/custom--scroll-left ()
+  "Scroll window left."
+  (interactive)
+  (evil-scroll-column-left keybinds/custom--hscroll-lines))
+
+(defun keybinds/custom--scroll-right ()
+  "Scroll window right."
+  (interactive)
+  (evil-scroll-column-right keybinds/custom--hscroll-lines))
+
+(defun keybinds/custom--scroll-down ()
+  "Scroll window down."
+  (interactive)
+  (evil-scroll-line-down keybinds/custom--scroll-lines))
+
+(defun keybinds/custom--scroll-up ()
+  "Scroll window up."
+  (interactive)
+  (evil-scroll-line-up keybinds/custom--scroll-lines))
+
+(defun keybinds/custom--scroll-other-down ()
+  "Scroll other window down."
+  (interactive)
+  (scroll-other-window keybinds/custom--scroll-lines))
+
+(defun keybinds/custom--scroll-other-up ()
+  "Scroll other window up."
+  (interactive)
+  (scroll-other-window-down keybinds/custom--scroll-lines))
+
+(defun keybinds/custom--minibuffer-scroll-other-down ()
+  "Scroll other window down."
+  (interactive)
+  (minibuffer-scroll-other-window keybinds/custom--scroll-lines))
+
+(defun keybinds/custom--minibuffer-scroll-other-up ()
+  "Scroll other window up."
+  (interactive)
+  (minibuffer-scroll-other-window-down keybinds/custom--scroll-lines))
+
 (eval-when-compile
   (defmacro keybinds/custom--one-window-tab-bar-close-tab (fn)
     `(lambda ()
@@ -74,23 +117,6 @@
        (interactive)
        (funcall #',splitfn)
        (other-window 1)))
-
-  (defmacro keybinds/custom--scroll-column (n)
-    `(lambda ()
-       (interactive)
-       (evil-scroll-column-right ,n)))
-
-  (defmacro keybinds/custom--scroll-line (n)
-    `(lambda ()
-       (interactive)
-       (evil-scroll-line-down ,n)))
-
-  (defmacro keybinds/custom--scroll-other-window (n)
-    `(lambda ()
-       (interactive)
-       (if (minibuffer-window-active-p (selected-window))
-	   (minibuffer-scroll-other-window ,n)
-	 (scroll-other-window ,n))))
   )
 
 (provide 'keybinds-custom)

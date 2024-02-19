@@ -14,10 +14,8 @@
   "Configurations for python."
   (add-hook 'python-ts-mode-hook #'lang/python-setup)
 
-  (setq mode-remap-alist
-        '((python-mode . python-ts-mode)))
-
-  (lang/utils--remap-major-mode mode-remap-alist))
+  (lang/utils--remap-major-mode
+   '((python-mode . python-ts-mode))))
 
 (lang/python-setup)
 

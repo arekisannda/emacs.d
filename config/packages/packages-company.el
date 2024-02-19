@@ -5,10 +5,6 @@
 
 (use-package company :ensure t)
 
-(use-package company-posframe :ensure t :after company)
-
-(use-package company-flx :ensure t :after company)
-
 (use-package company-auctex :ensure t :after '(company auctex))
 
 (use-package company-math :ensure t :after company)

@@ -3,11 +3,10 @@
 
 ;;; Code:
 
-(use-package yasnippet
-  :ensure t
+(use-package yasnippet :ensure t
   :init
   (setq-default yas-snippet-dirs
-		`(,(expand-file-name "emacs-snippets" configs/user-config-dir)))
+                `(,(expand-file-name "emacs-snippets" configs/user-config-dir)))
   :config
   (yas-global-mode 1))
 

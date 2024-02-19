@@ -6,8 +6,7 @@
 ;; (use-package perspective
 ;;   :ensure t)
 
-(use-package persp-mode
-  :ensure t
+(use-package persp-mode :ensure t
   :init
   (setq-default wg-morph-on nil)
   (setq-default persp-set-last-persp-for-new-frames nil
@@ -18,8 +17,7 @@
                 persp-remove-buffers-from-nil-persp-behaviour nil
                 persp-autokill-buffer-on-remove 'kill
                 persp-kill-foreign-buffer-behaviour 'kill
-                persp-nil-name "system"
-                persp-inhibit-switch-for '("system")))
+                persp-nil-name "main"))
 
 (provide 'packages-perspective)
 
