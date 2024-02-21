@@ -28,6 +28,7 @@
                 corfu-scroll-margin 2
                 corfu-bar-width 0.5)
   (setq-default completion-cycle-threshold nil)
+  (setq-default tab-always-indent nil)
 
   (global-corfu-mode 1)
   (corfu-popupinfo-mode 1))

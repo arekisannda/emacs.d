@@ -9,6 +9,9 @@
   "<escape>"
   "<escape> <escape>"
   "<escape> <escape> <escape>"
+  "C-<tab>"
+  "C-S-<tab>"
+  "C-S-<iso-lefttab>"
   "C-?")
 
 (general-create-definer keybinds/global)
