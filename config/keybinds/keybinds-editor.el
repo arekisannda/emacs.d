@@ -124,6 +124,7 @@
   "d"   '("delete hunk"          . diff-hl-revert-hunk))
 
 (keybinds/editor-input
+  "c"   '("insert char"          . insert-char)
   "n"   '("insert nerd-icon"     . nerd-icons-insert)
   "i"   '("english input"        . tools/input-method--set-english-input-method)
   "j"   '("japanese input"       . tools/input-method--set-japanese-input-method))

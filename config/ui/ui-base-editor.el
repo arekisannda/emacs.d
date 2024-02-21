@@ -72,6 +72,7 @@
   (setq-default display-line-numbers-type 'relative)
   (setq-default hscroll-step 5)
   (setq-default scroll-step 5)
+  (setq-default tab-width 4)
 
   (ui/base-editor--general-buffer-setup)
   (ui/base-editor--editorconfig-setup)
