@@ -67,6 +67,13 @@
 
   (editorconfig-mode 1))
 
+(defun ui/base-editor--input-method-setup ()
+  "Set up input-method configurations."
+  (setq google-translate-default-source-language "en")
+  (setq google-translate-translation-directions-alist
+        '(("ja" . "en") ("en" . "ja") ))
+  (setq-default default-input-method 'japanese-mozc))
+
 (defun ui/base-editor-setup ()
   "Set up editor configurations."
   (setq-default display-line-numbers-type 'relative)
@@ -76,7 +83,8 @@
 
   (ui/base-editor--general-buffer-setup)
   (ui/base-editor--editorconfig-setup)
-  (ui/base-editor--evil-mode-setup))
+  (ui/base-editor--evil-mode-setup)
+  (ui/base-editor--input-method-setup))
 
 (provide 'ui-base-editor)
 

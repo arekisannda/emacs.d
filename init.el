@@ -26,7 +26,6 @@
 (require 'tools-ispell)
 (require 'tools-diff)
 (require 'tools-vc)
-(require 'tools-input-method)
 
 (require 'management-init)
 (require 'ui-init)

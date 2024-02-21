@@ -45,8 +45,7 @@
   "<up>"     '("previous"         . corfu-previous)
   "<down>"   '("next"             . corfu-next)
   "M-?"      '("toggle info"      . corfu-popupinfo-toggle)
-
-  "C-<tab>"  #'keybinds/completion--info-command)
+  "C-<tab>"  '("info command"     . keybinds/completion--info-command))
 
 (keybinds/completion-info
   "d" '("popup info doc"          . corfu-popupinfo-documentation)

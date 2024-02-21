@@ -4,7 +4,6 @@
 ;;; Code:
 (require 'packages-init)
 (require 'util-folding)
-(require 'tools-input-method)
 
 (general-define-key
  :states        '(normal insert visual emacs motion)
@@ -125,9 +124,8 @@
 
 (keybinds/editor-input
   "c"   '("insert char"          . insert-char)
-  "n"   '("insert nerd-icon"     . nerd-icons-insert)
-  "i"   '("english input"        . tools/input-method--set-english-input-method)
-  "j"   '("japanese input"       . tools/input-method--set-japanese-input-method))
+  "t"   '("insert template"      . yas-insert-snippet)
+  "n"   '("insert nerd-icon"     . nerd-icons-insert))
 
 (keybinds/editor-translate
   "t"   '("translate to"         . google-translate-at-point)
