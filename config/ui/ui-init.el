@@ -40,7 +40,9 @@
 
 (defun ui/config--theme-setup ()
   "Set up theme configurations."
-  (load-theme 'sonokai t))
+  (let ((theme 'sonokai))
+    (load-theme theme t)
+    (ui/colors-load-theme theme)))
 
 (defun ui/config-setup ()
   "Set up Emacs UI configurations."

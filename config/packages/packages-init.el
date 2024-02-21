@@ -4,6 +4,7 @@
 ;;; Code:
 (require 'packages-manager)
 (require 'packages-base)
+(require 'packages-colors)
 (require 'packages-themes)
 (require 'packages-interface)
 (require 'packages-evil)

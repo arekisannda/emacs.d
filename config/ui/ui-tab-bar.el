@@ -43,17 +43,17 @@
   "Return tab bar project string."
   (concat
    (propertize (if init-file-debug "[DEBUG]" "")
-               'face `(nil :inherit nerd-icons-dred
+               'face `(nil :inherit ui/colors-red-d
                            :box nil
                            :weight normal
                            :height ,ui/fonts-fixed-pitch-size))
    (propertize (format "[%s]" persp-last-persp-name)
-               'face `(nil :inherit nerd-icons-dorange
+               'face `(nil :inherit ui/colors-orange-d
                            :box nil
                            :weight normal
                            :height ,ui/fonts-fixed-pitch-size))
    (propertize (format "[%s] " (ui/tab-bar-project-bar-project))
-               'face `(nil :inherit nerd-icons-dgreen
+               'face `(nil :inherit ui/colors-green-d
                            :box nil
                            :weight normal
                            :height ,ui/fonts-fixed-pitch-size))))
