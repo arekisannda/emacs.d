@@ -39,15 +39,30 @@
      (abbreviate-file-name ui/tab-bar--project-bar-project)
      "/")))
 
+(defun ui/tab-bar-project-string ()
+  "Return tab bar project string."
+  (concat
+   (propertize (if init-file-debug "[DEBUG]" "")
+               'face `(nil :inherit nerd-icons-dred
+                           :box nil
+                           :weight normal
+                           :height ,ui/fonts-fixed-pitch-size))
+   (propertize (format "[%s]" persp-last-persp-name)
+               'face `(nil :inherit nerd-icons-dorange
+                           :box nil
+                           :weight normal
+                           :height ,ui/fonts-fixed-pitch-size))
+   (propertize (format "[%s] " (ui/tab-bar-project-bar-project))
+               'face `(nil :inherit nerd-icons-dgreen
+                           :box nil
+                           :weight normal
+                           :height ,ui/fonts-fixed-pitch-size))))
+
 (defun ui/tab-bar-project-bar ()
   "Produce project information for the tab bar."
   (and ui/tab-bar-project-bar-mode
        (ui/tab-bar--active-frame-p)
-       (propertize (format "%s " (ui/tab-bar-project-bar-project))
-                   'face `(nil :inherit success
-                               :box nil
-                               :weight normal
-                               :height ,ui/fonts-fixed-pitch-size))))
+       (ui/tab-bar-project-string)))
 
 (define-minor-mode ui/tab-bar-project-bar-mode
   "Show current command and its key binding in the tab bar."
