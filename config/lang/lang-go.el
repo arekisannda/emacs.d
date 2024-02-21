@@ -11,8 +11,8 @@
   (setq lsp-go-analyses '((shadow . t)
                           (simplifycompositelit . :json-false)))
 
-  (add-hook 'before-save-hook #'lsp-format-buffer)
-  (add-hook 'before-save-hook #'lsp-organize-imports))
+  (add-hook 'before-save-hook #'lsp-format-buffer nil 'local)
+  (add-hook 'before-save-hook #'lsp-organize-imports nil 'local))
 
 (defun lang/go-setup ()
   "Configurations for go."

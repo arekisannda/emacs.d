@@ -52,7 +52,6 @@
 
 (defun ui/base-editor--exec-on-save ()
   "Operations to be executed on buffer save."
-  (util/indent-buffer)
   (delete-trailing-whitespace)
   (untabify (point-min) (point-max)))
 

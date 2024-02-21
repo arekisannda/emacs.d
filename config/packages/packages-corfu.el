@@ -26,7 +26,9 @@
 
 (use-package company-auctex :ensure t :after latex)
 
-(use-package yasnippet-capf :ensure t :after yasnippet)
+(use-package yasnippet-capf :ensure t :after yasnippet
+  :config
+  (setq yasnippet-capf-lookup-by 'key))
 
 (elpaca-wait)
 

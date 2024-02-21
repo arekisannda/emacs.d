@@ -22,7 +22,6 @@
 
 (defun lang/org--latex-mode-setup ()
   "Setup to run for latex major modes."
-  ;; (latex-preview-pane-mode)
   (shut-up
     (corfu-candidate-overlay-mode 1)
     (display-line-numbers-mode 1))

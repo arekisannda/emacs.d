@@ -9,6 +9,7 @@
   (shut-up
     (corfu-candidate-overlay-mode 1))
 
+  (add-hook 'before-save-hook #'util/indent-buffer nil 'local)
   (lang/utils--add-to-capf-list (list #'cape-dabbrev
                                       #'cape-file
                                       #'cape-elisp-symbol
