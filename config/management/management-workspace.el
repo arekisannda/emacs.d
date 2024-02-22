@@ -13,7 +13,7 @@
 
 (defun management/workspace--project-setup ()
   "Set up project configurations."
-  (setq project-vc-extra-root-markers '(".project.el" ".projectile" ".project")
+  (setq project-vc-extra-root-markers '(".dir-locals.el")
         project-vc-include-untracked nil
         project-vc-merge-submodules nil))
 

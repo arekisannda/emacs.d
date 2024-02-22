@@ -46,6 +46,8 @@
           (project-kill-buffers (vertico-sort-override-function . ui/minibuffer--vertico-sort-directories-first))
           (project-find-file (vertico-sort-override-function . ui/minibuffer--vertico-sort-directories-first))
           (project-find-dir (vertico-sort-override-function . ui/minibuffer--vertico-sort-directories-first))
+          (project-forget-project (vertico-sort-override-function . ui/minibuffer--vertico-sort-directories-first))
+          (project-forget-project-under (vertico-sort-override-function . ui/minibuffer--vertico-sort-directories-first))
           (describe-symbol (vertico-sort-override-function . vertico-sort-alpha))))
 
   (setq vertico-multiform-categories

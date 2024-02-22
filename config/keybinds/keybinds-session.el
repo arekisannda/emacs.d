@@ -62,6 +62,8 @@
 
 (keybinds/session-workspace
   "p"    '("switch project"      . project-switch-project)
+  "d"    '("forget project"      . project-forget-project)
+  "D"    '("forget project in"   . project-forget-projects-under)
   "K"    '("clear project"       . keybinds/custom--clear-project)
   "w"    '("switch perspective"  . persp-switch)
   "q"    '("kill perspective"    . persp-kill)
