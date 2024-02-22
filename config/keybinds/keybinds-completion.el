@@ -24,6 +24,15 @@
   "w"       '("capf word"         . cape-dict)
   "y"       `("capf math"         . cape-math-symbols-unicode))
 
+(keybinds/global minibuffer-local-map
+  "C-SPC"   '("completion"        . completion-at-point)
+  "C-S-SPC" '("complete overlay"  . corfu-candidate-overlay-complete-at-point))
+
+(keybinds/completion minibuffer-local-map :prefix "M-SPC"
+  "t"       '("capf snippet"      . yasnippet-capf)
+  "w"       '("capf word"         . cape-dict)
+  "y"       `("capf math"         . cape-math-symbols-unicode))
+
 (keybinds/completion-active
   [remap next-line]                          #'corfu-next
   [remap previous-line]                      #'corfu-previous
