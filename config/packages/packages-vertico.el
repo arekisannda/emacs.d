@@ -29,7 +29,7 @@
 
 (use-package embark :ensure t)
 
-(use-package embark-consult :ensure t :after '(embark consult))
+(use-package embark-consult :ensure t :after (embark consult))
 
 (use-package consult-dir :ensure t :after consult)
 

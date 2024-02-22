@@ -5,7 +5,7 @@
 
 (use-package company :ensure t)
 
-(use-package company-auctex :ensure t :after '(company auctex))
+(use-package company-auctex :ensure t :after (company auctex))
 
 (use-package company-math :ensure t :after company)
 
