@@ -59,7 +59,7 @@
   "C-s"         '("embark-collect"      . embark-collect)
   "C-e"         '("embark-export"       . embark-export)
   "C-d"         '("insert dir"          . consult-dir)
-  "C-D"         '("goto file"           . consult-dir-jump-file)
+  "C-S-d"       '("goto file"           . consult-dir-jump-file)
   "C-f"         '("insert file"         . consult-find)
   "C-."         '("consult narrow"      . consult-narrow))
 

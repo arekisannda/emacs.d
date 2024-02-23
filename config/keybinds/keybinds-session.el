@@ -39,13 +39,13 @@
   "C-\\" '("toggle popper"       . popper-toggle)
   "C-|"  '("toggle popper type"  . popper-toggle-type)
 
-  "v"    '("terminal"            . keybinds/session--term-command)
-  "p"    '("tools"               . keybinds/session--tools-command)
-  "w"    '("workspace"           . keybinds/session--workspace-command)
-  "t"    '("tabs"                . keybinds/session--tabs-command)
+  "TAB"  '("tools"               . keybinds/session--tools-command)
   "b"    '("buffers"             . keybinds/session--buffer-command)
   "d"    '("debugger"            . keybinds/session--debugger-command)
-  "m"    '("modes"               . keybinds/session--mode-command))
+  "m"    '("modes"               . keybinds/session--mode-command)
+  "w"    '("workspace"           . keybinds/session--workspace-command)
+  "t"    '("tabs"                . keybinds/session--tabs-command)
+  "v"    '("terminal"            . keybinds/session--term-command))
 
 (keybinds/session-term
   "v"    '("toggle project term" . multi-vterm-project)
@@ -53,11 +53,9 @@
   "r"    '("rename term"         . multi-vterm-rename-buffer))
 
 (keybinds/session-tools
-  "e"    '("eval region"         . eval-region)
-  "E"    '("eval buffer"         . eval-buffer)
-  "p"    '("elpaca try"          . elpaca-try)
-  "P"    '("elpaca manager"      . elpaca-manager)
-  "F"    '("ranger buffer"       . ranger)
+  "p"    '("package try"         . elpaca-try)
+  "P"    '("pakcage manager"     . elpaca-manager)
+  "f"    '("ranger buffer"       . ranger)
   "s"    '("scratch buffer"      . scratch-buffer))
 
 (keybinds/session-workspace

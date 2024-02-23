@@ -14,8 +14,8 @@
 (general-create-definer keybinds/editor
   :keymaps 'keybinds/editor--map)
 
-(general-create-definer keybinds/editor-stage-two
-  :prefix-command 'keybinds/editor--stage-two-command)
+(general-create-definer keybinds/editor-exec
+  :prefix-command 'keybinds/editor--exec-command)
 
 (general-create-definer keybinds/editor-text
   :prefix-command 'keybinds/editor--text-command)
@@ -45,91 +45,102 @@
   :prefix-command 'keybinds/editor--git-command)
 
 (keybinds/editor
-  ","   '("text"                 . keybinds/editor--text-command)
-  "m"   '("motion"               . keybinds/editor--motion-command)
-  "o"   '("fold"                 . keybinds/editor--fold-command)
-  "g"   '("git"                  . keybinds/editor--git-command)
-  "i"   '("input method"         . keybinds/editor--input-command)
-  "t"   '("translate"            . keybinds/editor--translate-command)
-  "!"   '("syntax check"         . keybinds/editor--syntax-check-command)
+  "C-,"   '("lsp/doc"              . keybinds/editor--lsp-command)
+  "C-."   '("stage two"            . keybinds/editor--exec-command)
+  "C-c"   '("cursor"               . keybinds/editor--cursor-command)
 
-  "C-," '("lsp/doc"              . keybinds/editor--lsp-command)
-  "C-." '("stage two"            . keybinds/editor--stage-two-command)
-  "C-c" '("cursor"               . keybinds/editor--cursor-command))
+  "!"     '("syntax check"         . keybinds/editor--syntax-check-command)
+  ","     '("text"                 . keybinds/editor--text-command)
+  "g"     '("git"                  . keybinds/editor--git-command)
+  "i"     '("input method"         . keybinds/editor--input-command)
+  "m"     '("motion"               . keybinds/editor--motion-command)
+  "o"     '("fold"                 . keybinds/editor--fold-command)
+  "t"     '("translate"            . keybinds/editor--translate-command))
 
-(keybinds/editor-stage-two
-  "C-," '("embark act"           . embark-act))
+(keybinds/editor-exec
+  "C-,"   '("embark act"           . embark-act)
+  "C-e"   '("eval region"          . eval-region)
+  "C-S-E" '("eval buffer"          . eval-buffer))
 
 (keybinds/editor-text
-  "="   '("indent"               . util/indent-buffer)
-  "+"   '("sort lines"           . sort-lines)
-  "k"   '("align"                . align)
-  "l"   '("align left"           . evil-lion-left)
-  "L"   '("align right"          . evil-lion-right)
-  "c"   '("comment line"         . evilnc-comment-or-uncomment-lines)
-  "C"   '("comment block"        . evilnc-comment-or-uncomment-paragraphs)
-  "s"   '("add surround"         . embrace-add)
-  "S"   '("change surround"      . embrace-change)
-  "d"   '("delete surround"      . embrace-delete)
-  "r"   '("find/replace"         . query-replace-regexp)
-  "R"   '("project find/replace" . project-query-replace-regexp)
-  "!"   '("fix typo"             . ispell-word))
+  "!"     '("fix typo"             . ispell-word)
+  "+"     '("sort lines"           . sort-lines)
+  "="     '("indent"               . util/indent-buffer)
+
+  "c"     '("comment line"         . evilnc-comment-or-uncomment-lines)
+  "C"     '("comment block"        . evilnc-comment-or-uncomment-paragraphs)
+
+  "s"     '("add surround"         . embrace-add)
+  "S"     '("change surround"      . embrace-change)
+  "d"     '("delete surround"      . embrace-delete)
+
+  "k"     '("align"                . align)
+  "l"     '("align left"           . evil-lion-left)
+  "L"     '("align right"          . evil-lion-right)
+
+  "r"     '("find/replace"         . query-replace-regexp)
+  "R"     '("project find/replace" . project-query-replace-regexp)
+  )
 
 (keybinds/editor-cursor
-  "C-q" '("clear cursors"        . evil-mc-undo-all-cursors)
-  "C-a" '("add cursors beg"      . evil-mc-make-cursor-in-visual-selection-beg)
-  "C-e" '("add cursors end"      . evil-mc-make-cursor-in-visual-selection-end))
+  "C-q"   '("clear cursors"        . evil-mc-undo-all-cursors)
+  "C-a"   '("add cursors beg"      . evil-mc-make-cursor-in-visual-selection-beg)
+  "C-e"   '("add cursors end"      . evil-mc-make-cursor-in-visual-selection-end))
 
 (keybinds/editor-motion
-  "j"   '("to char below"        . evilem-motion-find-char)
-  "k"   '("to char above"        . evilem-motion-find-char-backward)
-  "J"   '("til char below"       . evilem-motion-find-char-to)
-  "K"   '("til char above"       . evilem-motion-find-char-to-backward)
-  "s"   '("snipe to next"        . evil-snipe-s)
-  "S"   '("snipe to prev"        . evil-snipe-S)
-  "x"   '("snipe til next"       . evil-snipe-x)
-  "X"   '("snipe til prev"       . evil-snipe-X)
-  "t"   '("line to top"          . evil-scroll-line-to-top)
-  "b"   '("line to bottom"       . evil-scroll-line-to-bottom)
-  "m"   '("line to center"       . evil-scroll-line-to-center))
+  "j"     '("to char below"        . evilem-motion-find-char)
+  "J"     '("til char below"       . evilem-motion-find-char-to)
+  "k"     '("to char above"        . evilem-motion-find-char-backward)
+  "K"     '("til char above"       . evilem-motion-find-char-to-backward)
+
+  "s"     '("snipe to next"        . evil-snipe-s)
+  "S"     '("snipe to prev"        . evil-snipe-S)
+  "x"     '("snipe til next"       . evil-snipe-x)
+  "X"     '("snipe til prev"       . evil-snipe-X)
+
+  "b"     '("line to bottom"       . evil-scroll-line-to-bottom)
+  "m"     '("line to center"       . evil-scroll-line-to-center)
+  "t"     '("line to top"          . evil-scroll-line-to-top))
 
 (keybinds/editor-fold
-  "a"   '("inline beg comment"   . util/folding-add-fold-inline)
-  "A"   '("block beg comment"    . util/folding-add-fold-surround)
-  "e"   '("inline end comment"   . util/folding-add-fold-inline-end)
-  "E"   '("block end comment"    . util/folding-add-fold-surround-end)
-  "x"   '("show fold"            . hs-show-block)
-  "X"   '("show fold all"        . hs-show-all)
-  "c"   '("hide fold"            . hs-hide-block)
-  "C"   '("hide fold all"        . hs-hide-all)
-  "o"   '("toggle fold"          . hs-toggle-hiding)
-  "!"   '("hide fold level"      . hs-hide-level))
+  "!"     '("hide fold level"      . hs-hide-level)
+
+  "a"     '("inline beg comment"   . util/folding-add-fold-inline)
+  "A"     '("block beg comment"    . util/folding-add-fold-surround)
+  "e"     '("inline end comment"   . util/folding-add-fold-inline-end)
+  "E"     '("block end comment"    . util/folding-add-fold-surround-end)
+
+  "c"     '("hide fold"            . hs-hide-block)
+  "C"     '("hide fold all"        . hs-hide-all)
+  "X"     '("show fold all"        . hs-show-all)
+  "x"     '("show fold"            . hs-show-block)
+  "o"     '("toggle fold"          . hs-toggle-hiding))
 
 (keybinds/editor-lsp
-  "r"   '("lsp rename"           . lsp-rename)
-  "i"   '("lsp describe"         . lsp-describe-thing-at-point)
-  "I"   '("lsp implementation"   . lsp-find-implementation)
-  "t"   '("lsp type definition"  . lsp-find-type-definition)
-  "d"   '("lsp definition"       . lsp-find-definition)
-  "r"   '("lsp references"       . lsp-find-references))
+  "d"     '("lsp definition"       . lsp-find-definition)
+  "i"     '("lsp describe"         . lsp-describe-thing-at-point)
+  "I"     '("lsp implementation"   . lsp-find-implementation)
+  "r"     '("lsp references"       . lsp-find-references)
+  "r"     '("lsp rename"           . lsp-rename)
+  "t"     '("lsp type definition"  . lsp-find-type-definition))
 
 (keybinds/editor-syntax-check
-  "!"   '("check error"          . flycheck-display-error-at-point)
-  "@"   '("check syntax"         . flycheck-buffer))
+  "!"     '("check error"          . flycheck-display-error-at-point)
+  "@"     '("check syntax"         . flycheck-buffer))
 
 (keybinds/editor-git
-  "i"   '("inspect hunk"         . hydra-git-hunk/diff-hl-show-hunk)
-  "s"   '("stage hunk"           . diff-hl-stage-current-hunk)
-  "d"   '("delete hunk"          . diff-hl-revert-hunk))
+  "i"     '("inspect hunk"         . hydra-git-hunk/diff-hl-show-hunk)
+  "s"     '("stage hunk"           . diff-hl-stage-current-hunk)
+  "d"     '("delete hunk"          . diff-hl-revert-hunk))
 
 (keybinds/editor-input
-  "c"   '("insert char"          . insert-char)
-  "t"   '("insert template"      . yas-insert-snippet)
-  "n"   '("insert nerd-icon"     . nerd-icons-insert))
+  "c"     '("insert char"          . insert-char)
+  "t"     '("insert template"      . yas-insert-snippet)
+  "n"     '("insert nerd-icon"     . nerd-icons-insert))
 
 (keybinds/editor-translate
-  "t"   '("translate to"         . google-translate-at-point)
-  "T"   '("translate from"       . google-translate-at-point-reverse))
+  "t"     '("translate to"         . google-translate-at-point)
+  "T"     '("translate from"       . google-translate-at-point-reverse))
 
 (provide 'keybinds-editor)
 
