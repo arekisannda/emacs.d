@@ -38,19 +38,20 @@
   (set-face-attribute 'tab-bar nil
                       :font ui/fonts-fixed-pitch-face
                       :height ui/fonts-tab-size
-                      :weight 'bold)
+                      :weight 'bold
+                      :box '(:line-width (5 . 5) :style flat-button))
   (set-face-attribute 'tab-bar-tab nil
                       :font ui/fonts-fixed-pitch-face
                       :height ui/fonts-tab-size
                       :weight 'bold
                       :box '(:line-width (5 . 5) :style flat-button)
-                      :underline '(:inherit tab-bar-tab :style line :position 0))
+                      :underline '(:style line :position 0))
   (set-face-attribute 'tab-bar-tab-inactive nil
                       :font ui/fonts-fixed-pitch-face
                       :height ui/fonts-tab-size
-                      :weight 'light
-                      :box '(:line-width (5 . 5) :style flat-button)
-                      :underline '(:inherit tab-bar-tab :style line :position 0)))
+                      :weight 'bold
+                      :box '(:line-width (5 . 5) :style flat-button))
+  )
 
 (defun ui/fonts-setup ()
   "Set up fonts configurations."
