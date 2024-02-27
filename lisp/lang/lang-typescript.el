@@ -2,12 +2,12 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/typescript-setup ()
   "Configurations for typescript."
 
-  (lang/utils--set-auto-mode
+  (util/lang--set-auto-mode
    '(("\\.tsx\\'" . tsx-ts-mode)
      ("\\.ts\\'" . typescript-ts-mode))))
 

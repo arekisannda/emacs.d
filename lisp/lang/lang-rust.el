@@ -2,8 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/rust--setup ()
   "Configurations for rust."
@@ -13,7 +12,7 @@
   "Configurations for rust."
   (add-hook 'rust-ts-mode-hook #'lang/rust--setup)
 
-  (lang/utils--set-auto-mode
+  (util/lang--set-auto-mode
    '(("\\.rs\\'" . rust-ts-mode))))
 
 (lang/rust-setup)

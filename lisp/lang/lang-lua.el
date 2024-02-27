@@ -2,8 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/lua--setup ()
   "Setup to run for lua major modes."

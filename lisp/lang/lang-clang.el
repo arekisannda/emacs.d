@@ -2,8 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/clang--setup ()
   "Setup to run for C/C++ major modes."
@@ -15,7 +14,7 @@
   (add-hook 'c-ts-mode-hook #'lang/clang--setup)
   (add-hook 'c-or-c++-ts-mode-hook #'lang/clang--setup)
 
-  (lang/utils--remap-major-mode
+  (util/lang--remap-major-mode
    '((c-mode . c-ts-mode)
      (c++-mode . c++-ts-mode)
      (c-or-c++-mode . c-or-c++-ts-mode))))

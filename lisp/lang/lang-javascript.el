@@ -2,12 +2,12 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/javascript-setup ()
   "Configurations for javascript."
 
-  (lang/utils--remap-major-mode
+  (util/lang--remap-major-mode
    '((javascript-mode . js-ts-mode))))
 
 (lang/javascript-setup)

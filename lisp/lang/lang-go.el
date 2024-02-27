@@ -2,8 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/go--setup ()
   "Setup to run for go major modes."
@@ -18,7 +17,7 @@
   "Configurations for go."
   (add-hook 'go-ts-mode-hook #'lang/go--setup)
 
-  (lang/utils--set-auto-mode
+  (util/lang--set-auto-mode
    '(("\\.go\\'" . go-ts-mode))))
 
 (lang/go-setup)

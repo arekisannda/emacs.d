@@ -2,8 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/csharp--setup ()
   "Setup to run for csharp major modes."
@@ -11,10 +10,10 @@
 
 (defun lang/csharp-setup ()
   "Configurations for csharp."
-  (add-hook 'csharp-mode #'lang/csharp--setup)
-  (add-hook 'csharp-ts-mode #'lang/csharp--setup)
+  (add-hook 'csharp-mode-hook #'lang/csharp--setup)
+  (add-hook 'csharp-ts-mode-hook #'lang/csharp--setup)
 
-  (lang/utils--remap-major-mode
+  (util/lang--remap-major-mode
    '((csharp-mode . csharp-ts-mode))))
 
 (lang/csharp-setup)

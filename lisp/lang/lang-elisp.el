@@ -2,7 +2,6 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
 
 (defun lang/elisp--setup ()
   "Setup to run for `emacs-lisp-mode` major-modes."
@@ -10,10 +9,10 @@
     (corfu-candidate-overlay-mode 1))
 
   (add-hook 'before-save-hook #'util/indent-buffer nil 'local)
-  (lang/utils--add-to-capf-list (list #'cape-dabbrev
-                                      #'cape-file
-                                      #'cape-elisp-symbol
-                                      #'cape-keyword)))
+  (util/lang--add-to-capf-list (list #'cape-dabbrev
+                                     #'cape-file
+                                     #'cape-elisp-symbol
+                                     #'cape-keyword)))
 
 (defun lang/elisp-setup ()
   "Set up `emacs-lisp-mode` configurations."

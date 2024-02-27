@@ -3,8 +3,7 @@
 
 ;;; Code:
 (require 'hideshow)
-(require 'packages-init)
-(require 'lang-utils)
+(require 'util-lang)
 
 (defun lang/generic--prog-mode-setup ()
   "Setup to run for `prog-mode` major modes."
@@ -32,10 +31,10 @@
   (add-hook 'bash-ts-mode #'lang/generic--sh-setup)
   (add-hook 'sh-mode #'lang/generic--sh-setup)
 
-  (lang/utils--remap-major-mode
+  (util/lang--remap-major-mode
    '((sh-mode . bash-ts-mode)))
 
-  (lang/utils--set-auto-mode
+  (util/lang--set-auto-mode
    '(("Dockerfile\\'" . dockerfile-ts-mode)
      ("\\.dockerfile\\'" . dockerfile-ts-mode))))
 
@@ -44,11 +43,11 @@
   (add-hook 'i3wm-config-mode-hook #'lang/generic--conf-setup)
   (add-hook 'conf-mode-hook #'lang/generic--conf-setup)
 
-  (lang/utils--remap-major-mode
+  (util/lang--remap-major-mode
    '((css-mode . css-ts-mode)
      (js-json-mode . json-ts-mode)))
 
-  (lang/utils--set-auto-mode
+  (util/lang--set-auto-mode
    '(("\\.ya?ml\\'" . yaml-ts-mode)
      ("\\.sway\\'" . i3wm-config-mode)
      ("\\.jsonc\\'" . json-ts-mode))))
