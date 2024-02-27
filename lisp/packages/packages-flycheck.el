@@ -2,6 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'util-helpers)
 
 (use-package flycheck :ensure t
   :init
@@ -9,11 +10,13 @@
         flycheck-mode-line nil
         flycheck-display-errors-delay 3600.0
         flycheck-display-errors-function 'ignore
-        flycheck-check-syntax-automatically '(save)))
+        flycheck-check-syntax-automatically '(save))
+  :config
+  (global-flycheck-mode))
 
-(use-package flycheck-posframe :ensure t :after flycheck)
-
-(use-package flycheck-popup-tip :ensure t :after flycheck)
+(use-package flycheck-posframe :ensure t :after flycheck
+  :config
+  (util/if-daemon-run-after-make-frame (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)))
 
 (provide 'packages-flycheck)
 

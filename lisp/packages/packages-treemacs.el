@@ -15,6 +15,13 @@
 
 (use-package lsp-treemacs :ensure t :after (treemacs lsp-mode))
 
+(use-package emacs :after (treemacs treemacs-nerd-icons)
+  :elpaca nil
+  :config
+  (require 'treemacs-persp)
+  (treemacs-load-theme "nerd-icons")
+  (treemacs-set-scope-type 'Perspectives))
+
 (provide 'packages-treemacs)
 
 ;;; packages-treemacs.el ends here

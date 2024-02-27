@@ -4,8 +4,6 @@
 ;;; Code:
 (require 'cl-lib)
 
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
 (defun init/recursive-load-path (path)
   "Recursively load subdirectories in PATH."
   (let* ((path (expand-file-name path user-emacs-directory))

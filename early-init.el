@@ -9,6 +9,7 @@
 (setq gc-cons-threshold (* 1024 1024 100))
 
 (setq configs/user-config-dir (expand-file-name "~/.config"))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (when (getenv-internal "DEBUG")
   (setq init-file-debug t
@@ -28,8 +29,37 @@
 (setq make-backup-files nil)
 (setq create-lockfiles nil)
 
+(setq window-resize-pixelwise t)
+(setq frame-resize-pixelwise t)
+
+(setq-default truncate-lines t)
+(setq-default line-spacing 0)
+(setq-default indent-tabs-mode nil)
+(setq-default visual-line-mode nil)
+
+(tool-bar-mode -1)
+(tooltip-mode -1)
+(scroll-bar-mode -1)
+(menu-bar-mode -1)
+(global-eldoc-mode -1)
+(electric-pair-mode -1)
+(winner-mode 1)
+
 (setq message-log-max 2000)
 (setq warning-minimum-level :emergency)
+
+(defvar ui/fonts-fixed-pitch-face "SauceCodePro Nerd Font Mono")
+(defvar ui/fonts-fixed-pitch-italic-face "SauceCodePro Nerd Font Mono")
+(defvar ui/fonts-variable-pitch-face "SauceCodePro Nerd Font Propo")
+
+(defvar ui/fonts-fixed-pitch-size 90)
+(defvar ui/fonts-variable-pitch-size 90)
+(defvar ui/fonts-tab-size 100)
+
+(add-to-list
+ 'default-frame-alist
+ `(font . ,(concat ui/fonts-fixed-pitch-face
+                   (format "-%d" (/ ui/fonts-fixed-pitch-size 10)))))
 
 (provide 'early-init)
 ;;; early-init.el ends here

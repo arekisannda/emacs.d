@@ -45,6 +45,14 @@
         (hs-show-all))
     (indent-region (point-min) (point-max))))
 
+(eval-when-compile
+  (defmacro util/if-daemon-run-after-make-frame (fn)
+    `(if (daemonp)
+         (add-hook 'after-make-frame-functions
+                   (lambda (frame) (with-selected-frame frame ,fn)))
+       ,fn))
+  )
+
 (provide 'util-helpers)
 
 ;;; util-helpers.el ends here
