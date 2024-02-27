@@ -2,7 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
+(require 'general)
 (require 'keybinds-custom)
 
 (general-create-definer keybinds/evil)

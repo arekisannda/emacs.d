@@ -2,13 +2,14 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
+(require 'general)
+(require 'util-helpers)
 
 (general-define-key
- :states        '(normal insert visual emacs motion)
- :prefix-map    'keybinds/search--map
- :prefix        ";"
- :global-prefix "C-;")
+ :states         '(normal insert visual emacs motion)
+ :prefix-map     'keybinds/search--map
+ :prefix         ";"
+ :global-prefix  "C-;")
 
 (general-create-definer keybinds/search
   :keymaps 'keybinds/search--map)
@@ -30,10 +31,11 @@
   "C-k" '("find kmacro"  . consult-kmacro)
   "C-c" '("find command" . consult-mode-command)
   "C-h" '("find history" . consult-history)
-  "C-i" '("find info"    . consult-info))
+  "C-i" '("find info"    . consult-info)
 
-(keybinds/search :major-mode 'org-mode
-  "h"   '("find heading" . consult-org-heading))
+  "h"   (general-predicate-dispatch nil
+          (derived-mode-p 'org-mode) `("find heading" . consult-org-heading)
+          t                          `("find line"    . consult-line)))
 
 (provide 'keybinds-search)
 

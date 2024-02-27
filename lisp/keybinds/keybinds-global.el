@@ -2,7 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
+(require 'general)
 (require 'keybinds-custom)
 
 (general-unbind
@@ -24,6 +24,9 @@
   "C-<right>"   '("focus right"         . evil-window-right)
   "C-<up>"      '("focus up"            . evil-window-up)
   "C-<down>"    '("focus down"          . evil-window-down)
+
+  "C-<tab>"     '("toggle popper"       . popper-toggle)
+  "C-S-<tab>"   '("toggle popper type"  . popper-toggle-type)
 
   "M-["         '("prev tab"            . tab-previous)
   "M-]"         '("next tab"            . tab-next)

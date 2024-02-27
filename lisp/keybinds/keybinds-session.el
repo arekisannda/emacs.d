@@ -1,15 +1,17 @@
-;;; keybinds-session.el --- Emacs Global Keybindings -*- lexical-binding: t; -*-
+;;; keybinds-session.el --- Emacs Session Keybindings -*- lexical-binding: t; -*-
 ;;; Commentary:
 
+;;  other thing
+
 ;;; Code:
-(require 'packages-init)
+(require 'general)
 (require 'keybinds-custom)
 
 (general-define-key
- :states        '(normal visual emacs motion)
- :prefix-map    'keybinds/session--map
- :prefix        "C-\\"
- :global-prefix "C-\\")
+ :states         '(normal visual emacs motion)
+ :prefix-map     'keybinds/session--map
+ :prefix         "C-\\"
+ :global-prefix  "C-\\")
 
 (general-create-definer keybinds/session
   :keymaps 'keybinds/session--map)
@@ -36,10 +38,7 @@
   :prefix-command 'keybinds/session--mode-command)
 
 (keybinds/session
-  "C-\\" '("toggle popper"       . popper-toggle)
-  "C-|"  '("toggle popper type"  . popper-toggle-type)
-
-  "TAB"  '("tools"               . keybinds/session--tools-command)
+  "C-\\" '("tools"               . keybinds/session--tools-command)
   "b"    '("buffers"             . keybinds/session--buffer-command)
   "d"    '("debugger"            . keybinds/session--debugger-command)
   "m"    '("modes"               . keybinds/session--mode-command)
@@ -56,7 +55,10 @@
   "p"    '("package try"         . elpaca-try)
   "P"    '("pakcage manager"     . elpaca-manager)
   "f"    '("ranger buffer"       . ranger)
-  "s"    '("scratch buffer"      . scratch-buffer))
+  "s"    '("scratch buffer"      . scratch-buffer)
+
+  "e"    '("eval region"          . eval-region)
+  "E"    '("eval buffer"          . eval-buffer))
 
 (keybinds/session-workspace
   "p"    '("switch project"      . project-switch-project)

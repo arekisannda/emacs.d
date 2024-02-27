@@ -2,7 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
+(require 'general)
 
 (general-create-definer keybinds/completion)
 

@@ -2,7 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'packages-init)
+(require 'general)
 
 (defhydra hydra-dap-motion
   (:foreign-key exit :exit nil :timeout nil)
