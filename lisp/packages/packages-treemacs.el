@@ -1,4 +1,4 @@
-;;; packages-treemacs.el --- Treemacs Packages -*- lexical-binding: t; -*-
+;;; packages-treemacs.el --- Treemacs Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

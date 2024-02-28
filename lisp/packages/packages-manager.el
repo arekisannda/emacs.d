@@ -1,4 +1,4 @@
-;;; packages-manager.el --- Package Manager -*- lexical-binding: t; -*-
+;;; packages-manager.el --- Package Manager Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

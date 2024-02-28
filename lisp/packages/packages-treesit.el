@@ -1,4 +1,4 @@
-;;; packages-treesit.el --- Emacs Treesit Packages -*- lexical-binding: t; -*-
+;;; packages-treesit.el --- Emacs Treesit Packages Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

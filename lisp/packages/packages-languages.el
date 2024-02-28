@@ -1,4 +1,4 @@
-;;; packages-languages.el --- Programming Language Packages -*- lexical-binding: t; -*-
+;;; packages-languages.el --- Programming Language Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

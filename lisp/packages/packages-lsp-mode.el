@@ -1,4 +1,4 @@
-;;; packages-lsp-mode.el --- Emacs lsp-mode Packages -*- lexical-binding: t; -*-
+;;; packages-lsp-mode.el --- LSP-mode Package Configurations-*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

@@ -1,4 +1,4 @@
-;;; packages-project.el --- Project Packages -*- lexical-binding: t; -*-
+;;; packages-project.el --- Project Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

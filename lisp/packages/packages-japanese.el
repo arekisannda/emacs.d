@@ -1,4 +1,4 @@
-;;; packages-japanese.el --- Natural Language Packages -*- lexical-binding: t; -*-
+;;; packages-japanese.el --- Japanese-lang Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

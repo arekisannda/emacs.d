@@ -1,4 +1,4 @@
-;;; packages-ispell.el --- Emacs Ispell Packages -*- lexical-binding: t; -*-
+;;; packages-ispell.el --- Emacs Ispell Package Configurations-*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

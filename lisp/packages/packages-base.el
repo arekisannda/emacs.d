@@ -1,4 +1,4 @@
-;;; packages-base.el --- Emacs Packages Base Configurations -*- lexical-binding: t; -*-
+;;; packages-base.el --- Base Packages Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

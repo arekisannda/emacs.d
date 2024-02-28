@@ -1,4 +1,4 @@
-;;; packages-vterm.el --- Emacs Term Shell Configurations -*- lexical-binding: t; -*-
+;;; packages-vterm.el --- Emacs Term Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

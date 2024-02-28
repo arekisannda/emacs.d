@@ -1,4 +1,4 @@
-;;; packages-yasnippet.el --- YASnippet Packages  -*- lexical-binding: t; -*-
+;;; packages-yasnippet.el --- YASnippet Package Configurations  -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

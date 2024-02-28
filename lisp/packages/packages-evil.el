@@ -1,4 +1,4 @@
-;;; packages-evil.el --- Emacs Evil-mode Packages -*- lexical-binding: t; -*-
+;;; packages-evil.el --- Emacs Evil-mode Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

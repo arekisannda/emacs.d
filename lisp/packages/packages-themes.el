@@ -1,4 +1,4 @@
-;;; packages-themes.el --- Emacs Theme Packages -*- lexical-binding: t; -*-
+;;; packages-themes.el --- Emacs Theme Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

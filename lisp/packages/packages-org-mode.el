@@ -1,4 +1,4 @@
-;;; packages-org-mode.el --- Org-mode Packages -*- lexical-binding: t; -*-
+;;; packages-org-mode.el --- Org-mode Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

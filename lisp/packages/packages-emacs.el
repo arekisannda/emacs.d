@@ -1,4 +1,4 @@
-;;; packages-emacs.el --- Emacs Built-in Packages -*- lexical-binding: t; -*-
+;;; packages-emacs.el --- Emacs Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

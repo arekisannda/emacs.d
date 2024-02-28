@@ -1,4 +1,4 @@
-;;; packages-windows.el --- Window Management Packages -*- lexical-binding: t; -*-
+;;; packages-windows.el --- Window Management Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

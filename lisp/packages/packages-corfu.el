@@ -1,4 +1,4 @@
-;;; packages-corfu.el --- Corfu Completion Packages -*- lexical-binding: t; -*-
+;;; packages-corfu.el --- Corfu Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

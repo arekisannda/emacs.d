@@ -1,4 +1,4 @@
-;;; packages-dap-mode.el --- Emacs dap-mode Packages -*- lexical-binding: t; -*-
+;;; packages-dap-mode.el --- DAP-mode Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

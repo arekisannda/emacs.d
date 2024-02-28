@@ -1,4 +1,4 @@
-;;; packages-interface.el --- Emacs Interface Packages -*- lexical-binding: t; -*-
+;;; packages-interface.el --- Interface Packages Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

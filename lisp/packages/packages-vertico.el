@@ -1,4 +1,4 @@
-;;; packages-vertico.el --- Vertico Completion Packages -*- lexical-binding: t; -*-
+;;; packages-vertico.el --- Vertico Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

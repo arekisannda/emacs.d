@@ -1,4 +1,4 @@
-;;; packages-flycheck.el --- Flycheck Packages -*- lexical-binding: t; -*-
+;;; packages-flycheck.el --- Flycheck Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

@@ -1,4 +1,4 @@
-;;; packages-layout.el --- Layout Packages -*- lexical-binding: t; -*-
+;;; packages-layout.el --- Layout Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

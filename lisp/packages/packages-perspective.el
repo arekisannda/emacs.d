@@ -1,4 +1,4 @@
-;;; packages-perspective.el --- Emacs Pespective Packages -*- lexical-binding: t; -*-
+;;; packages-perspective.el --- Pespective Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

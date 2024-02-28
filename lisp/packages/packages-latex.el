@@ -1,4 +1,4 @@
-;;; packages-latex.el --- LaTeX Packages -*- lexical-binding: t; -*-
+;;; packages-latex.el --- LaTeX Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

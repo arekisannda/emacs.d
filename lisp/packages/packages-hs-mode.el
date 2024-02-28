@@ -1,4 +1,4 @@
-;;; packages-hs-mode.el --- Emacs Hide/Show Packages -*- lexical-binding: t; -*-
+;;; packages-hs-mode.el --- Emacs hs-mode Package Configurations-*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

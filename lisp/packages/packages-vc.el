@@ -1,4 +1,4 @@
-;;; packages-vc.el --- Emacs Magit/vC Packages -*- lexical-binding: t; -*-
+;;; packages-vc.el --- Emacs Magit/VC Package Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
