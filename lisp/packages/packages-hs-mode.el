@@ -6,17 +6,17 @@
 (use-package emacs :after easy-color-faces
   :ensure nil
   :config
-  (defvar ui/code-editor--fold-overlay-string
+  (defvar packages/hs-mode--fold-overlay-string
     (concat " "
-            (propertize "!" 'face `(nil :inherit easy-color-faces-green-d
+            (propertize "!" 'face `(nil :inherit easy-color-faces-green
                                         :weight bold
-                                        :box '(:style flat)))
-            (propertize "!" 'face `(nil :inherit easy-color-faces-orange-d
+                                        :box '(:style flat-button)))
+            (propertize "!" 'face `(nil :inherit easy-color-faces-orange
                                         :weight bold
-                                        :box '(:style flat)))
-            (propertize "!" 'face `(nil :inherit easy-color-facres-red-d
+                                        :box '(:style flat-button)))
+            (propertize "!" 'face `(nil :inherit easy-color-faces-red
                                         :weight bold
-                                        :box '(:style flat)))
+                                        :box '(:style flat-button)))
             " "))
 
   (defun packages/hs-mode--fold-overlay (ov)
