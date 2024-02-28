@@ -27,6 +27,10 @@
   (setq-default tab-width 4)
   (setq-default display-line-numbers-type 'relative)
 
+  (setq-default fringe-styles 'default)
+  (setq-default fringe-indicator-alist nil)
+  (fringe-mode 5)
+
   ;; performance tuning
   (defvar packages/emacs-gc-cons-threshold (* 1024 1024 100))
   (setq gc-cons-threshold packages/emacs-gc-cons-threshold)

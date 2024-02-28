@@ -26,6 +26,10 @@
   "<"   '("promote"            . outline-promote)
   ">"   '("demote"             . outline-demote)
 
+  "s"   '("add surround"       . embrace-add)
+  "S"   '("change surround"    . embrace-change)
+  "d"   '("delete surround"    . embrace-delete)
+
   "e"   '("emphasis"           . org-emphasize)
   "g"   '("goto"               . keybinds/org-mode--goto-command)
   "t"   '("tables"             . keybinds/org-mode--table-command))

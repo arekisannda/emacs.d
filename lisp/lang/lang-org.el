@@ -7,7 +7,8 @@
 
 (defun lang/org--org-mode-setup ()
   "Setup to run for `org-mode` major modes."
-  (display-line-numbers-mode 1)
+  ;; (display-line-numbers-mode 1)
+  (setq-local left-fringe-width 25)
   (global-org-modern-mode 1)
   (util/lang--add-to-capf-list (list #'cape-dabbrev
                                      #'cape-file

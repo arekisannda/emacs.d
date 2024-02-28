@@ -15,7 +15,9 @@
                                         (elpaca--continue-build e))
                                     #'elpaca--activate-package))))
 
-(use-package magit)
+(use-package magit
+  :init
+  (setq magit-auto-revert-mode nil))
 
 (use-package forge :after magit :disabled)
 
@@ -28,9 +30,6 @@
   (setq diff-hl-side-margin-width 3)
   (setq diff-hl-flydiff-delay 0.1)
   :config
-  (setq-default fringe-styles 'default)
-  (setq-default fringe-indicator-alist nil)
-
   (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
 
@@ -42,8 +41,7 @@
                       (diff-hl-margin-mode 1))))))
 
   (diff-hl-flydiff-mode 1)
-  (global-diff-hl-mode nil)
-  (fringe-mode 5))
+  (global-diff-hl-mode nil))
 
 (provide 'packages-vc)
 

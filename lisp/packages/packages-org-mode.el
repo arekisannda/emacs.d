@@ -7,6 +7,7 @@
   :ensure nil
   :config
   (setq-default  org-startup-with-inline-images t
+                 org-image-actual-width nil
                  org-startup-indented t
                  org-auto-align-tags nil
                  org-tags-column 0
@@ -50,25 +51,30 @@
 
 (use-package ob-kotlin)
 
-(use-package emacs :after (ob-go ob-rust ob-kotlin ob-typescript)
+(use-package gnuplot)
+
+(use-package emacs :after (ob-go ob-rust ob-kotlin ob-typescript gnuplot)
   :ensure nil
   :config
   (setq-default org-confirm-babel-evaluate nil)
-  (org-babel-do-load-languages 'org-babel-load-languages
-                               '((C . t)
-                                 (awk . t)
-                                 (calc . t)
-                                 (emacs-lisp . t)
-                                 (go . t)
-                                 (js . t)
-                                 (kotlin . t)
-                                 (plantuml . t)
-                                 (python . t)
-                                 (rust . t)
-                                 (shell . t)
-                                 (sql . t)
-                                 (sqlite . t)
-                                 (typescript . t))))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((C . t)
+     (awk . t)
+     (calc . t)
+     (emacs-lisp . t)
+     (gnuplot . t)
+     (go . t)
+     (js . t)
+     (kotlin . t)
+     (plantuml . t)
+     (python . t)
+     (rust . t)
+     (shell . t)
+     (sql . t)
+     (sqlite . t)
+     (typescript . t)))
+  )
 
 (use-package org-modern :after org
   :config
