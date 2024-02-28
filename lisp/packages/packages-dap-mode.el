@@ -3,7 +3,7 @@
 
 ;;; Code:
 
-(use-package dap-mode :ensure t :after (lsp-mode lsp-treemacs)
+(use-package dap-mode :after (lsp-mode lsp-treemacs)
   :init
   (setq dap-print-io nil)
   (setq dap-auto-configure-features '())

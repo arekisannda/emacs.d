@@ -3,7 +3,7 @@
 
 ;;; Code:
 
-(use-package lsp-mode :ensure t
+(use-package lsp-mode
   :init
   (setq lsp-keymap-prefix nil
         lsp-enable-indentation nil

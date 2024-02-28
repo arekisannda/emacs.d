@@ -3,9 +3,9 @@
 
 ;;; Code:
 
-(use-package i3wm-config-mode :ensure t)
+(use-package i3wm-config-mode)
 
-(use-package lua-mode :ensure t)
+(use-package lua-mode)
 
 (provide 'packages-languages)
 

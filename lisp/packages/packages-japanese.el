@@ -4,24 +4,24 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package mozc :ensure t)
+(use-package mozc)
 
-(use-package google-translate :ensure t :after mozc
+(use-package google-translate :after mozc
   :config
   (setq google-translate-default-source-language "en")
   (setq google-translate-translation-directions-alist
         '(("ja" . "en") ("en" . "ja") ))
   (setq-default default-input-method 'japanese-mozc))
 
-(use-package mozc-cand-posframe :ensure t :after mozc
-  :elpaca (mozc-cand-posframe :type git
+(use-package mozc-cand-posframe :after mozc
+  :ensure (mozc-cand-posframe :type git
                               :host github
                               :repo "arekisannda/mozc-posframe")
   :config
   (setq mozc-candidate-style 'posframe)
   (util/if-daemon-run-after-make-frame (mozc-cand-posframe-init)))
 
-(use-package migemo :ensure t :disabled)
+(use-package migemo :disabled)
 
 (provide 'packages-japanese)
 

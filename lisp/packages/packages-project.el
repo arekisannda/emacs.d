@@ -4,13 +4,13 @@
 ;;; Code:
 
 (use-package project
-  :elpaca nil
+  :ensure nil
   :config
   (setq project-vc-extra-root-markers '(".dir-locals.el")
         project-vc-include-untracked nil
         project-vc-merge-submodules nil))
 
-(use-package ibuffer-project :ensure t
+(use-package ibuffer-project
   :config
   (require 'ibuf-ext)
   (add-hook 'ibuffer-hook

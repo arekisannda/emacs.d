@@ -6,18 +6,18 @@
 (require 'cl-seq)
 (require 'util-helpers)
 
-(use-package which-key :ensure t
+(use-package which-key
   :init
   (setq-default which-key-sort-order 'which-key-description-order)
   :config
   (which-key-mode 1))
 
-(use-package which-key-posframe :ensure t :after which-key :disabled
+(use-package which-key-posframe :after which-key :disabled
   :config
   (setq which-key-posframe-poshandler 'posframe-poshandler-window-bottom-left-corner)
   (which-key-posframe-mode 1))
 
-(use-package vertico :ensure t
+(use-package vertico
   :init
   (setq savehist-file (expand-file-name "var/savehist" user-emacs-directory))
   :config
@@ -46,18 +46,17 @@
   (vertico-multiform-mode 1)
   (savehist-mode 1))
 
-(use-package orderless
-  :ensure t
+(use-package orderless :after vertico
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
-(use-package marginalia :ensure t
+(use-package marginalia :after vertico
   :config
   (marginalia-mode 1))
 
-(use-package consult :ensure t
+(use-package consult :after vertico
   :init
   (setq consult-narrow-key "<"
         register-preview-delay 0.5
@@ -70,18 +69,18 @@
 
   (add-hook 'completion-list-mode-hook #'consult-preview-at-point-mode))
 
-(use-package embark :ensure t
+(use-package embark)
+
+(use-package embark-consult :after (embark consult)
   :config
   (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
-(use-package embark-consult :ensure t :after (embark consult))
+(use-package consult-dir :after consult)
 
-(use-package consult-dir :ensure t :after consult)
-
-(use-package affe :ensure t :after consult)
+(use-package affe :after consult)
 
 (use-package emacs :after (vertico embark ace-window)
-  :elpaca nil
+  :ensure nil
   :config
   (defvar packages/vertico-embark-prompter-map (make-sparse-keymap)
     "Embark completion read prompter map.")
@@ -137,7 +136,7 @@ Passes on ARGS to `embark-act`"
   (packages/vertico--embark-ace-action bookmark-jump))
 
 (use-package emacs :after (vertico which-key)
-  :elpaca nil
+  :ensure nil
   :config
   (setq embark-indicators
         '(packages/vertico--embark-which-key-indicator
@@ -156,7 +155,7 @@ Executes FN with ARGS."
               :around #'packages/vertico--embark-hide-which-key-indicator))
 
 (use-package emacs :after vertico
-  :elpaca nil
+  :ensure nil
   :config
   (defun consult--orderless-regexp-compiler (input type &rest _config)
     (setq input (orderless-pattern-compiler input))

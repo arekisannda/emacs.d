@@ -3,9 +3,9 @@
 
 ;;; Code:
 
-(use-package vterm :ensure t)
+(use-package vterm)
 
-(use-package multi-vterm :ensure t :after vterm
+(use-package multi-vterm :after vterm
   :config
   (defun packages/vterm--multi-vterm ()
     "Create new vterm buffer."

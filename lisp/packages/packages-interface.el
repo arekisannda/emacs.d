@@ -3,22 +3,22 @@
 
 ;;; Code:
 
-(use-package nerd-icons :ensure t)
+(use-package nerd-icons)
 
-(use-package mixed-pitch :ensure t :disabled)
+(use-package mixed-pitch :disabled)
 
-(use-package ranger :ensure t
+(use-package ranger
   :config
   (ranger-override-dired-mode 1))
 
-(use-package rainbow-mode :ensure t
+(use-package rainbow-mode
   :config
   (setq-default rainbow-r-colors-alist '())
   (setq-default rainbow-html-colors-alist '()))
 
-(use-package rainbow-delimiters :ensure t)
+(use-package rainbow-delimiters)
 
-(use-package telephone-line :ensure t :after popper
+(use-package telephone-line :after popper
   :config
   (require 'telephone-line-utils)
   (telephone-line-defsegment* packages/telephone-line-popper-tag-segment ()
@@ -35,14 +35,14 @@
 
   (telephone-line-mode 1))
 
-(use-package ace-window :ensure t :after posframe
+(use-package ace-window :after posframe
   :init
   (setq-default aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
                 aw-dispatch-when-more-than 0)
   :config
   (util/if-daemon-run-after-make-frame (ace-window-posframe-mode 1)))
 
-(use-package dashboard :ensure t :after nerd-icons
+(use-package dashboard :after nerd-icons
   :init
   (setq dashboard-icon-type 'nerd-icons
         dashboard-startup-banner (expand-file-name "assets/logo.png" user-emacs-directory)

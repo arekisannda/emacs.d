@@ -3,32 +3,32 @@
 
 ;;; Code:
 
-(use-package shut-up :ensure t :demand t)
+(use-package shut-up :demand t)
 
-(use-package no-littering :ensure t :demand t)
+(use-package no-littering :demand t)
 
-(use-package diminish :ensure t :demand t)
+(use-package diminish :demand t)
 
-(use-package disable-mouse :ensure t :demand t
+(use-package disable-mouse :demand t
   :diminish disable-mouse-mode
   :config
   (disable-mouse-global-mode 1))
 
-(use-package editorconfig :ensure t :demand t
+(use-package editorconfig :demand t
   :init
   (setq-default editorconfig-lisp-use-default-indent t)
   :config
   (editorconfig-mode 1))
 
-(use-package undo-fu :ensure t :after diminish)
+(use-package undo-fu :after diminish)
 
-(use-package llama :ensure t)
+(use-package llama)
 
-(use-package epkg :ensure t :after llama)
+(use-package epkg :after llama)
 
-(use-package general :ensure t)
+(use-package general)
 
-(use-package hydra :ensure t
+(use-package hydra
   :init (setq-default hydra-key-doc-function nil))
 
 (provide 'packages-base)

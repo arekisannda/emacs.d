@@ -3,7 +3,7 @@
 
 ;;; Code:
 
-(use-package corfu :ensure t :demand t
+(use-package corfu :demand t
   :init
   (setq corfu-map (make-sparse-keymap)
         corfu-popupinfo-map (make-sparse-keymap))
@@ -36,34 +36,34 @@
       (corfu-mode 1)
       (corfu-candidate-overlay-mode 1)))
 
-
   (add-hook 'minibuffer-setup-hook #'packages/corfu-minibuffer-completion-setup)
 
   (global-corfu-mode 1)
   (corfu-popupinfo-mode 1))
 
-(use-package nerd-icons-corfu :ensure t :after corfu
+(use-package nerd-icons-corfu :after corfu
   :init
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 (use-package corfu-terminal :disabled)
 
-(use-package corfu-candidate-overlay :ensure t :after corfu)
+(use-package corfu-candidate-overlay :after corfu
+  :commands (corfu-candidate-overlay))
 
-(use-package cape :ensure t
+(use-package cape
   :config
   (require 'cape-char)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-keyword))
 
-(use-package company-math :ensure t :after latex)
+(use-package company-math :after latex)
 
-(use-package company-reftex :ensure t :after latex)
+(use-package company-reftex :after latex)
 
-(use-package company-auctex :ensure t :after latex)
+(use-package company-auctex :after latex)
 
-(use-package yasnippet-capf :ensure t :after yasnippet
+(use-package yasnippet-capf :after yasnippet
   :config
   (setq yasnippet-capf-lookup-by 'key))
 

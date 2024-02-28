@@ -3,8 +3,8 @@
 
 ;;; Code:
 
-(use-package ext-tab-bar :ensure t :after persp-mode
-  :elpaca (:host github :repo "arekisannda/ext-tab-bar")
+(use-package ext-tab-bar :after persp-mode
+  :ensure (:host github :repo "arekisannda/ext-tab-bar")
   :init
   (setq ext-tab-bar-project-disable-paths
         (list (expand-file-name elpaca-directory)
@@ -14,7 +14,7 @@
   (ext-tab-bar-persp-mode-setup))
 
 (use-package emacs :after ext-tab-bar
-  :elpaca nil
+  :ensure nil
   :config
   (defun ui/tab-bar-tab-name-format (tab i)
     (let ((current-p (eq (car tab) 'current-tab)))
@@ -44,11 +44,11 @@
                          tab-bar-separator))
   (ext-tab-bar-mode))
 
-(use-package easy-color-faces :ensure t
-  :elpaca (:host github :repo "arekisannda/easy-color-faces"))
+(use-package easy-color-faces
+  :ensure (:host github :repo "arekisannda/easy-color-faces"))
 
-(use-package sonokai-theme :ensure t :after easy-color-faces
-  :elpaca (:host github :repo "arekisannda/sonokai-emacs")
+(use-package sonokai-theme :after easy-color-faces
+  :ensure (:host github :repo "arekisannda/sonokai-emacs")
   :config
   (defun packages/themes--sonokai-easy-load-theme ()
     (easy-color-faces-set-colors "yellow" sonokai-yellow)
@@ -72,7 +72,7 @@
   (easy-color-load-theme 'sonokai))
 
 (use-package emacs :after (sonokai-theme ext-tab-bar easy-color-faces)
-  :elpaca nil
+  :ensure nil
   :config
   (util/if-daemon-run-after-make-frame
    (progn

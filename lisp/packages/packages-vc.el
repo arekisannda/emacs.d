@@ -15,12 +15,12 @@
                                         (elpaca--continue-build e))
                                     #'elpaca--activate-package))))
 
-(use-package magit :ensure t)
+(use-package magit)
 
-(use-package forge :ensure t :after magit :disabled)
+(use-package forge :after magit :disabled)
 
-(use-package diff-hl :ensure t :after magit
-  :elpaca (:type git :host github :repo "arekisannda/diff-hl" :branch "master")
+(use-package diff-hl :after magit
+  :ensure (:type git :host github :repo "arekisannda/diff-hl" :branch "master")
   :init
   (setq diff-hl-show-hunk-map (make-sparse-keymap))
   (setq diff-hl-show-staged-changes nil)

@@ -4,7 +4,7 @@
 ;;; Code:
 
 (use-package ediff
-  :elpaca nil
+  :ensure nil
   :config
   ;; (defun ediff-setup-windows-custom (buffer-A buffer-B buffer-C control-buffer))
   (setq ediff-setup-windows-function 'ediff-setup-windows-merge))
@@ -17,10 +17,9 @@
           consult
           persp-mode
           corfu)
-  :elpaca nil
+  :ensure nil
   :diminish auto-revert-mode
   :config
-
   (setq-default window-resize-pixelwise t)
   (setq-default frame-resize-pixelwise t)
   (setq-default hscroll-step 5)

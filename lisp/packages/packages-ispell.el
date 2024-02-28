@@ -4,7 +4,7 @@
 ;;; Code:
 
 (use-package emacs
-  :elpaca nil
+  :ensure nil
   :config
   (require 'ispell)
 

@@ -3,11 +3,11 @@
 
 ;;; Code:
 
-(use-package shackle :ensure t
+(use-package shackle
   :config
   (setq shackle-default-rule '(:same t)))
 
-(use-package popper :ensure t :after (shackle persp-mode)
+(use-package popper :after (shackle persp-mode)
   :config
   (defvar management/window--popper-derived-mode-alist '())
 

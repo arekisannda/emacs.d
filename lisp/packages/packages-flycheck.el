@@ -4,7 +4,7 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package flycheck :ensure t
+(use-package flycheck
   :init
   (setq flycheck-indication-mode nil
         flycheck-mode-line nil
@@ -14,7 +14,7 @@
   :config
   (global-flycheck-mode))
 
-(use-package flycheck-posframe :ensure t :after flycheck
+(use-package flycheck-posframe :after flycheck
   :config
   (util/if-daemon-run-after-make-frame (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode)))
 

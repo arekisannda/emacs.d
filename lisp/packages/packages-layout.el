@@ -4,7 +4,7 @@
 ;;; Code:
 
 (use-package emacs :after consult
-  :elpaca nil
+  :ensure nil
   :config
 
   (defun packages/layout--base ()

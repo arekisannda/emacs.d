@@ -4,7 +4,7 @@
 ;;; Code:
 
 (use-package org
-  :elpaca nil
+  :ensure nil
   :config
   (setq-default  org-startup-with-inline-images t
                  org-startup-indented t
@@ -42,14 +42,14 @@
                   (org-level-8 . 1.00)))
     (set-face-attribute (car face) nil :weight 'regular :height (cdr face))))
 
-(use-package ob-go :ensure t)
+(use-package ob-go)
 
-(use-package ob-rust :ensure t)
+(use-package ob-rust)
 
-(use-package ob-typescript :ensure t)
+(use-package ob-typescript)
 
 (use-package emacs :after (ob-go ob-rust ob-typescript)
-  :elpaca nil
+  :ensure nil
   :config
   (setq-default org-confirm-babel-evaluate nil)
   (org-babel-do-load-languages 'org-babel-load-languages
@@ -67,16 +67,15 @@
                                  (sqlite . t)
                                  (typescript . t))))
 
-(use-package org-modern :ensure t :after org
+(use-package org-modern :after org
   :config
   (setq org-modern-internal-target '(" ↪ " t " ")
         org-modern-radio-target '("  " t " ")
         org-modern-progress '("󰝦" "󰪞" "󰪟" "󰪠" "󰪡" "󰪢" "󰪣" "󰪤" "󰪥")
-        org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦")))
-  )
+        org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦"))))
 
-(use-package emacs :after (sonokai-theme org org-modern)
-  :elpaca nil
+(use-package emacs :after (sonokai-theme org org-modern easy-color-faces)
+  :ensure nil
   :config
   (util/if-daemon-run-after-make-frame
    (progn

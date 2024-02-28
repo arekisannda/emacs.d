@@ -3,20 +3,20 @@
 
 ;;; Code:
 
-(use-package treemacs :ensure t)
+(use-package treemacs)
 
-(use-package treemacs-nerd-icons :ensure t :after treemacs)
+(use-package treemacs-nerd-icons :after treemacs)
 
-(use-package treemacs-evil :ensure t :after treemacs)
+(use-package treemacs-evil :after treemacs)
 
-(use-package treemacs-persp :ensure t :after (treemacs persp-mode))
+(use-package treemacs-persp :after (treemacs persp-mode))
 
-(use-package treemacs-magit :ensure t :after (treemacs magit))
+(use-package treemacs-magit :after (treemacs magit))
 
-(use-package lsp-treemacs :ensure t :after (treemacs lsp-mode))
+(use-package lsp-treemacs :after (treemacs lsp-mode))
 
 (use-package emacs :after (treemacs treemacs-nerd-icons)
-  :elpaca nil
+  :ensure nil
   :config
   (require 'treemacs-persp)
   (treemacs-load-theme "nerd-icons")

@@ -4,7 +4,7 @@
 ;;; Code:
 
 (use-package emacs :after easy-color-faces
-  :elpaca nil
+  :ensure nil
   :config
   (defvar ui/code-editor--fold-overlay-string
     (concat " "
