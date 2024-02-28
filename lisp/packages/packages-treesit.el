@@ -23,6 +23,7 @@
                   (html . ("https://github.com/tree-sitter/tree-sitter-html.git"))
                   (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript.git"))
                   (json . ("https://github.com/tree-sitter/tree-sitter-json.git"))
+                  (kotlin . ("https://github.com/fwcd/tree-sitter-kotlin"))
                   (latex . ("https://github.com/latex-lsp/tree-sitter-latex.git"))
                   (lua . ("https://github.com/Azganoth/tree-sitter-lua"))
                   (python . ("https://github.com/tree-sitter/tree-sitter-python.git"))

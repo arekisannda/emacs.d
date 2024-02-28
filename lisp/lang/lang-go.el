@@ -1,4 +1,4 @@
-;;; lang-go.el --- Description -*- lexical-binding: t; -*-
+;;; lang-go.el --- Golang Configurations -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

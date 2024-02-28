@@ -48,7 +48,9 @@
 
 (use-package ob-typescript)
 
-(use-package emacs :after (ob-go ob-rust ob-typescript)
+(use-package ob-kotlin)
+
+(use-package emacs :after (ob-go ob-rust ob-kotlin ob-typescript)
   :ensure nil
   :config
   (setq-default org-confirm-babel-evaluate nil)
@@ -59,6 +61,7 @@
                                  (emacs-lisp . t)
                                  (go . t)
                                  (js . t)
+                                 (kotlin . t)
                                  (plantuml . t)
                                  (python . t)
                                  (rust . t)

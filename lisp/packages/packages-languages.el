@@ -7,6 +7,8 @@
 
 (use-package lua-mode)
 
+(use-package kotlin-ts-mode)
+
 (provide 'packages-languages)
 
 ;;; packages-languages.el ends here
