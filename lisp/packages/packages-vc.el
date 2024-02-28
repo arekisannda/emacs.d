@@ -45,7 +45,6 @@
   (global-diff-hl-mode nil)
   (fringe-mode 5))
 
-
 (provide 'packages-vc)
 
 ;;; packages-vc.el ends here

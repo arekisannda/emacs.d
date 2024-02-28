@@ -17,11 +17,8 @@
         lsp-completion-show-detail nil
         lsp-completion-show-kind nil
         lsp-ui-doc-enable nil
-        lsp-enable-on-type-formatting nil)
-  ;; performance tuning
-  (setq gc-cons-threshold (* 1024 1024 100))
-  (setq read-process-output-max (* 1024 1024))
-  (setq lsp-idle-delay 0.1)
+        lsp-enable-on-type-formatting nil
+        lsp-idle-delay 0.1)
   :commands (lsp lsp-mode lsp-deferred)
   :config
   (setq lsp-command-map (make-sparse-keymap)))

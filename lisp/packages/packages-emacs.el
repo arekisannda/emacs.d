@@ -28,6 +28,11 @@
   (setq-default tab-width 4)
   (setq-default display-line-numbers-type 'relative)
 
+  ;; performance tuning
+  (defvar packages/emacs-gc-cons-threshold (* 1024 1024 100))
+  (setq gc-cons-threshold packages/emacs-gc-cons-threshold)
+  (setq read-process-output-max (* 1024 1024))
+
   (defvar packages/emacs--read-only-prefixes-list
     (list (expand-file-name elpaca-directory)
           (expand-file-name package-user-dir))
@@ -54,6 +59,15 @@
   (add-hook 'find-file-hook #'packages/emacs--read-only-by-prefix)
   (add-hook 'help-mode-hook #'packages/emacs--visual-line-mode-setup)
   (add-hook 'elpaca-after-init-hook #'(lambda () (load custom-file 'noerror)))
+
+  (defun packages/emacs--minibuffer-setup ()
+    (setq gc-cons-threshold most-positive-fixnum))
+
+  (defun packages/emacs--minibuffer-exit ()
+    (setq gc-cons-threshold packages/emacs-gc-cons-threshold))
+
+  (add-hook 'minibuffer-setup-hook #'packages/emacs--minibuffer-setup)
+  (add-hook 'minibuffer-exit-hook #'packages/emacs--minibuffer-exit)
 
   (require 'lang-generic)
   (require 'lang-elisp)

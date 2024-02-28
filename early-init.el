@@ -6,7 +6,7 @@
 ;; Prevent package.el loading packages prior to their init-file loading.
 (setq package-enable-at-startup nil)
 (setq load-prefer-newer t)
-(setq gc-cons-threshold (* 1024 1024 100))
+(setq gc-cons-threshold most-positive-fixnum)
 
 (setq configs/user-config-dir (expand-file-name "~/.config"))
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
