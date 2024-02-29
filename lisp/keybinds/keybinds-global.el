@@ -12,6 +12,8 @@
   "C-<tab>"
   "C-S-<tab>"
   "C-S-<iso-lefttab>"
+  "C-M-\\"
+  "C-\\"
   "C-?")
 
 (general-create-definer keybinds/global)
@@ -25,17 +27,19 @@
   "C-<up>"      '("focus up"            . evil-window-up)
   "C-<down>"    '("focus down"          . evil-window-down)
 
-  "C-<tab>"     '("toggle popper"       . popper-toggle)
-  "C-S-<tab>"   '("toggle popper type"  . popper-toggle-type)
-
   "M-["         '("prev tab"            . tab-previous)
   "M-]"         '("next tab"            . tab-next)
   "M-{"         '("prev popup"          . popper-cycle-backwards)
   "M-}"         '("next popup"          . popper-cycle)
   "M-\\"        '("ace-window"          . ace-window)
-  "M-0"         '("focus treemacs"      . treemacs-select-window))
+  "M-0"         '("focus treemacs"      . treemacs-select-window)
+
+  "C-M-\\"      '("toggle input"        . toggle-input-method))
 
 (keybinds/global global
+  "C-<tab>"     '("toggle popper"       . popper-toggle)
+  "C-S-<tab>"   '("toggle popper type"  . popper-toggle-type)
+
   "C-<next>"    '("scroll left"         . keybinds/custom--scroll-left)
   "C-<prior>"   '("scroll right"        . keybinds/custom--scroll-right)
   "<prior>"     '("scroll up"           . keybinds/custom--scroll-up)

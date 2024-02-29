@@ -1,8 +1,6 @@
 ;;; keybinds-session.el --- Emacs Session Keybindings -*- lexical-binding: t; -*-
 ;;; Commentary:
 
-;;  other thing
-
 ;;; Code:
 (require 'general)
 (require 'keybinds-custom)
@@ -53,7 +51,7 @@
 
 (keybinds/session-tools
   "p"    '("package try"         . elpaca-try)
-  "P"    '("pakcage manager"     . elpaca-manager)
+  "P"    '("package manager"     . elpaca-manager)
   "f"    '("ranger buffer"       . ranger)
   "s"    '("scratch buffer"      . scratch-buffer)
 
