@@ -11,14 +11,14 @@
 
 (use-package disable-mouse :demand t
   :diminish disable-mouse-mode
-  :config
-  (disable-mouse-global-mode 1))
+  :hook
+  (elpaca-after-init . disable-mouse-global-mode))
 
 (use-package editorconfig :demand t
-  :init
-  (setq-default editorconfig-lisp-use-default-indent t)
+  :hook
+  (elpaca-after-init . editorconfig-mode)
   :config
-  (editorconfig-mode 1))
+  (setq-default editorconfig-lisp-use-default-indent t))
 
 (use-package undo-fu :after diminish)
 
@@ -29,7 +29,8 @@
 (use-package general)
 
 (use-package hydra
-  :init (setq-default hydra-key-doc-function nil))
+  :init
+  (setq-default hydra-key-doc-function nil))
 
 (provide 'packages-base)
 

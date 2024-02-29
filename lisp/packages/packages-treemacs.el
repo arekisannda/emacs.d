@@ -13,8 +13,6 @@
 
 (use-package treemacs-magit :after (treemacs magit))
 
-(use-package lsp-treemacs :after (treemacs lsp-mode))
-
 (use-package emacs :after (treemacs treemacs-nerd-icons)
   :ensure nil
   :config

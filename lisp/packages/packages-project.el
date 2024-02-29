@@ -5,18 +5,17 @@
 
 (use-package project
   :ensure nil
-  :config
-  (setq project-vc-extra-root-markers '(".dir-locals.el")
-        project-vc-include-untracked nil
-        project-vc-merge-submodules nil))
+  :custom
+  (project-vc-extra-root-markers '(".dir-locals.el"))
+  (project-vc-include-untracked nil)
+  (project-vc-merge-submodules nil))
 
 (use-package ibuffer-project
-  :config
+  :preface
   (require 'ibuf-ext)
-  (add-hook 'ibuffer-hook
-            #'(lambda ()
-                (setq ibuffer-filter-groups
-                      (ibuffer-project-generate-filter-groups)))))
+  :hook
+  (ibuffer . (lambda () (setq ibuffer-filter-groups
+                              (ibuffer-project-generate-filter-groups)))))
 
 (provide 'packages-project)
 

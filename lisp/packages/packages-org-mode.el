@@ -5,33 +5,32 @@
 
 (use-package org
   :ensure nil
+  :custom
+  (org-startup-with-inline-images t)
+  (org-image-actual-width nil)
+  (org-startup-indented t)
+  (org-auto-align-tags nil)
+  (org-tags-column 0)
+  (org-catch-invisible-edits 'show-and-error)
+  (org-special-ctrl-a/e t)
+  (org-insert-heading-respect-content t)
+
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+  (org-ellipsis " ... ") ;; folding symbol
+
+  (org-fontify-whole-heading-line t)
+  (org-fontify-done-headline t)
+  (org-fontify-quote-and-verse-blocks t)
+
+  (org-agenda-tags-column 0)
+  (org-agenda-block-separator ?─)
+  (org-agenda-time-grid '((daily today require-timed)
+                          (800 1000 1200 1400 1600 1800 2000)
+                          " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
+  (org-agenda-current-time-string
+   "◀── now ─────────────────────────────────────────────────")
   :config
-  (setq-default  org-startup-with-inline-images t
-                 org-image-actual-width nil
-                 org-startup-indented t
-                 org-auto-align-tags nil
-                 org-tags-column 0
-                 org-catch-invisible-edits 'show-and-error
-                 org-special-ctrl-a/e t
-                 org-insert-heading-respect-content t
-
-                 org-hide-emphasis-markers t
-                 org-pretty-entities t
-                 org-ellipsis " ... " ;; folding symbol
-
-                 ;; show actually italicized text instead of /italicized text/
-                 org-fontify-whole-heading-line t
-                 org-fontify-done-headline t
-                 org-fontify-quote-and-verse-blocks t
-
-                 org-agenda-tags-column 0
-                 org-agenda-block-separator ?─
-                 org-agenda-time-grid
-                 '((daily today require-timed)
-                   (800 1000 1200 1400 1600 1800 2000)
-                   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
-                 org-agenda-current-time-string
-                 "◀── now ─────────────────────────────────────────────────")
 
   (dolist (face `((org-level-1 . 1.30)
                   (org-level-2 . 1.25)
@@ -55,46 +54,45 @@
 
 (use-package emacs :after (ob-go ob-rust ob-kotlin ob-typescript gnuplot)
   :ensure nil
-  :config
-  (setq-default org-confirm-babel-evaluate nil)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((C . t)
-     (awk . t)
-     (calc . t)
-     (emacs-lisp . t)
-     (gnuplot . t)
-     (go . t)
-     (js . t)
-     (kotlin . t)
-     (plantuml . t)
-     (python . t)
-     (rust . t)
-     (shell . t)
-     (sql . t)
-     (sqlite . t)
-     (typescript . t)))
-  )
+  :custom
+  (org-confirm-babel-evaluate nil)
+  (org-babel-load-languages '((C . t)
+                              (awk . t)
+                              (calc . t)
+                              (emacs-lisp . t)
+                              (gnuplot . t)
+                              (go . t)
+                              (js . t)
+                              (kotlin . t)
+                              (plantuml . t)
+                              (python . t)
+                              (rust . t)
+                              (shell . t)
+                              (sql . t)
+                              (sqlite . t)
+                              (typescript . t))))
 
 (use-package org-modern :after org
-  :config
-  (setq org-modern-internal-target '(" ↪ " t " ")
-        org-modern-radio-target '("  " t " ")
-        org-modern-progress '("󰝦" "󰪞" "󰪟" "󰪠" "󰪡" "󰪢" "󰪣" "󰪤" "󰪥")
-        org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦"))))
+  :custom
+  (org-modern-internal-target '(" ↪ " t " "))
+  (org-modern-radio-target '("  " t " "))
+  (org-modern-progress '("󰝦" "󰪞" "󰪟" "󰪠" "󰪡" "󰪢" "󰪣" "󰪤" "󰪥"))
+  (org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦"))))
 
 (use-package emacs :after (sonokai-theme org org-modern easy-color-faces)
   :ensure nil
-  :config
-  (util/if-daemon-run-after-make-frame
-   (progn
-     (set-face-attribute 'org-checkbox nil
-                         :height +fonts-fixed-pitch-size
-                         :box nil)
-     (set-face-attribute 'org-modern-label nil
-                         :height +fonts-fixed-pitch-size
-                         :box '(:line-width 5 :style flat-button))
-     )))
+  :preface
+  (defun +themes-configure-org-fonts ()
+    (set-face-attribute 'org-checkbox nil
+                        :height +fonts-fixed-pitch-size
+                        :box nil)
+    (set-face-attribute 'org-modern-label nil
+                        :height +fonts-fixed-pitch-size
+                        :box '(:line-width 5 :style flat-button))
+    )
+  :hook
+  (window-setup . +themes-configure-org-fonts)
+  (server-after-make-frame-hook . +themes-configure-org-fonts))
 
 (provide 'packages-org-mode)
 

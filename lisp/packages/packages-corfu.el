@@ -7,21 +7,28 @@
   :init
   (setq corfu-map (make-sparse-keymap)
         corfu-popupinfo-map (make-sparse-keymap))
-  :config
-  (setq-default corfu-cycle nil
-                corfu-auto nil
-                corfu-on-exact-match 'show
-                corfu-popupinfo-delay (cons nil 0.5)
-                corfu-min-width 40
-                corfu-max-width 100
-                corfu-left-margin-width 1.0
-                corfu-right-margin-width 1.0
-                corfu-scroll-margin 2
-                corfu-bar-width 0.5)
-  (setq-default completion-cycle-threshold nil)
-  (setq-default tab-always-indent nil)
+  :custom
+  (corfu-cycle nil)
+  (corfu-auto nil)
+  (corfu-on-exact-match 'show)
+  (corfu-popupinfo-delay (cons nil 0.5))
+  (corfu-min-width 40)
+  (corfu-max-width 100)
+  (corfu-left-margin-width 1.0)
+  (corfu-right-margin-width 1.0)
+  (corfu-scroll-margin 2)
+  (corfu-popupinfo-delay (cons nil 0.5))
+  (corfu-bar-width 0.5)
+  (completion-cycle-threshold nil)
+  (tab-always-indent nil)
+  :hook
+  (elpaca-after-init . global-corfu-mode)
+  (elpaca-after-init . corfu-popupinfo-mode))
 
-  (defun packages/corfu-minibuffer-completion-setup ()
+(use-package emacs :after corfu
+  :ensure nil
+  :preface
+  (defun +corfu-minibuffer-completion-setup ()
     "Setup to run for minibuffer mode."
     (shut-up
       (when (local-variable-p 'completion-at-point-functions)
@@ -35,11 +42,8 @@
 
       (corfu-mode 1)
       (corfu-candidate-overlay-mode 1)))
-
-  (add-hook 'minibuffer-setup-hook #'packages/corfu-minibuffer-completion-setup)
-
-  (global-corfu-mode 1)
-  (corfu-popupinfo-mode 1))
+  :hook
+  (minibuffer-setup . +corfu-minibuffer-completion-setup))
 
 (use-package nerd-icons-corfu :after corfu
   :init
@@ -64,8 +68,8 @@
 (use-package company-auctex :after latex)
 
 (use-package yasnippet-capf :after yasnippet
-  :config
-  (setq yasnippet-capf-lookup-by 'key))
+  :custom
+  (yasnippet-capf-lookup-by 'key))
 
 (provide 'packages-corfu)
 

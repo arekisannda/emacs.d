@@ -145,8 +145,7 @@
   "n"   '("insert nerd-icon"     . nerd-icons-insert))
 
 (keybinds/editor-translate
-  "t"   '("translate to"         . google-translate-at-point)
-  "T"   '("translate from"       . google-translate-at-point-reverse))
+  "t"   '("translate"         . google-translate-smooth-translate))
 
 (provide 'keybinds-editor)
 

@@ -3,81 +3,99 @@
 
 ;;; Code:
 
-(use-package ediff
-  :ensure nil
-  :config
-  ;; (defun ediff-setup-windows-custom (buffer-A buffer-B buffer-C control-buffer))
-  (setq ediff-setup-windows-function 'ediff-setup-windows-merge))
-
 (use-package emacs
-  :after (general
-          hydra
-          evil
-          vertico
-          consult
-          persp-mode
-          corfu)
   :ensure nil
-  :diminish auto-revert-mode
-  :config
-  (setq-default window-resize-pixelwise t)
-  (setq-default frame-resize-pixelwise t)
-  (setq-default hscroll-step 5)
-  (setq-default scroll-step 5)
-  (setq-default tab-width 4)
-  (setq-default display-line-numbers-type 'relative)
+  ;; :diminish auto-revert-mode
+  :custom
+  (display-line-numbers-type 'relative)
+  :preface
+  (defun +emacs-tuning-configurations ()
+    ;; performance tuning
+    (defvar packages/emacs-gc-cons-threshold (* 1024 1024 100))
+    (setq gc-cons-threshold packages/emacs-gc-cons-threshold)
+    (setq read-process-output-max (* 1024 1024)))
 
-  (setq-default fringe-styles 'default)
-  (setq-default fringe-indicator-alist nil)
-  (fringe-mode 5)
+  (defun +emacs-configurations ()
+    (setq-default window-resize-pixelwise t)
+    (setq-default frame-resize-pixelwise t)
+    (setq-default hscroll-step 5)
+    (setq-default scroll-step 5)
+    (setq-default tab-width 4)
+    (setq-default tab-bar-separator "")
 
-  ;; performance tuning
-  (defvar packages/emacs-gc-cons-threshold (* 1024 1024 100))
-  (setq gc-cons-threshold packages/emacs-gc-cons-threshold)
-  (setq read-process-output-max (* 1024 1024))
+    (setq-default fringe-styles 'default)
+    (setq-default fringe-indicator-alist nil)
+    (fringe-mode 5))
 
-  (defvar packages/emacs--read-only-prefixes-list
+  (defvar +emacs-read-only-prefixes-list
     (list (expand-file-name elpaca-directory)
           (expand-file-name package-user-dir))
     "List of read-only file prefixes.")
 
-  (defun packages/emacs--read-only-by-prefix ()
-    "Enable `read-only-mode` if buffer includes one of `packages/emacs--read-only-prefixes-list`."
+  (defun +emacs-set-read-only-by-prefix ()
+    "Enable `read-only-mode` if buffer includes one of `+emacs-read-only-prefixes-list`."
     (when (and buffer-file-name
-               (cl-loop for prefix in packages/emacs--read-only-prefixes-list
+               (cl-loop for prefix in +emacs-read-only-prefixes-list
                         thereis (string-prefix-p prefix buffer-file-name)))
       (read-only-mode 1)))
 
-  (defun packages/emacs--visual-line-mode-setup ()
+  (defun +emacs-set-visual-line-mode ()
     "Setup to run for non `prog-mode` major modes."
     (setq truncate-lines nil)
     (visual-line-mode 1))
 
-  (defun packages/emacs--exec-on-save ()
+  (defun +emacs-exec-on-save ()
     "Operations to be executed on buffer save."
     (delete-trailing-whitespace)
     (untabify (point-min) (point-max)))
 
-  (add-hook 'before-save-hook #'packages/emacs--exec-on-save)
-  (add-hook 'find-file-hook #'packages/emacs--read-only-by-prefix)
-  (add-hook 'help-mode-hook #'packages/emacs--visual-line-mode-setup)
-  (add-hook 'elpaca-after-init-hook #'(lambda () (load custom-file 'noerror)))
-
-  (defun packages/emacs--minibuffer-setup ()
+  (defun +emacs-minibuffer-setup ()
     (setq gc-cons-threshold most-positive-fixnum))
 
-  (defun packages/emacs--minibuffer-exit ()
+  (defun +emacs-minibuffer-exit ()
     (setq gc-cons-threshold packages/emacs-gc-cons-threshold))
 
-  (add-hook 'minibuffer-setup-hook #'packages/emacs--minibuffer-setup)
-  (add-hook 'minibuffer-exit-hook #'packages/emacs--minibuffer-exit)
+  (defun +emacs-evil-mode-setup ()
+    (dolist (mode '(vterm-mode
+                    ranger-mode
+                    elpaca-ui-mode
+                    message-mode
+                    special-mode
+                    dap-ui-breakpoints-ui-list-mode
+                    eglot-list-connections-mode))
+      (add-to-list 'evil-emacs-state-modes mode)))
 
-  (require 'keybinds-global)
-  (require 'keybinds-evil)
-  (require 'keybinds-session)
-  (require 'keybinds-editor)
-  (require 'keybinds-search)
-  (require 'keybinds-completion))
+  (defun +emacs-load-keybinds ()
+    (require 'keybinds-global)
+    (require 'keybinds-evil)
+    (require 'keybinds-session)
+    (require 'keybinds-editor)
+    (require 'keybinds-search)
+    (require 'keybinds-completion))
+
+  (defun +emacs-modeline-setup ()
+    (require 'telephone-line-utils)
+    (telephone-line-defsegment* +popper-telephone-line-tag-segment ()
+      (if popper-popup-status "󰊠" nil))
+
+    (setq telephone-line-lhs '((evil   . (+popper-telephone-line-tag-segment
+                                          telephone-line-evil-tag-segment))
+                               (accent . (telephone-line-vc-segment
+                                          telephone-line-erc-modified-channels-segment
+                                          telephone-line-process-segment))
+                               (nil    . (telephone-line-projectile-segment
+                                          telephone-line-buffer-segment)))))
+  :hook
+  (before-save . +emacs-exec-on-save)
+  (find-file . +emacs-set-read-only-by-prefix)
+  (help-mode . +emacs-set-visual-line-mode)
+  (elpaca-after-init . (lambda () (load custom-file 'noerror)))
+  (minibuffer-setup . +emacs-minibuffer-setup)
+  (minibuffer-exit . +emacs-minibuffer-exit)
+  (emacs-startup . +emacs-tuning-configurations)
+  (emacs-startup . +emacs-configurations)
+  (elpaca-after-init . +emacs-evil-mode-setup)
+  (emacs-startup . +emacs-load-keybinds))
 
 (provide 'packages-emacs)
 

@@ -75,22 +75,26 @@
   "C-f"         '("insert file"         . consult-find)
   "C-."         '("consult narrow"      . consult-narrow))
 
-(keybinds/global packages/vertico-embark-prompter-map
+(keybinds/global +vertico-embark-prompter-map
   "<escape>"    '("abort"               . abort-minibuffers)
   "C-<tab>"     '("toggle prompter"     . abort-recursive-edit))
 
 (keybinds/global vertico-map
   "<escape>"    '("abort"               . abort-minibuffers)
-  "C-<tab>"     '("toggle prompter"     . packages/vertico-embark-act-with-completing-read))
+  "C-<tab>"     '("toggle prompter"     . +vertico-embark-act-with-completing-read))
 
 (keybinds/global embark-file-map
-  "o"           '("embark-ace file"     . packages/vertico--embark-ace-find-file))
+  "o"           '("embark-ace file"     . +vertico-embark-ace-find-file))
 
 (keybinds/global embark-buffer-map
-  "o"           '("embark-ace buffer"   . packages/vertico--embark-ace-switch-to-buffer))
+  "o"           '("embark-ace buffer"   . +vertico-embark-ace-switch-to-buffer))
 
 (keybinds/global embark-bookmark-map
-  "o"           '("embark-ace bookmark" . packages/vertico--embark-ace-bookmark-jump))
+  "o"           '("embark-ace bookmark" . +vertico-embark-ace-bookmark-jump))
+
+(keybinds/global google-translate-minibuffer-keymap
+  "<tab>"       '("next translation"    . google-translate-next-translation-direction)
+  "<backtab>"   '("prev translation"    . google-translate-previous-translation-direction))
 
 (provide 'keybinds-global)
 

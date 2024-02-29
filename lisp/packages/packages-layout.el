@@ -3,15 +3,14 @@
 
 ;;; Code:
 
-(use-package emacs :after consult
+(use-package emacs
   :ensure nil
   :config
-
-  (defun packages/layout--base ()
+  (defun +layout-base ()
     "1x1 layout."
     (delete-other-windows))
 
-  (defun packages/layout--tile ()
+  (defun +layout-tile ()
     "2x2 layout."
     (delete-other-windows)
     (split-window-below)
@@ -21,20 +20,20 @@
     (balance-windows)
     (other-window -2))
 
-  (defun packages/layout--col-2 ()
+  (defun +layout-col-2 ()
     "2x1 layout."
     (delete-other-windows)
     (split-window-right)
     (balance-windows))
 
-  (defun packages/layout--col-2-left ()
+  (defun +layout-col-2-left ()
     "2x1 layout with 1x2 left column."
     (delete-other-windows)
     (split-window-right)
     (split-window-below)
     (balance-windows))
 
-  (defun packages/layout--col-2-right ()
+  (defun +layout-col-2-right ()
     "2x1 layout with 1x2 right column."
     (delete-other-windows)
     (split-window-right)
@@ -43,20 +42,20 @@
     (balance-windows)
     (other-window -1))
 
-  (defun packages/layout--row-2 ()
+  (defun +layout-row-2 ()
     "1x2 layout."
     (delete-other-windows)
     (split-window-below)
     (balance-windows))
 
-  (defun packages/layout--row-2-top ()
+  (defun +layout-row-2-top ()
     "1x2 layout with 2x1 top row."
     (delete-other-windows)
     (split-window-below)
     (split-window-right)
     (balance-windows))
 
-  (defun packages/layout--row-2-bottom ()
+  (defun +layout-row-2-bottom ()
     "1x2 layout with 2x1 bottom row."
     (delete-other-windows)
     (split-window-below)
@@ -65,14 +64,14 @@
     (balance-windows)
     (other-window -1))
 
-  (defun packages/layout--col-3 ()
+  (defun +layout-col-3 ()
     "3x1 layout."
     (delete-other-windows)
     (split-window-right)
     (split-window-right)
     (balance-windows))
 
-  (defun packages/layout--col-3-left ()
+  (defun +layout-col-3-left ()
     "3x1 layout with 1x2 left column."
     (delete-other-windows)
     (split-window-right)
@@ -80,7 +79,7 @@
     (split-window-below)
     (balance-windows))
 
-  (defun packages/layout--col-3-right ()
+  (defun +layout-col-3-right ()
     "3x1 layout with 1x2 right column."
     (delete-other-windows)
     (split-window-right)
@@ -90,7 +89,7 @@
     (balance-windows)
     (other-window -2))
 
-  (defun packages/layout--col-3-both ()
+  (defun +layout-col-3-both ()
     "3x1 layout with 1x2 left/right splits."
     (delete-other-windows)
     (split-window-right)
@@ -101,24 +100,24 @@
     (balance-windows)
     (other-window -3))
 
-  (defvar packages/layout--layouts-alist
-    '(("base"           . packages/layout--base)
-      ("tile"           . packages/layout--tile)
-      ("column-2"       . packages/layout--col-2)
-      ("column-2-left"  . packages/layout--col-2-left)
-      ("column-2-right" . packages/layout--col-2-right)
-      ("column-3-both"  . packages/layout--col-3-both)
-      ("row-2"          . packages/layout--row-2)
-      ("row-2-top"      . packages/layout--row-2-top)
-      ("row-2-bottom"   . packages/layout--row-2-bottom)
-      ("column-3"       . packages/layout--col-3)
-      ("column-3-left"  . packages/layout--col-3-left)
-      ("column-3-right" . packages/layout--col-3-right)
-      ("column-3-both"  . packages/layout--col-3-both)))
+  (defvar +layout-layouts-alist
+    '(("base"           . +layout-base)
+      ("tile"           . +layout-tile)
+      ("column-2"       . +layout-col-2)
+      ("column-2-left"  . +layout-col-2-left)
+      ("column-2-right" . +layout-col-2-right)
+      ("column-3-both"  . +layout-col-3-both)
+      ("row-2"          . +layout-row-2)
+      ("row-2-top"      . +layout-row-2-top)
+      ("row-2-bottom"   . +layout-row-2-bottom)
+      ("column-3"       . +layout-col-3)
+      ("column-3-left"  . +layout-col-3-left)
+      ("column-3-right" . +layout-col-3-right)
+      ("column-3-both"  . +layout-col-3-both)))
 
-  (defun packages/layout--create-candidate (layout)
+  (defun +layout-create-candidate (layout)
     "Create LAYOUT consult candidate."
-    (let* ((layout-recipe (assoc layout packages/layout--layouts-alist))
+    (let* ((layout-recipe (assoc layout +layout-layouts-alist))
            (help-info (documentation (cdr layout-recipe))))
       (concat (propertize (util/strings-pad-string layout 20)
                           'face '(:inherit 'default)
@@ -128,12 +127,12 @@
               (propertize help-info
                           'face '(:inherit 'font-lock-comment-face :underline '(:style 'line))))))
 
-  (defun packages/layout--items ()
+  (defun +layout-items ()
     "Return itemized list of layout candidates."
-    (mapcar #'packages/layout--create-candidate
-            (mapcar #'car packages/layout--layouts-alist)))
+    (mapcar #'+layout-create-candidate
+            (mapcar #'car +layout-layouts-alist)))
 
-  (defun packages/layout--action (cand)
+  (defun +layout-action (cand)
     "Execute CAND layout recipe."
     (let ((recipe (get-text-property 0 'consult--candidate cand)))
       (funcall (cdr recipe))))
@@ -142,16 +141,16 @@
     (list :name     "Layouts"
           :narrow   ?l
           :category 'layouts
-          :items    #'packages/layout--items
-          :action   #'packages/layout--action))
+          :items    #'+layout-items
+          :action   #'+layout-action))
 
   (defun consult-layouts ()
     "Search for predefined layouts."
     (interactive)
+    (require 'consult)
     (consult--multi '(consult--source-layouts)
                     :prompt "Switch layout: "
-                    :sort t))
-  )
+                    :sort t)))
 
 (provide 'packages-layout)
 

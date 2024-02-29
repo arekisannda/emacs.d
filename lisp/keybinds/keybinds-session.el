@@ -46,7 +46,7 @@
 
 (keybinds/session-term
   "v"    '("toggle project term" . multi-vterm-project)
-  "V"    '("create term"         . packages/vterm--multi-vterm)
+  "V"    '("create term"         . +vterm-custom-multi-vterm)
   "r"    '("rename term"         . multi-vterm-rename-buffer))
 
 (keybinds/session-tools

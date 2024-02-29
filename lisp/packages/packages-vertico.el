@@ -7,87 +7,74 @@
 (require 'util-helpers)
 
 (use-package which-key
-  :init
-  (setq-default which-key-sort-order 'which-key-description-order)
-  :config
-  (which-key-mode 1))
+  :custom
+  (which-key-sort-order 'which-key-description-order)
+  :hook
+  (elpaca-after-init . which-key-mode))
 
 (use-package which-key-posframe :after which-key :disabled
-  :config
-  (setq which-key-posframe-poshandler 'posframe-poshandler-window-bottom-left-corner)
-  (which-key-posframe-mode 1))
+  :custom
+  (which-key-posframe-poshandler 'posframe-poshandler-window-bottom-left-corner)
+  :hook
+  (which-key-mode . which-key-posframe-mode))
 
 (use-package vertico
-  :init
-  (setq savehist-file (expand-file-name "var/savehist" user-emacs-directory))
-  :config
-
-  (defun packages/vertico--sort-directories-first (files)
+  :preface
+  (defun +vertico-sort-directories-first (files)
     "Sort FILES by directories first."
     (setq files (vertico-sort-history-length-alpha files))
     (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
            (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
+  :custom
+  (savehist-file (expand-file-name "var/savehist" user-emacs-directory))
+  (vertico-multiform-commands
+   `((find-file (vertico-sort-override-function . vertico-sort-alpha))
+     (project-switch-project (vertico-sort-override-function . +vertico-sort-directories-first))
+     (project-kill-buffers (vertico-sort-override-function . +vertico-sort-directories-first))
+     (project-find-file (vertico-sort-override-function . +vertico-sort-directories-first))
+     (project-find-dir (vertico-sort-override-function . +vertico-sort-directories-first))
+     (project-forget-project (vertico-sort-override-function . +vertico-sort-directories-first))
+     (project-forget-project-under (vertico-sort-override-function . +vertico-sort-directories-first))
+     (describe-symbol (vertico-sort-override-function . vertico-sort-alpha))))
 
-  (setq vertico-multiform-commands
-        `((find-file (vertico-sort-override-function . vertico-sort-alpha))
-          (project-switch-project (vertico-sort-override-function . packages/vertico--sort-directories-first))
-          (project-kill-buffers (vertico-sort-override-function . packages/vertico--sort-directories-first))
-          (project-find-file (vertico-sort-override-function . packages/vertico--sort-directories-first))
-          (project-find-dir (vertico-sort-override-function . packages/vertico--sort-directories-first))
-          (project-forget-project (vertico-sort-override-function . packages/vertico--sort-directories-first))
-          (project-forget-project-under (vertico-sort-override-function . packages/vertico--sort-directories-first))
-          (describe-symbol (vertico-sort-override-function . vertico-sort-alpha))))
-
-  (setq vertico-multiform-categories
-        `((file (vertico-sort-override-function . packages/vertico--sort-directories-first))
-          (consult-grep buffer (vertico-buffer-display-action . (display-buffer-same-window)))))
-
-  (vertico-mode 1)
-  (vertico-multiform-mode 1)
-  (savehist-mode 1))
-
-(use-package orderless :after vertico
-  :init
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+  (vertico-multiform-categories
+   `((file (vertico-sort-override-function . +vertico-sort-directories-first))
+     (consult-grep buffer (vertico-buffer-display-action . (display-buffer-same-window)))))
+  :hook
+  (elpaca-after-init . vertico-mode)
+  (vertico-mode . vertico-multiform-mode)
+  (vertico-mode . savehist-mode))
 
 (use-package marginalia :after vertico
-  :config
-  (marginalia-mode 1))
+  :hook
+  (vertico-mode . marginalia-mode))
 
 (use-package consult :after vertico
-  :init
-  (setq consult-narrow-key "<"
-        register-preview-delay 0.5
-        register-preview-function #'consult-register-format
-        xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-  :config
-  ;; Disable preview for consult-grep commands
-  (consult-customize consult-ripgrep consult-git-grep consult-grep :preview-key nil)
+  :custom
+  (consult-narrow-key "<")
+  (register-preview-delay 0.5)
+  (register-preview-function #'consult-register-format)
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref)
+  :hook
+  (completion-list-mode . consult-preview-at-point-mode))
 
-  (add-hook 'completion-list-mode-hook #'consult-preview-at-point-mode))
-
-(use-package embark)
-
-(use-package embark-consult :after (embark consult)
-  :config
-  (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
-
-(use-package consult-dir :after consult)
-
-(use-package affe :after consult)
-
-(use-package emacs :after (vertico embark ace-window)
+(use-package emacs :after consult
   :ensure nil
   :config
-  (defvar packages/vertico-embark-prompter-map (make-sparse-keymap)
+  ;; Disable preview for consult-grep commands
+  (consult-customize consult-ripgrep consult-git-grep consult-grep :preview-key nil))
+
+(use-package embark)
+(use-package emacs :after (vertico ace-window)
+  :ensure nil
+  :preface
+  (defvar +vertico-embark-prompter-map (make-sparse-keymap)
     "Embark completion read prompter map.")
 
   (eval-when-compile
-    (defmacro packages/vertico--embark-ace-action (fn)
-      `(defun ,(intern (concat "packages/vertico--embark-ace-" (symbol-name fn))) ()
+    (defmacro +vertico-make-embark-ace-action (fn)
+      `(defun ,(intern (concat "+vertico-embark-ace-" (symbol-name fn))) ()
          (interactive)
          (with-demoted-errors "%s"
            (require 'ace-window)
@@ -95,7 +82,7 @@
              (aw-switch-to-window (aw-select nil))
              (call-interactively (symbol-function ',fn)))))))
 
-  (defun packages/vertico--embark-which-key-indicator ()
+  (defun +vertico-embark-which-key-indicator ()
     "An embark indicator that displays keymaps using which-key.
 The which-key help message will show the type and value of the
 current target followed by an ellipsis if there are further
@@ -118,7 +105,7 @@ targets."
          nil nil t (lambda (binding)
                      (not (string-suffix-p "-argument" (cdr binding))))))))
 
-  (defun packages/vertico-embark-act-with-completing-read (&optional args)
+  (defun +vertico-embark-act-with-completing-read (&optional args)
     "Display embark actions in the minibuffer.
 Passes on ARGS to `embark-act`"
     (interactive "P")
@@ -129,50 +116,64 @@ Passes on ARGS to `embark-act`"
 
   (advice-add 'embark-completing-read-prompter
               :around (util/with-minibuffer-keymap
-                       packages/vertico-embark-prompter-map))
+                       +vertico-embark-prompter-map))
 
-  (packages/vertico--embark-ace-action find-file)
-  (packages/vertico--embark-ace-action switch-to-buffer)
-  (packages/vertico--embark-ace-action bookmark-jump))
+  (+vertico-make-embark-ace-action find-file)
+  (+vertico-make-embark-ace-action switch-to-buffer)
+  (+vertico-make-embark-ace-action bookmark-jump))
+
+(use-package embark-consult :after (embark consult)
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package consult-dir :after consult)
+
+(use-package affe :after consult)
 
 (use-package emacs :after (vertico which-key)
   :ensure nil
-  :config
-  (setq embark-indicators
-        '(packages/vertico--embark-which-key-indicator
-          embark-highlight-indicator
-          embark-isearch-highlight-indicator))
-
-  (defun packages/vertico--embark-hide-which-key-indicator (fn &rest args)
+  :custom
+  (embark-indicators '(+vertico-embark-which-key-indicator
+                       embark-highlight-indicator
+                       embark-isearch-highlight-indicator))
+  :init
+  (defun +vertico-embark-hide-which-key-indicator (fn &rest args)
     "Hide the `which-key` indicator after using the embark prompter.
 Executes FN with ARGS."
     (which-key--hide-popup-ignore-command)
     (let ((embark-indicators
-           (remq #'packages/vertico--embark-which-key-indicator embark-indicators)))
+           (remq #'+vertico-embark-which-key-indicator embark-indicators)))
       (apply fn args)))
 
   (advice-add #'embark-completing-read-prompter
-              :around #'packages/vertico--embark-hide-which-key-indicator))
+              :around #'+vertico-embark-hide-which-key-indicator))
 
-(use-package emacs :after vertico
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  :init
+  (setq completion-category-defaults nil))
+
+(use-package emacs :after (consult orderless)
   :ensure nil
-  :config
-  (defun consult--orderless-regexp-compiler (input type &rest _config)
+  :init
+  (defun +consult-orderless-regexp-compiler (input type &rest _config)
     (setq input (orderless-pattern-compiler input))
     (cons
      (mapcar (lambda (r) (consult--convert-regexp r type)) input)
      (lambda (str) (orderless--highlight input t str))))
 
   ;; OPTION 1: Activate globally for all consult-grep/ripgrep/find/...
-  ;; (setq consult--regexp-compiler #'consult--orderless-regexp-compiler)
+  ;; (setq consult--regexp-compiler #'+consult-orderless-regexp-compiler)
 
   ;; OPTION 2: Activate only for some commands, e.g., consult-ripgrep!
-  (defun consult--with-orderless (&rest args)
+  (defun +consult-with-orderless (&rest args)
     (minibuffer-with-setup-hook
         (lambda ()
-          (setq-local consult--regexp-compiler #'consult--orderless-regexp-compiler))
+          (setq-local consult--regexp-compiler #'+consult-orderless-regexp-compiler))
       (apply args)))
-  (advice-add #'consult-ripgrep :around #'consult--with-orderless)
+  (advice-add #'consult-ripgrep :around #'+consult-with-orderless)
 
   (keymap-substitute project-prefix-map #'project-find-regexp #'consult-ripgrep)
   (cl-nsubstitute-if

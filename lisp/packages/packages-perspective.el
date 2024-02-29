@@ -2,28 +2,22 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'util-helpers)
 
 (use-package persp-mode
-  :init
-  (setq-default wg-morph-on nil)
-  (setq-default persp-set-last-persp-for-new-frames nil
-                ;; persp-init-frame-behaviour nil
-                ;; persp-init-new-frame-behaviour-override nil
-                ;; persp-interactive-init-frame-behaviour-override nil
-                ;; persp-emacsclient-init-frame-behaviour-override nil
-                persp-remove-buffers-from-nil-persp-behaviour nil
-                persp-autokill-buffer-on-remove 'kill
-                persp-kill-foreign-buffer-behaviour 'kill
-                persp-nil-name "main")
-  :config
-  (if (daemonp)
-      (add-hook 'server-after-make-frame-hook
-                #'(lambda () (unless persp-mode (persp-mode 1))))
-    (add-hook 'window-setup-hook
-              #'(lambda () (unless persp-mode (persp-mode 1)))))
-
-
-  (defun packages/perspective--tab-bar-setup ()
+  :custom
+  ;; (wg-morph-on nil)
+  ;; (persp-init-frame-behaviour nil)
+  ;; (persp-init-new-frame-behaviour-override nil)
+  ;; (persp-interactive-init-frame-behaviour-override nil)
+  ;; (persp-emacsclient-init-frame-behaviour-override nil)
+  (persp-set-last-persp-for-new-frames nil)
+  (persp-remove-buffers-from-nil-persp-behaviour nil)
+  (persp-autokill-buffer-on-remove 'kill)
+  (persp-kill-foreign-buffer-behaviour 'kill)
+  (persp-nil-name "main")
+  :preface
+  (defun +persp-mode-tab-bar-setup ()
     "Add `persp-mode` hooks to save and restore tab-bar configurations."
     (require 'tab-bar)
     (add-hook 'persp-before-deactivate-functions
@@ -42,9 +36,10 @@
                     (set-persp-parameter
                      'tab-bar-tabs
                      (frameset-filter-tabs (tab-bar-tabs) nil nil t))))))
-
-
-  (add-hook 'persp-mode-hook #'packages/perspective--tab-bar-setup))
+  :hook
+  (server-after-make-frame . (lambda () (when (and (daemonp) (not persp-mode))) (persp-mode 1)))
+  (window-setup . (lambda () (when (not (or (daemonp) persp-mode)) (persp-mode 1))))
+  (persp-mode . +persp-mode-tab-bar-setup))
 
 (provide 'packages-perspective)
 

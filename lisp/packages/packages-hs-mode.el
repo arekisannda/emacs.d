@@ -5,8 +5,8 @@
 
 (use-package emacs :after easy-color-faces
   :ensure nil
-  :config
-  (defvar packages/hs-mode--fold-overlay-string
+  :preface
+  (defvar +hs-mode-fold-overlay-string
     (concat " "
             (propertize "!" 'face `(nil :inherit easy-color-faces-green
                                         :weight bold
@@ -19,13 +19,14 @@
                                         :box '(:style flat-button)))
             " "))
 
-  (defun packages/hs-mode--fold-overlay (ov)
+  (defun +hs-mode-fold-overlay (ov)
     "Format fold overlay OV."
     (when (eq 'code (overlay-get ov 'hs))
-      (overlay-put ov 'display packages/hs-mode--fold-overlay-string)))
+      (overlay-put ov 'display +hs-mode-fold-overlay-string)))
 
-  (defvar packages/hs-mode--overlay-fold-function #'packages/hs-mode--fold-overlay)
-  (setq hs-set-up-overlay packages/hs-mode--overlay-fold-function))
+  (defvar +hs-mode-overlay-fold-function #'+hs-mode-fold-overlay)
+  :custom
+  (hs-set-up-overlay +hs-mode-overlay-fold-function))
 
 (provide 'packages-hs-mode)
 

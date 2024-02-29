@@ -4,19 +4,19 @@
 ;;; Code:
 
 (use-package shackle
-  :config
-  (setq shackle-default-rule '(:same t)))
+  :custom
+  (shackle-default-rule '(:same t)))
 
 (use-package popper :after (shackle persp-mode)
-  :config
-  (defvar management/window--popper-derived-mode-alist '())
+  :preface
+  (defvar +popper-derived-mode-alist '())
 
-  (defun packages/poppper--derived-mode-p (buf)
-    "Return mode if BUF is derived from mode in `management/window--popper-derived-mode-alist`."
+  (defun +popper-derived-mode-p (buf)
+    "Return mode if BUF is derived from mode in `+popper-derived-mode-alist`."
     (with-current-buffer buf
-      (if (cl-some #'derived-mode-p management/window--popper-derived-mode-alist) t nil)))
+      (if (cl-some #'derived-mode-p +popper-derived-mode-alist) t nil)))
 
-  (setq management/window--popper-derived-mode-alist
+  (setq +popper-derived-mode-alist
         '(messages-buffer-mode
           xref--xref-buffer-mode
           help-mode
@@ -30,26 +30,39 @@
           elpaca-ui-mode
           elpaca-info-mode
           tabulated-list-mode))
+  :custom
+  (popper-reference-buffers '("\\*lsp-help\\*$"
+                              "\\*compilation\\*$"
+                              "\\*Man.*\\*$"
+                              "\\*Flycheck.*\\*$"
+                              "\\*Ediff Control.*\\*$"
+                              "\\*evil-marks\\*$"
+                              "^magit.*$"
+                              "\\*Async Shell Command\\*$"
+                              "\\*EGLOT.*\\*$"
+                              "\\*diff-hl\\*$"
+                              +popper-derived-mode-p))
+  (popper-window-height 30)
+  (popper-mode-line "")
+  (popper-display-control nil)
+  (popper-group-function #'(lambda () (safe-persp-name (get-current-persp))))
+  :hook
+  (elpaca-after-init . popper-mode))
 
-  (setq popper-reference-buffers
-        '("\\*lsp-help\\*$"
-          "\\*compilation\\*$"
-          "\\*Man.*\\*$"
-          "\\*Flycheck.*\\*$"
-          "\\*Ediff Control.*\\*$"
-          "\\*evil-marks\\*$"
-          "^magit.*$"
-          "\\*Async Shell Command\\*$"
-          "\\*EGLOT.*\\*$"
-          "\\*diff-hl\\*$"
-          packages/poppper--derived-mode-p))
+(use-package emacs :after telephone-line
+  :ensure nil
+  :config
+  (telephone-line-defsegment* +telepohone-line-popper-tag-segment ()
+    (if popper-popup-status "󰊠" nil))
 
-  (setq popper-window-height 30
-        popper-mode-line ""
-        popper-display-control nil
-        popper-group-function #'(lambda () (safe-persp-name (get-current-persp))))
-
-  (popper-mode +1))
+  (setq telephone-line-lhs
+        '((evil   . (+telepohone-line-popper-tag-segment
+                     telephone-line-evil-tag-segment))
+          (accent . (telephone-line-vc-segment
+                     telephone-line-erc-modified-channels-segment
+                     telephone-line-process-segment))
+          (nil    . (telephone-line-projectile-segment
+                     telephone-line-buffer-segment)))))
 
 (provide 'packages-windows)
 
