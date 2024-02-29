@@ -22,11 +22,7 @@ If ANNOTATE is present, annotate comment with INFO."
                        (format " %s" info))))
     (insert-before-markers (concat comment-str " }}}" description ))))
 
-(defun util/folding--add-fold-inline (rbegin rend comment-str
-                                           &optional
-                                           info
-                                           &key
-                                           annotate-end)
+(defun util/folding--add-fold-inline (rbegin rend comment-str &optional info &key annotate-end)
   "Add inline braces using COMMENT-STR to region between RBEGIN and REND.
 Optional INFO description for the fold block."
   (unless rbegin (error "Invalid region begin"))
@@ -49,11 +45,7 @@ Optional INFO description for the fold block."
       (newline)
       (indent-according-to-mode))))
 
-(defun util/folding--add-fold-surround (rbegin rend comment-str
-                                             &optional
-                                             info
-                                             &key
-                                             annotate-end)
+(defun util/folding--add-fold-surround (rbegin rend comment-str &optional info &key annotate-end)
   "Add surrounding braces using COMMENT-STR to region between RBEGIN and REND.
 Optional INFO description for the fold block."
   (unless rbegin (error "Invalid region begin"))
@@ -83,9 +75,8 @@ Optional INFO description for the fold block."
 
 (eval-when-compile
   (defmacro util/folding--add-fold (fn &key annotate-end)
-    `(defun ,(intern (concat
-                         (replace-regexp-in-string "--" "-" (symbol-name fn))
-                         (if annotate-end "-end")))
+    `(defun ,(intern (concat (replace-regexp-in-string "--" "-" (symbol-name fn))
+                             (if annotate-end "-end")))
          (rbegin rend)
        "Add fold comments to region."
        (interactive "r")
