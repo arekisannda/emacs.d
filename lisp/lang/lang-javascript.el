@@ -4,13 +4,11 @@
 ;;; Code:
 (require 'util-lang)
 
-(defun lang/javascript-setup ()
-  "Configurations for javascript."
-
+(use-package emacs
+  :ensure nil
+  :config
   (util/lang--remap-major-mode
    '((javascript-mode . js-ts-mode))))
-
-(lang/javascript-setup)
 
 (provide 'lang-javascript)
 

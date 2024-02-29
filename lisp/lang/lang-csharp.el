@@ -4,19 +4,18 @@
 ;;; Code:
 (require 'util-lang)
 
-(defun lang/csharp--setup ()
-  "Setup to run for csharp major modes."
-  (lsp-deferred))
+(use-package emacs
+  :ensure nil
+  :preface
+  (defun +lang-csharp-setup ()
+    "Setup to run for csharp major modes."
+    (lsp-deferred))
 
-(defun lang/csharp-setup ()
-  "Configurations for csharp."
-  (add-hook 'csharp-mode-hook #'lang/csharp--setup)
-  (add-hook 'csharp-ts-mode-hook #'lang/csharp--setup)
-
+  :hook
+  (csharp-ts-mode . +lang-csharp-setup)
+  :config
   (util/lang--remap-major-mode
    '((csharp-mode . csharp-ts-mode))))
-
-(lang/csharp-setup)
 
 (provide 'lang-csharp)
 

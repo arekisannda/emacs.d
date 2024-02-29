@@ -4,18 +4,15 @@
 ;;; Code:
 (require 'util-lang)
 
-(defun lang/rust--setup ()
-  "Configurations for rust."
-  (lsp-deferred))
-
-(defun lang/rust-setup ()
-  "Configurations for rust."
-  (add-hook 'rust-ts-mode-hook #'lang/rust--setup)
-
-  (util/lang--set-auto-mode
-   '(("\\.rs\\'" . rust-ts-mode))))
-
-(lang/rust-setup)
+(use-package rust-mode
+  :preface
+  (defun +lang-rust-setup ()
+    "Configurations for rust."
+    (lsp-deferred))
+  :hook
+  (rust-ts-mode . +lang-rust-setup)
+  :config
+  ("\\.rs\\'" . rust-ts-mode))
 
 (provide 'lang-rust)
 

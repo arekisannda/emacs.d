@@ -32,7 +32,6 @@
 (require 'packages-project)
 (require 'packages-windows)
 (require 'packages-layout)
-(require 'packages-languages)
 (require 'packages-japanese)
 (require 'packages-latex)
 (require 'packages-org-mode)
@@ -41,6 +40,17 @@
 (require 'packages-vertico)
 (require 'packages-ispell)
 (require 'packages-emacs)
+
+(require 'lang-clang)
+(require 'lang-csharp)
+(require 'lang-elisp)
+(require 'lang-generic)
+(require 'lang-go)
+(require 'lang-kotlin)
+(require 'lang-lua)
+(require 'lang-org)
+(require 'lang-python)
+(require 'lang-rust)
 
 (provide 'config/init)
 

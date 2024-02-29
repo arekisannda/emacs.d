@@ -72,15 +72,6 @@
   (add-hook 'minibuffer-setup-hook #'packages/emacs--minibuffer-setup)
   (add-hook 'minibuffer-exit-hook #'packages/emacs--minibuffer-exit)
 
-  (require 'lang-generic)
-  (require 'lang-elisp)
-  (require 'lang-org)
-  (require 'lang-clang)
-  (require 'lang-csharp)
-  (require 'lang-go)
-  (require 'lang-lua)
-  (require 'lang-python)
-
   (require 'keybinds-global)
   (require 'keybinds-evil)
   (require 'keybinds-session)

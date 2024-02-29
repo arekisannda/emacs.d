@@ -4,14 +4,11 @@
 ;;; Code:
 (require 'util-lang)
 
-(defun lang/typescript-setup ()
-  "Configurations for typescript."
-
-  (util/lang--set-auto-mode
-   '(("\\.tsx\\'" . tsx-ts-mode)
-     ("\\.ts\\'" . typescript-ts-mode))))
-
-(lang/typescript-setup)
+(use-package emacs
+  :ensure nil
+  :mode
+  ("\\.tsx\\'" . tsx-ts-mode)
+  ("\\.ts\\'" . typescript-ts-mode))
 
 (provide 'lang-typescript)
 

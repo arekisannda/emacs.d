@@ -4,19 +4,18 @@
 ;;; Code:
 (require 'util-lang)
 
-(defun lang/python--setup ()
-  "Configurations for python."
-  (lsp-deferred)
-  (setq lsp-clients-pylsp-library-directories))
-
-(defun lang/python-setup ()
-  "Configurations for python."
-  (add-hook 'python-ts-mode-hook #'lang/python-setup)
-
+(use-package emacs
+  :ensure nil
+  :preface
+  (defun +lang-python-setup ()
+    "Configurations for python."
+    (lsp-deferred)
+    (setq lsp-clients-pylsp-library-directories))
+  :hook
+  (python-ts-mode-hook . +lang-python-setup)
+  :config
   (util/lang--remap-major-mode
    '((python-mode . python-ts-mode))))
-
-(lang/python-setup)
 
 (provide 'lang-python)
 
