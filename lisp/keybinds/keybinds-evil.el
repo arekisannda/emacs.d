@@ -34,7 +34,8 @@
   "] g"      '("next hunk"       . hydra-git-motion/diff-hl-next-hunk))
 
 (keybinds/evil evil-emacs-state-map
-  "<escape>" '("quit"            . keyboard-quit))
+  "<escape>" (general-predicate-dispatch #'keyboard-quit
+               (derived-mode-p 'vterm-mode) #'vterm--self-insert))
 
 (keybinds/evil evil-motion-state-map
   "<escape>" '("quit"            . keyboard-quit)

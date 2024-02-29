@@ -54,6 +54,7 @@
   "M-<next>"    '("owindow scroll down" . keybinds/custom--scroll-other-down))
 
 (keybinds/global vterm-mode-map
+  "<escape>"    '("escape"              . vterm--self-insert)
   "M-C-<next>"  '("scroll left"         . keybinds/custom--scroll-left)
   "M-C-<prior>" '("scroll right"        . keybinds/custom--scroll-right)
   "M-<prior>"   '("scroll up"           . keybinds/custom--scroll-up)
