@@ -3,6 +3,8 @@
 
 ;;; Code:
 (require 'general)
+(require 'disable-mouse)
+(require 'dashboard)
 (require 'keybinds-custom)
 
 (general-unbind
@@ -15,6 +17,9 @@
   "C-M-\\"
   "C-\\"
   "C-?")
+
+(mapc #'disable-mouse-in-keymap
+      (list dashboard-mode-map))
 
 (general-create-definer keybinds/global)
 

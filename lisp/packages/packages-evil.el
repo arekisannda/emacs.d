@@ -13,11 +13,6 @@
         evil-want-minibuffer nil)
   :config
   (evil-mode 1)
-  (mapc #'disable-mouse-in-keymap
-        (list evil-motion-state-map
-              evil-normal-state-map
-              evil-visual-state-map
-              evil-insert-state-map))
 
   (dolist (mode '(vterm-mode
                   ranger-mode

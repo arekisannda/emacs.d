@@ -58,10 +58,7 @@
         initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   :config
   (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
-  (dashboard-setup-startup-hook)
-
-  (mapc #'disable-mouse-in-keymap
-        (list dashboard-mode-map)))
+  (dashboard-setup-startup-hook))
 
 (provide 'packages-interface)
 

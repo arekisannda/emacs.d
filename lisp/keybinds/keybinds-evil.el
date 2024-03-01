@@ -3,7 +3,15 @@
 
 ;;; Code:
 (require 'general)
+(require 'evil)
+(require 'disable-mouse)
 (require 'keybinds-custom)
+
+(mapc #'disable-mouse-in-keymap
+      (list evil-motion-state-map
+            evil-normal-state-map
+            evil-visual-state-map
+            evil-insert-state-map))
 
 (general-create-definer keybinds/evil)
 
