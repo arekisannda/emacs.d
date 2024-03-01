@@ -4,7 +4,20 @@
 ;;; Code:
 (require 'cl-lib)
 
-(defun init/recursive-load-path (path)
+(defvar +fonts-fixed-pitch-face "SauceCodePro Nerd Font Mono")
+(defvar +fonts-fixed-pitch-italic-face "SauceCodePro Nerd Font Mono")
+(defvar +fonts-variable-pitch-face "SauceCodePro Nerd Font Propo")
+
+(defvar +fonts-fixed-pitch-size 90)
+(defvar +fonts-variable-pitch-size 90)
+(defvar +fonts-tab-size 100)
+
+(add-to-list
+ 'default-frame-alist
+ `(font . ,(concat +fonts-fixed-pitch-face
+                   (format "-%d" (/ +fonts-fixed-pitch-size 10)))))
+
+(defun +recursive-load-path (path)
   "Recursively load subdirectories in PATH."
   (let* ((path (expand-file-name path user-emacs-directory))
          (local-pkgs (mapcar 'file-name-directory
@@ -13,7 +26,7 @@
         (mapc (apply-partially 'add-to-list 'load-path) local-pkgs))))
 
 (dolist (path '("lisp"))
-  (init/recursive-load-path path))
+  (+recursive-load-path path))
 
 (require 'packages-manager)
 (require 'packages-base)

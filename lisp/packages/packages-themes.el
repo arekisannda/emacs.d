@@ -77,31 +77,31 @@
   (util/if-daemon-run-after-make-frame
    (progn
      (set-face-attribute 'default nil
-                         :font ui/fonts-fixed-pitch-face
-                         :height ui/fonts-fixed-pitch-size
+                         :font +fonts-fixed-pitch-face
+                         :height +fonts-fixed-pitch-size
                          :weight 'normal)
      (set-face-attribute 'fixed-pitch nil
-                         :font ui/fonts-fixed-pitch-face
-                         :height ui/fonts-fixed-pitch-size
+                         :font +fonts-fixed-pitch-face
+                         :height +fonts-fixed-pitch-size
                          :weight 'normal)
      (set-face-attribute 'variable-pitch nil
-                         :font ui/fonts-variable-pitch-face
-                         :height ui/fonts-variable-pitch-size
+                         :font +fonts-variable-pitch-face
+                         :height +fonts-variable-pitch-size
                          :weight 'normal)
      (set-face-attribute 'italic nil
-                         :font ui/fonts-fixed-pitch-italic-face
+                         :font +fonts-fixed-pitch-italic-face
                          :slant 'italic
                          :underline nil)
      (set-face-attribute 'bold-italic nil
-                         :font ui/fonts-fixed-pitch-italic-face
+                         :font +fonts-fixed-pitch-italic-face
                          :weight 'bold
                          :slant 'italic
                          :underline nil)
      (set-face-attribute 'font-lock-comment-face nil
                          :inherit 'italic)
      (set-face-attribute 'tab-bar nil
-                         :font ui/fonts-fixed-pitch-face
-                         :height ui/fonts-fixed-pitch-size
+                         :font +fonts-fixed-pitch-face
+                         :height +fonts-fixed-pitch-size
                          :weight 'bold
                          :box '(:line-width 5 :style flat-button))
      (set-face-attribute 'tab-bar-tab nil
@@ -111,8 +111,8 @@
      (set-face-attribute 'tab-bar-tab-inactive nil
                          :inherit 'tab-bar)
      (set-face-attribute 'ext-tab-bar-faces-default nil
-                         :font ui/fonts-fixed-pitch-face
-                         :height ui/fonts-fixed-pitch-size
+                         :font +fonts-fixed-pitch-face
+                         :height +fonts-fixed-pitch-size
                          :weight 'normal
                          :box '(:line-width 5 :style flat-button))
      )))

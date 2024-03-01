@@ -8,7 +8,7 @@
 (setq load-prefer-newer t)
 (setq gc-cons-threshold most-positive-fixnum)
 
-(setq configs/user-config-dir (expand-file-name "~/.config"))
+(defvar +user-config-dir (expand-file-name "~/.config"))
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (when (getenv-internal "DEBUG")
@@ -47,19 +47,6 @@
 
 (setq message-log-max 2000)
 (setq warning-minimum-level :emergency)
-
-(defvar ui/fonts-fixed-pitch-face "SauceCodePro Nerd Font Mono")
-(defvar ui/fonts-fixed-pitch-italic-face "SauceCodePro Nerd Font Mono")
-(defvar ui/fonts-variable-pitch-face "SauceCodePro Nerd Font Propo")
-
-(defvar ui/fonts-fixed-pitch-size 90)
-(defvar ui/fonts-variable-pitch-size 90)
-(defvar ui/fonts-tab-size 100)
-
-(add-to-list
- 'default-frame-alist
- `(font . ,(concat ui/fonts-fixed-pitch-face
-                   (format "-%d" (/ ui/fonts-fixed-pitch-size 10)))))
 
 (provide 'early-init)
 ;;; early-init.el ends here

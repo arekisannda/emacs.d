@@ -89,10 +89,10 @@
   (util/if-daemon-run-after-make-frame
    (progn
      (set-face-attribute 'org-checkbox nil
-                         :height ui/fonts-fixed-pitch-size
+                         :height +fonts-fixed-pitch-size
                          :box nil)
      (set-face-attribute 'org-modern-label nil
-                         :height ui/fonts-fixed-pitch-size
+                         :height +fonts-fixed-pitch-size
                          :box '(:line-width 5 :style flat-button))
      )))
 
