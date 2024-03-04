@@ -63,7 +63,14 @@
   :ensure nil
   :config
   ;; Disable preview for consult-grep commands
-  (consult-customize consult-ripgrep consult-git-grep consult-grep :preview-key nil))
+  (consult-customize
+   consult-ripgrep
+   consult-git-grep
+   consult-buffer
+   consult-project-buffer
+   consult-grep
+   consult-recent-file
+   :preview-key nil))
 
 (use-package embark)
 (use-package emacs :after (vertico ace-window)
