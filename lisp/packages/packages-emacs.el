@@ -44,11 +44,6 @@
     (setq truncate-lines nil)
     (visual-line-mode 1))
 
-  (defun +emacs-exec-on-save ()
-    "Operations to be executed on buffer save."
-    (delete-trailing-whitespace)
-    (untabify (point-min) (point-max)))
-
   (defun +emacs-minibuffer-setup ()
     (setq gc-cons-threshold most-positive-fixnum))
 
@@ -86,7 +81,6 @@
                                (nil    . (telephone-line-projectile-segment
                                           telephone-line-buffer-segment)))))
   :hook
-  (before-save . +emacs-exec-on-save)
   (find-file . +emacs-set-read-only-by-prefix)
   (help-mode . +emacs-set-visual-line-mode)
   (elpaca-after-init . (lambda () (load custom-file 'noerror)))
