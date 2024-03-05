@@ -4,6 +4,8 @@
 ;;; Code:
 (require 'cl-lib)
 
+;; (profiler-start 'cpu+mem)
+
 (defun +recursive-load-path (path)
   "Recursively load subdirectories in PATH."
   (let* ((path (expand-file-name path user-emacs-directory))
@@ -44,8 +46,9 @@
 
 (require 'packages-vc)
 (require 'packages-flycheck)
-(require 'packages-lsp-mode)
-(require 'packages-dap-mode)
+;; (require 'packages-lsp-mode)
+;; (require 'packages-dap-mode)
+(require 'packages-eglot)
 (require 'packages-yasnippet)
 
 (require 'packages-latex)

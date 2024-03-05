@@ -9,8 +9,7 @@
   :preface
   (defun +lang-python-setup ()
     "Configurations for python."
-    (lsp-deferred)
-    (setq lsp-clients-pylsp-library-directories))
+    (eglot-ensure))
   :hook
   (python-ts-mode-hook . +lang-python-setup)
   :config

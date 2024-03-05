@@ -30,9 +30,6 @@
 (general-create-definer +keybinds-editor-lsp
   :prefix-command '+keybinds-editor--lsp-command)
 
-(general-create-definer keybinds/editor-syntax-check
-  :prefix-command 'keybinds/editor--syntax-check-command)
-
 (general-create-definer +keybinds-editor-syntax-check
   :prefix-command '+keybinds-editor--syntax-check-command)
 
@@ -126,12 +123,13 @@
   "o"   '("toggle fold"          . hs-toggle-hiding))
 
 (+keybinds-editor-lsp
-  "d"   '("definition"           . lsp-find-definition)
-  "i"   '("describe"             . lsp-describe-thing-at-point)
-  "I"   '("implementation"       . lsp-find-implementation)
-  "r"   '("references"           . lsp-find-references)
-  "R"   '("rename"               . lsp-rename)
-  "t"   '("type definition"      . lsp-find-type-definition))
+  "d"   '("definition"           . xref-find-definitions)
+  "D"   '("definition other"     . xref-find-definitions-other-window)
+  "i"   '("describe"             . eldoc)
+  "I"   '("implementation"       . eglot-find-implementation)
+  "r"   '("references"           . xref-find-references)
+  "R"   '("rename"               . eglot-rename)
+  "t"   '("type definition"      . eglot-find-typeDefinition))
 
 (+keybinds-editor-syntax-check
   "!"   '("check error"          . flycheck-display-error-at-point)

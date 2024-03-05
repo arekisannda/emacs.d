@@ -9,7 +9,7 @@
   :preface
   (defun +lang-clang-setup ()
     "Setup to run for C/C++ major modes."
-    (lsp-deferred))
+    (eglot-ensure))
   :hook
   (c++-ts-mode . +lang-clang-setup)
   (c-ts-mode . +lang-clang-setup)
