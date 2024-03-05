@@ -72,8 +72,17 @@
    consult-recent-file
    :preview-key nil))
 
-(use-package embark)
-(use-package emacs :after (vertico ace-window)
+(use-package consult-dir)
+
+(use-package affe)
+
+(use-package embark
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package embark-consult)
+
+(use-package emacs
   :ensure nil
   :preface
   (defvar +vertico-embark-prompter-map (make-sparse-keymap)
@@ -129,15 +138,7 @@ Passes on ARGS to `embark-act`"
   (+vertico-make-embark-ace-action switch-to-buffer)
   (+vertico-make-embark-ace-action bookmark-jump))
 
-(use-package embark-consult :after (embark consult)
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
-
-(use-package consult-dir :after consult)
-
-(use-package affe :after consult)
-
-(use-package emacs :after (vertico which-key)
+(use-package emacs
   :ensure nil
   :custom
   (embark-indicators '(+vertico-embark-which-key-indicator
@@ -160,11 +161,7 @@ Executes FN with ARGS."
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
   :init
-  (setq completion-category-defaults nil))
-
-(use-package emacs :after (consult orderless)
-  :ensure nil
-  :init
+  (setq completion-category-defaults nil)
   (defun +consult-orderless-regexp-compiler (input type &rest _config)
     (setq input (orderless-pattern-compiler input))
     (cons
