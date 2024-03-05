@@ -48,5 +48,18 @@
 (setq message-log-max 2000)
 (setq warning-minimum-level :emergency)
 
+(defvar +fonts-fixed-pitch-face "SauceCodePro Nerd Font Mono")
+(defvar +fonts-fixed-pitch-italic-face "SauceCodePro Nerd Font Mono")
+(defvar +fonts-variable-pitch-face "SauceCodePro Nerd Font Propo")
+
+(defvar +fonts-fixed-pitch-size 90)
+(defvar +fonts-variable-pitch-size 90)
+(defvar +fonts-tab-size 100)
+
+(add-to-list
+ 'default-frame-alist
+ `(font . ,(concat +fonts-fixed-pitch-face
+                   (format "-%d" (/ +fonts-fixed-pitch-size 10)))))
+
 (provide 'early-init)
 ;;; early-init.el ends here
