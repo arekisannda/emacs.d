@@ -31,7 +31,8 @@
           elpaca-info-mode
           tabulated-list-mode))
   :custom
-  (popper-reference-buffers '("\\*lsp-help\\*$"
+  (popper-reference-buffers '("\\*eldoc.*\\*$"
+                              "\\*lsp-help\\*$"
                               "\\*compilation\\*$"
                               "\\*Man.*\\*$"
                               "\\*Flycheck.*\\*$"

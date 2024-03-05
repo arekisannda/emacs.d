@@ -5,6 +5,8 @@
 (require 'hideshow)
 (require 'util-lang)
 
+(use-package markdown-mode)
+
 (use-package i3wm-config-mode
   :preface
   (defun +lang-i3wm-setup ()
