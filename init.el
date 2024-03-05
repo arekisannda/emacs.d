@@ -22,24 +22,14 @@
 (require 'packages-themes)
 (require 'packages-interface)
 (require 'packages-evil)
-(require 'packages-vc)
 (require 'packages-vterm)
-(require 'packages-lsp-mode)
-(require 'packages-dap-mode)
-(require 'packages-flycheck)
 (require 'packages-perspective)
 (require 'packages-treemacs)
 (require 'packages-project)
 (require 'packages-windows)
 (require 'packages-layout)
-(require 'packages-japanese)
-(require 'packages-latex)
-(require 'packages-org-mode)
-(require 'packages-yasnippet)
 (require 'packages-corfu)
 (require 'packages-vertico)
-(require 'packages-ispell)
-(require 'packages-emacs)
 
 (require 'lang-clang)
 (require 'lang-csharp)
@@ -51,6 +41,20 @@
 (require 'lang-org)
 (require 'lang-python)
 (require 'lang-rust)
+
+(require 'packages-vc)
+(require 'packages-flycheck)
+(require 'packages-lsp-mode)
+(require 'packages-dap-mode)
+(require 'packages-yasnippet)
+
+(require 'packages-latex)
+(require 'packages-org-mode)
+
+(require 'packages-japanese)
+(require 'packages-ispell)
+
+(require 'packages-emacs)
 
 (provide 'config/init)
 
