@@ -4,47 +4,47 @@
 ;;; Code:
 (require 'general)
 
-(general-create-definer keybinds/completion)
+(general-create-definer +keybinds-completion)
 
-(general-create-definer keybinds/completion-active
+(general-create-definer +keybinds-completion-active
   :keymaps 'corfu-map)
 
-(general-create-definer keybinds/completion-info
-  :prefix-command 'keybinds/completion--info-command)
+(general-create-definer +keybinds-completion-info
+  :prefix-command '+keybinds-completion--info-command)
 
-(general-create-definer keybinds/completion-minibuffer
+(general-create-definer +keybinds-completion-minibuffer
   :keymaps 'minibuffer-local-map)
 
-(keybinds/completion :states 'insert
+(+keybinds-completion :states 'insert
   "C-SPC"   '("completion"        . completion-at-point)
   "C-S-SPC" '("complete overlay"  . corfu-candidate-overlay-complete-at-point))
 
-(keybinds/completion :prefix "M-SPC" :states 'insert
+(+keybinds-completion :prefix "M-SPC" :states 'insert
   "t"       '("capf snippet"      . yasnippet-capf)
   "w"       '("capf word"         . cape-dict)
   "y"       `("capf math"         . cape-math-symbols-unicode))
 
-(keybinds/global minibuffer-local-map
+(+keybinds-global minibuffer-local-map
   "C-SPC"   '("completion"        . completion-at-point)
   "C-S-SPC" '("complete overlay"  . corfu-candidate-overlay-complete-at-point))
 
-(keybinds/completion minibuffer-local-map :prefix "M-SPC"
+(+keybinds-completion minibuffer-local-map :prefix "M-SPC"
   "t"       '("capf snippet"      . yasnippet-capf)
   "w"       '("capf word"         . cape-dict)
   "y"       `("capf math"         . cape-math-symbols-unicode))
 
-(keybinds/completion-active
-  [remap next-line]                          #'corfu-next
-  [remap previous-line]                      #'corfu-previous
-  [remap keybinds/custom--scroll-other-up]   #'corfu-popupinfo-scroll-down
-  [remap keybinds/custom--scroll-other-down] #'corfu-popupinfo-scroll-up
-  [remap keybinds/custom--scroll-up]         #'corfu-scroll-down
-  [remap keybinds/custom--scroll-down]       #'corfu-scroll-up
-  [remap beginning-of-buffer]                #'corfu-first
-  [remap end-of-buffer]                      #'corfu-last
-  [remap move-beginning-of-line]             #'corfu-prompt-beginning
-  [remap move-end-of-line]                   #'corfu-prompt-end
-  [remap evil-force-normal-state]            #'corfu-quit
+(+keybinds-completion-active
+  [remap next-line]                    #'corfu-next
+  [remap previous-line]                #'corfu-previous
+  [remap +keybinds--scroll-other-up]   #'corfu-popupinfo-scroll-down
+  [remap +keybinds--scroll-other-down] #'corfu-popupinfo-scroll-up
+  [remap +keybinds--scroll-up]         #'corfu-scroll-down
+  [remap +keybinds--scroll-down]       #'corfu-scroll-up
+  [remap beginning-of-buffer]          #'corfu-first
+  [remap end-of-buffer]                #'corfu-last
+  [remap move-beginning-of-line]       #'corfu-prompt-beginning
+  [remap move-end-of-line]             #'corfu-prompt-end
+  [remap evil-force-normal-state]      #'corfu-quit
 
   "<escape>" '("abort"            . corfu-quit)
   "C-g"      '("abort"            . corfu-quit)
@@ -54,9 +54,9 @@
   "<up>"     '("previous"         . corfu-previous)
   "<down>"   '("next"             . corfu-next)
   "M-?"      '("toggle info"      . corfu-popupinfo-toggle)
-  "C-<tab>"  '("info command"     . keybinds/completion--info-command))
+  "C-<tab>"  '("info command"     . +keybinds-completion--info-command))
 
-(keybinds/completion-info
+(+keybinds-completion-info
   "d" '("popup info doc"          . corfu-popupinfo-documentation)
   "D" '("info doc"                . corfu-info-documentation)
   "l" '("popup info loc"          . corfu-popupinfo-location)

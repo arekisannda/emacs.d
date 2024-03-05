@@ -21,12 +21,12 @@
 (mapc #'disable-mouse-in-keymap
       (list dashboard-mode-map))
 
-(general-create-definer keybinds/global)
+(general-create-definer +keybinds-global)
 
-(keybinds/global help-map
-  "g"           '("Emacs Docs"          . keybinds/custom--emacs-doc))
+(+keybinds-global help-map
+  "g"           '("Emacs Docs"          . +keybinds--emacs-doc))
 
-(keybinds/global override
+(+keybinds-global override
   "C-<left>"    '("focus left"          . evil-window-left)
   "C-<right>"   '("focus right"         . evil-window-right)
   "C-<up>"      '("focus up"            . evil-window-up)
@@ -41,31 +41,31 @@
 
   "C-M-\\"      '("toggle input"        . toggle-input-method))
 
-(keybinds/global global
-  "C-<tab>"     '("toggle popper"       . popper-toggle)
-  "C-S-<tab>"   '("toggle popper type"  . popper-toggle-type)
+(+keybinds-global global
+  "C-<tab>"         '("toggle popper"       . popper-toggle)
+  "C-<iso-lefttab>" '("toggle popper type"  . popper-toggle-type)
 
-  "C-<next>"    '("scroll left"         . keybinds/custom--scroll-left)
-  "C-<prior>"   '("scroll right"        . keybinds/custom--scroll-right)
-  "<prior>"     '("scroll up"           . keybinds/custom--scroll-up)
-  "<next>"      '("scroll down"         . keybinds/custom--scroll-down)
+  "C-<next>"    '("scroll left"         . +keybinds--scroll-left)
+  "C-<prior>"   '("scroll right"        . +keybinds--scroll-right)
+  "<prior>"     '("scroll up"           . +keybinds--scroll-up)
+  "<next>"      '("scroll down"         . +keybinds--scroll-down)
 
-  "M-<prior>"   '("owindow scroll up"   . keybinds/custom--scroll-other-up)
-  "M-<next>"    '("owindow scroll down" . keybinds/custom--scroll-other-down))
+  "M-<prior>"   '("owindow scroll up"   . +keybinds--scroll-other-up)
+  "M-<next>"    '("owindow scroll down" . +keybinds--scroll-other-down))
 
-(keybinds/global vterm-mode-map
+(+keybinds-global vterm-mode-map
   "<escape>"    '("escape"              . vterm--self-insert)
-  "M-C-<next>"  '("scroll left"         . keybinds/custom--scroll-left)
-  "M-C-<prior>" '("scroll right"        . keybinds/custom--scroll-right)
-  "M-<prior>"   '("scroll up"           . keybinds/custom--scroll-up)
-  "M-<next>"    '("scroll down"         . keybinds/custom--scroll-down))
+  "M-C-<next>"  '("scroll left"         . +keybinds--scroll-left)
+  "M-C-<prior>" '("scroll right"        . +keybinds--scroll-right)
+  "M-<prior>"   '("scroll up"           . +keybinds--scroll-up)
+  "M-<next>"    '("scroll down"         . +keybinds--scroll-down))
 
-(keybinds/global minibuffer-local-map
-  "M-<prior>"   '("owindow scroll up"   . keybinds/custom--minibuffer-scroll-other-up)
-  "M-<next>"    '("owindow scroll down" . keybinds/custom--minibuffer-scroll-other-down)
+(+keybinds-global minibuffer-local-map
+  "M-<prior>"   '("owindow scroll up"   . +keybinds--minibuffer-scroll-other-up)
+  "M-<next>"    '("owindow scroll down" . +keybinds--minibuffer-scroll-other-down)
   "<escape>"    '("abort"               . abort-minibuffers))
 
-(keybinds/global minibuffer-local-map :prefix "C-,"
+(+keybinds-global minibuffer-local-map :prefix "C-,"
   "C-a"         '("cycle annotators"    . marginalia-cycle)
   "C-r"         '("history"             . consult-history)
   "C-,"         '("embark-act"          . embark-act)
@@ -76,24 +76,24 @@
   "C-f"         '("insert file"         . consult-find)
   "C-."         '("consult narrow"      . consult-narrow))
 
-(keybinds/global +vertico-embark-prompter-map
+(+keybinds-global +vertico-embark-prompter-map
   "<escape>"    '("abort"               . abort-minibuffers)
   "C-<tab>"     '("toggle prompter"     . abort-recursive-edit))
 
-(keybinds/global vertico-map
+(+keybinds-global vertico-map
   "<escape>"    '("abort"               . abort-minibuffers)
   "C-<tab>"     '("toggle prompter"     . +vertico-embark-act-with-completing-read))
 
-(keybinds/global embark-file-map
+(+keybinds-global embark-file-map
   "o"           '("embark-ace file"     . +vertico-embark-ace-find-file))
 
-(keybinds/global embark-buffer-map
+(+keybinds-global embark-buffer-map
   "o"           '("embark-ace buffer"   . +vertico-embark-ace-switch-to-buffer))
 
-(keybinds/global embark-bookmark-map
+(+keybinds-global embark-bookmark-map
   "o"           '("embark-ace bookmark" . +vertico-embark-ace-bookmark-jump))
 
-(keybinds/global google-translate-minibuffer-keymap
+(+keybinds-global google-translate-minibuffer-keymap
   "<tab>"       '("next translation"    . google-translate-next-translation-direction)
   "<backtab>"   '("prev translation"    . google-translate-previous-translation-direction))
 

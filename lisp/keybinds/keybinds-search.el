@@ -7,14 +7,14 @@
 
 (general-define-key
  :states         '(normal insert visual emacs motion)
- :prefix-map     'keybinds/search--map
+ :prefix-map     '+keybinds-search--map
  :prefix         ";"
  :global-prefix  "C-;")
 
-(general-create-definer keybinds/search
-  :keymaps 'keybinds/search--map)
+(general-create-definer +keybinds-search
+  :keymaps '+keybinds-search--map)
 
-(keybinds/search
+(+keybinds-search
   "g"   '("find ripgrep" . consult-ripgrep)
   "l"   '("find line"    . consult-line)
   "y"   '("find yank"    . consult-yank-replace)
@@ -34,8 +34,9 @@
   "C-i" '("find info"    . consult-info)
 
   "h"   (general-predicate-dispatch nil
-          (derived-mode-p 'org-mode) `("find heading" . consult-org-heading)
-          t                          `("find line"    . consult-line)))
+          (derived-mode-p 'prog-mode) '("imenu"        . consult-imenu)
+          (derived-mode-p 'org-mode)  '("find heading" . consult-org-heading)
+          t                           '("find line"    . consult-line)))
 
 (provide 'keybinds-search)
 

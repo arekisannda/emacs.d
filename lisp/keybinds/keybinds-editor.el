@@ -8,68 +8,71 @@
 
 (general-define-key
  :states        '(normal insert visual emacs motion)
- :prefix-map    'keybinds/editor--map
+ :prefix-map    '+keybinds-editor--map
  :prefix        ","
  :global-prefix "C-,")
 
-(general-create-definer keybinds/editor
-  :keymaps 'keybinds/editor--map)
+(general-create-definer +keybinds-editor
+  :keymaps '+keybinds-editor--map)
 
-(general-create-definer keybinds/editor-exec
-  :prefix-command 'keybinds/editor--exec-command)
+(general-create-definer +keybinds-editor-exec
+  :prefix-command '+keybinds-editor--exec-command)
 
-(general-create-definer keybinds/editor-text-edit
-  :prefix-command 'keybinds/editor--text-edit-command)
+(general-create-definer +keybinds-editor-text-edit
+  :prefix-command '+keybinds-editor--text-edit-command)
 
-(general-create-definer keybinds/editor-motion
-  :prefix-command 'keybinds/editor--motion-command)
+(general-create-definer +keybinds-editor-motion
+  :prefix-command '+keybinds-editor--motion-command)
 
-(general-create-definer keybinds/editor-cursor
-  :prefix-command 'keybinds/editor--cursor-command)
+(general-create-definer +keybinds-editor-cursor
+  :prefix-command '+keybinds-editor--cursor-command)
 
-(general-create-definer keybinds/editor-lsp
-  :prefix-command 'keybinds/editor--lsp-command)
+(general-create-definer +keybinds-editor-lsp
+  :prefix-command '+keybinds-editor--lsp-command)
 
 (general-create-definer keybinds/editor-syntax-check
   :prefix-command 'keybinds/editor--syntax-check-command)
 
-(general-create-definer keybinds/editor-fold
-  :prefix-command 'keybinds/editor--fold-command)
+(general-create-definer +keybinds-editor-syntax-check
+  :prefix-command '+keybinds-editor--syntax-check-command)
 
-(general-create-definer keybinds/editor-input
-  :prefix-command 'keybinds/editor--input-command)
+(general-create-definer +keybinds-editor-fold
+  :prefix-command '+keybinds-editor--fold-command)
 
-(general-create-definer keybinds/editor-translate
-  :prefix-command 'keybinds/editor--translate-command)
+(general-create-definer +keybinds-editor-input
+  :prefix-command '+keybinds-editor--input-command)
 
-(general-create-definer keybinds/editor-git
-  :prefix-command 'keybinds/editor--git-command)
+(general-create-definer +keybinds-editor-translate
+  :prefix-command '+keybinds-editor--translate-command)
 
-(keybinds/editor
-  "C-c" '("cursor"               . keybinds/editor--cursor-command)
+(general-create-definer +keybinds-editor-git
+  :prefix-command '+keybinds-editor--git-command)
 
-  "!"   '("syntax check"         . keybinds/editor--syntax-check-command)
-  "g"   '("git"                  . keybinds/editor--git-command)
-  "i"   '("input method"         . keybinds/editor--input-command)
-  "m"   '("motion"               . keybinds/editor--motion-command)
-  "o"   '("fold"                 . keybinds/editor--fold-command)
-  "t"   '("translate"            . keybinds/editor--translate-command)
+(+keybinds-editor
+  "C-c" '("cursor"               . +keybinds-editor--cursor-command)
+
+  "!"   '("syntax check"         . +keybinds-editor--syntax-check-command)
+  "g"   '("git"                  . +keybinds-editor--git-command)
+  "i"   '("input method"         . +keybinds-editor--input-command)
+  "m"   '("motion"               . +keybinds-editor--motion-command)
+  "o"   '("fold"                 . +keybinds-editor--fold-command)
+  "t"   '("translate"            . +keybinds-editor--translate-command)
 
   "C-," (general-predicate-dispatch nil
-          (derived-mode-p 'prog-mode) `("lsp/doc"  . keybinds/editor--lsp-command))
+          (derived-mode-p 'prog-mode) '("lsp/doc"  . +keybinds-editor--lsp-command))
 
   ","   (general-predicate-dispatch nil
-          (derived-mode-p 'org-mode)  `("org edit" . keybinds/org-mode--edit-command)
-          t                           `("edit"     . keybinds/editor--text-edit-command))
+          (derived-mode-p 'org-mode)  '("org edit" . +keybinds-org-mode--edit-command)
+          t                           '("edit"     . +keybinds-editor--text-edit-command))
 
   "C-." (general-predicate-dispatch nil
-          (derived-mode-p 'org-mode)  `("org exec" . keybinds/org-mode--exec-command)
-          t                           `("exec"     . keybinds/editor--exec-command)))
+          (derived-mode-p 'org-mode)  '("org exec" . +keybinds-org-mode--exec-command)
+          t                           '("exec"     . +keybinds-editor--exec-command)))
 
-(keybinds/editor-exec
+(+keybinds-editor-exec
   "C-," '("embark act"           . embark-act))
 
-(keybinds/editor-text-edit
+(+keybinds-editor-text-edit
   "!"   '("fix typo"             . ispell-word)
   "+"   '("sort lines"           . sort-lines)
   "="   '("indent"               . util/indent-buffer)
@@ -88,12 +91,12 @@
   "r"   '("find/replace"         . query-replace-regexp)
   "R"   '("project find/replace" . project-query-replace-regexp))
 
-(keybinds/editor-cursor
+(+keybinds-editor-cursor
   "C-q" '("clear cursors"        . evil-mc-undo-all-cursors)
   "C-a" '("add cursors beg"      . evil-mc-make-cursor-in-visual-selection-beg)
   "C-e" '("add cursors end"      . evil-mc-make-cursor-in-visual-selection-end))
 
-(keybinds/editor-motion
+(+keybinds-editor-motion
   "j"   '("to char below"        . evilem-motion-find-char)
   "J"   '("til char below"       . evilem-motion-find-char-to)
   "k"   '("to char above"        . evilem-motion-find-char-backward)
@@ -108,7 +111,7 @@
   "m"   '("line to center"       . evil-scroll-line-to-center)
   "t"   '("line to top"          . evil-scroll-line-to-top))
 
-(keybinds/editor-fold
+(+keybinds-editor-fold
   "!"   '("hide fold level"      . hs-hide-level)
 
   "a"   '("inline beg comment"   . util/folding-add-fold-inline)
@@ -122,29 +125,29 @@
   "x"   '("show fold"            . hs-show-block)
   "o"   '("toggle fold"          . hs-toggle-hiding))
 
-(keybinds/editor-lsp
-  "d"   '("lsp definition"       . lsp-find-definition)
-  "i"   '("lsp describe"         . lsp-describe-thing-at-point)
-  "I"   '("lsp implementation"   . lsp-find-implementation)
-  "r"   '("lsp references"       . lsp-find-references)
-  "r"   '("lsp rename"           . lsp-rename)
-  "t"   '("lsp type definition"  . lsp-find-type-definition))
+(+keybinds-editor-lsp
+  "d"   '("definition"           . lsp-find-definition)
+  "i"   '("describe"             . lsp-describe-thing-at-point)
+  "I"   '("implementation"       . lsp-find-implementation)
+  "r"   '("references"           . lsp-find-references)
+  "R"   '("rename"               . lsp-rename)
+  "t"   '("type definition"      . lsp-find-type-definition))
 
-(keybinds/editor-syntax-check
+(+keybinds-editor-syntax-check
   "!"   '("check error"          . flycheck-display-error-at-point)
   "@"   '("check syntax"         . flycheck-buffer))
 
-(keybinds/editor-git
-  "i"   '("inspect hunk"         . hydra-git-hunk/diff-hl-show-hunk)
+(+keybinds-editor-git
+  "i"   '("inspect hunk"         . +hydra-git-hunk/diff-hl-show-hunk)
   "s"   '("stage hunk"           . diff-hl-stage-current-hunk)
   "d"   '("delete hunk"          . diff-hl-revert-hunk))
 
-(keybinds/editor-input
+(+keybinds-editor-input
   "c"   '("insert char"          . insert-char)
   "t"   '("insert template"      . yas-insert-snippet)
   "n"   '("insert nerd-icon"     . nerd-icons-insert))
 
-(keybinds/editor-translate
+(+keybinds-editor-translate
   "t"   '("translate"         . google-translate-smooth-translate))
 
 (provide 'keybinds-editor)
