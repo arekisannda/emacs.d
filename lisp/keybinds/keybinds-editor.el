@@ -45,18 +45,27 @@
 (general-create-definer +keybinds-editor-git
   :prefix-command '+keybinds-editor--git-command)
 
+(general-create-definer +keybinds-editor-context)
+
+(+keybinds-editor-context :prefix "C-SPC" :states '(normal visual emacs motion)
+  "!"   '("syntax check"         . +keybinds-editor--syntax-check-command)
+
+  "d"   '("definition"           . xref-find-definitions)
+  "D"   '("definition other"     . xref-find-definitions-other-window)
+  "i"   '("describe"             . eldoc)
+  "I"   '("implementation"       . eglot-find-implementation)
+  "r"   '("references"           . xref-find-references)
+  "R"   '("rename"               . eglot-rename)
+  "t"   '("type definition"      . eglot-find-typeDefinition))
+
 (+keybinds-editor
   "C-c" '("cursor"               . +keybinds-editor--cursor-command)
 
-  "!"   '("syntax check"         . +keybinds-editor--syntax-check-command)
   "g"   '("git"                  . +keybinds-editor--git-command)
   "i"   '("input method"         . +keybinds-editor--input-command)
   "m"   '("motion"               . +keybinds-editor--motion-command)
   "o"   '("fold"                 . +keybinds-editor--fold-command)
   "t"   '("translate"            . +keybinds-editor--translate-command)
-
-  "C-," (general-predicate-dispatch nil
-          (derived-mode-p 'prog-mode) '("lsp/doc"  . +keybinds-editor--lsp-command))
 
   ","   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode)  '("org edit" . +keybinds-org-mode--edit-command)
@@ -121,15 +130,6 @@
   "X"   '("show fold all"        . hs-show-all)
   "x"   '("show fold"            . hs-show-block)
   "o"   '("toggle fold"          . hs-toggle-hiding))
-
-(+keybinds-editor-lsp
-  "d"   '("definition"           . xref-find-definitions)
-  "D"   '("definition other"     . xref-find-definitions-other-window)
-  "i"   '("describe"             . eldoc)
-  "I"   '("implementation"       . eglot-find-implementation)
-  "r"   '("references"           . xref-find-references)
-  "R"   '("rename"               . eglot-rename)
-  "t"   '("type definition"      . eglot-find-typeDefinition))
 
 (+keybinds-editor-syntax-check
   "!"   '("check error"          . flycheck-display-error-at-point)

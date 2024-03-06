@@ -28,7 +28,8 @@
   (eglot-connect-timeout nil)
   (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 3)
-  (setq eglot-ignored-server-capabilities '())
+  (eglot-ignored-server-capabilities '(:documentHighlightProvider
+                                       :inlayHintProvider))
   :hook
   (eglot-managed-mode . (lambda () (eldoc-mode -1))))
 
