@@ -38,9 +38,10 @@
   (prog-mode . +lang-prog-mode-setup)
   (bash-ts-mode . +lang-sh-setup)
   (sh-mode . +lang-sh-setup)
-  :config
-  (util/lang--remap-major-mode
-   '((sh-mode . bash-ts-mode))))
+  :custom
+  (major-mode-remap-alist
+   (append '((sh-mode . bash-ts-mode))
+           major-mode-remap-alist)))
 
 (use-package emacs
   :ensure nil
@@ -58,10 +59,11 @@
   ("\\.jsonc\\'" . json-ts-mode)
   :hook
   (conf-mode . +lang-conf-setup)
-  :config
-  (util/lang--remap-major-mode
-   '((css-mode . css-ts-mode)
-     (js-json-mode . json-ts-mode))))
+  :custom
+  (major-mode-remap-alist
+   (append '((css-mode . css-ts-mode)
+             (js-json-mode . json-ts-mode))
+           major-mode-remap-alist)))
 
 (provide 'lang-generic)
 

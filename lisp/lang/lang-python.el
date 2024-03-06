@@ -12,9 +12,10 @@
     (eglot-ensure))
   :hook
   (python-ts-mode-hook . +lang-python-setup)
-  :config
-  (util/lang--remap-major-mode
-   '((python-mode . python-ts-mode))))
+  :custom
+  (major-mode-remap-alist
+   (append '((python-mode . python-ts-mode))
+           major-mode-remap-alist)))
 
 (provide 'lang-python)
 

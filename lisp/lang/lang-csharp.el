@@ -12,9 +12,10 @@
     (eglot-ensure))
   :hook
   (csharp-ts-mode . +lang-csharp-setup)
-  :config
-  (util/lang--remap-major-mode
-   '((csharp-mode . csharp-ts-mode))))
+  :custom
+  (major-mode-remap-alist
+   (append '((csharp-mode . csharp-ts-mode))
+           major-mode-remap-alist)))
 
 (provide 'lang-csharp)
 

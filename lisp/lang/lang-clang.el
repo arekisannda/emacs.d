@@ -14,11 +14,12 @@
   (c++-ts-mode . +lang-clang-setup)
   (c-ts-mode . +lang-clang-setup)
   (c-or-c++-ts-mode. +lang-clang-setup)
-  :config
-  (util/lang--remap-major-mode
-   '((c-mode . c-ts-mode)
-     (c++-mode . c++-ts-mode)
-     (c-or-c++-mode . c-or-c++-ts-mode))))
+  :custom
+  (major-mode-remap-alist
+   (append '((c-mode . c-ts-mode)
+             (c++-mode . c++-ts-mode)
+             (c-or-c++-mode . c-or-c++-ts-mode))
+           major-mode-remap-alist)))
 
 (provide 'lang-clang)
 

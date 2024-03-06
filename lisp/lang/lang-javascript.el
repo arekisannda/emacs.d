@@ -6,9 +6,10 @@
 
 (use-package emacs
   :ensure nil
-  :config
-  (util/lang--remap-major-mode
-   '((javascript-mode . js-ts-mode))))
+  :custom
+  (major-mode-remap-alist
+   (append '((javascript-mode . js-ts-mode))
+           major-mode-remap-alist)))
 
 (provide 'lang-javascript)
 
