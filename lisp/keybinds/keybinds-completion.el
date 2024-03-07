@@ -3,6 +3,7 @@
 
 ;;; Code:
 (require 'general)
+(require 'keybinds-global)
 
 (general-create-definer +keybinds-completion)
 
@@ -12,26 +13,23 @@
 (general-create-definer +keybinds-completion-info
   :prefix-command '+keybinds-completion--info-command)
 
-(general-create-definer +keybinds-completion-minibuffer
-  :keymaps 'minibuffer-local-map)
+(general-create-definer +keybinds-completion-extra
+  :prefix-command '+keybinds-completion--extra-command)
 
-(+keybinds-completion :states 'insert
-  "C-SPC"   '("completion"        . completion-at-point)
-  "C-S-SPC" '("complete overlay"  . corfu-candidate-overlay-complete-at-point))
-
-(+keybinds-completion :prefix "M-SPC" :states 'insert
+(+keybinds-completion-extra
   "t"       '("capf snippet"      . yasnippet-capf)
   "w"       '("capf word"         . cape-dict)
   "y"       `("capf math"         . cape-math-symbols-unicode))
+
+(+keybinds-global :states 'insert
+  "C-SPC"   '("completion"        . completion-at-point)
+  "C-S-SPC" '("complete overlay"  . corfu-candidate-overlay-complete-at-point)
+  "M-SPC"   '("completion extra"  . +keybinds-completion--extra-command))
 
 (+keybinds-global minibuffer-local-map
   "C-SPC"   '("completion"        . completion-at-point)
-  "C-S-SPC" '("complete overlay"  . corfu-candidate-overlay-complete-at-point))
-
-(+keybinds-completion minibuffer-local-map :prefix "M-SPC"
-  "t"       '("capf snippet"      . yasnippet-capf)
-  "w"       '("capf word"         . cape-dict)
-  "y"       `("capf math"         . cape-math-symbols-unicode))
+  "C-S-SPC" '("complete overlay"  . corfu-candidate-overlay-complete-at-point)
+  "M-SPC"   '("completion extra"  . +keybinds-completion--extra-command))
 
 (+keybinds-completion-active
   [remap next-line]                    #'corfu-next

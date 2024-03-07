@@ -32,6 +32,12 @@
   :init
   (setq-default hydra-key-doc-function nil))
 
+(use-package seq
+  :ensure (seq))
+
+(use-package jsonrpc
+  :ensure (jsonrpc))
+
 (provide 'packages-base)
 
 ;;; packages-base.el ends here

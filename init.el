@@ -47,9 +47,8 @@
 
 (require 'packages-vc)
 (require 'packages-flycheck)
-;; (require 'packages-lsp-mode)
-;; (require 'packages-dap-mode)
 (require 'packages-eglot)
+(require 'packages-dape)
 (require 'packages-yasnippet)
 
 (require 'packages-latex)

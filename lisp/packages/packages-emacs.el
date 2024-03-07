@@ -23,9 +23,8 @@
     (setq-default tab-width 4)
     (setq-default tab-bar-separator "")
 
-    (setq-default fringe-styles 'default)
     (setq-default fringe-indicator-alist nil)
-    (fringe-mode 5))
+    (fringe-mode nil))
 
   (defvar +emacs-read-only-prefixes-list
     (list (expand-file-name elpaca-directory)

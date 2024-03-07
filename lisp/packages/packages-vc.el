@@ -15,16 +15,8 @@
         diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
   :hook
   (global-diff-hl-mode . diff-hl-flydiff-mode)
-  (elpaca-after-init . global-diff-hl-mode))
-
-(use-package emacs :after diff-hl :disabled
-  :ensure nil
-  :if (daemonp)
-  :config
-  (add-hook 'after-make-frame-functions
-            (lambda (frame) (with-selected-frame frame
-                              (unless (display-graphic-p)
-                                (diff-hl-margin-mode 1))))))
+  (elpaca-after-init . global-diff-hl-mode)
+  (global-diff-hl-mode . diff-hl-margin-mode))
 
 (use-package magit :after diff-hl
   :hook

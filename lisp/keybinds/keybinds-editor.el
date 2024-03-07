@@ -4,6 +4,7 @@
 ;;; Code:
 (require 'general)
 (require 'util-folding)
+(require 'keybinds-global)
 (require 'keybinds-org-mode)
 
 (general-define-key
@@ -45,9 +46,11 @@
 (general-create-definer +keybinds-editor-git
   :prefix-command '+keybinds-editor--git-command)
 
-(general-create-definer +keybinds-editor-context)
+(+keybinds-global :states '(normal visual emacs motion)
+  "C-SPC" (general-predicate-dispatch nil
+            (derived-mode-p 'prog-mode) '("lsp" . +keybinds-editor--lsp-command)))
 
-(+keybinds-editor-context :prefix "C-SPC" :states '(normal visual emacs motion)
+(+keybinds-editor-lsp
   "!"   '("syntax check"         . +keybinds-editor--syntax-check-command)
 
   "d"   '("definition"           . xref-find-definitions)

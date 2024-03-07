@@ -4,12 +4,6 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package seq
-  :ensure (seq))
-
-(use-package jsonrpc
-  :ensure (jsonrpc))
-
 (use-package eldoc
   :ensure (eldoc)
   :custom
