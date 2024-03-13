@@ -56,6 +56,8 @@
                     message-mode
                     special-mode
                     dap-ui-breakpoints-ui-list-mode
+                    calc-mode
+                    calculator-mode
                     eglot-list-connections-mode))
       (add-to-list 'evil-emacs-state-modes mode)))
 
