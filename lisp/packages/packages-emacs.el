@@ -58,7 +58,8 @@
                     dap-ui-breakpoints-ui-list-mode
                     calc-mode
                     calculator-mode
-                    eglot-list-connections-mode))
+                    eglot-list-connections-mode
+                    inferior-python-mode))
       (add-to-list 'evil-emacs-state-modes mode)))
 
   (defun +emacs-load-keybinds ()
