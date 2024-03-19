@@ -55,10 +55,12 @@
   "f"    '("ranger buffer"       . ranger)
   "s"    '("scratch buffer"      . scratch-buffer)
 
-  "d"    '("eval defun"           . eval-defun)
-  "D"    '("edebug defun"         . edebug-defun)
-  "e"    '("eval region"          . eval-region)
-  "E"    '("eval buffer"          . eval-buffer))
+  "m"    '("magit"               . magit)
+
+  "d"    '("eval defun"          . eval-defun)
+  "D"    '("edebug defun"        . edebug-defun)
+  "e"    '("eval region"         . eval-region)
+  "E"    '("eval buffer"         . eval-buffer))
 
 (+keybinds-session-workspace
   "p"    '("switch project"      . project-switch-project)
