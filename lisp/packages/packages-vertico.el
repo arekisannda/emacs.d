@@ -74,7 +74,9 @@
 
 (use-package consult-dir)
 
-(use-package affe)
+(use-package affe
+  :custom
+  (affe-find-command "rg --color=never --files --hidden --glob=!.git/*"))
 
 (use-package embark
   :hook
