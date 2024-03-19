@@ -11,11 +11,11 @@
   (project-vc-merge-submodules nil))
 
 (use-package ibuffer-project
-  :preface
-  (require 'ibuf-ext)
   :hook
-  (ibuffer . (lambda () (setq ibuffer-filter-groups
-                              (ibuffer-project-generate-filter-groups)))))
+  (ibuffer . (lambda ()
+               (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
+               (unless (eq ibuffer-sorting-mode 'project-file-relative)
+                 (ibuffer-do-sort-by-project-file-relative)))))
 
 (provide 'packages-project)
 
