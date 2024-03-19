@@ -45,8 +45,8 @@
   "C-<tab>"         '("toggle popper"       . popper-toggle)
   "C-<iso-lefttab>" '("toggle popper type"  . popper-toggle-type)
 
-  "C-<next>"    '("scroll left"         . +keybinds--scroll-left)
-  "C-<prior>"   '("scroll right"        . +keybinds--scroll-right)
+  "S-<next>"    '("scroll left"         . +keybinds--scroll-left)
+  "S-<prior>"   '("scroll right"        . +keybinds--scroll-right)
   "<prior>"     '("scroll up"           . +keybinds--scroll-up)
   "<next>"      '("scroll down"         . +keybinds--scroll-down)
 
@@ -55,10 +55,13 @@
 
 (+keybinds-global vterm-mode-map
   "<escape>"    '("escape"              . vterm--self-insert)
-  "M-C-<next>"  '("scroll left"         . +keybinds--scroll-left)
-  "M-C-<prior>" '("scroll right"        . +keybinds--scroll-right)
-  "M-<prior>"   '("scroll up"           . +keybinds--scroll-up)
-  "M-<next>"    '("scroll down"         . +keybinds--scroll-down))
+  "C-S-<next>"  '("scroll left"         . +keybinds--scroll-left)
+  "C-S-<prior>" '("scroll right"        . +keybinds--scroll-right)
+  "C-<prior>"   '("scroll up"           . +keybinds--scroll-up)
+  "C-<next>"    '("scroll down"         . +keybinds--scroll-down)
+
+  "M-<prior>"   '("owindow scroll up"   . +keybinds--scroll-other-up)
+  "M-<next>"    '("owindow scroll down" . +keybinds--scroll-other-down))
 
 (+keybinds-global minibuffer-local-map
   "M-<prior>"   '("owindow scroll up"   . +keybinds--minibuffer-scroll-other-up)
