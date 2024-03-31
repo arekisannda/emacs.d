@@ -23,15 +23,17 @@
 (require 'packages-hs-mode)
 (require 'packages-themes)
 (require 'packages-interface)
+(require 'packages-treemacs)
 (require 'packages-evil)
 (require 'packages-vterm)
 (require 'packages-perspective)
-(require 'packages-treemacs)
 (require 'packages-project)
 (require 'packages-windows)
 (require 'packages-layout)
 (require 'packages-corfu)
 (require 'packages-vertico)
+
+(elpaca-wait)
 
 (require 'lang-generic)
 (require 'lang-elisp)
@@ -45,18 +47,17 @@
 (require 'lang-rust)
 (require 'lang-whitespace)
 
+(elpaca-wait)
+
 (require 'packages-vc)
 (require 'packages-flycheck)
 (require 'packages-eglot)
 (require 'packages-dape)
 (require 'packages-yasnippet)
-
 (require 'packages-latex)
 (require 'packages-org-mode)
-
 (require 'packages-japanese)
 (require 'packages-ispell)
-
 (require 'packages-emacs)
 
 (provide 'config/init)

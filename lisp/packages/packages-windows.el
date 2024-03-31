@@ -7,7 +7,7 @@
   :custom
   (shackle-default-rule '(:same t)))
 
-(use-package popper :after (shackle persp-mode)
+(use-package popper :after shackle :disabled
   :preface
   (defvar +popper-derived-mode-alist '())
 
@@ -46,11 +46,12 @@
   (popper-window-height 30)
   (popper-mode-line "")
   (popper-display-control nil)
-  (popper-group-function #'(lambda () (safe-persp-name (get-current-persp))))
+  (popper-group-function #'(lambda () (cond ((featurep 'persp-mode) (safe-persp-name (get-current-persp)))
+                                            ((featurep 'perspective) (persp-name (persp-curr))))))
   :hook
   (elpaca-after-init . popper-mode))
 
-(use-package emacs :after telephone-line
+(use-package emacs :after telephone-line :disabled
   :ensure nil
   :config
   (telephone-line-defsegment* +telepohone-line-popper-tag-segment ()
@@ -64,6 +65,8 @@
                      telephone-line-process-segment))
           (nil    . (telephone-line-projectile-segment
                      telephone-line-buffer-segment)))))
+
+(use-package window-purpose)
 
 (provide 'packages-windows)
 
