@@ -26,17 +26,21 @@
     (setq-default fringe-indicator-alist nil)
     (fringe-mode nil))
 
-  (defvar +emacs-read-only-prefixes-list
+  (defcustom +emacs-read-only-prefixes-list
     (list (expand-file-name elpaca-directory)
-          (expand-file-name package-user-dir))
-    "List of read-only file prefixes.")
+          (expand-file-name package-user-dir)
+          "/usr/share/emacs/")
+    "List of read-only file prefixes."
+    :group 'convenience
+    :type '(list :element-type string))
 
   (defun +emacs-set-read-only-by-prefix ()
     "Enable `read-only-mode` if buffer includes one of `+emacs-read-only-prefixes-list`."
     (when (and buffer-file-name
                (cl-loop for prefix in +emacs-read-only-prefixes-list
                         thereis (string-prefix-p prefix buffer-file-name)))
-      (read-only-mode 1)))
+      (read-only-mode 1)
+      (evil-motion-state t)))
 
   (defun +emacs-set-visual-line-mode ()
     "Setup to run for non `prog-mode` major modes."
