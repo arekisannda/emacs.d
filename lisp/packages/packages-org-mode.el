@@ -30,6 +30,17 @@
                           " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
   (org-agenda-current-time-string
    "◀── now ─────────────────────────────────────────────────")
+
+  (org-latex-pdf-process '("pdflatex -interaction nonstopmode -output-directory %o %f"
+                           "bibtex %b"
+                           "pdflatex -interaction nonstopmode -output-directory %o %f"
+                           "pdflatex -interaction nonstopmode -output-directory %o %f"))
+  (org-latex-logfiles-extensions (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc"
+                                         "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf"
+                                         "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf"
+                                         "acn" "acr" "alg" "glg" "gls" "ist")))
+  (org-latex-hyperref-template nil)
+
   :config
 
   (dolist (face `((org-level-1 . 1.30)
@@ -93,6 +104,11 @@
   :hook
   (window-setup . +themes-configure-org-fonts)
   (server-after-make-frame-hook . +themes-configure-org-fonts))
+
+(use-package org-contrib
+  :config
+  (require 'ox-extra)
+  (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
 (provide 'packages-org-mode)
 

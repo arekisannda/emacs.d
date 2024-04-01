@@ -21,7 +21,6 @@
   :hook
   (org-mode . +lang-org-mode-setup))
 
-
 (use-package emacs
   :ensure nil
   :preface

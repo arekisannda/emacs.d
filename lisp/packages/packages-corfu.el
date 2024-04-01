@@ -61,12 +61,6 @@
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-keyword))
 
-(use-package company-math :after latex)
-
-(use-package company-reftex :after latex)
-
-(use-package company-auctex :after latex)
-
 (use-package yasnippet-capf :after yasnippet
   :custom
   (yasnippet-capf-lookup-by 'key))
