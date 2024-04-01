@@ -38,6 +38,7 @@
   (prog-mode . +lang-prog-mode-setup)
   (bash-ts-mode . +lang-sh-setup)
   (sh-mode . +lang-sh-setup)
+  (typst-ts-mode . +lang-prog-mode-setup)
   :custom
   (major-mode-remap-alist
    (append '((sh-mode . bash-ts-mode))
@@ -59,6 +60,7 @@
   ("\\.jsonc\\'" . json-ts-mode)
   :hook
   (conf-mode . +lang-conf-setup)
+  (yaml-ts-mode . +lang-conf-setup)
   :custom
   (major-mode-remap-alist
    (append '((css-mode . css-ts-mode)

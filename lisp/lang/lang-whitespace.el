@@ -7,7 +7,7 @@
   :ensure nil
   :custom
   (go-ts-mode-indent-offset 4)
-  (json-ts-mode-indent-offset 2))
+  (typst-ts-mode-indent-offset 2))
 
 (provide 'lang-whitespace)
 

@@ -30,6 +30,7 @@
                   (rust . ("https://github.com/tree-sitter/tree-sitter-rust.git"))
                   (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript.git" nil "tsx/src"))
                   (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript.git" nil "typescript/src"))
+                  (typst . ("https://github.com/uben0/tree-sitter-typst"))
                   (yaml . ("https://github.com/ikatyang/tree-sitter-yaml.git"))
                   (make . ("https://github.com/alemuller/tree-sitter-make"))
                   (markdown . ("https://github.com/ikatyang/tree-sitter-markdown"))

@@ -6,6 +6,7 @@
 (require 'util-folding)
 (require 'keybinds-global)
 (require 'keybinds-org-mode)
+(require 'keybinds-typst)
 
 (general-define-key
  :states        '(normal insert visual emacs motion)
@@ -71,12 +72,13 @@
   "t"   '("translate"            . +keybinds-editor--translate-command)
 
   ","   (general-predicate-dispatch nil
-          (derived-mode-p 'org-mode)  '("org edit" . +keybinds-org-mode--edit-command)
-          t                           '("edit"     . +keybinds-editor--text-edit-command))
+          (derived-mode-p 'org-mode)      '("org edit"   . +keybinds-org-mode--edit-command)
+          t                               '("edit"       . +keybinds-editor--text-edit-command))
 
   "C-." (general-predicate-dispatch nil
-          (derived-mode-p 'org-mode)  '("org exec" . +keybinds-org-mode--exec-command)
-          t                           '("exec"     . +keybinds-editor--exec-command)))
+          (derived-mode-p 'org-mode)      '("org exec"   . +keybinds-org-mode--exec-command)
+          (derived-mode-p 'typst-ts-mode) '("typst exec" . +keybinds-typst-mode--exec-command)
+          t                               '("exec"       . +keybinds-editor--exec-command)))
 
 (+keybinds-editor-exec
   "C-," '("embark act"           . embark-act))
