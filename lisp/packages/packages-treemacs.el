@@ -9,7 +9,7 @@
 
 (use-package treemacs-evil :after treemacs)
 
-(use-package treemacs-persp :after (treemacs persp-mode) :defer)
+(use-package treemacs-persp :disabled :after (treemacs persp-mode) :defer)
 
 (use-package treemacs-perspective :after (treemacs perspective) :defer)
 
