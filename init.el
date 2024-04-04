@@ -17,6 +17,8 @@
 (dolist (path '("lisp"))
   (+recursive-load-path path))
 
+(setq-default +current-workspace nil)
+
 (require 'packages-manager)
 (require 'packages-base)
 (require 'packages-treesit)
@@ -32,8 +34,6 @@
 (require 'packages-layout)
 (require 'packages-corfu)
 (require 'packages-vertico)
-
-(elpaca-wait)
 
 (require 'lang-generic)
 (require 'lang-elisp)
@@ -58,6 +58,7 @@
 (require 'packages-org-mode)
 (require 'packages-japanese)
 (require 'packages-ispell)
+(require 'packages-code)
 (require 'packages-emacs)
 
 (provide 'config/init)

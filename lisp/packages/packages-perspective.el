@@ -17,6 +17,7 @@
   (persp-kill-foreign-buffer-behaviour 'kill)
   (persp-nil-name "main")
   :hook
+  (persp-activated . (lambda (&optional _) (setq +current-workspace (safe-persp-name (get-current-persp)))))
   (server-after-make-frame . (lambda () (when (and (daemonp) (not persp-mode))
                                           (persp-mode 1)
                                           (ext-tab-bar-persp-mode-setup))))
@@ -40,6 +41,7 @@
                        (persp-state-load persp-state-default-file))
                      (persp-switch "main")))
   (persp-created . dashboard-open)
+  (persp-activated . (lambda () (setq +current-workspace (persp-name (persp-curr)))))
   (server-after-make-frame . (lambda () (when (and (daemonp) (not persp-mode))
                                           (persp-mode 1)
                                           (ext-tab-bar-persp-mode-setup))))

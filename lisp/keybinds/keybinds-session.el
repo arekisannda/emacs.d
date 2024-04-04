@@ -4,6 +4,7 @@
 ;;; Code:
 (require 'general)
 (require 'keybinds-custom)
+(require 'keybinds-code)
 
 (general-define-key
  :states         '(normal visual emacs motion)
@@ -60,7 +61,11 @@
   "d"    '("eval defun"          . eval-defun)
   "D"    '("edebug defun"        . edebug-defun)
   "e"    '("eval region"         . eval-region)
-  "E"    '("eval buffer"         . eval-buffer))
+  "E"    '("eval buffer"         . eval-buffer)
+
+  "C-\\" (general-predicate-dispatch nil
+           (string= +current-workspace "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
+           (string= +current-workspace "exercism") '("exercism" . +keybinds-code--exercism-command)))
 
 (+keybinds-session-workspace
   "p"    '("switch project"      . project-switch-project)
