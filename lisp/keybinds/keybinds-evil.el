@@ -41,6 +41,8 @@
 
 (+keybinds-evil evil-emacs-state-map
   "<escape>" (general-predicate-dispatch #'keyboard-quit
+               (derived-mode-p 'vterm-mode) #'vterm--self-insert)
+  "\\"       (general-predicate-dispatch #'evil-execute-in-normal-state
                (derived-mode-p 'vterm-mode) #'vterm--self-insert))
 
 (+keybinds-evil evil-motion-state-map

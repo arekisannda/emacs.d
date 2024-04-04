@@ -83,7 +83,7 @@
   "t"    '("create new tab"      . tab-bar-new-tab)
   "T"    '("create fresh tab"    . +keybinds--create-fresh-tab)
   "k"    '("close tab"           . tab-bar-close-tab)
-  "K"    '("close other tab"     . tab-bar-close-other-tabs)
+  "o"    '("close other tab"     . tab-bar-close-other-tabs)
   "r"    '("rename tab"          . tab-bar-rename-tab)
   "u"    '("undo close tab"      . tab-bar-undo-close-tab))
 
