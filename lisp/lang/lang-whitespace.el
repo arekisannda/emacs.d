@@ -6,6 +6,7 @@
 (use-package emacs
   :ensure nil
   :custom
+  (python-indent-offset 4)
   (go-ts-mode-indent-offset 4)
   (json-ts-mode-indent-offset 2)
   (yaml-indent-offset 2)
