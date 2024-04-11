@@ -21,6 +21,11 @@
   (dolist (capf capf-list)
     (add-to-list 'completion-at-point-functions capf)))
 
+(defun util/lsp-ensure ()
+  "Helper function to enable LSP."
+  (unless (bound-and-true-p +lsp-disable)
+    (eglot-ensure)))
+
 (provide 'util-lang)
 
 ;;; util-lang.el ends here

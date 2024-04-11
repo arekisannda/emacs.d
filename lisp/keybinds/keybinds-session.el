@@ -43,7 +43,11 @@
   "m"    '("modes"               . +keybinds-session--mode-command)
   "w"    '("workspace"           . +keybinds-session--workspace-command)
   "t"    '("tabs"                . +keybinds-session--tabs-command)
-  "v"    '("terminal"            . +keybinds-session--term-command))
+  "v"    '("terminal"            . +keybinds-session--term-command)
+
+  "C-q"  (general-predicate-dispatch nil
+           (equal +current-workspace "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
+           (equal +current-workspace "exercism") '("exercism" . +keybinds-code--exercism-command)))
 
 (+keybinds-session-term
   "v"    '("toggle project term" . multi-vterm-project)
@@ -61,11 +65,7 @@
   "d"    '("eval defun"          . eval-defun)
   "D"    '("edebug defun"        . edebug-defun)
   "e"    '("eval region"         . eval-region)
-  "E"    '("eval buffer"         . eval-buffer)
-
-  "C-\\" (general-predicate-dispatch nil
-           (string= +current-workspace "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
-           (string= +current-workspace "exercism") '("exercism" . +keybinds-code--exercism-command)))
+  "E"    '("eval buffer"         . eval-buffer))
 
 (+keybinds-session-workspace
   "p"    '("switch project"      . project-switch-project)

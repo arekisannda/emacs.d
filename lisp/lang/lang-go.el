@@ -8,7 +8,7 @@
   :ensure nil
   :preface
   (defun +lang-go-setup ()
-    (eglot-ensure))
+    (util/lsp-ensure))
   :mode
   ("\\.go\\'" . go-ts-mode)
   :hook

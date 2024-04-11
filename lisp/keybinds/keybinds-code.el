@@ -18,11 +18,12 @@
 
 (+keybinds-code-exercism
   "O" '("set track"      . exercism-set-track)
-  "o" '("open exercise"  . exercism-open-exercise)
+  "o" '("set exercise"   . exercism-set-exercise)
   "t" '("test"           . exercism-run-tests)
-  "s" '("submit"         . exercism-submit)
-  "P" '("publish"        . exercism-publish)
-  "c" '("mark completed" . exercism-complete))
+  "s" '("submit"         . exercism-submit-solution)
+  "p" '("publish"        . exercism-publish-solution)
+  "u" '("unpublish"      . exercism-unpublish-solution)
+  "c" '("mark completed" . exercism-mark-completed))
 
 (provide 'keybinds-code)
 

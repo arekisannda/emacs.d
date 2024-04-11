@@ -9,7 +9,7 @@
   :preface
   (defun +lang-csharp-setup ()
     "Setup to run for csharp major modes."
-    (eglot-ensure))
+    (util/lsp-ensure))
   :hook
   (csharp-ts-mode . +lang-csharp-setup)
   :custom

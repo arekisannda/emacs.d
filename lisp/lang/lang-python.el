@@ -9,7 +9,7 @@
   :preface
   (defun +lang-python-setup ()
     "Configurations for python."
-    (eglot-ensure))
+    (util/lsp-ensure))
   :hook
   (python-ts-mode-hook . +lang-python-setup)
   :custom

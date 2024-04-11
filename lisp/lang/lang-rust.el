@@ -8,7 +8,7 @@
   :preface
   (defun +lang-rust-setup ()
     "Configurations for rust."
-    (eglot-ensure))
+    (util/lsp-ensure))
   :hook
   (rust-ts-mode . +lang-rust-setup)
   :config

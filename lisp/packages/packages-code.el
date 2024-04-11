@@ -44,78 +44,14 @@
   (advice-add #'leetcode--display-detail :override #'+leetcode--display-detail-override)
   (advice-add #'leetcode--display-code :override #'+leetcode--display-code-override))
 
-(use-package exercism
+(use-package exercism.
+  :ensure (exercism :type git :host github :repo "arekisannda/exercism.el")
   :custom
-  (exercism-display-tests-after-run t)
-  (exercism-directory (expand-file-name "~/Code/exercism"))
-  :config
-  (defun exercism-setup (&optional config-file-path)
-    (interactive)
-    (let* ((config-file-path (or config-file-path "~/.config/exercism/user.json")))
-      (unless (file-exists-p config-file-path)
-        (user-error "Failed to laod config: invalid file"))
-      (with-temp-buffer
-        (insert-file-contents config-file-path)
-        (let ((config (json-parse-string (buffer-string))))
-          (setq exercism--workspace (gethash "workspace" config))
-          (setq exercism--api-token (gethash "token" config))))))
-
-  (defun exercism-get-exercise-id ()
-    (interactive)
-    (let* ((track-exercise (concat exercism--current-track "/" exercism--current-exercise))
-           (exercise-path (expand-file-name track-exercise exercism--workspace))
-           (exercise-metadata-path (expand-file-name ".exercism/metadata.json" exercise-path))
-           (exercise-id))
-      (unless (file-exists-p exercise-metadata-path)
-        (user-error "Failed to laod metadata: invalid file"))
-      (with-temp-buffer
-        (insert-file-contents exercise-metadata-path)
-        (let ((config (json-parse-string (buffer-string))))
-          (setq exercise-id (gethash "id" config))
-          ))
-      exercise-id))
-
-  (defun exercism-complete ()
-    "Mark exercise as completed."
-    (interactive)
-    (let* ((exercise-id (exercism-get-exercise-id)))
-      (promise-new
-       (lambda (resolve _)
-         (request
-           (concat "https://exercism.org/api/v2/solutions/" exercise-id "/complete")
-           :type "PATCH"
-           :headers `(("Authorization" . ,(format "Bearer %s" exercism--api-token)))
-           :parser #'json-read
-           :success (cl-function
-                     (lambda (&key data &allow-other-keys)
-                       (message "Response: %s" data)))
-           :error (cl-function
-                   (lambda (&key err &allow-other-keys)
-                     (message "Request failed: %S" err)))
-           )))
-      ))
-
-  (defun exercism-publish ()
-    "Publish exercise solution."
-    (interactive)
-    (let* ((exercise-id (exercism-get-exercise-id)))
-      (promise-new
-       (lambda (resolve _)
-         (request
-           (concat "https://exercism.org/api/v2/solutions/" exercise-id "/publish")
-           :type "PATCH"
-           :headers `(("Authorization" . ,(format "Bearer %s" exercism--api-token)))
-           :parser #'json-read
-           :success (cl-function
-                     (lambda (&key data &allow-other-keys)
-                       (message "here!!!")
-                       (message "Response: %s" data)))
-           :error (cl-function
-                   (lambda (&key err &allow-other-keys)
-                     (message "Request failed: %S" err)))
-           )))
-      ))
-  )
+  (exercism-workspace-path (expand-file-name "~/Code/exercism"))
+  (exercism-enable-log-to-message-buffer nil)
+  (exercism-open-url-on-submit nil)
+  :hook
+  (window-setup . exercism-setup))
 
 (provide 'packages-code)
 
