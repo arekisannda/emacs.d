@@ -37,7 +37,7 @@
   "M-{"         '("prev popup"          . popper-cycle-backwards)
   "M-}"         '("next popup"          . popper-cycle)
   "M-\\"        '("ace-window"          . ace-window)
-  "M-0"         '("focus treemacs"      . treemacs-select-window)
+  "M-0"         '("focus treemacs"      . treemacs)
 
   "C-M-\\"      '("toggle input"        . toggle-input-method))
 

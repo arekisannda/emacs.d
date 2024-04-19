@@ -48,6 +48,14 @@
   (emacs-startup . dashboard-setup-startup-hook)
   (emacs-startup . dashboard-insert-startupify-lists))
 
+(use-package treemacs)
+
+(use-package treemacs-nerd-icons :after treemacs)
+
+(use-package treemacs-evil :after treemacs)
+
+(use-package treemacs-magit :after (treemacs magit))
+
 (provide 'packages-interface)
 
 ;;; packages-interface.el ends here
