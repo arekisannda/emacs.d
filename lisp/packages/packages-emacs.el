@@ -24,7 +24,9 @@
     (setq-default tab-bar-separator "")
 
     (setq-default fringe-indicator-alist nil)
-    (fringe-mode nil))
+    (fringe-mode nil)
+
+    (kill-buffer (messages-buffer)))
 
   (defcustom +emacs-read-only-prefixes-list
     (list (expand-file-name elpaca-directory)
@@ -62,8 +64,10 @@
                     dap-ui-breakpoints-ui-list-mode
                     calc-mode
                     calculator-mode
+                    calendar-mode
                     eglot-list-connections-mode
-                    inferior-python-mode))
+                    inferior-python-mode
+                    eshell-mode))
       (add-to-list 'evil-emacs-state-modes mode)))
 
   (defun +emacs-load-keybinds ()

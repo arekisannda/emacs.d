@@ -49,7 +49,13 @@
   "<escape>" '("quit"            . keyboard-quit)
 
   "L"        '("next arg"        . evil-forward-arg)
-  "H"        '("prev arg"        . evil-backward-arg))
+  "H"        '("prev arg"        . evil-backward-arg)
+
+  "[ x"      '("prev xref"       . +hydra-xref-motion/xref-go-back)
+  "] x"      '("prev xref"       . +hydra-xref-motion/xref-go-forward)
+
+  "[ h"      '("prev help"       . +hydra-help-motion/help-go-back)
+  "] h"      '("prev help"       . +hydra-help-motion/help-go-forward))
 
 (+keybinds-evil evil-inner-text-objects-map
   "a"        '("inner arg"       . evil-inner-arg))

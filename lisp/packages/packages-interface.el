@@ -31,6 +31,78 @@
   (server-after-make-frame . ace-window-posframe-mode))
 
 (use-package dashboard :after nerd-icons
+  :preface
+  (defun +dashboard-insert-project-shortmenu (&rest _)
+    (let* ((fn #'project-switch-project)
+           (fn-keymap (format "\\[%s]" fn))
+           (icon-name (alist-get 'projects dashboard-heading-icons))
+           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+      (insert (format "%s " icon))
+      (widget-create 'item
+                     :tag (format "%-30s" "Open project")
+                     :action (lambda (&rest _) (call-interactively #'project-switch-project))
+                     :mouse-face 'highlight
+                     :button-face 'dashboard-heading
+                     :button-prefix ""
+                     :button-suffix ""
+                     :format "%[%t%]")
+      (insert (propertize (substitute-command-keys fn-keymap)
+                          'face
+                          'font-lock-constant-face))))
+
+  (defun +dashboard-insert-org-agenda-shortmenu (&rest _)
+    (let* ((fn #'org-agenda)
+           (fn-keymap (format "\\[%s]" fn))
+           (icon-name (alist-get 'agenda dashboard-heading-icons))
+           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+      (insert (format "%s " icon))
+      (widget-create 'item
+                     :tag (format "%-30s" "Open org-agenda")
+                     :action (lambda (&rest _) (call-interactively #'org-agenda))
+                     :mouse-face 'highlight
+                     :button-face 'dashboard-heading
+                     :button-prefix ""
+                     :button-suffix ""
+                     :format "%[%t%]")
+      (insert (propertize (substitute-command-keys fn-keymap)
+                          'face
+                          'font-lock-constant-face))))
+
+  (defun +dashboard-insert-bookmark-shortmenu (&rest _)
+    (let* ((fn #'consult-bookmark)
+           (fn-keymap (format "\\[%s]" fn))
+           (icon-name (alist-get 'bookmarks dashboard-heading-icons))
+           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+      (insert (format "%s " icon))
+      (widget-create 'item
+                     :tag (format "%-30s" "Jump to bookmark")
+                     :action (lambda (&rest _) (call-interactively #'consult-bookmark))
+                     :mouse-face 'highlight
+                     :button-face 'dashboard-heading
+                     :button-prefix ""
+                     :button-suffix ""
+                     :format "%[%t%]")
+      (insert (propertize (substitute-command-keys fn-keymap)
+                          'face
+                          'font-lock-constant-face))))
+
+  (defun +dashboard-insert-recents-shortmenu (&rest _)
+    (let* ((fn #'consult-recent-file)
+           (fn-keymap (format "\\[%s]" fn))
+           (icon-name (alist-get 'recents dashboard-heading-icons))
+           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
+      (insert (format "%s " icon))
+      (widget-create 'item
+                     :tag (format "%-30s" "Recently opened files")
+                     :action (lambda (&rest _) (call-interactively #'consult-recent-file))
+                     :mouse-face 'highlight
+                     :button-face 'dashboard-heading
+                     :button-prefix ""
+                     :button-suffix ""
+                     :format "%[%t%]")
+      (insert (propertize (substitute-command-keys fn-keymap)
+                          'face
+                          'font-lock-constant-face))))
   :custom
   (dashboard-icon-type 'nerd-icons)
   (dashboard-startup-banner (expand-file-name "assets/logo.png" user-emacs-directory))
@@ -44,6 +116,33 @@
   (dashboard-set-file-icons t)
   (dashboard-items '((agenda . 8)  (bookmarks . 8) (projects . 16) (recents . 32)))
   (initial-buffer-choice #'dashboard-open)
+  (dashboard-startupify-list
+   '(dashboard-insert-banner
+     dashboard-insert-newline
+     dashboard-insert-banner-title
+     dashboard-insert-newline
+     dashboard-insert-init-info
+     dashboard-insert-items))
+
+  ;; (dashboard-startupify-list
+  ;;  '(dashboard-insert-banner
+  ;;    dashboard-insert-newline
+  ;;    dashboard-insert-banner-title
+  ;;    dashboard-insert-newline
+  ;;    dashboard-insert-init-info
+  ;;    dashboard-insert-items))
+
+  ;; (dashboard-item-generators
+  ;;  '((recents . +dashboard-insert-recents-shortmenu)
+  ;;    (bookmarks . +dashboard-insert-bookmark-shortmenu)
+  ;;    (projects . +dashboard-insert-project-shortmenu)
+  ;;    (agenda . +dashboard-insert-org-agenda-shortmenu)))
+
+  ;; (dashboard-items
+  ;;  '(agenda
+  ;;    bookmarks
+  ;;    projects
+  ;;    recents))
   :hook
   (emacs-startup . dashboard-setup-startup-hook)
   (emacs-startup . dashboard-insert-startupify-lists))

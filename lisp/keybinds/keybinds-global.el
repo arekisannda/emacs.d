@@ -76,8 +76,7 @@
   "C-e"         '("embark-export"       . embark-export)
   "C-d"         '("insert dir"          . consult-dir)
   "C-S-d"       '("goto file"           . consult-dir-jump-file)
-  "C-f"         '("insert file"         . consult-find)
-  "C-."         '("consult narrow"      . consult-narrow))
+  "C-f"         '("insert file"         . find-file))
 
 (+keybinds-global +vertico-embark-prompter-map
   "<escape>"    '("abort"               . abort-minibuffers)

@@ -4,13 +4,6 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package emacs
-  :ensure nil
-  :custom
-  (auth-source-pass-filename "~/.password-store/auth")
-  :config
-  (auth-source-pass-enable))
-
 (use-package diff-hl
   :ensure (:type git :host github :repo "arekisannda/diff-hl" :branch "master")
   :custom
@@ -30,7 +23,7 @@
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 
-(use-package forge :after magit)
+(use-package forge :after (magit transient))
 
 (provide 'packages-vc)
 

@@ -10,6 +10,7 @@
   (defun +lang-clang-setup ()
     "Setup to run for C/C++ major modes."
     (util/lsp-ensure)
+    (setq c-ts-mode-indent-style 'linux))
   :hook
   (c++-ts-mode . +lang-clang-setup)
   (c-ts-mode . +lang-clang-setup)

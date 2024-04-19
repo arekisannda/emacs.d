@@ -38,6 +38,12 @@
 (use-package jsonrpc
   :ensure (jsonrpc))
 
+(use-package compat
+  :ensure (compat))
+
+(use-package transient
+  :ensure (transient))
+
 (use-package ext-tab-bar
   :ensure (:host github :repo "arekisannda/ext-tab-bar")
   :preface
@@ -68,6 +74,19 @@
                                            (expand-file-name package-user-dir)))
   :hook
   (window-setup . ext-tab-bar-mode))
+
+(use-package indent-bars :disabled
+  :elpaca (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
+  :custom
+  (indent-bars-treesit-support t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module")))
+
+(use-package emacs
+  :ensure nil
+  :custom
+  (auth-source-pass-filename "~/.password-store/auth")
+  :config
+  (auth-source-pass-enable))
 
 (provide 'packages-base)
 

@@ -11,7 +11,7 @@
     "Configurations for python."
     (util/lsp-ensure))
   :hook
-  (python-ts-mode-hook . +lang-python-setup)
+  (python-ts-mode . +lang-python-setup)
   :custom
   (major-mode-remap-alist
    (append '((python-mode . python-ts-mode))
