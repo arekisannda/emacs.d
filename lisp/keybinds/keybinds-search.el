@@ -22,7 +22,7 @@
   "d"   '("find dir"     . consult-dir)
   "r"   '("find recent"  . consult-recent-file)
   "f"   '("find file"    . affe-find)
-  "F"   '("find dfile"   . find-file)
+  "F"   '("find dfile"   . find-file-without-purpose)
   "p"   '("find pfile"   . project-find-file)
   "b"   '("find buffer"  . consult-buffer)
   "B"   '("find pbuffer" . consult-project-buffer)

@@ -76,7 +76,11 @@
   "V"        '("vsplit"          . split-window-horizontally)
   "v"        `("vsplit focus"    . ,(+keybinds--split-focus-other-window split-window-horizontally))
   "S"        '("ssplit"          . split-window-vertically)
-  "s"        `("ssplit focus"    . ,(+keybinds--split-focus-other-window split-window-vertically)))
+  "s"        `("ssplit focus"    . ,(+keybinds--split-focus-other-window split-window-vertically))
+
+  "m"        '("set purpose"     . purpose-set-window-purpose)
+  "D"        '("toggle buffer"   . purpose-toggle-window-buffer-dedicated)
+  "d"        '("toggle purpose"  . purpose-toggle-window-purpose-dedicated))
 
 (+keybinds-evil-all-states
   "C-w"      '("evil-window"     . evil-window-map))
