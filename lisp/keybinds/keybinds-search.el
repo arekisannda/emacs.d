@@ -36,7 +36,10 @@
   "h"   (general-predicate-dispatch nil
           (derived-mode-p 'prog-mode) '("imenu"        . consult-imenu)
           (derived-mode-p 'org-mode)  '("find heading" . consult-org-heading)
-          t                           '("find line"    . consult-line)))
+          t                           '("find line"    . consult-line))
+
+  "s"   (general-predicate-dispatch nil
+          (eglot-managed-p)           '("symbols"      . consult-eglot-symbols)))
 
 (provide 'keybinds-search)
 
