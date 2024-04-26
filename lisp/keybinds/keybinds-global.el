@@ -66,7 +66,8 @@
 (+keybinds-global minibuffer-local-map
   "M-<prior>"   '("owindow scroll up"   . +keybinds--minibuffer-scroll-other-up)
   "M-<next>"    '("owindow scroll down" . +keybinds--minibuffer-scroll-other-down)
-  "<escape>"    '("abort"               . abort-minibuffers))
+  "<escape>"    '("abort"               . abort-minibuffers)
+  "C-v"         '("mark"                . set-mark-command))
 
 (+keybinds-global minibuffer-local-map :prefix "C-,"
   "C-a"         '("cycle annotators"    . marginalia-cycle)
