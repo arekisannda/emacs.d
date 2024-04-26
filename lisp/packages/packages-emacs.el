@@ -71,36 +71,15 @@
                     eshell-mode))
       (add-to-list 'evil-emacs-state-modes mode)))
 
-  (defun +emacs-load-keybinds ()
-    (require 'keybinds-global)
-    (require 'keybinds-evil)
-    (require 'keybinds-session)
-    (require 'keybinds-editor)
-    (require 'keybinds-search)
-    (require 'keybinds-completion))
-
-  (defun +emacs-modeline-setup ()
-    (require 'telephone-line-utils)
-    (telephone-line-defsegment* +popper-telephone-line-tag-segment ()
-      (if popper-popup-status "󰊠" nil))
-
-    (setq telephone-line-lhs '((evil   . (+popper-telephone-line-tag-segment
-                                          telephone-line-evil-tag-segment))
-                               (accent . (telephone-line-vc-segment
-                                          telephone-line-erc-modified-channels-segment
-                                          telephone-line-process-segment))
-                               (nil    . (telephone-line-projectile-segment
-                                          telephone-line-buffer-segment)))))
   :hook
   (find-file . +emacs-set-read-only-by-prefix)
   (help-mode . +emacs-set-visual-line-mode)
   (elpaca-after-init . (lambda () (load custom-file 'noerror)))
   (minibuffer-setup . +emacs-minibuffer-setup)
   (minibuffer-exit . +emacs-minibuffer-exit)
-  (emacs-startup . +emacs-tuning-configurations)
-  (emacs-startup . +emacs-configurations)
   (elpaca-after-init . +emacs-evil-mode-setup)
-  (emacs-startup . +emacs-load-keybinds))
+  (window-setup . +emacs-tuning-configurations)
+  (emacs-startup . +emacs-configurations))
 
 (provide 'packages-emacs)
 

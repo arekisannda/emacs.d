@@ -146,8 +146,8 @@
   ;;    projects
   ;;    recents))
   :hook
-  (emacs-startup . dashboard-setup-startup-hook)
-  (emacs-startup . dashboard-insert-startupify-lists))
+  (elpaca-after-init . dashboard-setup-startup-hook)
+  (elpaca-after-init . dashboard-insert-startupify-lists))
 
 (use-package treemacs)
 
@@ -155,7 +155,7 @@
 
 (use-package treemacs-evil :after treemacs)
 
-(use-package treemacs-magit :after (treemacs magit))
+(use-package treemacs-magit :after treemacs)
 
 (provide 'packages-interface)
 

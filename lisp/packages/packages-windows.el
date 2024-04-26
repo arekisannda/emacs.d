@@ -47,21 +47,6 @@
   :hook
   (elpaca-after-init . popper-mode))
 
-(use-package emacs :after telephone-line :disabled
-  :ensure nil
-  :config
-  (telephone-line-defsegment* +telepohone-line-popper-tag-segment ()
-    (if popper-popup-status "󰊠" nil))
-
-  (setq telephone-line-lhs
-        '((evil   . (+telepohone-line-popper-tag-segment
-                     telephone-line-evil-tag-segment))
-          (accent . (telephone-line-vc-segment
-                     telephone-line-erc-modified-channels-segment
-                     telephone-line-process-segment))
-          (nil    . (telephone-line-projectile-segment
-                     telephone-line-buffer-segment)))))
-
 (use-package window-purpose
   :custom
   (purpose-message-on-p nil)
@@ -81,14 +66,17 @@
                                 (occur-mode                  . search)
                                 (elpaca-manager-mode         . search)
                                 (elpaca-ui-mode              . search)
+                                (elpaca-log-mode             . search)
                                 (magit-mode                  . tool)
                                 (elpaca-info-mode            . tool)
                                 (help-mode                   . docs)
+                                (apropos-mode                . docs)
                                 (messages-buffer-mode        . logs)
                                 (backtrace-mode              . logs)
                                 (compilation-mode            . logs)))
   (purpose-user-name-purposes '((".gitignore"                . code)
                                 (".hgignore"                 . code)
+                                ("COMMIT_EDITMSG"            . terminal)
                                 ("*shell*"                   . terminal)))
   (purpose-user-regexp-purposes '(("^ \\*Minibuf-[0-9]*\\*$" . minibuf)))
   (purpose-x-popwin-width 0.3)
@@ -108,21 +96,13 @@
   (purpose-x-magit-single-on)
   (purpose-mode t))
 
-(use-package shackle :disabled
+(use-package shackle
   :custom
   (shackle-default-rule '(:same t))
-  (shackle-rules '((vterm-mode             :popup t :align bottom :size 0.4)
-                   (lisp-interaction-mode  :popup t :align bottom :size 0.4)
-                   (tabulated-list-mode    :popup t :align right  :size 0.3)
-                   (diff-mode              :popup t :align right  :size 0.3)
-                   (xref--xref-buffer-mode :popup t :align right  :size 0.3)
-                   (ibuffer-mode           :popup t :align right  :size 0.3)
-                   (elpaca-manager-mode    :popup t :align right  :size 0.3)
-                   (elpaca-ui-mode         :popup t :align right  :size 0.3)
-                   (grep-mode              :popup t :align right  :size 0.3)
-                   (elpaca-info-mode       :popup t :align right  :size 0.3)
-                   (help-mode              :popup t :align right  :size 0.3)
-                   (magit-mode             :popup t :align right  :size 0.3)
+  (shackle-rules '(
+                   (elpaca-ui-mode :popup t :align right :size 0.3)
+                   (elpaca-log-mode :popup t :align right :size 0.3)
+                   (elpaca-manager-mode :popup t :align below :size 0.4)
                    ))
   :config
   (defun +shackle--match (buffer-or-name condition plist)
@@ -158,14 +138,15 @@
                                   purpose-display-maybe-other-frame
                                   purpose-display-maybe-pop-up-window
                                   purpose-display-maybe-pop-up-frame))
-          (prefer-same-window  . (purpose-display-maybe-same-window
+          (prefer-same-window  . (+maybe-display-shackle
+                                  purpose-display-maybe-same-window
                                   purpose-display-reuse-window-buffer
                                   purpose-display-reuse-window-purpose
-                                  +maybe-display-shackle
                                   purpose-display-maybe-other-window
                                   purpose-display-maybe-other-frame
                                   purpose-display-maybe-pop-up-window
-                                  purpose-display-maybe-pop-up-frame))
+                                  purpose-display-maybe-pop-up-frame
+                                  ))
           (force-same-window   . (purpose-display-maybe-same-window))
           (prefer-other-window . (purpose-display-reuse-window-buffer
                                   purpose-display-reuse-window-purpose
@@ -174,7 +155,8 @@
                                   purpose-display-maybe-pop-up-window
                                   purpose-display-maybe-other-window
                                   purpose-display-maybe-other-frame
-                                  purpose-display-maybe-same-window))
+                                  purpose-display-maybe-same-window
+                                  ))
           (prefer-other-frame  . (purpose-display-reuse-window-buffer-other-frame
                                   purpose-display-reuse-window-purpose-other-frame
                                   +maybe-display-shackle

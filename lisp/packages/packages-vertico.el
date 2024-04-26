@@ -74,8 +74,6 @@
 
 (use-package consult-dir)
 
-(use-package consult-eglot)
-
 (use-package affe
   :custom
   (affe-find-command "rg --color=never --files --hidden --glob=!.git/*"))

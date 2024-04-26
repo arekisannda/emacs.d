@@ -4,7 +4,9 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package diff-hl
+(use-package magit :ensure t)
+
+(use-package diff-hl :after magit
   :ensure (:type git :host github :repo "arekisannda/diff-hl" :branch "master")
   :custom
   (diff-hl-show-staged-changes nil)
@@ -16,10 +18,7 @@
   :hook
   (global-diff-hl-mode . diff-hl-flydiff-mode)
   (elpaca-after-init . global-diff-hl-mode)
-  (global-diff-hl-mode . diff-hl-margin-mode))
-
-(use-package magit :after diff-hl
-  :hook
+  (global-diff-hl-mode . diff-hl-margin-mode)
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh))
 

@@ -32,17 +32,28 @@
   :init
   (setq-default hydra-key-doc-function nil))
 
-(use-package seq
-  :ensure (seq))
+(defun +elpaca-unload-seq (e)
+  (and (featurep 'seq) (unload-feature 'seq t))
+  (elpaca--continue-build e))
+
+(defun +elpaca-seq-build-steps ()
+  (append (butlast (if (file-exists-p (expand-file-name "seq" elpaca-builds-directory))
+                       elpaca--pre-built-steps elpaca-build-steps))
+          (list '+elpaca-unload-seq 'elpaca--activate-package)))
+
+(use-package seq :ensure `(seq :build ,(+elpaca-seq-build-steps)))
 
 (use-package jsonrpc
-  :ensure (jsonrpc))
+  :ensure t)
 
 (use-package compat
-  :ensure (compat))
+  :ensure t)
 
 (use-package transient
-  :ensure (transient))
+  :ensure t)
+
+(use-package persist
+  :ensure t)
 
 (use-package ext-tab-bar
   :ensure (:host github :repo "arekisannda/ext-tab-bar")

@@ -37,10 +37,12 @@
 (setq-default line-spacing 0)
 (setq-default indent-tabs-mode nil)
 (setq-default visual-line-mode nil)
+(setq-default use-file-dialog nil)
 
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (scroll-bar-mode -1)
+(blink-cursor-mode -1)
 (menu-bar-mode -1)
 (electric-pair-mode -1)
 (winner-mode 1)
