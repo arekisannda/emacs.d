@@ -39,6 +39,23 @@
   :ensure nil
   :preface
   (defun +themes-configure-fonts ()
+    (set-face-attribute 'cursor nil
+                        :inherit 'default
+                        :inverse-video nil
+                        :weight 'normal)
+    (set-face-attribute 'show-paren-match nil
+                        :inherit 'highlight
+                        :inverse-video nil
+                        :underline t
+                        :font +fonts-fixed-pitch-face
+                        :height +fonts-fixed-pitch-size
+                        :foreground 'unspecified
+                        :weight 'bold)
+    (set-face-attribute 'show-paren-mismatch nil
+                        :inverse-video t
+                        :font +fonts-fixed-pitch-face
+                        :height +fonts-fixed-pitch-size
+                        :weight 'bold)
     (set-face-attribute 'default nil
                         :font +fonts-fixed-pitch-face
                         :height +fonts-fixed-pitch-size
