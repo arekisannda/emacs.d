@@ -9,6 +9,7 @@
 (setq gc-cons-threshold most-positive-fixnum)
 
 (defvar +user-config-dir (expand-file-name "~/.config"))
+(defvar +persp-state-default-directory (expand-file-name "var/perspective" user-emacs-directory))
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (when (getenv-internal "DEBUG")

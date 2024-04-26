@@ -74,6 +74,8 @@
   "K"    '("clear project"       . +keybinds--clear-project)
   "w"    '("switch perspective"  . persp-switch)
   "q"    '("kill perspective"    . persp-kill)
+  "s"    '("save perspective"    . persp-state-save)
+  "o"    '("opn perspective"     . persp-state-load)
   "r"    '("rename perspective"  . persp-rename)
   "b"    '("remove buffer"       . persp-remove-buffer)
   "l"    '("apply layout"        . consult-layouts))
