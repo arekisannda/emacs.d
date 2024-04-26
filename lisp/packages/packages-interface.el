@@ -2,6 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'util-helpers)
 
 (use-package nerd-icons)
 
@@ -26,9 +27,10 @@
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   (aw-dispatch-when-more-than 0)
-  :hook
-  (window-setup . ace-window-posframe-mode)
-  (server-after-make-frame . ace-window-posframe-mode))
+  :init
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (ace-window-posframe-mode)
+   'window-setup-hook))
 
 (use-package dashboard :after nerd-icons
   :preface

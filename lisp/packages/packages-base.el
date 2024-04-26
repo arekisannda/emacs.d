@@ -2,6 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'util-helpers)
 
 (use-package shut-up :demand t)
 
@@ -11,14 +12,13 @@
 
 (use-package disable-mouse :demand t
   :diminish disable-mouse-mode
-  :hook
-  (elpaca-after-init . disable-mouse-global-mode))
+  :config
+  (disable-mouse-global-mode))
 
 (use-package editorconfig :demand t
-  :hook
-  (elpaca-after-init . editorconfig-mode)
   :config
-  (setq-default editorconfig-lisp-use-default-indent t))
+  (setq-default editorconfig-lisp-use-default-indent t)
+  (editorconfig-mode))
 
 (use-package undo-fu :after diminish)
 
@@ -72,8 +72,10 @@
   (tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
   (ext-tab-bar-project-disable-paths (list (expand-file-name elpaca-directory)
                                            (expand-file-name package-user-dir)))
-  :hook
-  (window-setup . ext-tab-bar-mode))
+  :config
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (ext-tab-bar-mode)
+   'window-setup-hook))
 
 (use-package indent-bars :disabled
   :elpaca (indent-bars :type git :host github :repo "jdtsmith/indent-bars")

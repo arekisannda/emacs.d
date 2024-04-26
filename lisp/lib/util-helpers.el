@@ -46,7 +46,13 @@
     (indent-region (point-min) (point-max))))
 
 (eval-when-compile
-  (defmacro util/if-daemon-run-after-make-frame (fn)
+  (defmacro util/if-daemon-run-after-make-frame-else-add-hook (fn alt-hook)
+    `(if (daemonp)
+         (add-hook 'after-make-frame-functions
+                   (lambda (frame) (with-selected-frame frame ,fn)))
+       (add-hook ,alt-hook (lambda () ,fn))))
+
+  (defmacro util/if-daemon-run-after-make-frame-else-run (fn)
     `(if (daemonp)
          (add-hook 'after-make-frame-functions
                    (lambda (frame) (with-selected-frame frame ,fn)))

@@ -101,9 +101,11 @@
                         :height +fonts-fixed-pitch-size
                         :box '(:line-width 5 :style flat-button))
     )
-  :hook
-  (window-setup . +themes-configure-org-fonts)
-  (server-after-make-frame-hook . +themes-configure-org-fonts))
+
+  :init
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (+themes-configure-org-fonts)
+   'window-setup-hook))
 
 (use-package org-contrib
   :config

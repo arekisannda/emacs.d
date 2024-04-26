@@ -2,6 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'util-helpers)
 
 (use-package emacs
   :ensure nil

@@ -2,6 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'util-helpers)
 
 (use-package easy-color-faces
   :ensure (:host github :repo "arekisannda/easy-color-faces"))
@@ -78,9 +79,10 @@
                         :weight 'normal
                         :box '(:line-width 5 :style flat-button))
     )
-  :hook
-  (window-setup . +themes-configure-fonts)
-  (server-after-make-frame . +themes-configure-fonts))
+  :init
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (+themes-configure-fonts)
+   'window-setup-hook))
 
 (provide 'packages-themes)
 

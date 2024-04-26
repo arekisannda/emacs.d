@@ -25,7 +25,12 @@
   (eglot-ignored-server-capabilities '(:documentHighlightProvider
                                        :inlayHintProvider))
   :hook
-  (eglot-managed-mode . (lambda () (eldoc-mode -1))))
+  (eglot-managed-mode . (lambda () (eldoc-mode -1)))
+  :init
+  (setq eldoc-display-functions '(eldoc-display-in-buffer))
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (lambda () (global-eldoc-mode -1))
+   'elpaca-after-init-hook))
 
 (use-package eglot-booster
   :ensure (:type git :host github :repo "jdtsmith/eglot-booster")
