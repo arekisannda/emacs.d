@@ -34,6 +34,19 @@
 (require 'packages-corfu)
 (require 'packages-vertico)
 
+(require 'packages-vc)
+(require 'packages-flycheck)
+(require 'packages-eglot)
+(require 'packages-dape)
+(require 'packages-yasnippet)
+(require 'packages-latex)
+(require 'packages-org-mode)
+(require 'packages-typst)
+(require 'packages-japanese)
+(require 'packages-ispell)
+(require 'packages-code)
+(require 'packages-emacs)
+
 (require 'lang-generic)
 (require 'lang-elisp)
 (require 'lang-org)
@@ -48,17 +61,12 @@
 
 (elpaca-wait)
 
-(require 'packages-vc)
-(require 'packages-flycheck)
-(require 'packages-eglot)
-(require 'packages-dape)
-(require 'packages-yasnippet)
-(require 'packages-latex)
-(require 'packages-org-mode)
-(require 'packages-japanese)
-(require 'packages-ispell)
-(require 'packages-code)
-(require 'packages-emacs)
+(require 'keybinds-global)
+(require 'keybinds-evil)
+(require 'keybinds-session)
+(require 'keybinds-editor)
+(require 'keybinds-search)
+(require 'keybinds-completion)
 
 (provide 'config/init)
 
