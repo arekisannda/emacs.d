@@ -4,18 +4,11 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package eldoc
-  :ensure (eldoc)
-  :custom
-  (eldoc-echo-area-use-multiline-p nil)
-  :init
-  (setq eldoc-display-functions '(eldoc-display-in-buffer))
-  :hook
-  (elpaca-after-init . (lambda () (global-eldoc-mode -1))))
 
 (use-package eglot
-  :ensure (eglot)
+  :ensure t
   :custom
+  (eldoc-echo-area-use-multiline-p nil)
   (fset #'jsonrpc--log-event #'ignore)
   (eglot-events-buffer-size 0)
   (eglot-sync-connect nil)
@@ -40,6 +33,8 @@
 (use-package flycheck-eglot
   :hook
   (eglot-managed-mode . flycheck-eglot-mode))
+
+(use-package consult-eglot :after eglot)
 
 (provide 'packages-eglot)
 
