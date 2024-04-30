@@ -27,9 +27,18 @@
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   (aw-dispatch-when-more-than 0)
+  :preface
+  (defun +ace-window-configure-fonts ()
+    (set-face-attribute 'aw-leading-char-face nil
+                        :foreground (face-foreground 'easy-color-faces-red)
+                        :height 2.00
+                        :weight 'bold))
   :init
   (util/if-daemon-run-after-make-frame-else-add-hook
    (ace-window-posframe-mode)
+   'window-setup-hook)
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (+ace-window-configure-fonts)
    'window-setup-hook))
 
 (use-package dashboard :after nerd-icons
