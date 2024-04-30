@@ -39,6 +39,8 @@
   "M-\\"        '("ace-window"          . ace-window)
   "M-0"         '("focus treemacs"      . treemacs)
 
+  "C-/"         '("toggle project term" . multi-vterm-project)
+
   "C-M-\\"      '("toggle input"        . toggle-input-method))
 
 (+keybinds-global global

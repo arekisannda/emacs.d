@@ -61,6 +61,7 @@
   (persp-state-default-file (expand-file-name "default" +persp-state-default-directory))
   :preface
   (defun +perspective-save ()
+    (interactive)
     (dolist (persp (persp-names))
       (with-perspective
           persp
@@ -68,7 +69,7 @@
             (kill-buffer treemacs-buffer))))
     (when (and (file-exists-p persp-state-default-file)
                (file-regular-p persp-state-default-file))
-      (persp-state-save)))
+      (persp-state-save persp-state-default-file)))
 
   (defun +perspective-init ()
     (require 'treemacs-perspective)
