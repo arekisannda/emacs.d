@@ -14,9 +14,10 @@
 
     (advice-add
      #'lua-calculate-indentation-block-modifier
-     :around #'(lambda (old-funcion &rest arguments)
+     :around #'(lambda (old-function &rest arguments)
                  (let ((old-res (apply old-function arguments)))
-                   (if (> old-res lua-indent-level) lua-indent-level old-res)))))
+                   (if (> old-res lua-indent-level) lua-indent-level old-res))))
+    (util/lsp-ensure))
   :hook
   (lua-mode . +lang-lua-setup))
 
