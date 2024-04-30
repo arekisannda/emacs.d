@@ -46,8 +46,8 @@
   "v"    '("terminal"            . +keybinds-session--term-command)
 
   "C-q"  (general-predicate-dispatch nil
-           (equal +current-workspace "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
-           (equal +current-workspace "exercism") '("exercism" . +keybinds-code--exercism-command)))
+           (equal (+keybinds--current-workspace) "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
+           (equal (+keybinds--current-workspace) "exercism") '("exercism" . +keybinds-code--exercism-command)))
 
 (+keybinds-session-term
   "v"    '("toggle project term" . multi-vterm-project)

@@ -51,6 +51,11 @@
   ("]" #'help-go-forward "next help"))
 (hydra-set-property #'+hydra-help-motion :verbosity 0)
 
+(defun +keybinds--current-workspace ()
+  "Return name of current perspective."
+  (cond ((featurep 'persp-mode) (safe-persp-name (get-current-persp)))
+        ((featurep 'perspective) (persp-name (persp-curr)))))
+
 (defun +keybinds--emacs-doc ()
   "Goto https://emacsdocs.org."
   (interactive)
