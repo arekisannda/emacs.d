@@ -71,6 +71,13 @@
                     eshell-mode))
       (add-to-list 'evil-emacs-state-modes mode)))
 
+  (defun +emacs-create-directory-on-save ()
+    (when buffer-file-name
+      (let ((dir (file-name-directory buffer-file-name)))
+        (when (and (not (file-exists-p dir))
+                   (y-or-n-p (format "Directory %s does not exist; Create it?" dir)))
+          (make-directory dir t)))))
+
   :hook
   (find-file . +emacs-set-read-only-by-prefix)
   (help-mode . +emacs-set-visual-line-mode)
@@ -79,7 +86,8 @@
   (minibuffer-exit . +emacs-minibuffer-exit)
   (elpaca-after-init . +emacs-evil-mode-setup)
   (window-setup . +emacs-tuning-configurations)
-  (emacs-startup . +emacs-configurations))
+  (emacs-startup . +emacs-configurations)
+  (before-save . +emacs-create-directory-on-save))
 
 (provide 'packages-emacs)
 
