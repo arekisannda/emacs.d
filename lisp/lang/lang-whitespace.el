@@ -10,7 +10,8 @@
   (go-ts-mode-indent-offset 4)
   (json-ts-mode-indent-offset 2)
   (yaml-indent-offset 2)
-  (typst-ts-mode-indent-offset 2))
+  (typst-ts-mode-indent-offset 2)
+  (sh-basic-offset 2))
 
 (provide 'lang-whitespace)
 
