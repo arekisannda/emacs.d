@@ -34,8 +34,6 @@
 
   "M-["         '("prev tab"            . tab-previous)
   "M-]"         '("next tab"            . tab-next)
-  "M-{"         '("prev popup"          . popper-cycle-backwards)
-  "M-}"         '("next popup"          . popper-cycle)
   "M-\\"        '("ace-window"          . ace-window)
   "M-0"         '("focus treemacs"      . treemacs)
 
@@ -46,9 +44,6 @@
   "<Paste>"     '("paste"               . yank))
 
 (+keybinds-global global
-  "C-<tab>"         '("toggle popper"       . popper-toggle)
-  "C-<iso-lefttab>" '("toggle popper type"  . popper-toggle-type)
-
   "S-<next>"    '("scroll left"         . +keybinds--scroll-left)
   "S-<prior>"   '("scroll right"        . +keybinds--scroll-right)
   "<prior>"     '("scroll up"           . +keybinds--scroll-up)

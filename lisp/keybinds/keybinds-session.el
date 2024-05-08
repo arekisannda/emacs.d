@@ -65,7 +65,10 @@
   "d"    '("eval defun"          . eval-defun)
   "D"    '("edebug defun"        . edebug-defun)
   "e"    '("eval region"         . eval-region)
-  "E"    '("eval buffer"         . eval-buffer))
+  "E"    '("eval buffer"         . eval-buffer)
+
+  "+"    '("text scale up"       . +hydra-text-scale/text-scale-increase)
+  "-"    '("text scale down"     . +hydra-text-scale/text-scale-decrease))
 
 (+keybinds-session-workspace
   "p"    '("switch project"      . project-switch-project)

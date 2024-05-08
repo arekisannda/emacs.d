@@ -5,6 +5,13 @@
 (require 'general)
 (require 'hydra)
 
+(defhydra +hydra-text-scale
+  (:foreign-key exti :exit nil :timeout nil)
+  "text scale"
+  ("+" #'text-scale-increase "increase")
+  ("-" #'text-scale-decrease "decrease"))
+(hydra-set-property #'+hydra-text-scale :verbosity 0)
+
 (defhydra +hydra-dap-motion
   (:foreign-key exit :exit nil :timeout nil)
   "dap motion"
