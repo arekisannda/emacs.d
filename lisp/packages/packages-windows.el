@@ -71,6 +71,7 @@
                                 (elpaca-info-mode            . tool)
                                 (help-mode                   . help-doc)
                                 (apropos-mode                . help-doc)
+                                (Custom-mode                 . tool)
                                 (markdown-view-mode          . docs)
                                 (messages-buffer-mode        . logs)
                                 (backtrace-mode              . logs)

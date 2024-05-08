@@ -19,6 +19,11 @@
   (persp-kill-foreign-buffer-behaviour 'kill)
   (persp-nil-name "main")
   (persp-auto-save-num-of-backups 0)
+
+  (consult-buffer-sources
+   (append '(persp-consult-source)
+           consult-buffer-sources))
+
   :preface
   (defun +perspective-init ()
     (require 'treemacs-persp)
@@ -67,9 +72,7 @@
           persp
         (if-let ((treemacs-buffer (treemacs-get-local-buffer)))
             (kill-buffer treemacs-buffer))))
-    (when (and (file-exists-p persp-state-default-file)
-               (file-regular-p persp-state-default-file))
-      (persp-state-save persp-state-default-file)))
+    (persp-state-save persp-state-default-file))
 
   (defun +perspective-init ()
     (require 'treemacs-perspective)
@@ -93,6 +96,7 @@
      (ext-tab-bar-persp-mode-setup)
      (+perspective-init))
    'emacs-startup-hook)
+  (run-with-timer (* 30 60) t #'+perspective-save)
   :config
   (defun +persp--state-frame-data ()
     (cl-loop for frame in (frame-list)
