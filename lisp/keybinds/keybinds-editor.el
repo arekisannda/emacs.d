@@ -151,7 +151,7 @@
   "n"   '("insert nerd-icon"     . nerd-icons-insert))
 
 (+keybinds-editor-translate
-  "t"   '("translate"         . google-translate-smooth-translate))
+  "t"   '("translate"            . google-translate-smooth-translate))
 
 (provide 'keybinds-editor)
 

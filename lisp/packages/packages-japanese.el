@@ -4,23 +4,25 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package mozc)
+;; (use-package mozc
+;;   :custom
+;;   (default-input-method 'japanese-mozc))
 
-(use-package google-translate :after mozc
+;; (use-package mozc-cand-posframe :after mozc
+;;   :ensure (mozc-cand-posframe :type git
+;;                               :host github
+;;                               :repo "arekisannda/mozc-posframe")
+;;   :custom
+;;   (mozc-candidate-style 'posframe)
+;;   :hook
+;;   (mozc-mode . mozc-cand-posframe-init))
+
+(use-package google-translate
   :custom
   (google-translate-default-source-language "en")
-  (google-translate-translation-directions-alist
-   '(("ja" . "en") ("en" . "ja") ))
-  (default-input-method 'japanese-mozc))
-
-(use-package mozc-cand-posframe :after mozc
-  :ensure (mozc-cand-posframe :type git
-                              :host github
-                              :repo "arekisannda/mozc-posframe")
-  :custom
-  (mozc-candidate-style 'posframe)
-  :hook
-  (mozc-mode . mozc-cand-posframe-init))
+  :config
+  (setq google-translate-translation-directions-alist
+        '(("ja" . "en") ("en" . "ja") )))
 
 (use-package migemo :disabled)
 

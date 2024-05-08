@@ -43,9 +43,7 @@
 
   "<Copy>"      '("copy"                . kill-ring-save)
   "<Cut>"       '("cut"                 . kill-region)
-  "<Paste>"     '("paste"               . yank)
-
-  "C-M-\\"      '("toggle input"        . toggle-input-method))
+  "<Paste>"     '("paste"               . yank))
 
 (+keybinds-global global
   "C-<tab>"         '("toggle popper"       . popper-toggle)
