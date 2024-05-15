@@ -18,9 +18,12 @@
 ;;   (mozc-mode . mozc-cand-posframe-init))
 
 (use-package google-translate
+  :demand t
   :custom
   (google-translate-default-source-language "en")
   :config
+  (require 'google-translate-smooth-ui)
+  (google-translate--setup-minibuffer-keymap)
   (setq google-translate-translation-directions-alist
         '(("ja" . "en") ("en" . "ja") )))
 

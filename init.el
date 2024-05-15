@@ -17,8 +17,6 @@
 (dolist (path '("lisp"))
   (+recursive-load-path path))
 
-(setq-default +current-workspace nil)
-
 (require 'packages-manager)
 (require 'packages-base)
 (require 'packages-treesit)
