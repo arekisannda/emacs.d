@@ -4,6 +4,16 @@
 ;;; Code:
 (require 'util-helpers)
 
+(use-package disable-mouse :demand t
+  :diminish disable-mouse-mode
+  :config
+  (disable-mouse-global-mode))
+
+(use-package editorconfig :demand t
+  :config
+  (setq-default editorconfig-lisp-use-default-indent t)
+  (editorconfig-mode))
+
 (use-package nerd-icons)
 
 (use-package mixed-pitch :disabled)
@@ -20,8 +30,8 @@
 (use-package rainbow-delimiters)
 
 (use-package telephone-line
-  :hook
-  (elpaca-after-init . telephone-line-mode))
+  :config
+  (telephone-line-mode))
 
 (use-package ace-window :after posframe
   :custom
@@ -158,9 +168,13 @@
   (elpaca-after-init . dashboard-setup-startup-hook)
   (elpaca-after-init . dashboard-insert-startupify-lists))
 
-(use-package treemacs)
+(use-package treemacs
+  :custom
+  (treemacs-position 'left))
 
-(use-package treemacs-nerd-icons :after treemacs)
+(use-package treemacs-nerd-icons :after treemacs
+  :config
+  (treemacs-load-theme "nerd-icons"))
 
 (use-package treemacs-evil :after treemacs)
 

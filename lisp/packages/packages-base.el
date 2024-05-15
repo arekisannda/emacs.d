@@ -4,21 +4,13 @@
 ;;; Code:
 (require 'util-helpers)
 
+(use-package aio :demand t)
+
 (use-package shut-up :demand t)
 
 (use-package no-littering :demand t)
 
 (use-package diminish :demand t)
-
-(use-package disable-mouse :demand t
-  :diminish disable-mouse-mode
-  :config
-  (disable-mouse-global-mode))
-
-(use-package editorconfig :demand t
-  :config
-  (setq-default editorconfig-lisp-use-default-indent t)
-  (editorconfig-mode))
 
 (use-package undo-fu :after diminish)
 
