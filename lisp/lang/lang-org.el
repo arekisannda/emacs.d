@@ -33,7 +33,7 @@
     (flyspell-mode)
     (visual-line-mode 1)
     (visual-fill-column-mode 1)
-    (valign-mode)
+    (valign-mode t)
     (+lang-org-mode-font))
   :hook
   (org-mode . +lang-org-mode-setup))

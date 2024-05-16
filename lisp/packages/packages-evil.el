@@ -3,6 +3,7 @@
 
 ;;; Code:
 
+(setq-default evil-respect-visual-line-mode t)
 (use-package evil :after undo-fu
   :custom
   (evil-want-integration t)
