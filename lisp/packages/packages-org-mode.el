@@ -3,6 +3,14 @@
 
 ;;; Code:
 
+(use-package visual-fill-column
+  :custom
+  (visual-fill-column-width 100))
+
+(use-package valign
+  :custom
+  (valign-fancy-bar t))
+
 (use-package org
   :ensure nil
   :custom
@@ -14,6 +22,7 @@
   (org-catch-invisible-edits 'show-and-error)
   (org-special-ctrl-a/e t)
   (org-insert-heading-respect-content t)
+  (org-cycle-level-faces nil)
 
   (org-hide-emphasis-markers t)
   (org-pretty-entities t)
@@ -41,8 +50,12 @@
                                          "acn" "acr" "alg" "glg" "gls" "ist")))
   (org-latex-hyperref-template nil)
 
-  :config
+  (org-agenda-files
+   (append
+    (directory-files-recursively "~/agenda/date" "\\.*org$")
+    (directory-files-recursively "~/agenda/project" "\\.*org$")))
 
+  :config
   (dolist (face `((org-level-1 . 1.30)
                   (org-level-2 . 1.25)
                   (org-level-3 . 1.20)
@@ -85,6 +98,8 @@
 
 (use-package org-modern :after org
   :custom
+  (org-modern-table nil)
+  (org-modern-star "○")
   (org-modern-internal-target '(" ↪ " t " "))
   (org-modern-radio-target '("  " t " "))
   (org-modern-progress '("󰝦" "󰪞" "󰪟" "󰪠" "󰪡" "󰪢" "󰪣" "󰪤" "󰪥"))

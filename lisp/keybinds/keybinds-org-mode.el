@@ -16,6 +16,13 @@
 (general-create-definer +keybinds-org-mode-goto
   :prefix-command '+keybinds-org-mode--goto-command)
 
+(general-create-definer +keybinds-org-mode
+  :keymaps 'org-mode-map)
+
+(+keybinds-org-mode
+  "C-M-<return>" #'org-insert-subheading
+  "C-M-S-<return>" #'org-insert-todo-subheading)
+
 (+keybinds-org-mode-edit
   "!"   '("fix typo"           . ispell-word)
 
@@ -32,7 +39,10 @@
 
   "e"   '("emphasis"           . org-emphasize)
   "g"   '("goto"               . +keybinds-org-mode--goto-command)
-  "t"   '("tables"             . +keybinds-org-mode--table-command))
+  "t"   '("tables"             . +keybinds-org-mode--table-command)
+
+  "r"   '("find/replace"         . query-replace-regexp)
+  "R"   '("project find/replace" . project-query-replace-regexp))
 
 (+keybinds-org-mode-goto
   "d"   '("open"               . org-open-at-point))

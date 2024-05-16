@@ -8,6 +8,17 @@
 (use-package emacs
   :ensure nil
   :preface
+  (defun +lang-org-mode-font ()
+    (let ((font-family (org-entry-get (point-min) "font-family" t))
+          (font-height (org-entry-get (point-min) "font-height" t)))
+      (when font-family
+        (message "font-family%s" font-family)
+        (setq-local buffer-face-mode-face `(:family ,font-family)))
+      (when font-height
+        (message "font-height%s" font-height)
+        (setq-local buffer-face-mode-face `(:height ,(string-to-number font-height))))
+      (buffer-face-mode)))
+
   (defun +lang-org-mode-setup ()
     "Setup to run for `org-mode` major modes."
     ;; (display-line-numbers-mode 1)
@@ -18,7 +29,12 @@
                                        #'cape-file
                                        #'cape-tex
                                        #'cape-elisp-block
-                                       #'cape-keyword)))
+                                       #'cape-keyword))
+    (flyspell-mode)
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1)
+    (valign-mode)
+    (+lang-org-mode-font))
   :hook
   (org-mode . +lang-org-mode-setup))
 
@@ -34,7 +50,8 @@
     (util/lang--add-to-capf-list (list #'cape-dabbrev
                                        #'cape-file
                                        #'cape-tex
-                                       #'cape-keyword)))
+                                       #'cape-keyword))
+    (flyspell-mode))
   :hook
   (latex-mode . +lang-latex-setup)
   (TeX-mode . +lang-latex-setup)

@@ -29,11 +29,14 @@
     (setq truncate-lines t)
     (visual-line-mode -1)
     (display-line-numbers-mode 1)
-    (rainbow-delimiters-mode 1))
+    (rainbow-delimiters-mode 1)
+    (flyspell-prog-mode)
+    (valign-mode 1))
 
   (defun +lang-sh-setup ()
     "Setup to run for sh major modes."
-    (setq sh-basic-offset 2))
+    (setq sh-basic-offset 2)
+    (valign-mode 1))
   :hook
   (prog-mode . +lang-prog-mode-setup)
   (bash-ts-mode . +lang-sh-setup)
