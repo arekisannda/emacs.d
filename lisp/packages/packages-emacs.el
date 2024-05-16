@@ -25,9 +25,7 @@
     (setq-default tab-bar-separator "")
 
     (setq-default fringe-indicator-alist nil)
-    (fringe-mode nil)
-
-    (kill-buffer (messages-buffer)))
+    (fringe-mode nil))
 
   (defcustom +emacs-read-only-prefixes-list
     (list (expand-file-name elpaca-directory)
@@ -48,7 +46,8 @@
   (defun +emacs-set-visual-line-mode ()
     "Setup to run for non `prog-mode` major modes."
     (setq truncate-lines nil)
-    (visual-line-mode 1))
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1))
 
   (defun +emacs-minibuffer-setup ()
     (setq gc-cons-threshold most-positive-fixnum))
