@@ -4,7 +4,11 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package magit :ensure t)
+(use-package magit
+  :ensure t
+  :custom
+  (magit-repository-directories
+   (list `(,(expand-file-name "~/Code/") . 1))))
 
 (use-package diff-hl :after magit
   :ensure (:type git :host github :repo "arekisannda/diff-hl" :branch "master")

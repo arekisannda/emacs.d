@@ -61,6 +61,7 @@
   "s"    '("scratch buffer"      . scratch-buffer)
 
   "m"    '("magit"               . magit)
+  "M"    '("list repositories"   . magit-list-repositories)
 
   "d"    '("eval defun"          . eval-defun)
   "D"    '("edebug defun"        . edebug-defun)
