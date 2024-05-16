@@ -112,6 +112,54 @@
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
+(use-package org-super-agenda
+  :custom
+  (org-agenda-custom-commands
+   '(("n" "Next View"
+      ((agenda "" ((org-agenda-span 'day)
+                   (org-super-agenda-groups
+                    '((:name "Today"
+                             :time-grid t
+                             :todo "TODAY"
+                             :scheduled today
+                             :order 0)
+                      (:habit t)
+                      (:name "Due Today"
+                             :deadline today
+                             :order 2)
+                      (:name "Due Soon"
+                             :deadline future
+                             :order 8)
+                      (:name "Overdue"
+                             :deadline past
+                             :order 7)
+                      ))))
+       (todo "" ((org-agenda-overriding-header "")
+                 (org-super-agenda-groups
+                  '((:name "Inbox"
+                           :file-path "inbox"
+                           :order 0
+                           )
+                    (:discard (:todo "TODO"))
+                    (:auto-category t
+                                    :order 9)
+                    ))))))
+     ("t" "Todo View"
+      (
+       (todo "" ((org-agenda-overriding-header "")
+                 (org-super-agenda-groups
+                  '((:name "Inbox"
+                           :file-path "inbox"
+                           :order 0
+                           )
+                    (:auto-category t
+                                    :order 9)
+                    ))))))
+     ))
+
+  :config
+  (org-super-agenda-mode t))
+
 (provide 'packages-org-mode)
 
 ;;; packages-org-mode.el ends here

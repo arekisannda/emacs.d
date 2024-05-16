@@ -45,6 +45,8 @@
   "t"    '("tabs"                . +keybinds-session--tabs-command)
   "v"    '("terminal"            . +keybinds-session--term-command)
 
+  "a"    '("agenda"              . +keybinds--org-agenda)
+
   "C-q"  (general-predicate-dispatch nil
            (equal (+keybinds--current-workspace) "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
            (equal (+keybinds--current-workspace) "exercism") '("exercism" . +keybinds-code--exercism-command)))

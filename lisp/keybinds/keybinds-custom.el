@@ -145,6 +145,12 @@
        (other-window 1)))
   )
 
+(defun +keybinds--org-agenda ()
+  "Open main and agenda."
+  (interactive)
+  (persp-switch "main")
+  (org-agenda nil "n"))
+
 (provide 'keybinds-custom)
 
 ;;; keybinds-custom.el ends here
