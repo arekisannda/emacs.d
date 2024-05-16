@@ -58,6 +58,13 @@
   ("]" #'help-go-forward "next help"))
 (hydra-set-property #'+hydra-help-motion :verbosity 0)
 
+(defhydra +hydra-org-remark-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'org-remark-prev "prev remark")
+  ("]" #'org-remark-next "next remark")
+  ("o" #'org-remark-view "view"))
+(hydra-set-property #'+hydra-org-remark-motion :verbosity 0)
+
 (defun +keybinds--current-workspace ()
   "Return name of current perspective."
   (cond ((featurep 'persp-mode) (safe-persp-name (get-current-persp)))

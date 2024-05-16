@@ -2,6 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'util-org-mode)
 
 (use-package visual-fill-column
   :custom
@@ -122,12 +123,12 @@
    (+themes-configure-org-fonts)
    'window-setup-hook))
 
-(use-package org-contrib
+(use-package org-contrib :after org
   :config
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
-(use-package org-super-agenda
+(use-package org-super-agenda :after org
   :custom
   (org-agenda-custom-commands
    '(("n" "Next View"
@@ -174,6 +175,107 @@
 
   :config
   (org-super-agenda-mode t))
+
+(use-package org-remark :after org
+  :preface
+  (defun +org-remar-configure-fonts ()
+    (set-face-attribute 'org-remark-highlighter nil
+                        :inherit 'default
+                        :weight 'bold)
+    (set-face-attribute 'org-remark-highlighter-warning nil
+                        :inherit 'easy-color-faces-yellow-d
+                        :weight 'bold))
+  :custom
+  (org-remark-create-default-pen-set nil)
+  (org-remark-notes-file-name ".remarks.org")
+  (org-remark-notes-auto-delete :auto-delete)
+  (org-remark-notes-buffer-name "*remark-notes*")
+  :init
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (+org-remar-configure-fonts)
+   'window-setup-hook)
+  :config
+  (org-remark-global-tracking-mode +1)
+  (org-remark-line-mode +1)
+
+  (org-remark-create "size-025" (util/org-remark-height-face 0.25))
+  (org-remark-create "size-050" (util/org-remark-height-face 0.50))
+  (org-remark-create "size-075" (util/org-remark-height-face 0.75))
+  (org-remark-create "size-125" (util/org-remark-height-face 1.25))
+  (org-remark-create "size-150" (util/org-remark-height-face 1.50))
+  (org-remark-create "size-175" (util/org-remark-height-face 1.75))
+  (org-remark-create "size-200" (util/org-remark-height-face 2.00))
+
+  (org-remark-create "warn"
+                     (util/org-remark-event-face
+                      'easy-color-faces-yellow-l
+                      1.25))
+  (org-remark-create "error"
+                     (util/org-remark-event-face
+                      'easy-color-faces-red-d
+                      1.25))
+
+  (org-remark-create "hl-yellow"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-yellow-l))
+  (org-remark-create "hl-orange"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-orange-l))
+  (org-remark-create "hl-red"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-red-l))
+  (org-remark-create "hl-magenta"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-magenta-l))
+  (org-remark-create "hl-blue"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-blue-l))
+  (org-remark-create "hl-green"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-green-l))
+  (org-remark-create "hl-cyan"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-cyan-l))
+  (org-remark-create "hl-violet"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-violet-l))
+  (org-remark-create "hl-purple"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-purple-l))
+  (org-remark-create "hl-gray"
+                     (util/org-remark-highlight-face
+                      'easy-color-faces-gray-l))
+
+  (org-remark-create "yellow"
+                     (util/org-remark-color-face
+                      'easy-color-faces-yellow))
+  (org-remark-create "orange"
+                     (util/org-remark-color-face
+                      'easy-color-faces-orange))
+  (org-remark-create "red"
+                     (util/org-remark-color-face
+                      'easy-color-faces-red))
+  (org-remark-create "magenta"
+                     (util/org-remark-color-face
+                      'easy-color-faces-magenta))
+  (org-remark-create "blue"
+                     (util/org-remark-color-face
+                      'easy-color-faces-blue-l))
+  (org-remark-create "green"
+                     (util/org-remark-color-face
+                      'easy-color-faces-green))
+  (org-remark-create "cyan"
+                     (util/org-remark-color-face
+                      'easy-color-faces-cyan))
+  (org-remark-create "violet"
+                     (util/org-remark-color-face
+                      'easy-color-faces-violet))
+  (org-remark-create "purple"
+                     (util/org-remark-color-face
+                      'easy-color-faces-purple))
+  (org-remark-create "gray"
+                     (util/org-remark-color-face
+                      'easy-color-faces-gray)))
 
 (provide 'packages-org-mode)
 

@@ -87,6 +87,7 @@
      ("*shell*"                   . terminal)
      ("*eldoc*"                   . terminal)
      ("*elpaca-manager*"          . tool)
+     ("*remark-notes*"            . remark)
      ))
   (purpose-user-regexp-purposes
    '(("^ \\*Minibuf-[0-9]*\\*$" . minibuf)
@@ -106,6 +107,7 @@
                    (search      :popup t :align below :size 0.4)
                    (tool        :popup t :align right :size 0.3)
                    (help-doc    :popup t :align right :size 0.3)
+                   (remark      :popup t :align right :size 0.3)
                    (agenda-view :popup t :align right :size 0.3)
                    ;; (Buffer-menu-mode   :popup t :align below :size 0.3)
                    ;; (elpaca-ui-mode :popup t :align right :size 0.3)
@@ -150,10 +152,10 @@
                                   purpose-display-maybe-other-frame
                                   purpose-display-maybe-pop-up-window
                                   purpose-display-maybe-pop-up-frame))
-          (prefer-same-window  . (+maybe-display-shackle
-                                  purpose-display-maybe-same-window
+          (prefer-same-window  . (purpose-display-maybe-same-window
                                   purpose-display-reuse-window-buffer
                                   purpose-display-reuse-window-purpose
+                                  +maybe-display-shackle
                                   purpose-display-maybe-other-window
                                   purpose-display-maybe-other-frame
                                   purpose-display-maybe-pop-up-window
