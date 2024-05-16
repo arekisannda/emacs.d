@@ -56,21 +56,6 @@
   (defun +emacs-minibuffer-exit ()
     (setq gc-cons-threshold packages/emacs-gc-cons-threshold))
 
-  (defun +emacs-evil-mode-setup ()
-    (dolist (mode '(vterm-mode
-                    ranger-mode
-                    elpaca-ui-mode
-                    message-mode
-                    special-mode
-                    dap-ui-breakpoints-ui-list-mode
-                    calc-mode
-                    calculator-mode
-                    calendar-mode
-                    eglot-list-connections-mode
-                    inferior-python-mode
-                    eshell-mode))
-      (add-to-list 'evil-emacs-state-modes mode)))
-
   (defun +emacs-create-directory-on-save ()
     (when buffer-file-name
       (let ((dir (file-name-directory buffer-file-name)))
@@ -84,7 +69,6 @@
   (elpaca-after-init . (lambda () (load custom-file 'noerror)))
   (minibuffer-setup . +emacs-minibuffer-setup)
   (minibuffer-exit . +emacs-minibuffer-exit)
-  (elpaca-after-init . +emacs-evil-mode-setup)
   (window-setup . +emacs-tuning-configurations)
   (emacs-startup . +emacs-configurations)
   (before-save . +emacs-create-directory-on-save))

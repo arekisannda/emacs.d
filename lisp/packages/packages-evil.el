@@ -11,23 +11,53 @@
   (evil-want-keybinding nil)
   (evil-undo-system 'undo-fu)
   (evil-want-minibuffer nil)
+
+  (evil-emacs-state-modes
+   (delete-dups
+    (append '(vterm-mode
+              ranger-mode
+              elpaca-ui-mode
+              message-mode
+              special-mode
+              dap-ui-breakpoints-ui-list-mode
+              calc-mode
+              calculator-mode
+              calendar-mode
+              eglot-list-connections-mode
+              inferior-python-mode
+              eshell-mode)
+            evil-emacs-state-modes)))
+
+  (evil-motion-state-modes
+   '(apropos-mode
+     color-theme-mode
+     command-history-mode
+     compilation-mode
+     dictionary-mode
+     ert-results-mode
+     help-mode
+     Info-mode
+     Man-mode
+     speedbar-mode
+     undo-tree-visualizer-mode
+     woman-mode))
   :hook
-  (elpaca-after-init . evil-mode))
+  (window-setup . evil-mode))
 
 (use-package evil-collection :after evil
   :custom
-  (evil-collection-mode-list '(dashboard
-                               info
-                               dired
-                               ibuffer
-                               magit
-                               edebug
-                               org
-                               org-roam
-                               ediff))
+  (evil-collection-mode-list
+   '(info
+     dired
+     ibuffer
+     magit
+     edebug
+     org
+     org-roam
+     ediff))
   :diminish evil-collection-unimpaired-mode
   :hook
-  (evil-mode . evil-collection-init))
+  (elpaca-after-init . evil-collection-init))
 
 (use-package evil-nerd-commenter :after evil)
 
