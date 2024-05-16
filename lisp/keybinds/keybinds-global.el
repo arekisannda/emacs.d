@@ -1,4 +1,4 @@
-;;; keybinds-global.el --- Emacs G eneral Keybindings-*- lexical-binding: t; -*-
+;;; keybinds-global.el --- Emacs General Keybindings-*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
@@ -98,6 +98,10 @@
 (+keybinds-global google-translate-minibuffer-keymap
   "<tab>"       '("next translation"    . google-translate-next-translation-direction)
   "<backtab>"   '("prev translation"    . google-translate-previous-translation-direction))
+
+(+keybinds-global tabulated-list-mode-map
+  :states        '(normal insert visual emacs motion)
+  "q"           '("kill window"         . quit-window))
 
 (provide 'keybinds-global)
 
