@@ -27,7 +27,6 @@
   :preface
   (defun +perspective-init ()
     (require 'treemacs-persp)
-    (treemacs-load-theme "nerd-icons")
     (treemacs-set-scope-type 'Perspectives)
     (delete-other-windows)
     (dashboard-open))
@@ -63,9 +62,12 @@
   (persp-show-modestring nil)
   (persp-mode-prefix-key nil)
   (persp-switch-wrap nil)
-  (persp-state-default-file (expand-file-name "default" +persp-state-default-directory))
+  (persp-state-default-file
+   (if debug-on-error
+       (expand-file-name "debug" +persp-state-default-directory)
+     (expand-file-name "default" +persp-state-default-directory)))
   :preface
-  (defun +perspective-save ()
+  (aio-defun +perspective-save ()
     (interactive)
     (dolist (persp (persp-names))
       (with-perspective
@@ -74,14 +76,19 @@
             (kill-buffer treemacs-buffer))))
     (persp-state-save persp-state-default-file))
 
+  (aio-defun +perspective-save-async ()
+    (interactive)
+    (aio-await (+perspective-save)))
+
   (defun +perspective-init ()
     (require 'treemacs-perspective)
-    (treemacs-load-theme "nerd-icons")
     (treemacs-set-scope-type 'Perspectives)
     (when (not (file-exists-p +persp-state-default-directory))
       (make-directory +persp-state-default-directory))
-    (when (file-regular-p persp-state-default-file)
-      (persp-state-load persp-state-default-file)))
+    (aio-with-async
+      (when (and (file-regular-p persp-state-default-file)
+                 (not debug-on-error))
+        (persp-state-load persp-state-default-file))))
 
   :hook
   (persp-state-before-save . (lambda ()
@@ -96,7 +103,7 @@
      (ext-tab-bar-persp-mode-setup)
      (+perspective-init))
    'emacs-startup-hook)
-  (run-with-timer (* 30 60) t #'+perspective-save)
+  (run-with-timer (* 30 60) t #'+perspective-save-async)
   :config
   (defun +persp--state-frame-data ()
     (cl-loop for frame in (frame-list)
