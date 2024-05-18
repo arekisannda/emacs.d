@@ -12,10 +12,8 @@
     (let ((font-family (org-entry-get (point-min) "font-family" t))
           (font-height (org-entry-get (point-min) "font-height" t)))
       (when font-family
-        (message "font-family%s" font-family)
         (setq-local buffer-face-mode-face `(:family ,font-family)))
       (when font-height
-        (message "font-height%s" font-height)
         (setq-local buffer-face-mode-face `(:height ,(string-to-number font-height))))
       (buffer-face-mode)))
 
