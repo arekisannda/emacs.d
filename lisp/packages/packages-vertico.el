@@ -6,18 +6,6 @@
 (require 'cl-seq)
 (require 'util-helpers)
 
-(use-package which-key
-  :custom
-  (which-key-sort-order 'which-key-description-order)
-  :hook
-  (elpaca-after-init . which-key-mode))
-
-(use-package which-key-posframe :after which-key :disabled
-  :custom
-  (which-key-posframe-poshandler 'posframe-poshandler-window-bottom-left-corner)
-  :hook
-  (which-key-mode . which-key-posframe-mode))
-
 (use-package vertico
   :preface
   (defun +vertico-sort-directories-first (files)

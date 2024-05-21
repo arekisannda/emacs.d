@@ -4,6 +4,52 @@
 ;;; Code:
 (require 'util-helpers)
 
+;; posframe handlers
+;; 1.  `posframe-poshandler-frame-center'
+;; 2.  `posframe-poshandler-frame-top-center'
+;; 3.  `posframe-poshandler-frame-top-left-corner'
+;; 4.  `posframe-poshandler-frame-top-right-corner'
+;; 5.  `posframe-poshandler-frame-top-left-or-right-other-corner'
+;; 6.  `posframe-poshandler-frame-bottom-center'
+;; 7.  `posframe-poshandler-frame-bottom-left-corner'
+;; 8.  `posframe-poshandler-frame-bottom-right-corner'
+;; 9.  `posframe-poshandler-window-center'
+;; 10. `posframe-poshandler-window-top-center'
+;; 11. `posframe-poshandler-window-top-left-corner'
+;; 12. `posframe-poshandler-window-top-right-corner'
+;; 13. `posframe-poshandler-window-bottom-center'
+;; 14. `posframe-poshandler-window-bottom-left-corner'
+;; 15. `posframe-poshandler-window-bottom-right-corner'
+;; 16. `posframe-poshandler-point-top-left-corner'
+;; 17. `posframe-poshandler-point-bottom-left-corner'
+;; 18. `posframe-poshandler-point-bottom-left-corner-upward'
+;; 19. `posframe-poshandler-point-window-center'
+;; 20. `posframe-poshandler-point-frame-center'
+(use-package posframe)
+
+(use-package transient-posframe
+  :custom
+  (transient-posframe-poshandler 'posframe-poshandler-window-center)
+  :config
+  (transient-posframe-mode t))
+
+(use-package which-key
+  :custom
+  (which-key-sort-order 'which-key-description-order)
+  :hook
+  (elpaca-after-init . which-key-mode))
+
+(use-package which-key-posframe :after which-key
+  :custom
+  (which-key-posframe-poshandler #'posframe-poshandler-frame-bottom-left-corner)
+  (which-key-posframe-parameters
+   `((min-width . ,(frame-width))
+     (left-fringe . 10)
+     (right-fringe . 10)
+     ))
+  :hook
+  (which-key-mode . which-key-posframe-mode))
+
 (use-package disable-mouse :demand t
   :diminish disable-mouse-mode
   :config
