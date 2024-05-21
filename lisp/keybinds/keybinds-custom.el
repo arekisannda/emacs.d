@@ -150,13 +150,25 @@
        (interactive)
        (funcall #',splitfn)
        (other-window 1)))
+
+  (defmacro +keybinds--org-agenda (key)
+    `(lambda ()
+       (interactive)
+       (persp-switch "main")
+       (org-agenda nil ,key)))
   )
 
-(defun +keybinds--org-agenda ()
-  "Open main and agenda."
+(defun +keybinds-toggle-window-buffer-dedicated (&optional window)
+  "Toggle window WINDOW's dedication to its current buffer on or off.
+WINDOW defaults to the selected window."
   (interactive)
-  (persp-switch "main")
-  (org-agenda nil "n"))
+  (let* ((flag (not (window-dedicated-p window))))
+    (set-window-dedicated-p window flag)
+    (if flag
+        (message "Window buffer is now dedicated")
+      (message "Window buffer is not dedicated anymore"))
+    (force-mode-line-update)
+    flag))
 
 (provide 'keybinds-custom)
 

@@ -36,6 +36,9 @@
 (general-create-definer +keybinds-session-mode
   :prefix-command '+keybinds-session--mode-command)
 
+(general-create-definer +keybinds-session-agenda
+  :prefix-command '+keybinds-session--agenda-command)
+
 (+keybinds-session
   "C-\\" '("tools"               . +keybinds-session--tools-command)
   "b"    '("buffers"             . +keybinds-session--buffer-command)
@@ -45,11 +48,16 @@
   "t"    '("tabs"                . +keybinds-session--tabs-command)
   "v"    '("terminal"            . +keybinds-session--term-command)
 
-  "a"    '("agenda"              . +keybinds--org-agenda)
+  "a"    '("agenda"              . +keybinds-session--agenda-command)
 
   "C-q"  (general-predicate-dispatch nil
            (equal (+keybinds--current-workspace) "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
            (equal (+keybinds--current-workspace) "exercism") '("exercism" . +keybinds-code--exercism-command)))
+
+(+keybinds-session-agenda
+  "a"    `("agenda"              . ,(+keybinds--org-agenda "a"))
+  "n"    `("Next View"           . ,(+keybinds--org-agenda "n"))
+  "t"    `("Todo View"           . ,(+keybinds--org-agenda "t")))
 
 (+keybinds-session-term
   "v"    '("toggle project term" . multi-vterm-project)
@@ -78,6 +86,7 @@
   "d"    '("forget project"      . project-forget-project)
   "D"    '("forget project in"   . project-forget-projects-under)
   "K"    '("clear project"       . +keybinds--clear-project)
+  "W"    '("last perspective"    . persp-switch-last)
   "w"    '("switch perspective"  . persp-switch)
   "q"    '("kill perspective"    . persp-kill)
   "s"    '("save perspective"    . +perspective-save-async)

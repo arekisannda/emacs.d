@@ -22,7 +22,7 @@
   "d"   '("find dir"     . consult-dir)
   "r"   '("find recent"  . consult-recent-file)
   "f"   '("find file"    . affe-find)
-  "F"   '("find dfile"   . find-file-without-purpose)
+  "F"   '("find dfile"   . find-file)
   "p"   '("find pfile"   . project-find-file)
   "b"   '("find buffer"  . consult-buffer)
   "B"   '("find pbuffer" . consult-project-buffer)
@@ -32,6 +32,9 @@
   "C-c" '("find command" . consult-mode-command)
   "C-h" '("find history" . consult-history)
   "C-i" '("find info"    . consult-info)
+
+  "C-r" '("find reg"     . consult-register)
+  "C-b" '("find marks"   . consult-bookmark)
 
   "h"   (general-predicate-dispatch nil
           (derived-mode-p 'prog-mode) '("imenu"        . consult-imenu)

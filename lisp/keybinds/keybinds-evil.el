@@ -78,9 +78,7 @@
   "S"        '("ssplit"          . split-window-vertically)
   "s"        `("ssplit focus"    . ,(+keybinds--split-focus-other-window split-window-vertically))
 
-  "m"        '("set purpose"     . purpose-set-window-purpose)
-  "D"        '("toggle buffer"   . purpose-toggle-window-buffer-dedicated)
-  "d"        '("toggle purpose"  . purpose-toggle-window-purpose-dedicated))
+  "d"        '("toggle buffer"   . +keybinds-toggle-window-buffer-dedicated))
 
 (+keybinds-evil-all-states
   "C-w"      '("evil-window"     . evil-window-map))
