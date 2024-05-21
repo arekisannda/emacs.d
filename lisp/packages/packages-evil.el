@@ -68,7 +68,7 @@
   :custom
   (evil-snipe-enable-highlight t)
   :hook
-  (evil-mode . evil-snipe-override-mode))
+  (evil-mode . evil-snipe-mode))
 
 (use-package evil-easymotion :after evil)
 
