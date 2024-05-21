@@ -8,7 +8,21 @@
   :ensure t
   :custom
   (magit-repository-directories
-   (list `(,(expand-file-name "~/Code/") . 1))))
+   (list `(,(expand-file-name "~/Code/") . 1)))
+  (magit-commit-diff-inhibit-same-window t)
+  :config
+  (defun +magit-repolist-setup-override (columns)
+    (unless magit-repository-directories
+      (user-error "You need to customize `magit-repository-directories' %s"
+                  "before you can list repositories"))
+    (with-current-buffer (get-buffer-create "*Magit Repositories*")
+      (magit-repolist-mode)
+      (setq-local magit-repolist-columns columns)
+      (magit-repolist-setup-1)
+      (magit-repolist-refresh)
+      (pop-to-buffer (current-buffer))))
+
+  (advice-add #'magit-repolist-setup :override #'+magit-repolist-setup-override))
 
 (use-package diff-hl :after magit
   :ensure (:type git :host github :repo "arekisannda/diff-hl" :branch "master")

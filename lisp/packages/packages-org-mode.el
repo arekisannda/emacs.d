@@ -190,6 +190,7 @@
   (org-remark-notes-file-name ".remarks.org")
   (org-remark-notes-auto-delete :auto-delete)
   (org-remark-notes-buffer-name "*remark-notes*")
+  (org-remark-notes-display-buffer-action '())
   :init
   (util/if-daemon-run-after-make-frame-else-add-hook
    (+org-remar-configure-fonts)

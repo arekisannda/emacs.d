@@ -41,7 +41,11 @@
 
   "<Copy>"      '("copy"                . kill-ring-save)
   "<Cut>"       '("cut"                 . kill-region)
-  "<Paste>"     '("paste"               . yank))
+  "<Paste>"     '("paste"               . yank)
+
+  "M-?"         '("popper toggle"       . popper-toggle)
+  "M-<"         '("popper prev"         . popper-cycle-backwards)
+  "M->"         '("popper next"         . popper-cycle))
 
 (+keybinds-global global
   "S-<next>"    '("scroll left"         . +keybinds--scroll-left)

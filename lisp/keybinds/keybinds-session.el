@@ -47,8 +47,9 @@
   "w"    '("workspace"           . +keybinds-session--workspace-command)
   "t"    '("tabs"                . +keybinds-session--tabs-command)
   "v"    '("terminal"            . +keybinds-session--term-command)
-
   "a"    '("agenda"              . +keybinds-session--agenda-command)
+
+  "C-|"  '("toggle side window"  . window-toggle-side-windows)
 
   "C-q"  (general-predicate-dispatch nil
            (equal (+keybinds--current-workspace) "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
