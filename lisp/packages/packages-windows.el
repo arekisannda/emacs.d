@@ -9,92 +9,6 @@
   (window-sides-slots '(3 0 3 1))
   (window-sides-vertical t))
 
-(use-package window-purpose :disabled
-  :custom
-  (purpose-message-on-p nil)
-  (purpose-use-default-configuration t)
-  (purpose-user-mode-purposes
-   '((prog-mode                   . edit)
-     (vterm-mode                  . terminal)
-     (lisp-interaction-mode       . terminal)
-     (comint-mode                 . terminal)
-     (eshell-mode                 . terminal)
-     (term-mode                   . terminal)
-     (magit-mode                  . rtools)
-     (magit-repolist-mode         . rtools)
-     (elpaca-manager-mode         . rtools)
-     (elpaca-ui-mode              . rtools)
-     (elpaca-log-mode             . rtools)
-     (elpaca-info-mode            . rtools)
-     (Custom-mode                 . rtools)
-     (help-mode                   . rtools)
-     (apropos-mode                . rtools)
-     (markdown-view-mode          . rtools)
-     (messages-buffer-mode        . terminal)
-     (backtrace-mode              . terminal)
-     (compilation-mode            . terminal)
-     (tabulated-list-mode         . rtools)
-     (diff-mode                   . rtools)
-     (xref--xref-buffer-mode      . rtools)
-     (ibuffer-mode                . rtools)
-     (Buffer-menu-mode            . rtools)
-     (bookmark-bmenu-mode         . rtools)
-     (grep-mode                   . rtools)
-     (occur-mode                  . rtools)
-     ))
-  (purpose-user-name-purposes
-   '((".gitignore"                . edit)
-     (".hgignore"                 . edit)
-     ("COMMIT_EDITMSG"            . terminal)
-     ("*shell*"                   . terminal)
-     ("*eldoc*"                   . terminal)
-     ("*elpaca-manager*"          . rtools)
-     ("*remark-notes*"            . rtools)
-     ))
-  (purpose-user-regexp-purposes
-   '(("^ \\*Minibuf-[0-9]*\\*$" . minibuf)
-     ("^ \\*log4e-.*\\*$"       . terminal)
-     ("\\*Org Agenda.*\\*"      . ltools)
-     ("[1-9][0-9]*_\\(0?[1-9]\\|1[0-2]\\)_\\(0?[1-9]\\|[12][0-9]\\|3[01]\\)\\.org$" . edit)))
-
-  (purpose-x-popwin-width 0.33)
-  (purpose-x-popwin-height 0.4)
-  (purpose-display-at-right-width 0.33)
-  (purpose-display-at-left-width 0.25)
-  (purpose-display-at-bottom-height 0.4)
-  :config
-  (purpose-compile-user-configuration)
-  (purpose-x-magit-off)
-  (purpose-x-popupify-purpose 'terminal #'purpose-display-at-bottom)
-  (purpose-x-popupify-purpose 'rtools #'purpose-display-at-right)
-  (purpose-x-popupify-purpose 'Magit #'purpose-display-at-right)
-  (purpose-x-popupify-purpose 'ltools #'purpose-display-at-left)
-  (purpose-x-popwin-update-conf)
-  (purpose-x-popwin-setup)
-  (purpose-mode t))
-
-(use-package emacs :after telephone-line :disabled
-  :ensure nil
-  :config
-  (telephone-line-defsegment* +telepohone-line-purpose-tag-segment ()
-    (let* ((purpose-plist (purpose-window-params))
-           (dedicated (plist-get purpose-plist :purpose-dedicated))
-           (purpose (plist-get purpose-plist :purpose)))
-      (format "%s %s" (if dedicated "" "") purpose)))
-
-  (telephone-line-defsegment* +telepohone-line-purpose-buffer-tag-segment ()
-    (if (window-dedicated-p nil) "󰓎"))
-
-  (setq telephone-line-lhs
-        '((evil   . (+telepohone-line-purpose-buffer-tag-segment
-                     telephone-line-evil-tag-segment))
-          (accent . (+telepohone-line-purpose-tag-segment
-                     telephone-line-vc-segment
-                     telephone-line-erc-modified-channels-segment
-                     telephone-line-process-segment))
-          (nil    . (telephone-line-projectile-segment
-                     telephone-line-buffer-segment)))))
-
 (setq +wm-terminal-rule-list
       '(vterm-mode
         messages-buffer-mode
@@ -102,6 +16,7 @@
         comint-mode
         eshell-mode
         term-mode
+        diff-mode
         "*shell*"))
 
 (setq +wm-terminal-no-focus-rule-list
@@ -121,7 +36,6 @@
         apropos-mode
         markdown-view-mode
         tabulated-list-mode
-        diff-mode
         xref--xref-buffer-mode
         ibuffer-mode
         Buffer-menu-mode
@@ -366,7 +280,6 @@
   (popper-window-height 0.40)
   (popper-mode-line "")
   (popper-display-control nil)
-  ;; (popper-display-function #'display-buffer-in-child-frame)
   (popper-group-function #'+popper-group-function)
   :hook
   (elpaca-after-init . popper-mode))
@@ -376,10 +289,10 @@
   (shackle-default-rule nil)
   (shackle-rules
    `((,+wm-terminal-rule-list
-      :popup t :align bottom :height 0.40 :width nil :slot 0
+      :popup t :align bottom :height 0.30 :width nil :slot 0
       :custom +wm-select-popup)
      (,+wm-terminal-no-focus-rule-list
-      :popup t :align bottom :height 0.40 :width nil :slot 0 :noselect t
+      :popup t :align bottom :height 0.30 :width nil :slot 0 :noselect t
       :custom +wm-select-popup)
      (,+wm-left-rule-list
       :popup t :align left :height nil :width 35 :slot 1
@@ -388,7 +301,7 @@
       :popup t :align right :height nil :width 100 :slot 0
       :custom +wm-select-popup)
      (,+wm-terminal-no-focus-rule-list-regex
-      :popup t :align bottom :height 0.40 :width nil :regexp t :slot 0 :noselect t
+      :popup t :align bottom :height 0.30 :width nil :regexp t :slot 0 :noselect t
       :custom +wm-select-popup)
      (,+wm-left-rule-list-regex
       :popup t :align left :height nil :width 35 :regexp t :slot 1
@@ -399,17 +312,14 @@
      ("[1-9][0-9]*_\\(0?[1-9]\\|1[0-2]\\)_\\(0?[1-9]\\|[12][0-9]\\|3[01]\\)\\.org$"
       :other t :regexp t)
      ("*remark-notes*"
-      :popup t :align right :height 0.40 :width 100 :slot 1 :noselect t
+      :popup t :align right :height 0.30 :width 100 :slot 1 :noselect t
       :custom +wm-select-popup)
      ("^\\*Org Agenda.*\\*$"
       :popup t :align left :height nil :width 35 :regexp t :slot 1 :dedicated t
       :custom +wm-select-popup)
      ((prog-mode) :same t)
-     ;; ("COMMIT_EDITMSG"
-     ;;  :popup t :align right :height nil :width 80 :slot 0
-     ;;  :custom +wm-select-popup)
      (magit-diff-mode
-      :popup t :align right :height 0.60 :width 80 :slot -1 :noselect t
+      :popup t :align right :height 0.70 :width 100 :slot -1 :noselect t
       :custom +wm-select-popup)
      ))
   :config

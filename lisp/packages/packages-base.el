@@ -47,6 +47,9 @@
 (use-package persist
   :ensure t)
 
+(use-package eldoc
+  :ensure t)
+
 (use-package ext-tab-bar
   :ensure (:host github :repo "arekisannda/ext-tab-bar")
   :preface

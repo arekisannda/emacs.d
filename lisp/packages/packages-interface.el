@@ -45,8 +45,7 @@
   (which-key-posframe-parameters
    `((min-width . ,(frame-width))
      (left-fringe . 10)
-     (right-fringe . 10)
-     ))
+     (right-fringe . 10)))
   :hook
   (which-key-mode . which-key-posframe-mode))
 
