@@ -215,7 +215,30 @@
 
 (use-package treemacs
   :custom
-  (treemacs-position 'left))
+  (treemacs-position 'left)
+  (treemacs-width 35)
+  (treemacs-display-in-side-window t)
+  :config
+
+  (defun +treemacs--popup-window ()
+    "Pop up a side window and buffer for treemacs."
+    (let ((buf (treemacs-get-local-buffer-create)))
+      (display-buffer buf
+                      `(,(if treemacs-display-in-side-window
+                             'display-buffer-in-side-window
+                           'display-buffer-in-direction)
+                        . (;; for buffer in direction
+                           (direction . ,treemacs-position)
+                           (window . root)
+                           ;; for side windows
+                           (slot . 0)
+                           (side . ,treemacs-position)
+                           ;; general-purpose settings
+                           (window-width . ,treemacs-width)
+                           (dedicated . t))))
+      (select-window (get-buffer-window buf))))
+
+  (advice-add #'treemacs--popup-window :override #'+treemacs--popup-window))
 
 (use-package treemacs-nerd-icons :after treemacs
   :config
