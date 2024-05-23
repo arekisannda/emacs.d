@@ -4,9 +4,8 @@
 ;;; Code:
 (require 'util-helpers)
 
-
-(use-package eglot
-  :ensure t
+(use-package emacs
+  :ensure nil
   :custom
   (eldoc-echo-area-use-multiline-p nil)
   (fset #'jsonrpc--log-event #'ignore)

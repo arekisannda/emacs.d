@@ -35,20 +35,15 @@
 
 (use-package seq :ensure `(seq :build ,(+elpaca-seq-build-steps)))
 
-(use-package jsonrpc
-  :ensure t)
+(use-package jsonrpc :ensure t)
 
-(use-package compat
-  :ensure t)
+(use-package compat :ensure t)
 
-(use-package transient
-  :ensure t)
+(use-package transient :ensure t)
 
-(use-package persist
-  :ensure t)
+(use-package persist :ensure t)
 
-(use-package eldoc
-  :ensure t)
+;; (use-package eldoc :ensure t)
 
 (use-package ext-tab-bar
   :ensure (:host github :repo "arekisannda/ext-tab-bar")
