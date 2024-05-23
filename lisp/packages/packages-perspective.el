@@ -67,13 +67,12 @@
        (expand-file-name "debug" +persp-state-default-directory)
      (expand-file-name "default" +persp-state-default-directory)))
   :preface
-  (aio-defun +perspective-save ()
+  (aio-defun +perspective-save (&optional terminated)
     (interactive)
-    (dolist (persp (persp-names))
-      (with-perspective
-          persp
-        (if-let ((treemacs-buffer (treemacs-get-local-buffer)))
-            (kill-buffer treemacs-buffer))))
+    (when terminated
+      (dolist (persp (persp-names))
+        (with-perspective persp
+          (delete-other-windows (window-main-window nil)))))
     (persp-state-save persp-state-default-file))
 
   (aio-defun +perspective-save-async ()
@@ -94,7 +93,7 @@
   (persp-state-before-save . (lambda ()
                                (ext-tab-bar-persp-mode-update)
                                (persist-save 'ext-tab-bar-persp-mode-hash)))
-  (kill-emacs . +perspective-save)
+  (kill-emacs . (lambda () (+perspective-save t)))
   (persp-created . dashboard-open)
   :init
   (util/if-daemon-run-after-make-frame-else-add-hook
