@@ -11,6 +11,10 @@
   (project-vc-merge-submodules nil))
 
 (use-package ibuffer-project
+  :preface
+  (defun +ibuffer-list ()
+    (interactive)
+    (ibuffer nil nil nil t nil nil nil))
   :hook
   (ibuffer . (lambda ()
                (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))

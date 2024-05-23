@@ -97,7 +97,7 @@
   "l"    '("apply layout"        . consult-layouts))
 
 (+keybinds-session-buffer
-  "l"    '("list buffers"        . ibuffer)
+  "l"    '("list buffers"        . +ibuffer-list)
   "k"    '("kill buffer"         . kill-this-buffer)
   "K"    '("kill buffer by name" . kill-buffer)
   "r"    '("revert buffer"       . revert-buffer))
