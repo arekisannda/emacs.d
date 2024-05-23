@@ -228,17 +228,50 @@
                  `((window-width  . ,width))))
      )))
 
-(setq-default +wm-slot nil)
-(setq-default +wm-popper-last-group nil)
+(defun +wm-balance-main-windows ()
+  (interactive)
+  (balance-windows (window-main-window)))
 
 (defun +popper-group-function ()
   (let* ((perspective (cond ((featurep 'persp-mode) (safe-persp-name (get-current-persp)))
-                            ((featurep 'perspective) (persp-name (persp-curr))))))
-    (if +wm-slot
-        (format "%s-%s" perspective +wm-slot)
-      (if +wm-popper-last-group
-          (format "%s-%s" perspective +wm-popper-last-group)
-        (format "%s" perspective)))))
+                            ((featurep 'perspective) (persp-name (persp-curr)))))
+         (slot (window-parameter (selected-window) 'window-slot))
+         (side (window-parameter (selected-window) 'window-side)))
+    (when (equal side 'bottom) (format "%s-%s-%s" perspective (symbol-name side) (+ slot 1)))))
+
+(defun +wm-toggle-side-windows (&optional frame)
+  (interactive)
+  (let* ((frame (window-normalize-frame frame))
+         (window--sides-inhibit-check t)
+         state)
+    (cond
+     ((window-with-parameter 'window-side 'bottom frame)
+      ;; At least one side window exists.  Remove all side windows after
+      ;; saving FRAME's state in its `window-state' parameter.
+      (set-frame-parameter
+       frame 'window-state (window-state-get (frame-root-window frame)))
+      (let ((ignore-window-parameters t))
+        (walk-windows
+         (lambda (win)
+           (when (equal (window-parameter win 'window-side) 'bottom)
+             (delete-window win))))))
+     ((setq state (frame-parameter nil 'window-state))
+      ;; A window state was saved for FRAME.  Restore it and put the
+      ;; current root window into its main window.
+      (walk-windows
+       (lambda (win)
+         (when (or (equal (window-parameter win 'window-side) 'left)
+                   (equal (window-parameter win 'window-side) 'right)
+                   (equal (window-parameter win 'window-side) 'above))
+           (delete-window win))))
+
+      (let ((window-combination-resize t)
+            (main-state (window-state-get (frame-root-window nil))))
+        (window-state-put state (frame-root-window nil) t)
+        (window-state-put main-state (window-main-window nil)))
+      (window--sides-reverse-frame nil))
+     (t
+      (error "No side windows state found")))))
 
 (use-package popper
   :preface

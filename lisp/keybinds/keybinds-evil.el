@@ -64,7 +64,7 @@
   "a"        '("outer arg"       . evil-outer-arg))
 
 (+keybinds-evil evil-window-map
-  "="        '("balance windows" . balance-windows)
+  "="        '("balance windows" . +wm-balance-main-windows)
   "O"        '("clear windows"   . +keybinds--clear-windows)
 
   "u"        '("undo window"     . winner-undo)

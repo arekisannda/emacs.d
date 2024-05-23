@@ -35,17 +35,16 @@
   "M-["         '("prev tab"            . tab-previous)
   "M-]"         '("next tab"            . tab-next)
   "M-\\"        '("ace-window"          . ace-window)
-  "M-0"         '("focus treemacs"      . treemacs)
-
-  "C-/"         '("toggle project term" . multi-vterm-project)
+  "M-0"         '("focus treemacs"      . treemacs-select-window)
 
   "<Copy>"      '("copy"                . kill-ring-save)
   "<Cut>"       '("cut"                 . kill-region)
   "<Paste>"     '("paste"               . yank)
 
-  "M-?"         '("popper toggle"       . popper-toggle)
-  "M-<"         '("popper prev"         . popper-cycle-backwards)
-  "M->"         '("popper next"         . popper-cycle))
+  "M-/"         '("toggle project term" . multi-vterm-project)
+  "M-?"         '("side window toggle"  . +wm-toggle-side-windows)
+  "M-<"         '("popper prev"         . +popper-cycle-backwards)
+  "M->"         '("popper next"         . +popper-cycle))
 
 (+keybinds-global global
   "S-<next>"    '("scroll left"         . +keybinds--scroll-left)
@@ -64,7 +63,8 @@
   "C-<next>"    '("scroll down"         . +keybinds--scroll-down)
 
   "M-<prior>"   '("owindow scroll up"   . +keybinds--scroll-other-up)
-  "M-<next>"    '("owindow scroll down" . +keybinds--scroll-other-down))
+  "M-<next>"    '("owindow scroll down" . +keybinds--scroll-other-down)
+  "M-:"         '("eval"                . eval-expression))
 
 (+keybinds-global minibuffer-local-map
   "M-<prior>"   '("owindow scroll up"   . +keybinds--minibuffer-scroll-other-up)
