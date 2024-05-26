@@ -3,30 +3,29 @@
 
 ;;; Code:
 
-(use-package emacs :after easy-color-faces
+(use-package emacs :after (easy-color-faces treesit-fold)
   :ensure nil
   :preface
-  (defvar +hs-mode-fold-overlay-string
-    (concat " "
-            (propertize "!" 'face `(nil :inherit easy-color-faces-green
-                                        :weight bold
-                                        :box '(:style flat-button)))
-            (propertize "!" 'face `(nil :inherit easy-color-faces-orange
-                                        :weight bold
-                                        :box '(:style flat-button)))
-            (propertize "!" 'face `(nil :inherit easy-color-faces-red
-                                        :weight bold
-                                        :box '(:style flat-button)))
-            " "))
+  (setq +fold-replacement "  ")
 
   (defun +hs-mode-fold-overlay (ov)
     "Format fold overlay OV."
     (when (eq 'code (overlay-get ov 'hs))
-      (overlay-put ov 'display +hs-mode-fold-overlay-string)))
+      (overlay-put ov 'display
+                   (propertize +fold-replacement
+                               'face
+                               `((nil :foreground ,easy-color-gray
+                                      :box nil
+                                      :weight bold))))))
 
   (defvar +hs-mode-overlay-fold-function #'+hs-mode-fold-overlay)
   :custom
-  (hs-set-up-overlay +hs-mode-overlay-fold-function))
+  (treesit-fold-replacement +fold-replacement)
+  (hs-set-up-overlay +hs-mode-overlay-fold-function)
+  :custom-face
+  (treesit-fold-replacement-face ((nil :foreground ,easy-color-gray
+                                       :box nil
+                                       :weight bold))))
 
 (provide 'packages-hs-mode)
 

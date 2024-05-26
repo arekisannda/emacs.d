@@ -38,6 +38,9 @@
 (general-create-definer +keybinds-editor-fold
   :prefix-command '+keybinds-editor--fold-command)
 
+(general-create-definer +keybinds-editor-fold-treesit
+  :prefix-command '+keybinds-editor--fold-treesit-command)
+
 (general-create-definer +keybinds-editor-input
   :prefix-command '+keybinds-editor--input-command)
 
@@ -68,8 +71,11 @@
   "g"   '("git"                  . +keybinds-editor--git-command)
   "i"   '("input method"         . +keybinds-editor--input-command)
   "m"   '("motion"               . +keybinds-editor--motion-command)
-  "o"   '("fold"                 . +keybinds-editor--fold-command)
   "t"   '("translate"            . +keybinds-editor--translate-command)
+
+  "o"   (general-predicate-dispatch nil
+          (treesit-fold-ready-p)          '("fold"       . +keybinds-editor--fold-treesit-command)
+          t                               '("fold"       . +keybinds-editor--fold-command))
 
   ","   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode)      '("org edit"   . +keybinds-org-mode--edit-command)
@@ -135,6 +141,20 @@
   "X"   '("show fold all"        . hs-show-all)
   "x"   '("show fold"            . hs-show-block)
   "o"   '("toggle fold"          . hs-toggle-hiding))
+
+(+keybinds-editor-fold-treesit
+  "!"   '("open recursively"     . treesit-fold-open-recursively)
+
+  "a"   '("inline beg comment"   . util/folding-add-fold-inline)
+  "A"   '("block beg comment"    . util/folding-add-fold-surround)
+  "e"   '("inline end comment"   . util/folding-add-fold-inline-end)
+  "E"   '("block end comment"    . util/folding-add-fold-surround-end)
+
+  "c"   '("hide fold"            . treesit-fold-close)
+  "C"   '("hide fold all"        . treesit-fold-close-all)
+  "X"   '("show fold all"        . treesit-fold-open-all)
+  "x"   '("show fold"            . treesit-fold-open)
+  "o"   '("toggle fold"          . treesit-fold-toggle))
 
 (+keybinds-editor-syntax-check
   "!"   '("check error"          . flycheck-display-error-at-point)
