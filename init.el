@@ -24,11 +24,11 @@
 (require 'packages-themes)
 (require 'packages-interface)
 (require 'packages-evil)
-(require 'packages-perspective)
 (require 'packages-vterm)
 (require 'packages-project)
 (require 'packages-windows)
 (require 'packages-layout)
+(require 'packages-perspective)
 (require 'packages-corfu)
 (require 'packages-vertico)
 

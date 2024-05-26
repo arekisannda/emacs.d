@@ -27,19 +27,32 @@
 ;; 20. `posframe-poshandler-point-frame-center'
 (use-package posframe)
 
+(use-package transient :ensure t
+  :custom
+  (transient-show-popup 0)
+  (transient-display-buffer-action nil)
+  (transient-mode-line-format nil)
+  (transient-force-fixed-pitch t))
+
 (use-package transient-posframe
   :custom
-  (transient-posframe-poshandler 'posframe-poshandler-window-center)
+  (transient-posframe-poshandler #'posframe-poshandler-window-center)
   :config
   (transient-posframe-mode t))
 
 (use-package which-key
   :custom
-  (which-key-sort-order 'which-key-description-order)
+  (which-key-sort-order 'which-key-key-order)
+  (which-key-show-prefix 'top)
+  (which-key-popup-type 'minibuffer)
+  ;; (which-key-side-window-slot 0)
+  ;; (which-key-popup-type 'side-window)
+  ;; (which-key-side-window-location 'left)
+  ;; (which-key-side-window-location 'bottom)
   :hook
   (elpaca-after-init . which-key-mode))
 
-(use-package which-key-posframe :after which-key
+(use-package which-key-posframe :after which-key :disabled
   :custom
   (which-key-posframe-poshandler #'posframe-poshandler-frame-bottom-left-corner)
   (which-key-posframe-parameters
@@ -56,7 +69,7 @@
 
 (use-package editorconfig :demand t
   :config
-  (setq-default editorconfig-lisp-use-default-indent t)
+  (setq editorconfig-lisp-use-default-indent t)
   (editorconfig-mode))
 
 (use-package nerd-icons)
@@ -180,7 +193,7 @@
   (dashboard-set-heading-icons t)
   (dashboard-set-footer nil)
   (dashboard-set-file-icons t)
-  (dashboard-items '((agenda . 8)  (bookmarks . 8) (projects . 16) (recents . 32)))
+  (dashboard-items '((agenda . 8) (bookmarks . 8) (projects . 16) (recents . 32)))
   (initial-buffer-choice #'dashboard-open)
   (dashboard-startupify-list
    '(dashboard-insert-banner
@@ -211,15 +224,24 @@
   ;;    recents))
   :hook
   (elpaca-after-init . dashboard-setup-startup-hook)
-  (elpaca-after-init . dashboard-insert-startupify-lists))
+  (elpaca-after-init . dashboard-insert-startupify-lists)
+  (dashboard-mode . (lambda () (util/window--set-purpose (selected-window) 'edit-general))))
 
 (use-package treemacs
   :custom
   (treemacs-position 'left)
   (treemacs-width 35)
   (treemacs-display-in-side-window t)
+  (treemacs-RET-actions-config '((root-node-open . treemacs-toggle-node)
+                                 (root-node-closed . treemacs-toggle-node)
+                                 (dir-node-open . treemacs-toggle-node)
+                                 (dir-node-closed . treemacs-toggle-node)
+                                 (file-node-open . treemacs-visit-node-in-most-recently-used-window)
+                                 (file-node-closed . treemacs-visit-node-in-most-recently-used-window)
+                                 (tag-node-open . treemacs-toggle-node-prefer-tag-visit)
+                                 (tag-node-closed . treemacs-toggle-node-prefer-tag-visit)
+                                 (tag-node . treemacs-visit-node-in-most-recently-used-window)))
   :config
-
   (defun +treemacs--popup-window ()
     "Pop up a side window and buffer for treemacs."
     (let ((buf (treemacs-get-local-buffer-create)))

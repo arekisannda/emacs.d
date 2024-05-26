@@ -8,7 +8,6 @@
   :ensure nil
   :custom
   (eldoc-echo-area-use-multiline-p nil)
-  (fset #'jsonrpc--log-event #'ignore)
   (eglot-events-buffer-size 0)
   (eglot-sync-connect nil)
   (eglot-connect-timeout nil)
@@ -17,17 +16,16 @@
   (eglot-ignored-server-capabilities '(:documentHighlightProvider
                                        :inlayHintProvider))
   :hook
-  (eglot-managed-mode . (lambda () (eldoc-mode -1)))
-  :init
-  (setq eldoc-display-functions '(eldoc-display-in-buffer))
-  (util/if-daemon-run-after-make-frame-else-add-hook
-   (lambda () (global-eldoc-mode -1))
-   'elpaca-after-init-hook))
+  (eglot-managed-mode . (lambda ()(eldoc-mode -1))))
 
 (use-package eglot-booster
   :ensure (:type git :host github :repo "jdtsmith/eglot-booster")
   :hook
-  (elpaca-after-init . eglot-booster-mode))
+  (elpaca-after-init . eglot-booster-mode)
+  :custom
+  (eglot-events-buffer-size 0)
+  :config
+  (fset #'jsonrpc--log-event #'ignore))
 
 (use-package flycheck-eglot
   :hook

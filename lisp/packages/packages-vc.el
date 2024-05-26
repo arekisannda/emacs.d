@@ -10,6 +10,7 @@
   (magit-repository-directories
    (list `(,(expand-file-name "~/Code/") . 1)))
   (magit-commit-diff-inhibit-same-window t)
+  (magit-save-repository-buffers 'dontask)
   :config
   (defun +magit-repolist-setup-override (columns)
     (unless magit-repository-directories

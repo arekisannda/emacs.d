@@ -13,8 +13,8 @@
   (defun +emacs-tuning-configurations ()
     ;; performance tuning
     (defvar packages/emacs-gc-cons-threshold (* 1024 1024 100))
-    (setq gc-cons-threshold packages/emacs-gc-cons-threshold)
-    (setq read-process-output-max (* 1024 1024)))
+    (setq-default gc-cons-threshold packages/emacs-gc-cons-threshold)
+    (setq-default read-process-output-max (* 1024 1024)))
 
   (defun +emacs-configurations ()
     (setq-default window-resize-pixelwise t)
@@ -23,7 +23,6 @@
     (setq-default scroll-step 5)
     (setq-default tab-width 4)
     (setq-default tab-bar-separator "")
-
     (setq-default fringe-indicator-alist nil)
     (fringe-mode nil))
 

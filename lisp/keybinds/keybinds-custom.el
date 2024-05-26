@@ -154,7 +154,6 @@
   (defmacro +keybinds--org-agenda (key)
     `(lambda ()
        (interactive)
-       (persp-switch "main")
        (org-agenda nil ,key)))
   )
 

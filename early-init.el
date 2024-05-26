@@ -38,6 +38,7 @@
 (setq-default indent-tabs-mode nil)
 (setq-default visual-line-mode nil)
 (setq-default use-file-dialog nil)
+(setq-default show-help-function nil)
 
 (tool-bar-mode -1)
 (tooltip-mode -1)
@@ -46,6 +47,7 @@
 (menu-bar-mode -1)
 (electric-pair-mode -1)
 (winner-mode 1)
+(global-eldoc-mode -1)
 
 (setq message-log-max 2000)
 (setq warning-minimum-level :emergency)

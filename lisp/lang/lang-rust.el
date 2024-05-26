@@ -11,7 +11,7 @@
     (util/lsp-ensure))
   :hook
   (rust-ts-mode . +lang-rust-setup)
-  :config
+  :mode
   ("\\.rs\\'" . rust-ts-mode))
 
 (provide 'lang-rust)

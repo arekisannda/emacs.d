@@ -28,6 +28,7 @@
   (org-hide-emphasis-markers t)
   (org-pretty-entities t)
   (org-ellipsis " ... ") ;; folding symbol
+  (org-use-sub-superscripts '{})
 
   (org-fontify-whole-heading-line t)
   (org-fontify-done-headline t)
@@ -51,10 +52,9 @@
                                          "acn" "acr" "alg" "glg" "gls" "ist")))
   (org-latex-hyperref-template nil)
 
-  (org-agenda-files
-   (append
-    (directory-files-recursively "~/agenda/date" "\\.*org$")
-    (directory-files-recursively "~/agenda/project" "\\.*org$")))
+  (org-agenda-files '("~/agenda/date"
+                      "~/agenda/project"
+                      "~/agenda/work"))
 
   :config
   (dolist (face `((org-level-1 . 1.30)
@@ -101,10 +101,13 @@
   :custom
   (org-modern-table nil)
   (org-modern-star "○")
+  (org-modern-replace-stars "○")
   (org-modern-internal-target '(" ↪ " t " "))
   (org-modern-radio-target '("  " t " "))
   (org-modern-progress '("󰝦" "󰪞" "󰪟" "󰪠" "󰪡" "󰪢" "󰪣" "󰪤" "󰪥"))
-  (org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦"))))
+  (org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦")))
+  :config
+  (global-org-modern-mode 1))
 
 (use-package emacs :after (sonokai-theme org org-modern easy-color-faces)
   :ensure nil
@@ -173,8 +176,8 @@
                     ))))))
      ))
 
-  :config
-  (org-super-agenda-mode t))
+  :hook
+  (elpaca-after-init . org-super-agenda-mode))
 
 (use-package org-remark :after org
   :preface
