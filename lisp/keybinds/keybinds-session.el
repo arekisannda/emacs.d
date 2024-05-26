@@ -94,7 +94,7 @@
   "o"    '("opn perspective"     . persp-state-load)
   "r"    '("rename perspective"  . persp-rename)
   "b"    '("remove buffer"       . persp-remove-buffer)
-  "l"    '("apply layout"        . consult-layouts))
+  "l"    '("apply layout"        . +layout-choose-windows-layout))
 
 (+keybinds-session-buffer
   "l"    '("list buffers"        . +ibuffer-list)

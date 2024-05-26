@@ -17,6 +17,8 @@
 (dolist (path '("lisp"))
   (+recursive-load-path path))
 
+(require 'lib-layouts)
+
 (require 'packages-manager)
 (require 'packages-base)
 (require 'packages-treesit)
@@ -27,7 +29,6 @@
 (require 'packages-vterm)
 (require 'packages-project)
 (require 'packages-windows)
-(require 'packages-layout)
 (require 'packages-perspective)
 (require 'packages-corfu)
 (require 'packages-vertico)
