@@ -1,4 +1,4 @@
-;;; util-folding.el --- Code Folcing Utility Functdions -*- lexical-binding: t; -*-
+;;; util-folding.el --- Code Folcing Utility Functions -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:

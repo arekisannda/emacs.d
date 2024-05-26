@@ -17,6 +17,10 @@
       (substring str 0 (- (length str) (length suffix)))
     str))
 
+(defun util/strings-add-font-lock (str face)
+  "Add property FACE to STR."
+  (prog1 str (add-face-text-property 0 (length str) face nil str)))
+
 (provide 'util-strings)
 
 ;;; util-strings.el ends here

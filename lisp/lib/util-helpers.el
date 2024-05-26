@@ -41,8 +41,6 @@
   "Indent BUFFER."
   (interactive)
   (save-excursion
-    (if hs-minor-mode
-        (hs-show-all))
     (indent-region (point-min) (point-max))))
 
 (eval-when-compile
