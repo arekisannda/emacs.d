@@ -17,6 +17,7 @@
 (dolist (path '("lisp"))
   (+recursive-load-path path))
 
+(require 'lib-window-extras)
 (require 'lib-layouts)
 
 (require 'packages-manager)

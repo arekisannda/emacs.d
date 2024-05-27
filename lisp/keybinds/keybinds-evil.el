@@ -64,7 +64,7 @@
   "a"        '("outer arg"       . evil-outer-arg))
 
 (+keybinds-evil evil-window-map
-  "="        '("balance windows" . +wm-balance-main-windows)
+  "="        '("balance windows" . balance-windows)
   "O"        '("clear windows"   . +keybinds--clear-windows)
 
   "u"        '("undo window"     . winner-undo)
@@ -78,7 +78,8 @@
   "S"        '("ssplit"          . split-window-vertically)
   "s"        `("ssplit focus"    . ,(+keybinds--split-focus-other-window split-window-vertically))
 
-  "d"        '("toggle buffer"   . +keybinds-toggle-window-buffer-dedicated))
+  "d"        '("toggle buffer"   . +toggle-dedicated-window-buffer)
+  "m"        '("window purpose"  . +window-set-purpose))
 
 (+keybinds-evil-all-states
   "C-w"      '("evil-window"     . evil-window-map))

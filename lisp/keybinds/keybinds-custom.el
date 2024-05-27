@@ -157,18 +157,6 @@
        (org-agenda nil ,key)))
   )
 
-(defun +keybinds-toggle-window-buffer-dedicated (&optional window)
-  "Toggle window WINDOW's dedication to its current buffer on or off.
-WINDOW defaults to the selected window."
-  (interactive)
-  (let* ((flag (not (window-dedicated-p window))))
-    (set-window-dedicated-p window flag)
-    (if flag
-        (message "Window buffer is now dedicated")
-      (message "Window buffer is not dedicated anymore"))
-    (force-mode-line-update)
-    flag))
-
 (provide 'keybinds-custom)
 
 ;;; keybinds-custom.el ends here
