@@ -31,6 +31,11 @@
 (general-create-definer +keybinds-org-mode
   :keymaps 'org-mode-map)
 
+(general-unbind org-mode-map
+  "C-c C-x C-t"
+  "C-c C-x t t"
+  "C-c C-x t c")
+
 (+keybinds-org-mode
   "C-M-<return>" #'org-insert-subheading
   "C-M-S-<return>" #'org-insert-todo-subheading)
@@ -66,11 +71,13 @@
   "="   '("align table"        . org-table-align))
 
 (+keybinds-org-mode-exec
-  "C-t" '("toggle modern mode" . org-modern-mode)
-  "!"   '("org ctrl-c"         . org-ctrl-c-ctrl-c))
+  "t"   '("typst toggle"       . org-typst-preview)
+  "C-t" '("typst render"       . +org-typst-preview-render)
+
+  "!"   '("toggle modern mode" . org-modern-mode))
 
 (+keybinds-org-mode-remark
-  "o"  '("view"                . +hydra-org-remark-motion/org-remark-view)
+  "o"   '("view"               . +hydra-org-remark-motion/org-remark-view)
 
   "d"   '("delete"             . org-remark-delete)
   "h"   '("highlight"          . +keybinds-org-mode--remark-highlight-command)
@@ -83,38 +90,38 @@
   "]"   '("next remark"        . +hydra-org-remark-motion/org-remark-next))
 
 (+keybinds-org-mode-remark-size
-  "1" '("1.25"                 . org-remark-mark-size-125)
-  "2" '("1.50"                 . org-remark-mark-size-150)
-  "3" '("1.75"                 . org-remark-mark-size-175)
-  "4" '("2.00"                 . org-remark-mark-size-200)
+  "1"   '("1.25"               . org-remark-mark-size-125)
+  "2"   '("1.50"               . org-remark-mark-size-150)
+  "3"   '("1.75"               . org-remark-mark-size-175)
+  "4"   '("2.00"               . org-remark-mark-size-200)
 
-  "6" '("0.25"                 . org-remark-mark-size-025)
-  "7" '("0.50"                 . org-remark-mark-size-050)
-  "8" '("0.75"                 . org-remark-mark-size-075))
+  "6"   '("0.25"               . org-remark-mark-size-025)
+  "7"   '("0.50"               . org-remark-mark-size-050)
+  "8"   '("0.75"               . org-remark-mark-size-075))
 
 (+keybinds-org-mode-remark-highlight
-  "y" '("yellow"               . org-remark-mark-hl-yellow)
-  "o" '("orange"               . org-remark-mark-hl-orange)
-  "r" '("red"                  . org-remark-mark-hl-red)
-  "m" '("magenta"              . org-remark-mark-hl-magenta)
-  "b" '("blue"                 . org-remark-mark-hl-blue)
-  "g" '("green"                . org-remark-mark-hl-green)
-  "c" '("cyan"                 . org-remark-mark-hl-cyan)
-  "v" '("violet"               . org-remark-mark-hl-violet)
-  "p" '("purple"               . org-remark-mark-hl-purple)
-  "g" '("gray"                 . org-remark-mark-hl-gray))
+  "y"   '("yellow"             . org-remark-mark-hl-yellow)
+  "o"   '("orange"             . org-remark-mark-hl-orange)
+  "r"   '("red"                . org-remark-mark-hl-red)
+  "m"   '("magenta"            . org-remark-mark-hl-magenta)
+  "b"   '("blue"               . org-remark-mark-hl-blue)
+  "g"   '("green"              . org-remark-mark-hl-green)
+  "c"   '("cyan"               . org-remark-mark-hl-cyan)
+  "v"   '("violet"             . org-remark-mark-hl-violet)
+  "p"   '("purple"             . org-remark-mark-hl-purple)
+  "g"   '("gray"               . org-remark-mark-hl-gray))
 
 (+keybinds-org-mode-remark-color
-  "y" '("yellow"               . org-remark-mark-yellow)
-  "o" '("orange"               . org-remark-mark-orange)
-  "r" '("red"                  . org-remark-mark-red)
-  "m" '("magenta"              . org-remark-mark-magenta)
-  "b" '("blue"                 . org-remark-mark-blue)
-  "g" '("green"                . org-remark-mark-green)
-  "c" '("cyan"                 . org-remark-mark-cyan)
-  "v" '("violet"               . org-remark-mark-violet)
-  "p" '("purple"               . org-remark-mark-purple)
-  "g" '("gray"                 . org-remark-mark-gray))
+  "y"   '("yellow"             . org-remark-mark-yellow)
+  "o"   '("orange"             . org-remark-mark-orange)
+  "r"   '("red"                . org-remark-mark-red)
+  "m"   '("magenta"            . org-remark-mark-magenta)
+  "b"   '("blue"               . org-remark-mark-blue)
+  "g"   '("green"              . org-remark-mark-green)
+  "c"   '("cyan"               . org-remark-mark-cyan)
+  "v"   '("violet"             . org-remark-mark-violet)
+  "p"   '("purple"             . org-remark-mark-purple)
+  "g"   '("gray"               . org-remark-mark-gray))
 
 (provide 'keybinds-org-mode)
 
