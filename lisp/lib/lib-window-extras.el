@@ -1,4 +1,4 @@
-;;; lib-window-extra.el --- Additional Windows Commands -*- lexical-binding: t; -*-
+;;; lib-window-extras.el --- Additional Windows Commands -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
@@ -16,7 +16,7 @@ WINDOW defaults to the selected window."
     (force-mode-line-update)
     flag))
 
-(defun +windows-set-purpose (&optional arg)
+(defun +window-set-purpose (&optional arg)
   "Set/unset window purpose.
 
 With prefix ARG \\[universal-argument], remove window purpose.
@@ -27,10 +27,10 @@ With double-prefix ARG \\[universal-argument], echo window purpose."
     (16 (message "window-purpose: %s" (util/window-get-purpose)))
     (_ (util/window--set-purpose))))
 
-(defun +window-with-purpose (&optional purpose noselect)
+(defun +window-with-purpose (&optional purpose select)
   "Select window with `window-purpose` value PURPOSE.
 
-If NOSELECT is non-nil, just return window."
+If SELECT is non-nil, select and return window."
   (interactive)
   (let* ((purpose-list (mapcar #'symbol-name +window-purpose-list))
          (prompt (format "Select purpose: "))
@@ -38,7 +38,7 @@ If NOSELECT is non-nil, just return window."
     (if-let ((window (window-with-parameter 'window-purpose
                                             (cond ((stringp purpose) (intern purpose))
                                                   ((symbolp purpose) purpose)))))
-        (if noselect window (select-window window)))))
+        (if select (select-window window) window ))))
 
 (defun +toggle-bottom-side-windows (&optional frame)
   "Toggle bottom side window in FRAME."
@@ -81,42 +81,50 @@ If NOSELECT is non-nil, just return window."
   "Select popup window for BUFFER.
 ALIST is an association list of action symbols and values.
 PLIST is custom shackle parameters list."
-  (let* ((side (plist-get plist :align))
-         (slot (plist-get plist :slot))
-         (height (plist-get plist :height))
-         (width (plist-get plist :width))
-         (caller-window (selected-window))
-         (parameters `((window-side . ,side) (window-slot . ,slot)))
-         window)
+  (unless (plist-get plist :ignore)
+    (let* ((side (plist-get plist :align))
+           (slot (plist-get plist :slot))
+           (height (plist-get plist :height))
+           (width (plist-get plist :width))
+           (caller-window (selected-window))
+           parameters
+           window)
 
-    (when (plist-get plist :disable-modeline)
-      (set-window-parameter window 'mode-line-format))
+      (when (plist-get plist :disable-modeline)
+        (set-window-parameter window 'mode-line-format))
 
-    (with-current-buffer buffer
-      (if-let ((fixed (plist-get plist :fixed)))
-          (setq-local window-size-fixed fixed)))
+      (with-current-buffer buffer
+        (if-let ((fixed (plist-get plist :fixed)))
+            (setq-local window-size-fixed fixed)))
 
-    (cond
-     ((setq window (util/window-with-parameters parameters nil))
-      (set-window-buffer window buffer))
-     (t
-      (setq window
-            (display-buffer-in-side-window
-             buffer
-             (append alist
-                     `((dedicated                . ,(plist-get plist :dedicated))
-                       (direction                . ,(plist-get plist :direction))
-                       (side                     . ,side)
-                       (slot                     . ,slot))
-                     (if height `((window-height . ,height)))
-                     (if width `((window-width   . ,width)))))))
-     )
+      (if (and side slot)
+          (setq parameters `((window-side . ,side) (window-slot . ,slot)))
+        (user-error "Missing window side and slot parameters"))
 
-    (if (not window)
-        (error "Unable to create side-window")
-      (set-window-parameter window 'no-delete-other-windows t)
+      (cond
+       ;; if reuse flag is set and if buffer is visible, reuse the window
+       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+        (select-window window))
+       ((setq window (util/window-with-parameters parameters nil))
+        (set-window-buffer window buffer))
+       (t
+        (setq window
+              (display-buffer-in-side-window
+               buffer
+               (append alist
+                       `((dedicated                . ,(plist-get plist :dedicated))
+                         (direction                . ,(plist-get plist :direction))
+                         (side                     . ,side)
+                         (slot                     . ,slot)
+                         (window-parameters
+                          .
+                          ((no-delete-other-windows . t))))
+                       (if height `((window-height . ,height)))
+                       (if width `((window-width   . ,width))))))))
+      (unless window
+        (user-error "Unable to create side window"))
 
-      (if (not (plist-get plist :noselect))
+      (if (plist-get plist :select)
           (select-window window)
         (select-window caller-window)))))
 
@@ -124,34 +132,65 @@ PLIST is custom shackle parameters list."
   "Display BUFFER in window with specified purpose.
 ALIST is an association list of action symbols and values.
 PLIST is custom shackle parameters list."
-  (unless (and (plist-get plist :ignore))
+  (unless (plist-get plist :ignore)
     (let* ((purpose-list (plist-get plist :purpose))
-           (caller-window (selected-window)))
+           (caller-window (selected-window))
+           window)
       (cond
-       ((equal (window-parameter caller-window 'window-side) 'bottom)
-        (cond
-         ((setq window (get-buffer-window buffer))
-          (select-window window))
+       ;; if reuse flag is set and if buffer is visible, reuse the window
+       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+        (select-window window))
+       ((setq window (get-buffer-window buffer))
+        (select-window window))
+       ;; return first window with purpose matching an element from `purpose-list`
+       ;; if `purpose-list` contains multiple matched elements, return window of the
+       ;; matched element from the list.
+       ((setq window (cl-some (lambda (purpose) (+window-with-purpose purpose)) purpose-list))
+        (set-window-buffer window buffer))
+       (t (user-error "Unable to find window with the requested purpose")))
 
-         ((setq window (get-buffer-window buffer))
-          (select-window window))
+      (if (plist-get plist :select)
+          (select-window window)
+        (select-window caller-window)))))
 
-         ((setq window (cl-some (lambda (purpose) (+window-with-purpose purpose t)) purpose-list))
-          (set-window-buffer window buffer)
-          (select-window window))
-
-         (t (user-error "No window matching items in purpose list"))))
-
-       ((plist-get plist :same)
-        (display-buffer-same-window buffer alist))
-       ))))
-
-(defun +wm-display-in-mru-main-window (buffer &optional alist plist)
+(defun +display-buffer-in-mru-main-window (buffer &optional alist plist)
   "Select the most recently used main window for BUFFER.
 ALIST is an association list of action symbols and values.
 PLIST is custom shackle parameters list."
-  )
+  (unless (plist-get plist :ignore)
+    (let* ((caller-window (selected-window))
+           window)
+      (cond
+       ;; if reuse flag is set and if buffer is visible, reuse the window
+       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+        (select-window window))
+       ((setq window (util/window-get-mru-in-main))
+        (set-window-buffer window buffer))
+       (t (user-error "Unable to get main window")))
+
+      (if (plist-get plist :select)
+          (select-window window)
+        (select-window caller-window)))))
+
+(defun +display-buffer-in-lru-main-window (buffer &optional alist plist)
+  "Select the least recently used main window for BUFFER.
+ALIST is an association list of action symbols and values.
+PLIST is custom shackle parameters list."
+  (unless (plist-get plist :ignore)
+    (let* ((caller-window (selected-window))
+           window)
+      (cond
+       ;; if reuse flag is set and if buffer is visible, reuse the window
+       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+        (select-window window))
+       ((setq window (util/window-get-lru-in-main))
+        (set-window-buffer window buffer))
+       (t (user-error "Unable to get main window")))
+
+      (if (plist-get plist :select)
+          (select-window window)
+        (select-window caller-window)))))
 
 (provide 'lib-window-extras)
 
-;;; lib-window-extra.el ends here
+;;; lib-window-extras.el ends here
