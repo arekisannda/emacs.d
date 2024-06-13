@@ -3,6 +3,7 @@
 
 ;;; Code:
 (require 'util-helpers)
+(require 'util-windows)
 
 ;; posframe handlers
 ;; 1.  `posframe-poshandler-frame-center'
@@ -25,7 +26,7 @@
 ;; 18. `posframe-poshandler-point-bottom-left-corner-upward'
 ;; 19. `posframe-poshandler-point-window-center'
 ;; 20. `posframe-poshandler-point-frame-center'
-(use-package posframe)
+(use-package posframe :demand t)
 
 (use-package transient :ensure t
   :custom
@@ -43,22 +44,16 @@
 (use-package which-key
   :custom
   (which-key-sort-order 'which-key-key-order)
-  (which-key-show-prefix 'top)
-  (which-key-popup-type 'minibuffer)
-  ;; (which-key-side-window-slot 0)
-  ;; (which-key-popup-type 'side-window)
-  ;; (which-key-side-window-location 'left)
-  ;; (which-key-side-window-location 'bottom)
+  (which-key-show-prefix 'echo)
+  (which-key-side-window-slot 0)
+  (which-key-popup-type 'side-window)
+  (which-key-side-window-location 'bottom)
   :hook
   (elpaca-after-init . which-key-mode))
 
-(use-package which-key-posframe :after which-key :disabled
+(use-package which-key-posframe
   :custom
   (which-key-posframe-poshandler #'posframe-poshandler-frame-bottom-left-corner)
-  (which-key-posframe-parameters
-   `((min-width . ,(frame-width))
-     (left-fringe . 10)
-     (right-fringe . 10)))
   :hook
   (which-key-mode . which-key-posframe-mode))
 
@@ -151,7 +146,29 @@
    'window-setup-hook)
   (util/if-daemon-run-after-make-frame-else-add-hook
    (+ace-window-configure-fonts)
-   'window-setup-hook))
+   'window-setup-hook)
+
+  (setq aw-dispatch-alist
+        '((?x aw-delete-window "Delete Window")
+          (?m aw-swap-window "Swap Windows")
+          (?M aw-move-window "Move Window")
+          (?c aw-copy-window "Copy Window")
+          (?j aw-switch-buffer-in-window "Select Buffer")
+          (?\\ aw-flip-window)
+          (?F aw-split-window-fair "Split Fair Window")
+          (?v aw-split-window-vert "Split Vert Window")
+          (?b aw-split-window-horz "Split Horz Window")
+          (?? aw-show-dispatch-help)))
+
+  (defun +window-check-aw-ignored-p (orig-func &rest args)
+    ;; Ignore side-windows or popup-windows
+    (let ((window (nth 0 args)))
+      (cond
+       ((util/window-side-p window) t)
+       ((util/window-popup-p window) t)
+       (t (apply orig-func args)))))
+
+  (advice-add #'aw-ignored-p :around #'+window-check-aw-ignored-p))
 
 (use-package dashboard :after nerd-icons
   :preface
@@ -286,7 +303,7 @@
                                  (tag-node-closed . treemacs-toggle-node-prefer-tag-visit)
                                  (tag-node . treemacs-visit-node-in-most-recently-used-window)))
   :config
-  (defun +treemacs--popup-window ()
+  (defun +treemacs--popup-window-override ()
     "Pop up a side window and buffer for treemacs."
     (let ((buf (treemacs-get-local-buffer-create)))
       (display-buffer buf
@@ -304,7 +321,7 @@
                            (dedicated . t))))
       (select-window (get-buffer-window buf))))
 
-  (advice-add #'treemacs--popup-window :override #'+treemacs--popup-window))
+  (advice-add #'treemacs--popup-window :override #'+treemacs--popup-window-override))
 
 (use-package treemacs-nerd-icons :after treemacs
   :config

@@ -13,25 +13,44 @@
     (setq files (vertico-sort-history-length-alpha files))
     (nconc (seq-filter (lambda (x) (string-suffix-p "/" x)) files)
            (seq-remove (lambda (x) (string-suffix-p "/" x)) files)))
+
+  (defun +vertico-add-options (command options)
+    (append `(,command
+              posframe)
+            options
+            '((vertico-posframe-fallback-mode . vertico-buffer-mode))))
+
   :custom
   (savehist-file (expand-file-name "var/savehist" user-emacs-directory))
   (vertico-multiform-commands
-   `((find-file (vertico-sort-override-function . vertico-sort-alpha))
-     (project-switch-project (vertico-sort-override-function . +vertico-sort-directories-first))
-     (project-kill-buffers (vertico-sort-override-function . +vertico-sort-directories-first))
-     (project-find-file (vertico-sort-override-function . +vertico-sort-directories-first))
-     (project-find-dir (vertico-sort-override-function . +vertico-sort-directories-first))
-     (project-forget-project (vertico-sort-override-function . +vertico-sort-directories-first))
-     (project-forget-project-under (vertico-sort-override-function . +vertico-sort-directories-first))
-     (describe-symbol (vertico-sort-override-function . vertico-sort-alpha))))
+   `(,(+vertico-add-options #'find-file
+                            '((vertico-sort-override-function . vertico-sort-alpha)))
+     ,(+vertico-add-options #'project-switch-project
+                            '((vertico-sort-override-function . +vertico-sort-directories-first)))
+     ,(+vertico-add-options #'project-kill-buffers
+                            '((vertico-sort-override-function . +vertico-sort-directories-first)))
+     ,(+vertico-add-options #'project-find-file
+                            '((vertico-sort-override-function . +vertico-sort-directories-first)))
+     ,(+vertico-add-options #'project-find-dir
+                            '((vertico-sort-override-function . +vertico-sort-directories-first)))
+     ,(+vertico-add-options #'project-forget-project
+                            '((vertico-sort-override-function . +vertico-sort-directories-first)))
+     ,(+vertico-add-options #'project-forget-project-under
+                            '((vertico-sort-override-function . +vertico-sort-directories-first)))
+     ,(+vertico-add-options #'describe-symbol
+                            '((vertico-sort-override-function . vertico-sort-alpha)))
+     (t posframe)))
 
   (vertico-multiform-categories
-   `((file (vertico-sort-override-function . +vertico-sort-directories-first))
-     (consult-grep buffer (vertico-buffer-display-action . (display-buffer-same-window)))))
+   `((file (vertico-sort-override-function . +vertico-sort-directories-first))))
   :hook
   (elpaca-after-init . vertico-mode)
   (vertico-mode . vertico-multiform-mode)
   (vertico-mode . savehist-mode))
+
+(use-package vertico-posframe :after vertico)
+;; :hook
+;; (vertico-mode . vertico-posframe-mode))
 
 (use-package marginalia :after vertico
   :hook

@@ -5,10 +5,45 @@
 (require 'util-helpers)
 
 (use-package emacs
+  :after (posframe which-key-posframe vertico-posframe transient-posframe easy-color-faces)
   :ensure nil
-  ;; :diminish auto-revert-mode
   :custom
-  (display-line-numbers-type 'relative)
+  (vertico-count 20)
+  (vertico-posframe-width nil)
+  (vertico-posframe-min-width 120)
+  (vertico-posframe-min-height nil)
+  :config
+  (defun +emacs-setup-posframe-parameters ()
+    (setq vertico-posframe-width 120)
+    (setq vertico-posframe-min-width 120)
+    (setq vertico-posframe-min-height nil)
+    (setq vertico-posframe-parameters
+          `((max-width . 200)
+            (max-height . 20)
+            (left-fringe . nil)
+            (right-fringe . nil)
+            (background-color . ,(easy-color-darken (face-background 'default) 5))))
+
+    (setq transient-posframe-parameters
+          `((left-fringe . nil)
+            (right-fringe . nil)
+            (background-color . ,(easy-color-darken (face-background 'default) 5))))
+
+    (setq which-key-posframe-parameters
+          `((min-width . ,(frame-pixel-width))
+            (min-height . 20)
+            (left-fringe . nil)
+            (right-fringe . nil)
+            (background-color . ,(easy-color-darken (face-background 'default) 5))))
+    )
+
+  (util/if-daemon-run-after-make-frame-else-add-hook
+   (+emacs-setup-posframe-parameters)
+   'window-setup-hook))
+
+(use-package emacs
+  :ensure nil
+  ;;:diminish auto-revert-mode
   :preface
   (defun +emacs-tuning-configurations ()
     ;; performance tuning
