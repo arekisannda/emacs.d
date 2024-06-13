@@ -38,6 +38,9 @@
 (general-create-definer +keybinds-editor-fold
   :prefix-command '+keybinds-editor--fold-command)
 
+(general-create-definer +keybinds-editor-view
+  :prefix-command '+keybinds-editor--view-command)
+
 (general-create-definer +keybinds-editor-fold-treesit
   :prefix-command '+keybinds-editor--fold-treesit-command)
 
@@ -52,7 +55,8 @@
 
 (+keybinds-global :states '(normal visual emacs motion)
   "C-SPC" (general-predicate-dispatch nil
-            (derived-mode-p 'prog-mode) '("lsp" . +keybinds-editor--lsp-command)))
+            (derived-mode-p 'prog-mode)
+            '("lsp"              . +keybinds-editor--lsp-command)))
 
 (+keybinds-editor-lsp
   "!"   '("syntax check"         . +keybinds-editor--syntax-check-command)
@@ -72,25 +76,33 @@
   "i"   '("input method"         . +keybinds-editor--input-command)
   "m"   '("motion"               . +keybinds-editor--motion-command)
   "t"   '("translate"            . +keybinds-editor--translate-command)
+  "v"   '("view"                 . +keybinds-editor--view-command)
 
-  "o"   (general-predicate-dispatch nil
-          (treesit-fold-ready-p)          '("fold"       . +keybinds-editor--fold-treesit-command)
-          t                               '("fold"       . +keybinds-editor--fold-command))
+  "f"   (general-predicate-dispatch nil
+          (treesit-fold-ready-p)
+          '("fold"               . +keybinds-editor--fold-treesit-command)
+          t
+          '("fold"               . +keybinds-editor--fold-command))
 
   ","   (general-predicate-dispatch nil
-          (derived-mode-p 'org-mode)      '("org edit"   . +keybinds-org-mode--edit-command)
-          t                               '("edit"       . +keybinds-editor--text-edit-command))
+          (derived-mode-p 'org-mode)
+          '("org edit"           . +keybinds-org-mode--edit-command)
+          t
+          '("edit"               . +keybinds-editor--text-edit-command))
 
   "C-." (general-predicate-dispatch nil
-          (derived-mode-p 'org-mode)      '("org exec"   . +keybinds-org-mode--exec-command)
-          (derived-mode-p 'typst-ts-mode) '("typst exec" . +keybinds-typst-mode--exec-command)
-          t                               '("exec"       . +keybinds-editor--exec-command)))
+          (derived-mode-p 'org-mode)
+          '("org exec"           . +keybinds-org-mode--exec-command)
+          (derived-mode-p         'typst-ts-mode)
+          '("typst exec"         . +keybinds-typst-mode--exec-command)
+          t
+          '("exec"               . +keybinds-editor--exec-command)))
 
 (+keybinds-editor-exec
   "C-," '("embark act"           . embark-act))
 
 (+keybinds-editor-text-edit
-  "!"   '("fix typo"             . ispell-word)
+  "!"   '("fix typo"             . flyspell-correct-word-before-point)
   "+"   '("sort lines"           . sort-lines)
   "="   '("indent"               . util/indent-buffer)
 
@@ -124,9 +136,12 @@
   "x"   '("snipe til next"       . evil-snipe-x)
   "X"   '("snipe til prev"       . evil-snipe-X)
 
-  "b"   '("line to bottom"       . evil-scroll-line-to-bottom)
-  "m"   '("line to center"       . evil-scroll-line-to-center)
-  "t"   '("line to top"          . evil-scroll-line-to-top))
+  "b"   `("line to bottom-ish"   . ,(+keybinds--scroll-line-to 90))
+  "B"   '("line to bottom"       . evil-scroll-line-to-bottom)
+  "m"   `("line to center-ish"   . ,(+keybinds--scroll-line-to 25))
+  "M"   '("line to center"       . evil-scroll-line-to-center)
+  "t"   `("line to top-ish"      . ,(+keybinds--scroll-line-to 10))
+  "T"   '("line to top"          . evil-scroll-line-to-top))
 
 (+keybinds-editor-fold
   "!"   '("hide fold level"      . hs-hide-level)
@@ -138,9 +153,9 @@
 
   "c"   '("hide fold"            . hs-hide-block)
   "C"   '("hide fold all"        . hs-hide-all)
-  "X"   '("show fold all"        . hs-show-all)
-  "x"   '("show fold"            . hs-show-block)
-  "o"   '("toggle fold"          . hs-toggle-hiding))
+  "O"   '("show fold all"        . hs-show-all)
+  "o"   '("show fold"            . hs-show-block)
+  "f"   '("toggle fold"          . hs-toggle-hiding))
 
 (+keybinds-editor-fold-treesit
   "!"   '("open recursively"     . treesit-fold-open-recursively)
@@ -152,9 +167,16 @@
 
   "c"   '("hide fold"            . treesit-fold-close)
   "C"   '("hide fold all"        . treesit-fold-close-all)
-  "X"   '("show fold all"        . treesit-fold-open-all)
-  "x"   '("show fold"            . treesit-fold-open)
-  "o"   '("toggle fold"          . treesit-fold-toggle))
+  "O"   '("show fold all"        . treesit-fold-open-all)
+  "o"   '("show fold"            . treesit-fold-open)
+  "f"   '("toggle fold"          . treesit-fold-toggle))
+
+(+keybinds-editor-view
+  "F" '("narrow function"        . narrow-to-defun)
+  "R" '("narrow region"          . narrow-to-region)
+  "w" '("widen"                  . widen)
+  "c" '("clone"                  . clone-indirect-buffer)
+  "C" '("clone in other"         . clone-indirect-buffer-other-window))
 
 (+keybinds-editor-syntax-check
   "!"   '("check error"          . flycheck-display-error-at-point)

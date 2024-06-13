@@ -45,7 +45,6 @@
 (+keybinds-session
   "C-\\" '("tools"               . +keybinds-session--tools-command)
   "b"    '("buffers"             . +keybinds-session--buffer-command)
-  "d"    '("debugger"            . +keybinds-session--debugger-command)
   "m"    '("modes"               . +keybinds-session--mode-command)
   "w"    '("workspace"           . +keybinds-session--workspace-command)
   "t"    '("tabs"                . +keybinds-session--tabs-command)
@@ -53,11 +52,17 @@
   "a"    '("agenda"              . +keybinds-session--agenda-command)
   "!"    '("flycheck"            . +keybinds-session--flycheck-command)
 
-  "C-|"  '("toggle side window"  . window-toggle-side-windows)
+  "C-d"  (general-predicate-dispatch  nil
+           (derived-mode-p 'emacs-lisp-mode)
+           '("ert"  . ert)
+           t
+           '("dape" . +keybinds-session--debugger-command))
 
   "C-q"  (general-predicate-dispatch nil
-           (equal (+keybinds--current-workspace) "leetcode") '("leetcode" . +keybinds-code--leetcode-command)
-           (equal (+keybinds--current-workspace) "exercism") '("exercism" . +keybinds-code--exercism-command)))
+           (equal (+keybinds--current-workspace) "leetcode")
+           '("leetcode" . +keybinds-code--leetcode-command)
+           (equal (+keybinds--current-workspace) "exercism")
+           '("exercism" . +keybinds-code--exercism-command)))
 
 (+keybinds-session-agenda
   "a"    `("agenda"              . ,(+keybinds--org-agenda "a"))

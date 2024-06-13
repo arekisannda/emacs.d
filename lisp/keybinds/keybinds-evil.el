@@ -39,6 +39,12 @@
   "[ h"      '("prev help"       . +hydra-help-motion/help-go-back)
   "] h"      '("prev help"       . +hydra-help-motion/help-go-forward))
 
+
+(+keybinds-evil evil-insert-state-map
+  "C-<return>" (general-predicate-dispatch nil
+                 (derived-mode-p 'prog-mode) #'default-indent-new-line
+                 (derived-mode-p 'org-mode)  #'org-insert-heading-respect-content))
+
 (+keybinds-evil evil-emacs-state-map
   "<escape>" (general-predicate-dispatch #'keyboard-quit
                (derived-mode-p 'vterm-mode) #'vterm--self-insert)

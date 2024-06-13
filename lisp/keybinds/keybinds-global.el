@@ -12,6 +12,7 @@
   "<escape> <escape>"
   "<escape> <escape> <escape>"
   "C-<tab>"
+  "C-M-i"
   "C-S-<tab>"
   "C-S-<iso-lefttab>"
   "C-M-\\"
@@ -22,6 +23,22 @@
       (list dashboard-mode-map))
 
 (general-create-definer +keybinds-global)
+
+(general-define-key
+ :states         '(normal visual emacs motion)
+ :prefix-map     '+keybinds-window--map
+ :prefix         "M-/"
+ :global-prefix  "M-/")
+
+(general-create-definer +keybinds-window
+  :keymaps '+keybinds-window--map)
+
+(+keybinds-window
+  "M-/"         '("select main"         . +keybinds--select-mru-main-window)
+  "h"           '("select treemacs"     . treemacs-select-window)
+  "l"           '("select right"        . +window-select-right-side-window)
+  "j"           '("select bottom"       . +window-select-bottom-side-window)
+  "k"           '("ace-window"          . ace-window))
 
 (+keybinds-global help-map
   "g"           '("Emacs Docs"          . +keybinds--emacs-doc))
@@ -34,15 +51,15 @@
 
   "M-["         '("prev tab"            . tab-previous)
   "M-]"         '("next tab"            . tab-next)
-  "M-\\"        '("ace-window"          . ace-window)
+
+  "C-S-c"       '("copy"                . kill-ring-save)
+  "C-S-x"       '("cut"                 . kill-region)
+  "C-S-v"       '("paste"               . yank)
+
+  "C-/"         '("ace-window"          . ace-window)
   "M-0"         '("focus treemacs"      . treemacs-select-window)
-
-  "<Copy>"      '("copy"                . kill-ring-save)
-  "<Cut>"       '("cut"                 . kill-region)
-  "<Paste>"     '("paste"               . yank)
-
-  "M-/"         '("toggle project term" . multi-vterm-project)
-  "M-?"         '("side window toggle"  . +wm-toggle-side-windows)
+  "M-DEL"       '("focus right"         . +window-select-right-side-window)
+  "M-\\"        '("focus bottom"        . +window-select-bottom-side-window)
   "M-<"         '("popper prev"         . +popper-cycle-backwards)
   "M->"         '("popper next"         . +popper-cycle))
 
@@ -62,9 +79,12 @@
   "C-<prior>"   '("scroll up"           . +keybinds--scroll-up)
   "C-<next>"    '("scroll down"         . +keybinds--scroll-down)
 
-  "M-<prior>"   '("owindow scroll up"   . +keybinds--scroll-other-up)
-  "M-<next>"    '("owindow scroll down" . +keybinds--scroll-other-down)
-  "M-:"         '("eval"                . eval-expression))
+  "C-/"           '("ace-window"          . ace-window)
+  "M-0"           '("focus treemacs"      . treemacs-select-window)
+  "M-<backspace>" '("toggle right"        . +window-toggle-right-side-window)
+  "M-<prior>"     '("owindow scroll up"   . +keybinds--scroll-other-up)
+  "M-<next>"      '("owindow scroll down" . +keybinds--scroll-other-down)
+  "M-:"           '("eval"                . eval-expression))
 
 (+keybinds-global minibuffer-local-map
   "M-<prior>"   '("owindow scroll up"   . +keybinds--minibuffer-scroll-other-up)
@@ -94,7 +114,8 @@
   "o"           '("embark-ace file"     . +vertico-embark-ace-find-file))
 
 (+keybinds-global embark-buffer-map
-  "o"           '("embark-ace buffer"   . +vertico-embark-ace-switch-to-buffer))
+  "o"           '("embark-ace buffer"   . +vertico-embark-ace-switch-to-buffer)
+  "C-c"         '("clone buffer"        . +embark-clone-indirect-buffer))
 
 (+keybinds-global embark-bookmark-map
   "o"           '("embark-ace bookmark" . +vertico-embark-ace-bookmark-jump))

@@ -41,7 +41,7 @@
   "C-M-S-<return>" #'org-insert-todo-subheading)
 
 (+keybinds-org-mode-edit
-  "!"   '("fix typo"           . ispell-word)
+  "!"   '("fix typo"           . flyspell-correct-word-before-point)
 
   ","   '("toggle checkbox"    . org-toggle-checkbox)
   "*"   '("cycle bullet"       . org-cycle-list-bullet)

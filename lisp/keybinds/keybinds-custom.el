@@ -152,9 +152,22 @@
        (other-window 1)))
 
   (defmacro +keybinds--org-agenda (key)
-    `(lambda ()
+    `(defun ,(intern (concat "+org-agenda-list-key-" key)) ()
        (interactive)
        (org-agenda nil ,key)))
+
+  (defmacro +keybinds--scroll-line-to (ppt)
+    `(defun ,(intern (format "+keybinds--scroll-line-to-%d-ppt" ppt)) ()
+       ,(format "Scroll current to %d%% of window" ppt)
+       (interactive)
+       (when-let* ((buffer-height (count-lines (point-min) (point-max)))
+                   (_ (> buffer-height (window-height)))
+                   (window-ppt (/ ,ppt 100.0))
+                   (window-start-line (line-number-at-pos (window-start)))
+                   (target-line (+ window-start-line (ceiling (* (window-height) window-ppt))))
+                   (current-line (line-number-at-pos))
+                   (scroll-count (- target-line current-line)))
+         (scroll-down-line scroll-count))))
   )
 
 (defun +keybinds--org-scratch-buffer ()
@@ -164,6 +177,19 @@
     (with-current-buffer buffer
       (org-mode))
     (display-buffer buffer)))
+
+(defun +keybinds--select-mru-main-window ()
+  "Select most recently used main window."
+  (interactive)
+  (select-window (util/window-get-mru-in-main)))
+
+(defun +embark-clone-indirect-buffer (buffer)
+  "Embark clone BUFFER."
+  (interactive "sClone buffer: ")
+  (with-demoted-errors "%s"
+    (with-current-buffer (get-buffer buffer)
+      (call-interactively #'clone-indirect-buffer))))
+
 (provide 'keybinds-custom)
 
 ;;; keybinds-custom.el ends here
