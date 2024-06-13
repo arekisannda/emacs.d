@@ -6,7 +6,7 @@
 (require 'hydra)
 
 (defhydra +hydra-text-scale
-  (:foreign-key exti :exit nil :timeout nil)
+  (:foreign-key exit :exit nil :timeout nil)
   "text scale"
   ("+" #'text-scale-increase "increase")
   ("-" #'text-scale-decrease "decrease"))

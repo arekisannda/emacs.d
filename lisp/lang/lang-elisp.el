@@ -9,8 +9,7 @@
   (defun +lang-elisp-exec-on-save ()
     "Operations to be executed on buffer save."
     (delete-trailing-whitespace)
-    (untabify (point-min) (point-max))
-    (util/indent-buffer))
+    (untabify (point-min) (point-max)))
 
   (defun +lang-elisp-setup ()
     "Setup to run for `emacs-lisp-mode` major-modes."
