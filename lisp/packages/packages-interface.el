@@ -62,6 +62,50 @@
   :hook
   (which-key-mode . which-key-posframe-mode))
 
+(use-package flycheck
+  :custom
+  (flycheck-indication-mode nil)
+  (flycheck-mode-line nil)
+  (flycheck-display-errors-delay 3600.0)
+  (flycheck-display-errors-function 'ignore)
+  (flycheck-check-syntax-automatically '(save))
+  (flycheck-auto-display-errors-after-checking nil)
+  :hook
+  (elpaca-after-init . global-flycheck-mode))
+
+(use-package flycheck-posframe :after (flycheck easy-color-faces)
+  :custom
+  (flycheck-posframe-border-width 1)
+  :custom-face
+  (flycheck-posframe-border-face
+   ((t (:foreground ,easy-color-white
+                    :background unspecified))))
+  :config
+  (defun flycheck-posframe-show-posframe (errors)
+    "Display ERRORS, using posframe.el library."
+    (posframe-hide flycheck-posframe-buffer)
+    (when (and errors
+               (not (run-hook-with-args-until-success 'flycheck-posframe-inhibit-functions)))
+      (let ((poshandler (intern (format "posframe-poshandler-%s" flycheck-posframe-position))))
+        (unless (functionp poshandler)
+          (setq poshandler nil))
+        (flycheck-posframe-check-position)
+        (posframe-show
+         flycheck-posframe-buffer
+         :string (flycheck-posframe-format-errors errors)
+         :background-color (face-background 'flycheck-posframe-background-face nil t)
+         :position (point)
+         :internal-border-width flycheck-posframe-border-width
+         :internal-border-color (face-foreground (if flycheck-posframe-border-use-error-face
+                                                     (flycheck-posframe-highest-error-level-face errors)
+                                                   'flycheck-posframe-border-face) nil t)
+         :poshandler poshandler
+         :hidehandler #'flycheck-posframe-hidehandler))))
+  :hook
+  (elpaca-after-init . flycheck-posframe-configure-pretty-defaults)
+  (flycheck-mode . flycheck-posframe-mode))
+
+
 (use-package disable-mouse :demand t
   :diminish disable-mouse-mode
   :config
@@ -70,7 +114,7 @@
 (use-package editorconfig :demand t
   :config
   (setq editorconfig-lisp-use-default-indent t)
-  (editorconfig-mode))
+  (editorconfig-mode t))
 
 (use-package nerd-icons)
 

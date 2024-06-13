@@ -39,6 +39,9 @@
 (general-create-definer +keybinds-session-agenda
   :prefix-command '+keybinds-session--agenda-command)
 
+(general-create-definer +keybinds-session-flycheck
+  :prefix-command '+keybinds-session--flycheck-command)
+
 (+keybinds-session
   "C-\\" '("tools"               . +keybinds-session--tools-command)
   "b"    '("buffers"             . +keybinds-session--buffer-command)
@@ -48,6 +51,7 @@
   "t"    '("tabs"                . +keybinds-session--tabs-command)
   "v"    '("terminal"            . +keybinds-session--term-command)
   "a"    '("agenda"              . +keybinds-session--agenda-command)
+  "!"    '("flycheck"            . +keybinds-session--flycheck-command)
 
   "C-|"  '("toggle side window"  . window-toggle-side-windows)
 
@@ -59,6 +63,9 @@
   "a"    `("agenda"              . ,(+keybinds--org-agenda "a"))
   "n"    `("Next View"           . ,(+keybinds--org-agenda "n"))
   "t"    `("Todo View"           . ,(+keybinds--org-agenda "t")))
+
+(+keybinds-session-flycheck
+  "l"     '("list errors"        . flycheck-list-errors))
 
 (+keybinds-session-term
   "v"    '("toggle project term" . multi-vterm-project)

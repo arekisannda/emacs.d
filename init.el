@@ -35,7 +35,6 @@
 (require 'packages-vertico)
 
 (require 'packages-vc)
-(require 'packages-flycheck)
 (require 'packages-eglot)
 (require 'packages-dape)
 (require 'packages-yasnippet)
