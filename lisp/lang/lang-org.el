@@ -34,6 +34,7 @@
     (valign-mode t)
     (+lang-org-mode-font))
   :hook
+  (org-mode . embrace-org-mode-hook)
   (org-mode . +lang-org-mode-setup))
 
 (use-package emacs

@@ -12,8 +12,12 @@
   :custom
   (valign-fancy-bar t))
 
-(use-package org
+(use-package org :after easy-color-faces
   :ensure nil
+  :preface
+  (defun +org-set-window-size-fixed ()
+    (setq-local window-size-fixed 'width))
+
   :custom
   (org-startup-with-inline-images t)
   (org-image-actual-width nil)
@@ -34,6 +38,16 @@
   (org-fontify-done-headline t)
   (org-fontify-quote-and-verse-blocks t)
 
+  (org-todo-keywords
+   '((sequence "TODO" "PENDING" "CANCELLED" "DONE" )))
+
+  (org-todo-keyword-faces
+   `(("TODO" . (nil :inherit easy-color-faces-red-d :weight bold))
+     ("PENDING" . (nil :inherit easy-color-faces-orange-d :weight bold))
+     ("CANCELLED" . (nil :inherit easy-color-faces-yellow-d :weight bold))
+     ("DONE" . (nil :inherit easy-color-faces-gray-l :weight bold))))
+
+  (org-agenda-window-setup 'current-window)
   (org-agenda-tags-column 0)
   (org-agenda-block-separator ?─)
   (org-agenda-time-grid '((daily today require-timed)
@@ -55,6 +69,9 @@
   (org-agenda-files '("~/agenda/date"
                       "~/agenda/project"
                       "~/agenda/work"))
+
+  :hook
+  (org-agenda-mode . +org-set-window-size-fixed)
 
   :config
   (dolist (face `((org-level-1 . 1.30)
@@ -100,6 +117,9 @@
 (use-package org-modern :after org
   :custom
   (org-modern-table nil)
+  (org-modern-timestamp nil)
+  (org-modern-todo nil)
+  (org-modern-todo-faces nil)
   (org-modern-star "○")
   (org-modern-replace-stars "○")
   (org-modern-internal-target '(" ↪ " t " "))
