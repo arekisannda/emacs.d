@@ -51,16 +51,6 @@
     (setq-default gc-cons-threshold packages/emacs-gc-cons-threshold)
     (setq-default read-process-output-max (* 1024 1024)))
 
-  (defun +emacs-configurations ()
-    (setq-default window-resize-pixelwise t)
-    (setq-default frame-resize-pixelwise t)
-    (setq-default hscroll-step 5)
-    (setq-default scroll-step 5)
-    (setq-default tab-width 4)
-    (setq-default tab-bar-separator "")
-    (setq-default fringe-indicator-alist nil)
-    (fringe-mode nil))
-
   (defcustom +emacs-read-only-prefixes-list
     (list (expand-file-name elpaca-directory)
           (expand-file-name package-user-dir)
@@ -69,13 +59,16 @@
     :group 'convenience
     :type '(list :element-type string))
 
+  (defun +emacs-set-read-only ()
+    (read-only-mode 1)
+    (evil-motion-state t))
+
   (defun +emacs-set-read-only-by-prefix ()
     "Enable `read-only-mode` if buffer includes one of `+emacs-read-only-prefixes-list`."
     (when (and buffer-file-name
                (cl-loop for prefix in +emacs-read-only-prefixes-list
                         thereis (string-prefix-p prefix buffer-file-name)))
-      (read-only-mode 1)
-      (evil-motion-state t)))
+      (+emacs-set-read-only)))
 
   (defun +emacs-set-visual-line-mode ()
     "Setup to run for non `prog-mode` major modes."
@@ -96,14 +89,21 @@
                    (y-or-n-p (format "Directory %s does not exist; Create it?" dir)))
           (make-directory dir t)))))
 
+  (defun +emacs-message-buffer-setup ()
+    (visual-line-mode t)
+    (follow-mode t))
+
+  :custom
+  (display-line-numbers-type 'relative)
   :hook
+  (clone-indirect-buffer . +emacs-set-read-only)
+  (messages-buffer-mode . +emacs-message-buffer-setup)
   (find-file . +emacs-set-read-only-by-prefix)
   (help-mode . +emacs-set-visual-line-mode)
   (elpaca-after-init . (lambda () (load custom-file 'noerror)))
   (minibuffer-setup . +emacs-minibuffer-setup)
   (minibuffer-exit . +emacs-minibuffer-exit)
   (window-setup . +emacs-tuning-configurations)
-  (emacs-startup . +emacs-configurations)
   (before-save . +emacs-create-directory-on-save))
 
 (provide 'packages-emacs)
