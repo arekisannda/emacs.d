@@ -35,7 +35,7 @@
 
   (defun +lang-sh-setup ()
     "Setup to run for sh major modes."
-    (setq sh-basic-offset 2)
+    (setq-local sh-basic-offset 2)
     (valign-mode 1))
   :hook
   (prog-mode . +lang-prog-mode-setup)

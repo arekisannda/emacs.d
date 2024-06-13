@@ -46,6 +46,7 @@
 (require 'packages-code)
 (require 'packages-emacs)
 
+(require 'lang-whitespace)
 (require 'lang-generic)
 (require 'lang-elisp)
 (require 'lang-org)
@@ -56,7 +57,6 @@
 (require 'lang-lua)
 (require 'lang-python)
 (require 'lang-rust)
-(require 'lang-whitespace)
 
 (elpaca-wait)
 
