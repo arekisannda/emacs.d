@@ -4,7 +4,9 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package treemacs-perspective :after (treemacs perspective) :defer)
+(use-package treemacs-perspective :after (treemacs perspective)
+  :ensure t)
+
 (use-package perspective :after treemacs
   :custom
   (persp-show-modestring nil)
@@ -24,11 +26,7 @@
     (with-mutex +perspective-save-mutex
       (dolist (persp (persp-names))
         (with-perspective persp
-          (when terminated
-            (walk-windows
-             (lambda (window)
-               (if (window-parameter window 'window-side)
-                   (delete-window window)))))
+          (when terminated (+window-kill-non-main-windows))
           (ext-tab-bar-persp-mode-update)
           (persist-save 'ext-tab-bar-persp-mode-hash)))
       (persp-state-save persp-state-default-file)))
