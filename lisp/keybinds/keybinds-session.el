@@ -76,7 +76,9 @@
   "p"    '("package try"         . elpaca-try)
   "P"    '("package manager"     . elpaca-manager)
   "f"    '("ranger buffer"       . ranger)
-  "s"    '("scratch buffer"      . scratch-buffer)
+  "s"    '("persp scratch"       . persp-switch-to-scratch-buffer)
+  "S"    '("scratch"             . scratch-buffer)
+  "O"    '("org scratch"         . +keybinds--org-scratch-buffer)
 
   "m"    '("magit"               . magit)
   "M"    '("list repositories"   . magit-list-repositories)
@@ -105,6 +107,7 @@
 
 (+keybinds-session-buffer
   "l"    '("list buffers"        . +ibuffer-list)
+  "b"    '("bury buffer"         . bury-buffer)
   "k"    '("kill buffer"         . kill-this-buffer)
   "K"    '("kill buffer by name" . kill-buffer)
   "r"    '("revert buffer"       . revert-buffer))

@@ -157,6 +157,13 @@
        (org-agenda nil ,key)))
   )
 
+(defun +keybinds--org-scratch-buffer ()
+  "Open a new scratch buffer in Org mode."
+  (interactive)
+  (let ((buffer (get-buffer-create "*org-scratch*")))
+    (with-current-buffer buffer
+      (org-mode))
+    (display-buffer buffer)))
 (provide 'keybinds-custom)
 
 ;;; keybinds-custom.el ends here

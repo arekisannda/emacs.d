@@ -62,6 +62,11 @@
    'emacs-startup-hook)
   (run-with-timer (* 30 60) t #'+perspective-save-async)
   :config
+  (defun +persp-switch-to-scratch-buffer ()
+    (interactive)
+    (display-buffer (persp-get-scratch-buffer)))
+  (advice-add #'persp-switch-to-scratch-buffer :override #'+persp-switch-to-scratch-buffer)
+
   (defun +persp--state-frame-data ()
     (cl-loop for frame in (frame-list)
              if (and (not (equal "initial_terminal" (terminal-name frame)))
