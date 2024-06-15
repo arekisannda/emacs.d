@@ -14,7 +14,7 @@
 
 (use-package undo-fu :after diminish)
 
-(use-package llama)
+(use-package llama :ensure t)
 
 (use-package epkg :after llama)
 
@@ -40,6 +40,8 @@
 (use-package persist :ensure t)
 
 (use-package ov :ensure t)
+
+(use-package jsonrpc :ensure t)
 
 (use-package ext-tab-bar
   :ensure (:host github :repo "arekisannda/ext-tab-bar")

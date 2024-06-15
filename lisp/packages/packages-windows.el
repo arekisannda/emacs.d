@@ -10,6 +10,8 @@
         comint-mode
         eshell-mode
         term-mode
+        elpaca-log-mode
+        log4e-mode
         messages-buffer-mode
         xref--xref-buffer-mode
         grep-mode
@@ -32,7 +34,6 @@
 (setq +wm-right-rule-list
       '(elpaca-manager-mode
         elpaca-ui-mode
-        elpaca-log-mode
         elpaca-info-mode
         magit-status-mode
         magit-repolist-mode
