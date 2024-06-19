@@ -25,6 +25,7 @@
 
 (setq +wm-bottom-side-rule-list
       '(backtrace-mode
+        "*Org Links*"
         "*diff-hl*"
         "*diff-hl-show-hunk-diff-buffer*"
         "*diff-hl-show-hunk-buffer*"
@@ -146,7 +147,7 @@
 
      (outline-mode
       :custom +dynamic-display-buffer
-      :static (:action +display-buffer-in-mru-main-window :select t)
+      :static (:mru t :select t)
       :dynamic
       ((org-agenda-mode
         :if (lambda () org-agenda-follow-mode)
