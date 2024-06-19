@@ -73,6 +73,7 @@
 (+keybinds-org-mode-exec
   "t"   '("typst toggle"       . org-typst-preview)
   "C-t" '("typst render"       . +org-typst-preview-render)
+  "l"   '("org-link toggle"    . org-toggle-link-display)
 
   "!"   '("toggle modern mode" . org-modern-mode))
 

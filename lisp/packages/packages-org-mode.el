@@ -68,7 +68,8 @@
 
   (org-agenda-files '("~/agenda/date"
                       "~/agenda/project"
-                      "~/agenda/work"))
+                      "~/agenda/work"
+                      "~/agenda/general"))
 
   :hook
   (org-agenda-mode . +org-set-window-size-fixed)
