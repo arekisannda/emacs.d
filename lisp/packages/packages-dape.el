@@ -4,6 +4,7 @@
 ;;; Code:
 
 (use-package dape
+  :after jsonrpc
   :preface
   (setq dape-key-prefix nil))
 

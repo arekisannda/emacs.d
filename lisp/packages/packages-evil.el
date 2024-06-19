@@ -3,15 +3,14 @@
 
 ;;; Code:
 
-(setq-default evil-respect-visual-line-mode t)
+(setq-default evil-respect-visual-line-mode t
+              evil-want-keybinding nil
+              evil-want-minibuffer nil)
 (use-package evil :after undo-fu
   :custom
   (evil-want-integration t)
-  (evil-want-keybinding nil)
   (evil-default-state 'normal)
-  (evil-want-keybinding nil)
   (evil-undo-system 'undo-fu)
-  (evil-want-minibuffer nil)
 
   (evil-emacs-state-modes
    (delete-dups
@@ -22,6 +21,7 @@
               special-mode
               dap-ui-breakpoints-ui-list-mode
               calc-mode
+              comint-mode
               calculator-mode
               calendar-mode
               eglot-list-connections-mode
@@ -58,7 +58,7 @@
      ediff))
   :diminish evil-collection-unimpaired-mode
   :hook
-  (elpaca-after-init . evil-collection-init))
+  (evil-mode . evil-collection-init))
 
 (use-package evil-nerd-commenter :after evil)
 

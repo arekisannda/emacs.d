@@ -42,7 +42,7 @@
              (message "Treesit parser installed: %s" lang))))
 
 (use-package treesit-fold
-  :elpaca (treesit-fold :type git :host github :repo "abougouffa/treesit-fold"))
+  :ensure (treesit-fold :type git :host github :repo "abougouffa/treesit-fold"))
 
 (provide 'packages-treesit)
 

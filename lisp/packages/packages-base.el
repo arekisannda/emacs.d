@@ -14,7 +14,8 @@
 
 (use-package undo-fu :after diminish)
 
-(use-package llama :ensure t)
+(use-package llama
+  :ensure (:tag "v0.3.1"))
 
 (use-package epkg :after llama)
 
@@ -41,7 +42,10 @@
 
 (use-package ov :ensure t)
 
-(use-package jsonrpc :ensure t)
+(use-package jsonrpc
+  :ensure t
+  :config
+  (fset #'jsonrpc--log-event #'ignore))
 
 (use-package ext-tab-bar
   :ensure (:host github :repo "arekisannda/ext-tab-bar")
