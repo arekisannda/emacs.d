@@ -1,11 +1,15 @@
-;;; packages-yasnippet.el --- YASnippet Package Configurations  -*- lexical-binding: t; -*-
+;;; packages-snippets.el --- Snippet/Template Packages Configurations  -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
 
 (use-package yasnippet
+  :custom-face
+  (yas-field-highlight-face
+   ((nil :inherit region)))
   :hook
-  (elpaca-after-init . yas-global-mode))
+  (elpaca-after-init . yas-global-mode)
+  :diminish yas-minor-mode)
 
 (use-package yasnippet-snippets :after yasnippet
   :config
@@ -14,6 +18,6 @@
       (add-to-list 'yas-snippet-dirs dir)
       (yas--load-snippet-dirs))))
 
-(provide 'packages-yasnippet)
+(provide 'packages-snippets)
 
-;;; packages-yasnippet.el ends here
+;;; packages-snippets.el ends here

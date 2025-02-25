@@ -1,9 +1,9 @@
-;;; packages-ispell.el --- Emacs Ispell Package Configurations-*- lexical-binding: t; -*-
+;;; packages-writing.el --- Writing package configurations  -*- lexical-binding: t; -*-
 ;;; Commentary:
 
 ;;; Code:
 
-(use-package emacs
+(use-package ispell
   :ensure nil
   :custom
   (ispell-complete-word-dict
@@ -65,6 +65,20 @@ Also position fit window to BUFFER and select it."
   :init
   (advice-add #'ispell-display-buffer :override #'+ispell-display-buffer-override))
 
-(provide 'packages-ispell)
 
-;;; packages-ispell.el ends here
+(use-package google-translate
+  :custom
+  (google-translate-default-source-language "en")
+  :config
+  (require 'google-translate-smooth-ui)
+  (google-translate--setup-minibuffer-keymap)
+  (setq google-translate-translation-directions-alist
+        '(("ja" . "en") ("en" . "ja") )))
+
+(use-package migemo :disabled)
+
+(use-package powerthesaurus)
+
+(provide 'packages-writing)
+
+;;; packages-writing.el ends here

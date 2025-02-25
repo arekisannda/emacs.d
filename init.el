@@ -2,70 +2,61 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'cl-lib)
 
 ;; (profiler-start 'cpu+mem)
 
+(use-package doom-themes
+  :config
+  (load-theme 'doom-monokai-pro t))
+
+(elpaca-wait)
+
+(require 'cl-lib)
+
+;; load configuration files
+(defvar +user-config-dir (expand-file-name "~/.config"))
+(defvar +user-packages-dir (expand-file-name "lisp/packages" user-emacs-directory))
+(setq custom-file (expand-file-name "custom.el.gpg" user-emacs-directory))
+(load custom-file 'noerror)
 (defun +recursive-load-path (path)
-  "Recursively load subdirectories in PATH."
-  (let* ((path (expand-file-name path user-emacs-directory))
-         (local-pkgs (mapcar 'file-name-directory
-                             (directory-files-recursively path"\\.el$"))))
-    (if (file-accessible-directory-p path)
-        (mapc (apply-partially 'add-to-list 'load-path) local-pkgs))))
+  "Recursively load sub-directories in PATH."
+  (if (file-regular-p path)
+      (load path)
+    (let* ((path (expand-file-name path user-emacs-directory))
+           (local-pkgs (mapcar 'file-name-directory
+                               (directory-files-recursively path"\\.el$"))))
+      (if (file-accessible-directory-p path)
+          (mapc (apply-partially #'add-to-list 'load-path) local-pkgs)))))
 
 (dolist (path '("lisp"))
   (+recursive-load-path path))
 
-(require 'lib-window-extras)
-(require 'lib-layouts)
+(defun eldoc-fancy (arg)
+  "`eldoc' the echo area by default and a prefix will swap to a buffer.
+ARG arguments."
+  (interactive "P")
+  (let ((eldoc-display-functions
+          (if arg '(eldoc-display-in-buffer) '(eldoc-display-in-echo-area))))
+    (eldoc t)))
 
-(require 'packages-manager)
+;; enable configurations
 (require 'packages-base)
-(require 'packages-treesit)
-(require 'packages-hs-mode)
-(require 'packages-themes)
 (require 'packages-interface)
-(require 'packages-evil)
-(require 'packages-vterm)
-(require 'packages-project)
+(require 'packages-utils)
+(require 'packages-writing)
 (require 'packages-windows)
-(require 'packages-perspective)
-(require 'packages-corfu)
-(require 'packages-vertico)
-
-(require 'packages-vc)
-(require 'packages-eglot)
-(require 'packages-dape)
-(require 'packages-yasnippet)
+(require 'packages-tools)
+(require 'packages-completion)
+(require 'packages-lsp)
 (require 'packages-latex)
 (require 'packages-org-mode)
-(require 'packages-typst)
-(require 'packages-japanese)
-(require 'packages-ispell)
+(require 'packages-snippets)
+(require 'packages-dashboard)
 (require 'packages-code)
+(require 'packages-dape)
+
+(require 'packages-modes)
 (require 'packages-emacs)
-
-(require 'lang-whitespace)
-(require 'lang-generic)
-(require 'lang-elisp)
-(require 'lang-org)
-(require 'lang-clang)
-(require 'lang-csharp)
-(require 'lang-go)
-(require 'lang-kotlin)
-(require 'lang-lua)
-(require 'lang-python)
-(require 'lang-rust)
-
-(elpaca-wait)
-
-(require 'keybinds-global)
-(require 'keybinds-evil)
-(require 'keybinds-session)
-(require 'keybinds-editor)
-(require 'keybinds-search)
-(require 'keybinds-completion)
 
 (provide 'config/init)
 

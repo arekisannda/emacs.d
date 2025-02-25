@@ -4,15 +4,23 @@
 ;;; Code:
 (require 'hideshow)
 
+(defun util/read-file-to-string (file)
+  "Read entire content of FILE to string."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (buffer-string)))
+
 (defun util/dedup-add-to-list (list-var element &optional append compare-fn)
   "Add ELEMENT to LIST-VAR without creating duplicates."
   (unless (member element (symbol-value list-var))
     (add-to-list list-var element append compare-fn)))
 
-(defun util/update-alist (alist element value)
-  "Overwrite or create ELEMENT with VALUE in ALIST."
-  (setq alist (assoc-delete-all element alist))
-  (setq alist (cons (cons element value) alist)))
+(defun util/update-alist (orig-alist overwrite-alist)
+  "Overwrite or create ORIG-ALIST with values from OVERWRITE-ALIST."
+  (cl-loop for (element . value) in overwrite-alist do
+           (setf (symbol-value orig-alist)
+                 (cons (cons element value)
+                       (assoc-delete-all element (symbol-value orig-alist))))))
 
 (defun util/alist-contains-value (alist value)
   "Check if ALIST contain VALUE."
@@ -43,19 +51,10 @@
   (save-excursion
     (indent-region (point-min) (point-max))))
 
-(eval-when-compile
-  (defmacro util/if-daemon-run-after-make-frame-else-add-hook (fn alt-hook)
-    `(if (daemonp)
-         (add-hook 'after-make-frame-functions
-                   (lambda (frame) (with-selected-frame frame ,fn)))
-       (add-hook ,alt-hook (lambda () ,fn))))
-
-  (defmacro util/if-daemon-run-after-make-frame-else-run (fn)
-    `(if (daemonp)
-         (add-hook 'after-make-frame-functions
-                   (lambda (frame) (with-selected-frame frame ,fn)))
-       ,fn))
-  )
+(defmacro util/custom-faces (&rest faces)
+  "Customize FACES."
+  `(mapc (lambda (spec) (apply #'face-spec-set spec))
+         (backquote ,faces)))
 
 (provide 'util-helpers)
 

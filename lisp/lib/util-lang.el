@@ -5,12 +5,6 @@
 (require 'cl-lib)
 (require 'util-helpers)
 
-(defun util/lang--remap-major-mode (overwrite-alist)
-  "Update `major-mode-remap-alist` with OVERWRITE-ALIST."
-  (cl-loop for (mode . rmode) in overwrite-alist do
-           (setq major-mode-remap-alist
-                 (util/update-alist major-mode-remap-alist mode rmode))))
-
 (defun util/lang--set-auto-mode (mode-alist)
   "Update `auto-mode-alist` with MODE-ALIST."
   (cl-loop for mode in mode-alist do

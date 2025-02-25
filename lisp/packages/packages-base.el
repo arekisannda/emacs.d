@@ -2,20 +2,19 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'util-helpers)
+(require 'lib-buffer-extras)
 
-(use-package aio :demand t)
+(use-package aio)
 
-(use-package shut-up :demand t)
+(use-package shut-up)
 
-(use-package no-littering :demand t)
+(use-package no-littering)
 
-(use-package diminish :demand t)
+(use-package diminish)
 
-(use-package undo-fu :after diminish)
+(use-package undo-fu)
 
-(use-package llama
-  :ensure (:tag "v0.3.1"))
+(use-package llama)
 
 (use-package epkg :after llama)
 
@@ -25,73 +24,156 @@
   :init
   (setq hydra-key-doc-function nil))
 
-(defun +elpaca-unload-seq (e)
-  (and (featurep 'seq) (unload-feature 'seq t))
-  (elpaca--continue-build e))
+(use-package compat)
 
-(defun +elpaca-seq-build-steps ()
-  (append (butlast (if (file-exists-p (expand-file-name "seq" elpaca-builds-directory))
-                       elpaca--pre-built-steps elpaca-build-steps))
-          (list '+elpaca-unload-seq 'elpaca--activate-package)))
+(use-package persist)
 
-(use-package seq :ensure `(seq :build ,(+elpaca-seq-build-steps)))
+(use-package ov)
 
-(use-package compat :ensure t)
+(setq-default evil-respect-visual-line-mode t
+              evil-want-keybinding nil
+              evil-want-minibuffer nil)
 
-(use-package persist :ensure t)
-
-(use-package ov :ensure t)
-
-(use-package jsonrpc
-  :ensure t
-  :config
-  (fset #'jsonrpc--log-event #'ignore))
-
-(use-package ext-tab-bar
-  :ensure (:host github :repo "arekisannda/ext-tab-bar")
-  :preface
-  (defun +ext-tab-bar-name-format (tab i)
-    (let ((current-p (eq (car tab) 'current-tab)))
-      (propertize
-       (concat (if tab-bar-tab-hints (format " %d " i) " ")
-               (truncate-string-to-width
-                (alist-get 'name tab)
-                tab-bar-tab-name-truncated-max nil nil
-                tab-bar-tab-name-ellipsis)
-               (or (and tab-bar-close-button-show
-                        (not (eq tab-bar-close-button-show
-                                 (if current-p 'non-selected 'selected)))
-                        tab-bar-close-button)
-                   ""))
-       'face (funcall tab-bar-tab-face-function tab))))
+(use-package evil :after undo-fu
   :custom
-  (tab-bar-tab-name-format-function #'+ext-tab-bar-name-format)
-  (tab-bar-close-button-show nil)
-  (tab-bar-new-button-show nil)
-  (tab-bar-tab-name-truncated-max 60)
-  (tab-bar-auto-width t)
-  (tab-bar-auto-width-max '(400 60))
-  (tab-bar-auto-width-min '(100 15))
-  (tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
-  (ext-tab-bar-project-disable-paths (list (expand-file-name elpaca-directory)
-                                           (expand-file-name package-user-dir)))
+  (evil-want-integration t)
+  (evil-default-state 'normal)
+  (evil-undo-system 'undo-fu)
+  (+buffer-scroll-left-function #'evil-scroll-column-left)
+  (+buffer-scroll-right-function #'evil-scroll-column-right)
+  (+buffer-scroll-up-function #'evil-scroll-line-up)
+  (+buffer-scroll-down-function #'evil-scroll-line-down)
   :config
-  (util/if-daemon-run-after-make-frame-else-add-hook
-   (ext-tab-bar-mode)
-   'window-setup-hook))
+  (setq evil-emacs-state-modes
+        (delete-dups
+         (append '(vterm-mode
+                   ranger-mode
+                   elpaca-ui-mode
+                   message-mode
+                   special-mode
+                   dap-ui-breakpoints-ui-list-mode
+                   calc-mode
+                   comint-mode
+                   calculator-mode
+                   calendar-mode
+                   eglot-list-connections-mode
+                   inferior-python-mode
+                   eshell-mode)
+                 evil-emacs-state-modes)))
+  (setq evil-motion-state-modes
+        '(apropos-mode
+          color-theme-mode
+          command-history-mode
+          compilation-mode
+          dictionary-mode
+          ert-results-mode
+          help-mode
+          Info-mode
+          Man-mode
+          speedbar-mode
+          undo-tree-visualizer-mode
+          woman-mode))
+  :hook
+  (elpaca-after-init . evil-mode))
 
-(use-package indent-bars :disabled
-  :elpaca (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
+(use-package evil-collection :after evil
   :custom
-  (indent-bars-treesit-support t)
-  (indent-bars-treesit-ignore-blank-lines-types '("module")))
+  (evil-collection-mode-list
+   '(info
+     dired
+     ibuffer
+     magit
+     edebug
+     org
+     org-roam
+     ediff))
+  :diminish evil-collection-unimpaired-mode
+  :hook
+  (evil-mode . evil-collection-init))
 
-(use-package emacs
-  :ensure nil
+(use-package evil-nerd-commenter :after evil)
+
+(use-package evil-args :after evil)
+
+(use-package evil-snipe :after evil
   :custom
-  (auth-source-pass-filename "~/.password-store/auth")
+  (evil-snipe-enable-highlight t)
+  :hook
+  (evil-mode . evil-snipe-mode))
+
+(use-package evil-easymotion :after evil)
+
+(use-package evil-matchit :after evil
+  :hook
+  (evil-mode . global-evil-matchit-mode))
+
+(use-package evil-lion :after evil
+  :custom
+  (evil-lion-squeeze-spaces t)
+  (evil-lion-left-align-key nil)
+  (evil-lion-right-align-key nil)
+  :hook
+  (evil-mode . evil-lion-mode))
+
+(use-package evil-mc :after evil
+  :init
+  (setq evil-mc-cursors-map (make-sparse-keymap)
+        evil-mc-key-map (make-sparse-keymap))
+  :hook
+  (evil-mode . global-evil-mc-mode))
+
+(use-package embrace
+  :init
+  (setq embrace-show-help-p t)
   :config
-  (auth-source-pass-enable))
+  (defun +embrace-with-org-block ()
+    (let ((block-type (completing-read
+                       "Org block type: "
+                       '(center comment example export justifyleft justifyright
+                                quote src verse))))
+      (cond ((string= block-type "src")
+             (cons
+              (concat (format "#+begin_src %s"
+                              (completing-read "Language: "
+                                               (embrace--get-org-src-block-modes)))
+                      (let ((args (read-string "Arguments: ")))
+                        (unless (string= args "")
+                          (format " %s" args))))
+              "#+end_src"))
+            ((string= block-type "export")
+             (cons (format "#+begin_export %s"
+                           (completing-read "Format: "
+                                            '(ascii beamer html latex texinfo)))
+                   "#+end_export"))
+            (t
+             (setq block-type (downcase block-type))
+             (cons (format "#+begin_%s" block-type)
+                   (format "#+end_%s" block-type))))))
+
+  (defun +embrace-org-mode-hook ()
+    (dolist (lst '((?= "=" . "=")
+                   (?~ "~" . "~")
+                   (?/ "/" . "/")
+                   (?* "*" . "*")
+                   (?_ "_" . "_")
+                   (?+ "+" . "+")
+                   (?k "@@html:<kbd>@@" . "@@html:</kbd>@@")))
+      (embrace-add-pair (car lst) (cadr lst) (cddr lst)))
+    (embrace-add-pair-regexp ?l "#\\+begin_.*" "#\\+end_.*" 'embrace-with-org-block
+                             (embrace-build-help "#+begin_*" "#+end") t))
+  (advice-add #'embrace-with-org-block :override #'+embrace-with-org-block)
+  (advice-add #'embrace-org-mode-hook :override #'+embrace-org-mode-hook)
+  )
+
+(use-package editorconfig
+  :config
+  (setq editorconfig-lisp-use-default-indent t)
+  (editorconfig-mode t)
+  :diminish editorconfig-mode)
+
+(use-package nerd-icons
+  :custom
+  (nerd-icons-font-family "SauceCodePro Nerd Font Mono"))
 
 (provide 'packages-base)
 

@@ -129,19 +129,22 @@ a buffer object, or a function."
      ((eq side-window init-window)
       ;; if selected window is the right side-window
       ;; (util/window-with-parameters-delete parameters)
+      ;; alternative last selected window
+      ;; (-if-let (mru-window (get-mru-window (selected-frame) nil :not-selected))
+      ;;     (select-window mru-window)))
       (select-window (util/window-get-mru-in-main)))
 
      (side-window (select-window side-window))
 
      ((functionp init-buffer)
-      (select-buffer (funcall init-buffer)))
+      (select-window (get-buffer-window (funcall init-buffer))))
 
      ((bufferp init-buffer)
       (display-buffer init-buffer)
       (select-window (get-buffer-window init-buffer)))
 
      ((stringp init-buffer)
-      (select-buffer (get-buffer-create init-buffer)))
+      (select-window (get-buffer-create init-buffer)))
      )))
 
 (provide 'util-windows)

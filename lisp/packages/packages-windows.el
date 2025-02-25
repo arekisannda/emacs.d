@@ -5,6 +5,9 @@
 (require 'cl-lib)
 (require 'lib-window-extras)
 
+(setq +wm-ignore-list
+      '("*Capture*"))
+
 (setq +wm-bottom-rule-list
       '(vterm-mode
         comint-mode
@@ -17,11 +20,13 @@
         grep-mode
         occur-mode
         compilation-mode
-        "*remark-notes*"))
+        org-roam-mode
+        flycheck-error-list-mode
+        "*Org Select*"
+        "*remark-notes*"
+        "*Error*"))
 
-(setq +wm-bottom-rule-list-regex
-      '("^\\*Google Translate.*\\*$"
-        "^ \\*log4e-.*\\*$"))
+(setq +wm-bottom-rule-list-regex '())
 
 (setq +wm-bottom-side-rule-list
       '(backtrace-mode
@@ -36,8 +41,6 @@
       '(elpaca-manager-mode
         elpaca-ui-mode
         elpaca-info-mode
-        magit-status-mode
-        magit-repolist-mode
         Info-mode
         Custom-mode
         apropos-mode
@@ -45,8 +48,11 @@
         ibuffer-mode
         Buffer-menu-mode
         bookmark-bmenu-mode
-        help-mode
         calendar-mode
+        eglot-list-connections-mode
+        magit-status-mode
+        magit-repolist-mode
+        Man-mode
 
         "*info*"
         "*Ibuffer*"
@@ -60,13 +66,14 @@
         "^\\*Org Select\\*$"))
 
 (setq +wm-left-rule-list '())
+
 (setq +wm-left-rule-list-regex '())
 
 (setq +wm-skip-rule-match-list
       '(treemacs-mode
         ("^ \\*Treemacs.*\\*$" :regexp t)))
 
-(setq +wm-right-width 90)
+(setq +wm-right-width 100)
 (setq +wm-left-width 35)
 (setq +wm-bottom-height 20)
 
@@ -80,24 +87,44 @@
            +wm-bottom-rule-list))
   (shackle-default-rule nil)
   (shackle-rules
-   `((,+wm-bottom-rule-list
+   `((,+wm-ignore-list :ignore t)
+
+     (,+wm-bottom-rule-list
       :custom +display-buffer-in-popup-window
       :side below :size ,+wm-bottom-height
       :fixed height
+      :quit-restore kill
       :select t)
+
+     (,+wm-bottom-rule-list-regex
+      :custom +display-buffer-in-popup-window
+      :side below :size ,+wm-bottom-height
+      :fixed height
+      :quit-restore kill
+      :select t
+      :regexp t)
+
+     ((flymake-diagnostics-buffer-mode
+       flymake-project-diagnostics-mode)
+      :custom +display-buffer-in-popup-window
+      :side below :size ,+wm-bottom-height
+      :quit-restore kill
+      :fixed height)
 
      (,+wm-bottom-side-rule-list
       :custom +display-buffer-in-side-window
       :side bottom :slot 0
+      :fixed height
       :select t)
 
      (,+wm-left-rule-list
       :custom +display-buffer-in-side-window
-      :side left :slot 1 :size ,+wm-left-width)
+      :side left :slot 0 :size ,+wm-left-width
+      :select t)
 
      (,+wm-left-rule-list-regex
       :custom +display-buffer-in-side-window
-      :side left :slot 1 :size ,+wm-left-width
+      :side left :slot 0 :size ,+wm-left-width
       :regexp t)
 
      (,+wm-right-rule-list
@@ -113,6 +140,17 @@
       :select t
       :regexp t)
 
+     (help-mode
+      :custom +display-buffer-in-side-window
+      :side right :slot 0 :size ,+wm-right-width
+      :fixed width)
+
+     ("^\\*eldoc.*\\*"
+      :custom +display-buffer-in-side-window
+      :side right :slot 0 :size ,+wm-right-width
+      :fixed width
+      :regexp t)
+
      (magit-diff-mode
       :custom +display-buffer-in-side-window
       :side right :slot 1 :size ,+wm-right-width
@@ -126,11 +164,13 @@
       :side right :slot 1 :size ,+wm-right-width
       :fixed width)
 
-     (prog-mode
+     ((prog-mode
+       conf-mode)
       :custom +dynamic-display-buffer
       :static (:mru t :select t)
       :dynamic
-      ((help-mode
+      (((help-mode
+         prog-mode)
         :action +display-buffer-in-side-window
         :side right :slot 1 :size ,+wm-right-width
         :fixed width
@@ -154,7 +194,8 @@
         :action +display-buffer-in-side-window
         :side right :slot 1 :size ,+wm-right-width
         :fixed width
-        :select t)))
+        :select t)
+       (org-roam-mode :mru t :select t)))
      ))
   :config
   (defun +shackle-condition-ignore-check (orig-func &rest args)
@@ -176,28 +217,6 @@
   ;; add `shackle-mode` guard to prevent adding duplicates in
   ;; `display-buffer-alist`
   (unless shackle-mode (shackle-mode t)))
-
-(use-package emacs :after telephone-line
-  :ensure nil
-  :config
-  (telephone-line-defsegment* +telepohone-line-buffer-dedicated-tag-segment ()
-    (if (window-dedicated-p nil) "" ""))
-
-  (setq telephone-line-lhs
-        '((evil   . (+telepohone-line-buffer-dedicated-tag-segment
-                     telephone-line-evil-tag-segment))
-          (accent . (telephone-line-vc-segment
-                     telephone-line-erc-modified-channels-segment
-                     telephone-line-process-segment))
-          (nil    . (telephone-line-projectile-segment
-                     telephone-line-buffer-segment))))
-
-  (setq telephone-line-rhs
-        '((nil    . (telephone-line-flycheck-segment
-                     telephone-line-misc-info-segment))
-          (accent . (telephone-line-major-mode-segment))
-          (evil   . (telephone-line-airline-position-segment)))
-        ))
 
 (provide 'packages-windows)
 

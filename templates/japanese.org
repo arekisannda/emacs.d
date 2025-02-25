@@ -1,0 +1,10 @@
+# -*- eval: (+org-table-set-height :japanese) -*-
+:PROPERTIES:
+:ID: ${id}
+:HEADER-ARGS: :eval no
+:END:
+:SETTINGS:
+#+startup: showall
+:END:
+#+title: ${title}
+#+filetags: :japanese:%^{Tags}:

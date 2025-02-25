@@ -5,43 +5,6 @@
 (require 'util-helpers)
 
 (use-package emacs
-  :after (posframe which-key-posframe vertico-posframe transient-posframe easy-color-faces)
-  :ensure nil
-  :custom
-  (vertico-count 20)
-  (vertico-posframe-width nil)
-  (vertico-posframe-min-width 120)
-  (vertico-posframe-min-height nil)
-  :config
-  (defun +emacs-setup-posframe-parameters ()
-    (setq vertico-posframe-width 120)
-    (setq vertico-posframe-min-width 120)
-    (setq vertico-posframe-min-height nil)
-    (setq vertico-posframe-parameters
-          `((max-width . 200)
-            (max-height . 20)
-            (left-fringe . nil)
-            (right-fringe . nil)
-            (background-color . ,(easy-color-darken (face-background 'default) 5))))
-
-    (setq transient-posframe-parameters
-          `((left-fringe . nil)
-            (right-fringe . nil)
-            (background-color . ,(easy-color-darken (face-background 'default) 5))))
-
-    (setq which-key-posframe-parameters
-          `((min-width . ,(frame-pixel-width))
-            (min-height . 20)
-            (left-fringe . nil)
-            (right-fringe . nil)
-            (background-color . ,(easy-color-darken (face-background 'default) 5))))
-    )
-
-  (util/if-daemon-run-after-make-frame-else-add-hook
-   (+emacs-setup-posframe-parameters)
-   'window-setup-hook))
-
-(use-package emacs
   :ensure nil
   ;;:diminish auto-revert-mode
   :preface
@@ -51,10 +14,10 @@
     (setq-default gc-cons-threshold packages/emacs-gc-cons-threshold)
     (setq-default read-process-output-max (* 1024 1024)))
 
-  (defcustom +emacs-read-only-prefixes-list
-    (list (expand-file-name elpaca-directory)
-          (expand-file-name package-user-dir)
-          "/usr/share/emacs/")
+  (defcustom +emacs-read-only-rules
+    (list (format "^%s" (expand-file-name elpaca-directory))
+          (format "^%s" (expand-file-name package-user-dir))
+          "^/usr/share/emacs/")
     "List of read-only file prefixes."
     :group 'convenience
     :type '(list :element-type string))
@@ -63,23 +26,19 @@
     (read-only-mode 1)
     (evil-motion-state t))
 
-  (defun +emacs-set-read-only-by-prefix ()
-    "Enable `read-only-mode` if buffer includes one of `+emacs-read-only-prefixes-list`."
+  (defun +emacs-set-read-only-by-rules ()
+    "Enable `read-only-mode` if buffer matches one of `+emacs-read-only-rules`."
     (when (and buffer-file-name
-               (cl-loop for prefix in +emacs-read-only-prefixes-list
-                        thereis (string-prefix-p prefix buffer-file-name)))
+               (cl-loop for rule in +emacs-read-only-rules
+                        thereis (string-match-p rule buffer-file-name)))
       (+emacs-set-read-only)))
 
-  (defun +emacs-set-visual-line-mode ()
-    "Setup to run for non `prog-mode` major modes."
-    (setq truncate-lines nil)
-    (visual-line-mode 1)
-    (visual-fill-column-mode 1))
-
   (defun +emacs-minibuffer-setup ()
-    (setq gc-cons-threshold most-positive-fixnum))
+    (setq gc-cons-threshold most-positive-fixnum)
+    (marginalia-mode +1))
 
   (defun +emacs-minibuffer-exit ()
+    (marginalia-mode -1)
     (setq gc-cons-threshold packages/emacs-gc-cons-threshold))
 
   (defun +emacs-create-directory-on-save ()
@@ -93,17 +52,48 @@
     (visual-line-mode t)
     (follow-mode t))
 
+  (defun +emacs-open-docs ()
+    "Goto https://emacsdocs.org."
+    (interactive)
+    (browse-url "https://emacsdocs.org"))
+
+  (defun +emacs-ro-clone-indirect-buffer ()
+    (interactive)
+    (let ((clone (call-interactively #'clone-indirect-buffer)))
+      (with-current-buffer clone
+        (+emacs-set-read-only))))
+
+  (defun +embark-clone-indirect-buffer (buffer)
+    "Embark clone BUFFER."
+    (interactive "sClone buffer: ")
+    (with-demoted-errors "%s"
+      (with-current-buffer (get-buffer buffer)
+        (call-interactively #'+emacs-ro-clone-indirect-buffer))))
+
+  (defun +emacs-dedicated-frame-exit-after (&rest r)
+    (when (frame-parameter nil '+dedicated-frame) (delete-frame nil nil)))
+  (advice-add #'kill-current-buffer  :after #'+emacs-dedicated-frame-exit-after)
+  (advice-add #'org-capture-finalize :after #'+emacs-dedicated-frame-exit-after)
+  (advice-add #'org-capture-kill     :after #'+emacs-dedicated-frame-exit-after)
+
+  (defun +emacs-load-keybinds ()
+    (org-babel-load-file (expand-file-name "keybinds.org" user-emacs-directory)))
+
   :custom
+  (read-quoted-char-radix 16)
   (display-line-numbers-type 'relative)
+  (minibuffer-message-clear-timeout 0)
+  (+emacs-read-only-rules
+   (append +emacs-read-only-rules
+           '("/node_modules/"
+             "/vendor/")))
   :hook
-  (clone-indirect-buffer . +emacs-set-read-only)
+  (find-file . +emacs-set-read-only-by-rules)
   (messages-buffer-mode . +emacs-message-buffer-setup)
-  (find-file . +emacs-set-read-only-by-prefix)
-  (help-mode . +emacs-set-visual-line-mode)
-  (elpaca-after-init . (lambda () (load custom-file 'noerror)))
   (minibuffer-setup . +emacs-minibuffer-setup)
   (minibuffer-exit . +emacs-minibuffer-exit)
-  (window-setup . +emacs-tuning-configurations)
+  (emacs-startup . +emacs-load-keybinds)
+  (elpaca-after-init . +emacs-tuning-configurations)
   (before-save . +emacs-create-directory-on-save))
 
 (provide 'packages-emacs)

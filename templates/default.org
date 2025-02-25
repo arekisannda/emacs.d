@@ -1,0 +1,9 @@
+:PROPERTIES:
+:ID: ${id}
+:HEADER-ARGS: :eval no
+:END:
+:SETTINGS:
+#+startup: showall
+:END:
+#+title: ${title}
+#+filetags: :%^{Tags}:

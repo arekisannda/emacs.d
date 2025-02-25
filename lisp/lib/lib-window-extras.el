@@ -64,27 +64,16 @@ If NOSELECT is nil, select and return window."
   :group 'window
   :group 'convenience)
 
-(defun +window-toggle-right-side-window ()
-  "Toggle right side-window."
-  (interactive)
-  (util/window-toggle-window '((window-side . right))
-                             +window-init-right-side-window-function))
-
 (defun +window-select-right-side-window (&optional prefix)
-  "Select right side-window.
+  "Toggle right side-window.
 
 With double-prefix PREFIX \\[universal-argument], delete right side windows."
   (interactive "p")
   (let ((params '((window-side . right))))
     (pcase prefix
       (16 (util/window-with-parameters-delete params))
-      (_ (select-window (util/window-with-parameters params nil t))))))
-
-(defun +window-toggle-bottom-side-window ()
-  "Toggle bottom side-window."
-  (interactive)
-  (util/window-toggle-window '((window-popup . below))
-                             +window-init-bottom-side-window-function))
+      (_ (util/window-toggle-window params
+                                    +window-init-right-side-window-function)))))
 
 (defun +window-select-bottom-side-window (&optional prefix)
   "Select bottom side-window.
@@ -94,7 +83,8 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
   (let ((params '((window-popup . below))))
     (pcase prefix
       (16 (util/window-with-parameters-delete params))
-      (_ (select-window (util/window-with-parameters params nil t))))))
+      (_ (util/window-toggle-window params
+                                    +window-init-bottom-side-window-function)))))
 
 (defun +window-kill-non-main-windows ()
   "Kill side windows and pop up windows."
@@ -117,6 +107,7 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
     (let* ((side (plist-get plist :side))
            (size (plist-get plist :size))
            (fixed (plist-get plist :fixed))
+           (quit-restore (plist-get plist :quit-restore))
            (init-window (selected-window))
            state
            parameters
@@ -139,6 +130,7 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
       (when (plist-get plist :disable-modeline)
         (set-window-parameter window 'mode-line-format 'none))
 
+      (set-window-parameter window 'quit-restore '(window nil nil nil))
       (set-window-parameter window 'no-delete-other-windows t)
       (set-window-parameter window 'window-popup side)
       (set-window-parameter window 'split-window #'+display-popup-disable-split-window)
@@ -150,13 +142,14 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
 
       (if (plist-get plist :select) window init-window))))
 
-(defun +display-buffer-in-side-window (buffer &optional alist plist) ;
-  "Display buffer in side window according to ALIST and PLIST."
+(defun +display-buffer-in-side-window (buffer &optional alist plist)
+ "Display BUFFER in side window according to ALIST and PLIST."
   (if (plist-get plist :ignore) 'fail
     (let* ((side (plist-get plist :side))
            (slot (plist-get plist :slot))
            (size (plist-get plist :size))
            (fixed (plist-get plist :fixed))
+           (quit-restore (plist-get plist :quit-restore))
            (init-window (selected-window))
            parameters
            window)
@@ -173,15 +166,17 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
               (display-buffer-in-side-window
                buffer
                (append alist
-                       `((dedicated                . ,(plist-get plist :dedicated))
-                         (direction                . ,(plist-get plist :direction))
-                         (side                     . ,side)
-                         (slot                     . ,slot))
+                       `((dedicated . ,(plist-get plist :dedicated))
+                         (direction . ,(plist-get plist :direction))
+                         (side      . ,side)
+                         (slot      . ,slot))
                        (cond
                         ((equal fixed 'height) `((window-height . ,size)))
                         ((equal fixed 'width) `((window-width . ,size)))))))
         (set-window-buffer window buffer))
        (t (user-error "Unable to create side window")))
+
+      (set-window-parameter window 'quit-restore '(window nil nil nil))
 
       (when (plist-get plist :disable-modeline)
         (set-window-parameter window 'mode-line-format 'none))
@@ -449,8 +444,49 @@ ALIST is an association list of action symbols and values."
                    (set-window-parameter best-window 'window-slot slot)
                    (with-current-buffer buffer
                      (setq window--sides-shown t))
-                   (window--display-buffer
+                   (window--display-bufferk
                     buffer best-window 'reuse alist)))))))))
+
+(defun +window-select-mru-main-window ()
+  "Select most recently used main window."
+  (interactive)
+  (select-window (util/window-get-mru-in-main)))
+
+(defmacro +window-one-window-tab-bar-close-tab (&rest body)
+  "Create custom close tab function with BODY."
+  `(lambda ()
+     (interactive)
+     (if (one-window-p)
+         (tab-bar-close-tab)
+       (progn ,@body))))
+
+(defmacro +window-split-focus-other-window (splitfn)
+  "Focus other window after calling SPLITFN."
+  `(lambda ()
+     (interactive)
+     (funcall #',splitfn)
+     (other-window 1)))
+
+(defmacro +window-make-frame-with-params (params &rest body)
+  "Create new frames with PARAMS and run BODY."
+  `(let ((frame (make-frame ,params)))
+     (select-frame-set-input-focus frame)
+     ,@body))
+
+(defmacro +window-select-frame-with-params (params &rest body)
+  "Select frames with PARAMS or create it then run BODY."
+  `(let ((frame (cl-find-if
+                 (lambda (f)
+                   (seq-every-p
+                    (lambda (p)
+                      (eq (frame-parameter f (car p)) (cdr p)))
+                    ,params))
+                 (frame-list))))
+     (if frame
+         (progn
+           (select-frame-set-input-focus frame)
+           ,@body)
+       (+window-make-frame-with-params ,params ,@body))))
 
 (provide 'lib-window-extras)
 

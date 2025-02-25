@@ -2,8 +2,18 @@
 ;;; Commentary:
 
 ;;; Code:
+(defun +latex-setup ()
+  "Setup to run for latex major modes."
+  (shut-up
+    (display-line-numbers-mode 1))
 
-(use-package latex :demand t
+  (util/lang--add-to-capf-list (list #'cape-dabbrev
+                                     #'cape-file
+                                     #'cape-tex
+                                     #'cape-keyword))
+  (flyspell-mode))
+
+(use-package latex
   :ensure
   (auctex :version (lambda (_) (require 'tex-site) AUCTeX-version)
           :files ("*.el" "*.info" "dir" "doc" "etc" "images" "latex" "style")
@@ -17,7 +27,11 @@
   (TeX-master nil)
   (TeX-save-query nil)
   (TeX-auto-save nil)
-  (TeX-parse-self t))
+  (TeX-parse-self t)
+  :hook
+  (latex-mode . +latex-setup)
+  (TeX-mode . +latex-setup)
+  (LaTeX-mode . +latex-setup))
 
 (use-package latex-preview-pane :after latex)
 

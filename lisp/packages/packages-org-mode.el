@@ -2,23 +2,68 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'util-org-mode)
-
-(use-package visual-fill-column
-  :custom
-  (visual-fill-column-width 100))
+(require 'util-strings)
+(require 'util-lang)
 
 (use-package valign
   :custom
   (valign-fancy-bar t))
 
-(use-package org :after easy-color-faces
+(defcustom +org-table-heights '(:japanese 1.5)
+  "Custom table face height for Japanese text."
+  :type '(alist :key-type symbol :value-type number)
+  :group 'org-table
+  :group 'convenience)
+
+(defmacro +org-table-set-height (type)
+  "Helper function to set table font height for TYPE."
+  (progn
+    (face-remap-set-base 'org-table
+                         :inherit 'org-table
+                         :height (plist-get +org-table-heights type))))
+
+(defun +org-mode-setup ()
+  "Setup to run for `org-mode` major modes."
+  ;; (display-line-numbers-mode 1)
+  ;; (setq-local left-margin-width 1)
+  ;; (setq-local right-margin-width 1)
+  (setq-local visual-fill-column 120)
+  (visual-line-mode 1)
+  (visual-fill-column-mode 1)
+  (org-modern-mode 1)
+  (util/lang--add-to-capf-list (list #'cape-dabbrev
+                                     #'cape-file
+                                     #'cape-tex
+                                     #'cape-elisp-block
+                                     #'cape-keyword))
+  ;; (diff-hl-mode 1)
+  (flyspell-mode)
+  (valign-mode t)
+
+  (let ((font-family (org-entry-get (point-min) "font-family" t))
+        (font-height (org-entry-get (point-min) "font-height" t)))
+    (when font-family
+      (setq-local buffer-face-mode-face `(:family ,font-family)))
+    (when font-height
+      (setq-local buffer-face-mode-face `(:height ,(string-to-number font-height))))
+    (buffer-face-mode)))
+
+(defun +org-agenda-configure ()
+  "Org-agenda configuration."
+  (setq-local window-size-fixed 'width))
+
+(defmacro +org-agenda-list-key (key)
+  "Create Org-agenda shortcut functions for KEY."
+  `(defun ,(intern (concat "+org-agenda-list-key-" key)) ()
+     (interactive)
+     (org-agenda nil ,key)))
+
+(use-package org
   :ensure nil
   :preface
-  (defun +org-set-window-size-fixed ()
-    (setq-local window-size-fixed 'width))
-
   :custom
+  (org-use-tag-inheritance nil)
+  (org-link-descriptive t)
   (org-startup-with-inline-images t)
   (org-image-actual-width nil)
   (org-startup-indented t)
@@ -28,6 +73,11 @@
   (org-special-ctrl-a/e t)
   (org-insert-heading-respect-content t)
   (org-cycle-level-faces nil)
+
+  (org-src-preserve-indentation nil)
+  (org-src-window-setup 'current-window)
+  (org-edit-src-persistent-message nil)
+  (org-edit-src-content-indentation 0)
 
   (org-hide-emphasis-markers t)
   (org-pretty-entities t)
@@ -42,10 +92,18 @@
    '((sequence "TODO" "PENDING" "CANCELLED" "DONE" )))
 
   (org-todo-keyword-faces
-   `(("TODO" . (nil :inherit easy-color-faces-red-d :weight bold))
-     ("PENDING" . (nil :inherit easy-color-faces-orange-d :weight bold))
-     ("CANCELLED" . (nil :inherit easy-color-faces-yellow-d :weight bold))
-     ("DONE" . (nil :inherit easy-color-faces-gray-l :weight bold))))
+   `(("TODO" . (nil :inherit default
+                    :weight bold
+                    :foreground ,(doom-darken (doom-color 'red) 0.2)))
+     ("PENDING" . (nil :inherit default
+                       :weight bold
+                       :foreground ,(doom-darken (doom-color 'orange) 0.2)))
+     ("CANCELLED" . (nil :inherit default
+                         :weight bold
+                         :foreground ,(doom-darken (doom-color 'orange) 0.2)))
+     ("DONE" . (nil :inherit default
+                    :weight bold
+                    :foreground ,(doom-lighten (doom-color 'gray) 0.2)))))
 
   (org-agenda-window-setup 'current-window)
   (org-agenda-tags-column 0)
@@ -66,24 +124,33 @@
                                          "acn" "acr" "alg" "glg" "gls" "ist")))
   (org-latex-hyperref-template nil)
 
-  (org-agenda-files '("~/agenda/date"
-                      "~/agenda/project"
-                      "~/agenda/work"
-                      "~/agenda/general"))
-
-  :hook
-  (org-agenda-mode . +org-set-window-size-fixed)
-
+  (org-agenda-files '("~/Agenda/date"
+                      "~/Agenda/project"
+                      "~/Agenda/work"
+                      "~/Agenda/general"))
+  (org-src-block-faces
+   `(("japanese" (:height 1.5 :foreground ,(doom-color 'violet)))))
   :config
-  (dolist (face `((org-level-1 . 1.30)
-                  (org-level-2 . 1.25)
-                  (org-level-3 . 1.20)
-                  (org-level-4 . 1.16)
-                  (org-level-5 . 1.12)
-                  (org-level-6 . 1.08)
-                  (org-level-7 . 1.04)
+  (dolist (face `((org-level-1 . 1.175)
+                  (org-level-2 . 1.150)
+                  (org-level-3 . 1.125)
+                  (org-level-4 . 1.100)
+                  (org-level-5 . 1.075)
+                  (org-level-6 . 1.050)
+                  (org-level-7 . 1.025)
                   (org-level-8 . 1.00)))
-    (set-face-attribute (car face) nil :weight 'regular :height (cdr face))))
+    (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
+  :hook
+  (org-agenda-mode . +org-agenda-configure)
+  (org-mode . +org-mode-setup)
+  (org-mode . embrace-org-mode-hook))
+
+(use-package org-crypt :after org
+  :ensure nil
+  :custom
+  (org-tags-exclude-from-inheritance (quote ("crypt")))
+  :config
+  (org-crypt-use-before-save-magic))
 
 (use-package ob-go)
 
@@ -99,21 +166,50 @@
   :ensure nil
   :custom
   (org-confirm-babel-evaluate nil)
-  (org-babel-load-languages '((C . t)
-                              (awk . t)
-                              (calc . t)
-                              (emacs-lisp . t)
-                              (gnuplot . t)
-                              (go . t)
-                              (js . t)
-                              (kotlin . t)
-                              (plantuml . t)
-                              (python . t)
-                              (rust . t)
-                              (shell . t)
-                              (sql . t)
-                              (sqlite . t)
-                              (typescript . t))))
+  (org-babel-default-header-args:go '((:wrap . "example")))
+  (org-plantuml-exec-mode 'plantuml)
+  :config
+  (util/update-alist
+   'org-babel-load-languages
+   '((C . t)
+     (ba)
+     (awk . t)
+     (calc . t)
+     (emacs-lisp . t)
+     (gnuplot . t)
+     (go . t)
+     (js . t)
+     (cpp . t)
+     (kotlin . t)
+     (plantuml . t)
+     (python . t)
+     (rust . t)
+     (shell . t)
+     (sql . t)
+     (sqlite . t)
+     (typescript . t)))
+
+  (util/update-alist
+   'org-src-lang-modes
+   '(("C"          . c)
+     ("C++"        . c++)
+     ("bash"       . shell)
+     ("cpp"        . c++)
+     ("desktop"    . conf-desktop)
+     ("dot"        . fundamental)
+     ("elisp"      . emacs-lisp)
+     ("go"         . go)
+     ("javascript" . javascript)
+     ("kotlin"     . kotlin)
+     ("ocaml"      . tuareg)
+     ("python"     . python)
+     ("rust"       . rust)
+     ("screen"     . shell-script)
+     ("shell"      . sh)
+     ("sqlite"     . sql)
+     ("toml"       . conf-toml)
+     ("typescript" . typescript)
+     )))
 
 (use-package org-modern :after org
   :custom
@@ -127,32 +223,22 @@
   (org-modern-radio-target '("  " t " "))
   (org-modern-progress '("󰝦" "󰪞" "󰪟" "󰪠" "󰪡" "󰪢" "󰪣" "󰪤" "󰪥"))
   (org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦")))
+  :custom-face
+  (org-checkbox
+   ((nil :box nil
+         :height ,+fonts-fixed-pitch-size)))
+  (org-modern-label
+   ((nil :box (:line-width 5 :style flat-button)
+         :height ,+fonts-fixed-pitch-size)))
   :config
   (global-org-modern-mode 1))
-
-(use-package emacs :after (sonokai-theme org org-modern easy-color-faces)
-  :ensure nil
-  :preface
-  (defun +themes-configure-org-fonts ()
-    (set-face-attribute 'org-checkbox nil
-                        :height +fonts-fixed-pitch-size
-                        :box nil)
-    (set-face-attribute 'org-modern-label nil
-                        :height +fonts-fixed-pitch-size
-                        :box '(:line-width 5 :style flat-button))
-    )
-
-  :init
-  (util/if-daemon-run-after-make-frame-else-add-hook
-   (+themes-configure-org-fonts)
-   'window-setup-hook))
 
 (use-package org-contrib :after org
   :config
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
-(use-package org-super-agenda :after org
+(use-package org-super-agenda
   :custom
   (org-agenda-custom-commands
    '(("n" "Next View"
@@ -201,106 +287,355 @@
   (elpaca-after-init . org-super-agenda-mode))
 
 (use-package org-remark :after org
-  :preface
-  (defun +org-remar-configure-fonts ()
-    (set-face-attribute 'org-remark-highlighter nil
-                        :inherit 'default
-                        :weight 'bold)
-    (set-face-attribute 'org-remark-highlighter-warning nil
-                        :inherit 'easy-color-faces-yellow-d
-                        :weight 'bold))
   :custom
   (org-remark-create-default-pen-set nil)
   (org-remark-notes-file-name ".remarks.org")
   (org-remark-notes-auto-delete :auto-delete)
   (org-remark-notes-buffer-name "*remark-notes*")
   (org-remark-notes-display-buffer-action '())
-  :init
-  (util/if-daemon-run-after-make-frame-else-add-hook
-   (+org-remar-configure-fonts)
-   'window-setup-hook)
+  :custom-face
+  (org-remark-highlighter
+   ((nil :inherit default
+         :weight bold)))
+  (org-remark-highlighter-warning
+   ((nil :inherit default
+         :weight bold
+         :foreground ,(doom-darken (doom-color 'yellow) 0.2))))
   :config
   (org-remark-global-tracking-mode +1)
   (org-remark-line-mode +1)
 
-  (org-remark-create "size-025" (util/org-remark-height-face 0.25))
-  (org-remark-create "size-050" (util/org-remark-height-face 0.50))
-  (org-remark-create "size-075" (util/org-remark-height-face 0.75))
-  (org-remark-create "size-125" (util/org-remark-height-face 1.25))
-  (org-remark-create "size-150" (util/org-remark-height-face 1.50))
-  (org-remark-create "size-175" (util/org-remark-height-face 1.75))
-  (org-remark-create "size-200" (util/org-remark-height-face 2.00))
+  (defmacro +org-remark-height-face (height)
+    `(list t :height ,height))
+
+  (defmacro +org-remark-event-face (color height)
+    `(list t :foreground ,color :height ,height))
+
+  (defmacro +org-remark-highlight-face (color)
+    `(list t :foreground ,color :inverse-video t))
+
+  (defmacro +org-remark-color-face (color)
+    `(list t :foreground ,color))
+
+  (org-remark-create "size-025" (+org-remark-height-face 0.25))
+  (org-remark-create "size-050" (+org-remark-height-face 0.50))
+  (org-remark-create "size-075" (+org-remark-height-face 0.75))
+  (org-remark-create "size-125" (+org-remark-height-face 1.25))
+  (org-remark-create "size-150" (+org-remark-height-face 1.50))
+  (org-remark-create "size-175" (+org-remark-height-face 1.75))
+  (org-remark-create "size-200" (+org-remark-height-face 2.00))
 
   (org-remark-create "warn"
-                     (util/org-remark-event-face
-                      'easy-color-faces-yellow-l
+                     (+org-remark-event-face
+                      (doom-darken (doom-color 'yellow) 0.1)
                       1.25))
   (org-remark-create "error"
-                     (util/org-remark-event-face
-                      'easy-color-faces-red-d
+                     (+org-remark-event-face
+                      (doom-darken (doom-color 'red) 0.1)
                       1.25))
 
   (org-remark-create "hl-yellow"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-yellow-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'yellow) 0.1)))
   (org-remark-create "hl-orange"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-orange-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'orange) 0.1)))
   (org-remark-create "hl-red"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-red-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'red) 0.1)))
   (org-remark-create "hl-magenta"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-magenta-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'magenta) 0.1)))
   (org-remark-create "hl-blue"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-blue-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'dark-blue) 0.1)))
   (org-remark-create "hl-green"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-green-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'green) 0.1)))
   (org-remark-create "hl-cyan"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-cyan-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'blue) 0.1)))
   (org-remark-create "hl-violet"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-violet-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'violet) 0.3)))
   (org-remark-create "hl-purple"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-purple-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'violet) 0.1)))
   (org-remark-create "hl-gray"
-                     (util/org-remark-highlight-face
-                      'easy-color-faces-gray-l))
+                     (+org-remark-highlight-face
+                      (doom-lighten (doom-color 'grey) 0.1)))
 
   (org-remark-create "yellow"
-                     (util/org-remark-color-face
-                      'easy-color-faces-yellow))
+                     (+org-remark-color-face
+                      (doom-color 'yellow)))
   (org-remark-create "orange"
-                     (util/org-remark-color-face
-                      'easy-color-faces-orange))
+                     (+org-remark-color-face
+                      (doom-color 'orange)))
   (org-remark-create "red"
-                     (util/org-remark-color-face
-                      'easy-color-faces-red))
+                     (+org-remark-color-face
+                      (doom-color 'red)))
   (org-remark-create "magenta"
-                     (util/org-remark-color-face
-                      'easy-color-faces-magenta))
+                     (+org-remark-color-face
+                      (doom-color 'magenta)))
   (org-remark-create "blue"
-                     (util/org-remark-color-face
-                      'easy-color-faces-blue-l))
+                     (+org-remark-color-face
+                      (doom-lighten (doom-color 'dark-blue) 0.1)))
   (org-remark-create "green"
-                     (util/org-remark-color-face
-                      'easy-color-faces-green))
+                     (+org-remark-color-face
+                      (doom-color 'green)))
   (org-remark-create "cyan"
-                     (util/org-remark-color-face
-                      'easy-color-faces-cyan))
+                     (+org-remark-color-face
+                      (doom-color 'cyan)))
   (org-remark-create "violet"
-                     (util/org-remark-color-face
-                      'easy-color-faces-violet))
+                     (+org-remark-color-face
+                      (doom-lighten (doom-color 'violet) 0.3)))
   (org-remark-create "purple"
-                     (util/org-remark-color-face
-                      'easy-color-faces-purple))
+                     (+org-remark-color-face
+                      (doom-color 'violet)))
   (org-remark-create "gray"
-                     (util/org-remark-color-face
-                      'easy-color-faces-gray)))
+                     (+org-remark-color-face
+                      (doom-color 'grey)))
+  )
+
+(defcustom +org-roam-default-profile "default"
+  "Default Org-roam profile."
+  :type 'string
+  :group 'org-roam
+  :group 'convenience)
+
+(defvar +org-roam-current-profile "default")
+
+(defcustom +org-roam-profiles `(("default"
+                                 :description "Default Org-roam"
+                                 :directory ,(expand-file-name "~/org-roam")
+                                 :db-location ,(locate-user-emacs-file "org-roam.db")))
+  "Profiles for switching between different note org-roam repositories."
+  :type '(repeat
+          (list :tag "Org-roam Profile"
+                (string :tag "Name")
+                (string :tag "Description")
+                (string :tag "Directory")
+                (string :tag "DB Path")))
+  :group 'org-roam
+  :group 'convenience)
+
+(defun +org-roam--profile-candidate-entry (cand)
+  "Create Org-roam profile CAND entry."
+  (let* ((profile-name (car cand))
+         (description (plist-get (cdr cand) :description)))
+    (list (util/strings-pad-string profile-name 20) `(:description ,(format "%s" description)))))
+
+(defun +org-roam--profile-annotations (cand)
+  "Retrieve profile CAND description."
+  (let* ((option (car (last (assoc cand minibuffer-completion-table))))
+         (description (plist-get option :description)))
+    (concat " " (util/strings-add-font-lock description 'font-lock-comment-face))))
+
+(defun +org-roam-switch-profile (&optional profile-name)
+  "Load Org-roam PROFILE-NAME."
+  (interactive)
+
+  (unless profile-name
+    (setq completion-extra-properties '(:annotation-function +org-roam--profile-annotations))
+    (setq profile-name (s-trim
+                        (completing-read
+                         "Org-roam profile: "
+                         (mapcar #'+org-roam--profile-candidate-entry +org-roam-profiles)))))
+
+  (let* ((profile (cdr (assoc profile-name +org-roam-profiles))))
+    (unless profile (error "Invalid profile name"))
+    (setq +org-roam-current-profile profile-name)
+    (setq org-roam-directory (plist-get profile :directory))
+    (setq org-roam-db-location (plist-get profile :db-location))
+    (org-roam-db-sync)))
+
+(defcustom +org-roam-node-types '("capture"
+                                  "concept"
+                                  "procedure"
+                                  "reference"
+                                  "index")
+  "A list of node types."
+  :type '(repeat string)
+  :group 'org-roam
+  :group 'convenience)
+
+(use-package org-roam
+  :custom
+  (+org-roam-default-profile "notes")
+  (org-roam-node-display-template (concat "${title:40} " (propertize "${tags:80}" 'face 'org-tag)))
+  (org-roam-database-connector 'sqlite-builtin)
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+   `(("d" "default"
+      plain "%?"
+      :target (file+head
+               "${id}.org"
+               ,(util/read-file-to-string
+                 (expand-file-name "templates/default.org" user-emacs-directory)))
+      :jump-to-captured t
+      :immediate-finish t
+      :unnarrowed t)
+     ("c" "code"
+      plain "%?"
+      :target (file+head
+               "${id}.org"
+               ,(util/read-file-to-string
+                 (expand-file-name "templates/code.org" user-emacs-directory)))
+      :jump-to-captured t
+      :immediate-finish t
+      :unnarrowed t)
+     ("j" "japanese"
+      plain "%?"
+      :target (file+head
+               "${id}.org"
+               ,(util/read-file-to-string
+                 (expand-file-name "templates/japanese.org" user-emacs-directory)))
+      :jump-to-captured t
+      :immediate-finish t
+      :unnarrowed t)
+     ("e" "encrypted"
+      plain "%?"
+      :target (file+head
+               "${id}.org.gpg"
+               ,(concat
+                 "# -*- mode:org -*-\n"
+                 (util/read-file-to-string
+                  (expand-file-name "templates/default.org" user-emacs-directory))))
+      :jump-to-captured t
+      :immediate-finish t
+      :unnarrowed t)))
+  :init
+  (+org-roam-switch-profile +org-roam-default-profile)
+  (org-roam-db-autosync-enable)
+  :config
+  (cl-defmethod org-roam-node-type ((node org-roam-node))
+    "Return the TYPE of NODE."
+    (condition-case nil
+        (let ((tags (org-roam-node-tags node)))
+          (car (seq-some
+                (lambda (tag) (member tag tags))
+                +org-roam-node-types)))
+      (error ""))))
+
+(defun +org-roam-node-remove ()
+  "Remove node."
+  (interactive)
+  (let* ((file (buffer-file-name (current-buffer)))
+         (roam-p (org-roam-file-p file))
+         (id (and roam-p
+                  (car (car (org-roam-db-query [:select id :from nodes :where (= file $s1)] file)))))
+         (node (org-roam-node-from-id id))
+         (target (org-roam-node-read (and node (org-roam-node-title node))))
+         (target-file (org-roam-node-file target)))
+    (when (y-or-n-p (format "Delete node '%s'?" (org-roam-node-title target)))
+      (delete-file target-file)
+      (if-let* ((buffer (find-buffer-visiting target-file)))
+          (kill-buffer-ask buffer)))
+    (org-roam-db-sync)))
+
+(defun +org-roam--list-tags ()
+  "List Org-roam tags."
+  (let ((sql "SELECT DISTINCT tags.tag FROM tags ORDER BY tags.tag COLLATE NOCASE ASC"))
+    (mapcar #'car (org-roam-db-query sql))))
+
+(defun +org-roam-node-find-by-filetag (&optional tag)
+  "Find an Org-roam node by filetag TAG."
+  (interactive
+   (list (completing-read "Tag: " (+org-roam--list-tags) nil t)))
+  (org-roam-node-find nil (format "#%s" tag)))
+
+(defun +org-roam-node-find-uncategorized ()
+  "Find Org-roam node non-categorized by PACER."
+  (interactive)
+  (org-roam-node-find nil nil
+                      (lambda (node)
+                        (seq-every-p
+                         (lambda (tag) (not (member tag (org-roam-node-tags node))))
+                         +org-roam-node-types))))
+
+(defun +org-roam-node-find-captures ()
+  "Find Org-roam node not processed by PACER."
+  (interactive)
+  (org-roam-node-find nil nil
+                      (lambda (node)
+                        (member "capture" (org-roam-node-tags node)))))
+
+(use-package org-roam-ui :after org-roam
+  :custom
+  (org-roam-ui-follow t)
+  (org-roam-ui-update-on-save t)
+  (org-roam-ui-open-on-start nil)
+  :hook
+  (org-roam-ui-mode . org-roam-ui-sync-theme))
+
+(defcustom +org-roam-ui-viewer-function nil
+  "Function to launch org-roam-ui."
+  :type 'function
+  :group 'org-roam-ui
+  :group 'convenience)
+
+(defun +org-roam-ui-launch-viewer ()
+  "Launch custom org-roam-ui viewer."
+  (interactive)
+  (shut-up
+    (funcall +org-roam-ui-viewer-function)))
+
+(defun +org-scratch-buffer ()
+  "Open a new scratch buffer in Org mode."
+  (interactive)
+  (let ((buffer (get-buffer-create "*org-scratch*")))
+    (with-current-buffer buffer
+      (org-mode))
+    (display-buffer buffer)))
+
+(use-package edraw :after (org ox)
+  :ensure (:host github :repo "misohena/el-easydraw" :files (:defaults "*.el"))
+  :custom
+  (edraw-default-document-properties
+   '((width . 600)
+     (height . 400)
+     (background . "#00000000")))
+  (edraw-package-default-shape-properties
+   `((rect
+      (fill . ,(doom-color 'fg-alt))
+      (stroke . ,(doom-color 'bg-alt))
+      (stroke-width . 1))
+     (ellipse
+      (fill . ,(doom-color 'fg-alt))
+      (stroke . ,(doom-color 'bg-alt))
+      (stroke-width . 1))
+     (path
+      (fill . "none")
+      (stroke . ,(doom-color 'bg-alt))
+      (stroke-width . 1)
+      ;; (marker-end . "arrow")
+      )
+     (text
+      (fill . ,(doom-color 'bg-alt)) ;; Not edraw-package-default-fill
+      (font-size . 16)
+      (font-family . ,+fonts-variable-pitch-face)
+      (text-anchor . "middle"))
+     (image)))
+  :config
+  (require 'edraw-org)
+  (edraw-org-setup-default))
+
+(use-package org-download :after org
+  :custom
+  (org-download-image-dir "./images")
+  (org-download-screenshot-method "grim -g \"$(slurp)\" %s"))
+
+(use-package org-typst-preview
+  :ensure (:type git :host github :repo "remimimimimi/org-typst-preview.el"))
+
+(defun +org-typst-preview-render (&optional arg)
+  "Render/clear `Typst` preview in buffer.
+
+With prefix ARG \\[universal-argument], clear preview in buffer."
+  (interactive "p")
+  (pcase arg
+    (4 (org-typst-preview-clear-buffer))
+    (_ (org-typst-preview-render-buffer))))
 
 (provide 'packages-org-mode)
 

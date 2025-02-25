@@ -5,332 +5,313 @@
 (require 'util-helpers)
 (require 'util-windows)
 
-;; posframe handlers
-;; 1.  `posframe-poshandler-frame-center'
-;; 2.  `posframe-poshandler-frame-top-center'
-;; 3.  `posframe-poshandler-frame-top-left-corner'
-;; 4.  `posframe-poshandler-frame-top-right-corner'
-;; 5.  `posframe-poshandler-frame-top-left-or-right-other-corner'
-;; 6.  `posframe-poshandler-frame-bottom-center'
-;; 7.  `posframe-poshandler-frame-bottom-left-corner'
-;; 8.  `posframe-poshandler-frame-bottom-right-corner'
-;; 9.  `posframe-poshandler-window-center'
-;; 10. `posframe-poshandler-window-top-center'
-;; 11. `posframe-poshandler-window-top-left-corner'
-;; 12. `posframe-poshandler-window-top-right-corner'
-;; 13. `posframe-poshandler-window-bottom-center'
-;; 14. `posframe-poshandler-window-bottom-left-corner'
-;; 15. `posframe-poshandler-window-bottom-right-corner'
-;; 16. `posframe-poshandler-point-top-left-corner'
-;; 17. `posframe-poshandler-point-bottom-left-corner'
-;; 18. `posframe-poshandler-point-bottom-left-corner-upward'
-;; 19. `posframe-poshandler-point-window-center'
-;; 20. `posframe-poshandler-point-frame-center'
-(use-package posframe :demand t)
+(defvar +fonts-fixed-pitch-face "SauceCodePro Nerd Font Mono")
+(defvar +fonts-fixed-pitch-italic-face "SauceCodePro Nerd Font Mono")
+(defvar +fonts-variable-pitch-face "SauceCodePro Nerd Font Propo")
+(set-frame-font "SauceCodePro Nerd Font Propo 9" nil t)
 
-(use-package transient :ensure t
-  :custom
-  (transient-show-popup 0)
-  (transient-display-buffer-action nil)
-  (transient-mode-line-format nil)
-  (transient-force-fixed-pitch t))
+(defvar +fonts-fixed-pitch-size 90)
+(defvar +fonts-variable-pitch-size 90)
+(defvar +fonts-tab-size 100)
 
-(use-package transient-posframe
-  :custom
-  (transient-posframe-poshandler #'posframe-poshandler-window-center)
-  :config
-  (transient-posframe-mode t))
+(add-to-list
+ 'default-frame-alist
+ `(font . ,(concat +fonts-fixed-pitch-face
+                   (format "-%d" (/ +fonts-fixed-pitch-size 10)))))
 
-(use-package which-key
-  :custom
-  (which-key-sort-order 'which-key-key-order)
-  (which-key-show-prefix 'echo)
-  (which-key-side-window-slot 0)
-  (which-key-popup-type 'side-window)
-  (which-key-side-window-location 'bottom)
-  :hook
-  (elpaca-after-init . which-key-mode))
-
-(use-package which-key-posframe
-  :custom
-  (which-key-posframe-poshandler #'posframe-poshandler-frame-bottom-left-corner)
-  :hook
-  (which-key-mode . which-key-posframe-mode))
-
-(use-package flycheck
-  :custom
-  (flycheck-keymap-prefix "")
-  (flycheck-indication-mode nil)
-  (flycheck-mode-line nil)
-  (flycheck-display-errors-delay 3600.0)
-  (flycheck-display-errors-function 'ignore)
-  (flycheck-check-syntax-automatically '(save))
-  (flycheck-auto-display-errors-after-checking nil)
-  :hook
-  (elpaca-after-init . global-flycheck-mode))
-
-(use-package flycheck-posframe :after (flycheck easy-color-faces)
-  :custom
-  (flycheck-posframe-border-width 1)
-  :custom-face
-  (flycheck-posframe-border-face
-   ((t (:foreground ,easy-color-white
-                    :background unspecified))))
-  :config
-  (defun flycheck-posframe-show-posframe (errors)
-    "Display ERRORS, using posframe.el library."
-    (posframe-hide flycheck-posframe-buffer)
-    (when (and errors
-               (not (run-hook-with-args-until-success 'flycheck-posframe-inhibit-functions)))
-      (let ((poshandler (intern (format "posframe-poshandler-%s" flycheck-posframe-position))))
-        (unless (functionp poshandler)
-          (setq poshandler nil))
-        (flycheck-posframe-check-position)
-        (posframe-show
-         flycheck-posframe-buffer
-         :string (flycheck-posframe-format-errors errors)
-         :background-color (face-background 'flycheck-posframe-background-face nil t)
-         :position (point)
-         :internal-border-width flycheck-posframe-border-width
-         :internal-border-color (face-foreground (if flycheck-posframe-border-use-error-face
-                                                     (flycheck-posframe-highest-error-level-face errors)
-                                                   'flycheck-posframe-border-face) nil t)
-         :poshandler poshandler
-         :hidehandler #'flycheck-posframe-hidehandler))))
-  :hook
-  (elpaca-after-init . flycheck-posframe-configure-pretty-defaults)
-  (flycheck-mode . flycheck-posframe-mode))
-
-
-(use-package disable-mouse :demand t
-  :diminish disable-mouse-mode
-  :config
-  (disable-mouse-global-mode))
-
-(use-package editorconfig :demand t
-  :config
-  (setq editorconfig-lisp-use-default-indent t)
-  (editorconfig-mode t))
-
-(use-package nerd-icons)
-
-(use-package mixed-pitch :disabled)
-
-(use-package ranger :after evil
-  :hook
-  (emacs-startup . ranger-override-dired-mode))
+(use-package rainbow-delimiters)
 
 (use-package rainbow-mode
   :custom
   (rainbow-r-colors-alist '())
   (rainbow-html-colors-alist '()))
 
-(use-package rainbow-delimiters)
-
-(use-package telephone-line
+(use-package doom-modeline
+  :custom-face
+  (doom-modeline-bar
+   ((nil :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'bg-alt))))
+  (doom-modeline-bar-inactive
+   ((nil :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'bg-alt))))
+  (doom-modeline-evil-insert-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'green))))
+  (doom-modeline-evil-normal-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'blue))))
+  (doom-modeline-evil-visual-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'yellow))))
+  (doom-modeline-evil-replace-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'red))))
+  (doom-modeline-evil-motion-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'magenta))))
+  (doom-modeline-evil-operator-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'orange))))
+  (doom-modeline-evil-emacs-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'violet))))
+  (doom-modeline-evil-user-state
+   ((nil :weight bold
+         :foreground ,(doom-color 'bg-alt)
+         :background ,(doom-color 'dark-blue))))
+  :custom
+  (doom-modeline-bar-width 2)
+  (doom-modeline-height 15)
+  (doom-modeline-buffer-file-name-style 'auto)
+  (doom-modeline-buffer-file-state-icon nil)
+  (doom-modeline-buffer-modification-icon nil)
+  (doom-modeline-window-width-limit nil)
+  (mode-line-right-align-edge 'right-fringe)
+  (visual-fill-column-width 120)
   :config
-  (telephone-line-mode))
+  (doom-modeline-def-segment evil
+    "Display evil mode states."
+    (when (bound-and-true-p evil-mode)
+      (let ((tag (cond
+                  ((not (evil-visual-state-p)) (upcase (symbol-name evil-state)))
+                  ((eq evil-visual-selection 'block) "V-BLOCK")
+                  ((eq evil-visual-selection 'line) "V-LINE")
+                  (t "VISUAL")))
+            (face (cond
+                   ((evil-normal-state-p) 'doom-modeline-evil-normal-state)
+                   ((evil-emacs-state-p) 'doom-modeline-evil-emacs-state)
+                   ((evil-insert-state-p) 'doom-modeline-evil-insert-state)
+                   ((evil-motion-state-p) 'doom-modeline-evil-motion-state)
+                   ((evil-visual-state-p) 'doom-modeline-evil-visual-state)
+                   ((evil-operator-state-p) 'doom-modeline-evil-operator-state)
+                   ((evil-replace-state-p) 'doom-modeline-evil-replace-state)
+                   (t 'doom-modeline-evil-user-state))))
+        (propertize
+         (format " %s " tag)
+         'face (doom-modeline-face face)
+         'help-echo (evil-state-property evil-state :name t)))))
 
-(use-package ace-window :after posframe
-  :custom
-  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  (aw-dispatch-when-more-than 0)
-  :preface
-  (defun +ace-window-configure-fonts ()
-    (set-face-attribute 'aw-leading-char-face nil
-                        :foreground (face-foreground 'easy-color-faces-red)
-                        :height 2.00
-                        :weight 'bold))
-  :init
-  (util/if-daemon-run-after-make-frame-else-add-hook
-   (ace-window-posframe-mode)
-   'window-setup-hook)
-  (util/if-daemon-run-after-make-frame-else-add-hook
-   (+ace-window-configure-fonts)
-   'window-setup-hook)
+  (doom-modeline-def-segment buffer-info-extra
+    `(" "
+      mode-line-mule-info
+      mode-line-modified
+      mode-line-client
+      mode-line-remote))
 
-  (setq aw-dispatch-alist
-        '((?x aw-delete-window "Delete Window")
-          (?m aw-swap-window "Swap Windows")
-          (?M aw-move-window "Move Window")
-          (?c aw-copy-window "Copy Window")
-          (?j aw-switch-buffer-in-window "Select Buffer")
-          (?\\ aw-flip-window)
-          (?F aw-split-window-fair "Split Fair Window")
-          (?v aw-split-window-vert "Split Vert Window")
-          (?b aw-split-window-horz "Split Horz Window")
-          (?? aw-show-dispatch-help)))
+  (doom-modeline-def-segment space
+    `(" "))
 
-  (defun +window-check-aw-ignored-p (orig-func &rest args)
-    ;; Ignore side-windows or popup-windows
-    (let ((window (nth 0 args)))
-      (cond
-       ((util/window-side-p window) t)
-       ((util/window-popup-p window) t)
-       (t (apply orig-func args)))))
+  (doom-modeline-def-segment minibuffer-depth
+    (let* ((depth (minibuffer-depth)))
+      (when (> depth 0)
+        (format "[%d]" depth))))
 
-  (advice-add #'aw-ignored-p :around #'+window-check-aw-ignored-p))
+  (doom-modeline-def-segment treemacs-peek
+    (when treemacs-peek-mode
+      (propertize
+       "  Peek "
+       'face (doom-modeline-face 'doom-modeline-evil-insert-state))))
 
-(use-package dashboard :after nerd-icons
-  :preface
-  (defun +dashboard-insert-project-shortmenu (&rest _)
-    (let* ((fn #'project-switch-project)
-           (fn-keymap (format "\\[%s]" fn))
-           (icon-name (alist-get 'projects dashboard-heading-icons))
-           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
-      (insert (format "%s " icon))
-      (widget-create 'item
-                     :tag (format "%-30s" "Open project")
-                     :action (lambda (&rest _) (call-interactively #'project-switch-project))
-                     :mouse-face 'highlight
-                     :button-face 'dashboard-heading
-                     :button-prefix ""
-                     :button-suffix ""
-                     :format "%[%t%]")
-      (insert (propertize (substitute-command-keys fn-keymap)
-                          'face
-                          'font-lock-constant-face))))
+  (doom-modeline-def-modeline
+    '+treemacs-modeline
+    '(workspace-name)
+    '(treemacs-peek))
 
-  (defun +dashboard-insert-org-agenda-shortmenu (&rest _)
-    (let* ((fn #'org-agenda)
-           (fn-keymap (format "\\[%s]" fn))
-           (icon-name (alist-get 'agenda dashboard-heading-icons))
-           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
-      (insert (format "%s " icon))
-      (widget-create 'item
-                     :tag (format "%-30s" "Open org-agenda")
-                     :action (lambda (&rest _) (call-interactively #'org-agenda))
-                     :mouse-face 'highlight
-                     :button-face 'dashboard-heading
-                     :button-prefix ""
-                     :button-suffix ""
-                     :format "%[%t%]")
-      (insert (propertize (substitute-command-keys fn-keymap)
-                          'face
-                          'font-lock-constant-face))))
+  (doom-modeline-def-modeline
+    '+default-modeline
+    '(evil vcs process buffer-info-extra buffer-info matches selection-info)
+    '(misc-info check repl minor-modes lsp major-mode minibuffer-depth buffer-position space))
 
-  (defun +dashboard-insert-bookmark-shortmenu (&rest _)
-    (let* ((fn #'consult-bookmark)
-           (fn-keymap (format "\\[%s]" fn))
-           (icon-name (alist-get 'bookmarks dashboard-heading-icons))
-           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
-      (insert (format "%s " icon))
-      (widget-create 'item
-                     :tag (format "%-30s" "Jump to bookmark")
-                     :action (lambda (&rest _) (call-interactively #'consult-bookmark))
-                     :mouse-face 'highlight
-                     :button-face 'dashboard-heading
-                     :button-prefix ""
-                     :button-suffix ""
-                     :format "%[%t%]")
-      (insert (propertize (substitute-command-keys fn-keymap)
-                          'face
-                          'font-lock-constant-face))))
+  (defun +doom-modeline-set ()
+    (doom-modeline-set-modeline '+default-modeline 'default))
 
-  (defun +dashboard-insert-recents-shortmenu (&rest _)
-    (let* ((fn #'consult-recent-file)
-           (fn-keymap (format "\\[%s]" fn))
-           (icon-name (alist-get 'recents dashboard-heading-icons))
-           (icon (nerd-icons-octicon icon-name :face 'dashboard-heading)))
-      (insert (format "%s " icon))
-      (widget-create 'item
-                     :tag (format "%-30s" "Recently opened files")
-                     :action (lambda (&rest _) (call-interactively #'consult-recent-file))
-                     :mouse-face 'highlight
-                     :button-face 'dashboard-heading
-                     :button-prefix ""
-                     :button-suffix ""
-                     :format "%[%t%]")
-      (insert (propertize (substitute-command-keys fn-keymap)
-                          'face
-                          'font-lock-constant-face))))
-  :custom
-  (dashboard-icon-type 'nerd-icons)
-  (dashboard-startup-banner (expand-file-name "assets/logo.png" user-emacs-directory))
-  (dashboard-banner-logo-title nil)
-  (dashboard-projects-backend 'project-el)
-  (dashboard-center-content t)
-  (dashboard-show-shortcuts t)
-  (dashboard-display-icons-p t)
-  (dashboard-set-heading-icons t)
-  (dashboard-set-footer nil)
-  (dashboard-set-file-icons t)
-  (dashboard-items '((agenda . 8) (bookmarks . 8) (projects . 16) (recents . 32)))
-  (initial-buffer-choice #'dashboard-open)
-  (dashboard-startupify-list
-   '(dashboard-insert-banner
-     dashboard-insert-newline
-     dashboard-insert-banner-title
-     dashboard-insert-newline
-     dashboard-insert-init-info
-     dashboard-insert-items))
-
-  ;; (dashboard-startupify-list
-  ;;  '(dashboard-insert-banner
-  ;;    dashboard-insert-newline
-  ;;    dashboard-insert-banner-title
-  ;;    dashboard-insert-newline
-  ;;    dashboard-insert-init-info
-  ;;    dashboard-insert-items))
-
-  ;; (dashboard-item-generators
-  ;;  '((recents . +dashboard-insert-recents-shortmenu)
-  ;;    (bookmarks . +dashboard-insert-bookmark-shortmenu)
-  ;;    (projects . +dashboard-insert-project-shortmenu)
-  ;;    (agenda . +dashboard-insert-org-agenda-shortmenu)))
-
-  ;; (dashboard-items
-  ;;  '(agenda
-  ;;    bookmarks
-  ;;    projects
-  ;;    recents))
+  (setq doom-modeline-mode-alist nil)
   :hook
-  (elpaca-after-init . dashboard-setup-startup-hook)
-  (elpaca-after-init . dashboard-insert-startupify-lists)
-  (dashboard-mode . (lambda () (util/window--set-purpose (selected-window) 'edit-general))))
+  (doom-modeline-mode . +doom-modeline-set)
+  (doom-modeline-mode . column-number-mode)
+  (elpaca-after-init . doom-modeline-mode))
 
-(use-package treemacs
+(use-package ext-tab-bar :disabled
+  :ensure (:host github :repo "arekisannda/ext-tab-bar")
+  :preface
+  (defun +ext-tab-bar-name-format (tab i)
+    (let ((current-p (eq (car tab) 'current-tab)))
+      (propertize
+       (concat (if tab-bar-tab-hints (format " %d " i) " ")
+               (truncate-string-to-width
+                (alist-get 'name tab)
+                tab-bar-tab-name-truncated-max nil nil
+                tab-bar-tab-name-ellipsis)
+               (or (and tab-bar-close-button-show
+                        (not (eq tab-bar-close-button-show
+                                 (if current-p 'non-selected 'selected)))
+                        tab-bar-close-button)
+                   ""))
+       'face (funcall tab-bar-tab-face-function tab))))
+
+  (defun +ext-tab-bar-customize-face ()
+    (util/custom-faces
+     (tab-bar
+      ((nil :weight bold
+            :underline nil
+            :box (:line-width 5 :style flat-button)
+            :font ,+fonts-fixed-pitch-face
+            :height ,+fonts-fixed-pitch-size)))
+     (tab-bar-tab
+      ((nil :inherit tab-bar
+            :underline (:color ,(doom-color 'vertical-bar)
+                               :style line :position 0))))
+     (tab-bar-tab-inactive
+      ((nil :inherit tab-bar)))
+     (ext-tab-bar-faces-default
+      ((nil :weight normal
+            :box (:line-width 5 :style flat-button)
+            :font ,+fonts-fixed-pitch-face
+            :height ,+fonts-fixed-pitch-size)))
+     (ext-tab-bar-faces-project
+      ((nil :foreground ,(doom-darken (doom-color 'green) 0.2))))
+     (ext-tab-bar-faces-debug
+      ((nil :foreground ,(doom-darken (doom-color 'red) 0.2))))))
   :custom
-  (treemacs-position 'left)
-  (treemacs-width 35)
-  (treemacs-display-in-side-window t)
-  (treemacs-RET-actions-config '((root-node-open . treemacs-toggle-node)
-                                 (root-node-closed . treemacs-toggle-node)
-                                 (dir-node-open . treemacs-toggle-node)
-                                 (dir-node-closed . treemacs-toggle-node)
-                                 (file-node-open . treemacs-visit-node-in-most-recently-used-window)
-                                 (file-node-closed . treemacs-visit-node-in-most-recently-used-window)
-                                 (tag-node-open . treemacs-toggle-node-prefer-tag-visit)
-                                 (tag-node-closed . treemacs-toggle-node-prefer-tag-visit)
-                                 (tag-node . treemacs-visit-node-in-most-recently-used-window)))
-  :config
-  (defun +treemacs--popup-window-override ()
-    "Pop up a side window and buffer for treemacs."
-    (let ((buf (treemacs-get-local-buffer-create)))
-      (display-buffer buf
-                      `(,(if treemacs-display-in-side-window
-                             'display-buffer-in-side-window
-                           'display-buffer-in-direction)
-                        . (;; for buffer in direction
-                           (direction . ,treemacs-position)
-                           (window . root)
-                           ;; for side windows
-                           (slot . 0)
-                           (side . ,treemacs-position)
-                           ;; general-purpose settings
-                           (window-width . ,treemacs-width)
-                           (dedicated . t))))
-      (select-window (get-buffer-window buf))))
+  (tab-bar-tab-name-format-function #'+ext-tab-bar-name-format)
+  (tab-bar-close-button-show nil)
+  (tab-bar-new-button-show nil)
+  (tab-bar-tab-name-truncated-max 60)
+  (tab-bar-auto-width t)
+  (tab-bar-auto-width-max '(400 60))
+  (tab-bar-auto-width-min '(100 15))
+  (tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+  (ext-tab-bar-project-disable-paths (list (expand-file-name elpaca-directory)
+                                           (expand-file-name package-user-dir)))
+  :hook
+  (elpaca-after-init . ext-tab-bar-mode)
+  (ext-tab-bar-mode . (lambda ()
+                        (+ext-tab-bar-customize-face)
+                        (setq tab-bar-map (make-sparse-keymap))
+                        (setq tab-bar-mode-map (make-sparse-keymap)))))
 
-  (advice-add #'treemacs--popup-window :override #'+treemacs--popup-window-override))
+(use-package indent-bars
+  :custom
+  (indent-bars-no-stipple-char 9615)
+  (indent-bars-depth-update-delay 0.1)
+  (indent-bars-display-on-blank-lines nil)
+  (indent-bars-starting-column 0)
+  (indent-bars-color-by-depth nil)
+  (indent-bars-color '(highlight :face-bg t :blend 0.2))
+  (indent-bars-highlight-current-depth nil)
+  ;; '(:face default :blend 0.4))
+  (indent-bars-pad-frac 0.0)
+  (indent-bars-width-frac 0.1)
+  (indent-bars-pattern ".")
+  (indent-bars-zigzag nil)
+  (indent-bars-treesit-support t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-display-on-blank-lines 'least))
 
-(use-package treemacs-nerd-icons :after treemacs
-  :config
-  (treemacs-load-theme "nerd-icons"))
+(use-package diff-hl :after magit
+  :ensure (:type git :host github :repo "arekisannda/diff-hl" :branch "master")
+  :custom
+  (diff-hl-show-staged-changes nil)
+  (diff-hl-flydiff-delay 0.1)
+  :init
+  (setq diff-hl-show-hunk-map (make-sparse-keymap)
+        diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
+  :hook
+  (window-setup . diff-hl-flydiff-mode)
+  (magit-pre-refresh . diff-hl-magit-pre-refresh)
+  (magit-post-refresh . diff-hl-magit-post-refresh))
 
-(use-package treemacs-evil :after treemacs)
+(defun +delayed-customize-face ()
+  "Delay customize face."
+  (util/custom-faces
+   ;; general
+   (match
+    ((nil :inherit unspecified
+          :box nil
+          :foreground ,(doom-color 'bg)
+          :background ,(doom-color 'fg))))
+   (isearch
+    ((nil :inherit unspecified
+          :box nil
+          :foreground ,(doom-color 'bg)
+          :background ,(doom-color 'yellow))))
+   (isearch-fail
+    ((nil :inherit unspecified
+          :box nil
+          :foreground ,(doom-color 'magenta)
+          :background unspecified)))
+   (isearch-group-1
+    ((nil :inherit unspecified
+          :box nil
+          :foreground ,(doom-color 'fg)
+          :background ,(doom-color 'red))))
+   (isearch-group-2
+    ((nil :inherit unspecified
+          :box nil
+          :foreground ,(doom-color 'fg)
+          :background ,(doom-color 'magenta))))
+   (popup-isearch-match
+    ((nil :inherit unspecified
+          :box nil
+          :foreground ,(doom-color 'fg)
+          :background ,(doom-color 'yellow))))
 
-(use-package treemacs-magit :after treemacs)
+   (line-number
+    ((nil :inherit default
+          :weight normal
+          :foreground ,(doom-color 'comments))))
+   (line-number-current-line
+    ((nil :inherit default
+          :weight bold
+          :foreground ,(doom-color 'orange))))
+
+   (show-paren-match
+    ((nil :inherit highlight
+          :weight bold
+          :underline t
+          :inverse-video nil
+          :font ,+fonts-fixed-pitch-face
+          :height ,+fonts-fixed-pitch-size
+          :foreground unspecified)))
+   (show-paren-mismatch
+    ((nil :weight bold
+          :inverse-video t
+          :font ,+fonts-fixed-pitch-face
+          :height ,+fonts-fixed-pitch-size)))
+
+   (default
+    ((nil :weight normal
+          :font ,+fonts-fixed-pitch-face
+          :height ,+fonts-fixed-pitch-size)))
+   (fixed-pitch
+    ((nil :weight normal
+          :font ,+fonts-fixed-pitch-face
+          :height ,+fonts-fixed-pitch-size)))
+   (variable-pitch
+    ((nil :weight normal
+          :font ,+fonts-variable-pitch-face
+          :height ,+fonts-variable-pitch-size)))
+   (italic
+    ((nil :slant italic
+          :underline nil
+          :font ,+fonts-fixed-pitch-italic-face)))
+   (bold-italic
+    ((nil :weight bold
+          :slant italic
+          :underline nil
+          :font ,+fonts-fixed-pitch-italic-face)))
+   (font-lock-comment-face
+    ((nil :inherit italic)))
+   ))
+
+(add-hook 'elpaca-after-init-hook #'+delayed-customize-face)
 
 (provide 'packages-interface)
 
