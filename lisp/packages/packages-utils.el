@@ -213,13 +213,23 @@
   :ensure nil
   :custom
   (flymake-start-on-flymake-mode t)
-  (flymake-show-diagnostics-at-end-of-line t)
+  (flymake-show-diagnostics-at-end-of-line nil)
   (flymake-indicator-type nil)
   (flymake-fringe-indicator-position nil)
   (flymake-disabled-backends)
   :hook
   (prog-mode . flymake-mode)
   (text-mode . flymake-mode))
+
+(use-package flymake-python-pyflakes
+  :custom
+  (flymake-python-pyflakes-executable "flake8")
+  :hook
+  (python-ts-mode . flymake-python-pyflakes-load))
+
+(use-package flymake-golangci
+  :hook
+  (go-ts-mode . flymake-golangci-load))
 
 (provide 'packages-utils)
 

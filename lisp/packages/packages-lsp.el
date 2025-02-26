@@ -8,7 +8,7 @@
   :custom
   (eldoc-echo-area-prefer-doc-buffer t)
   ;; (eldoc-echo-area-use-multiline-p nil)
-  (eglot-events-buffer-config '(:size 2000000 :format full))
+  (eglot-events-buffer-config '(:size 0 :format full))
   (eglot-sync-connect nil)
   (eglot-connect-timeout nil)
   (eglot-autoshutdown t)

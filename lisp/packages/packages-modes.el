@@ -74,8 +74,16 @@
   :ensure nil
   :custom
   (python-indent-offset 4)
+  :config
+  (defun +lang-python-mode-setup ()
+    (setq-local python-flymake-command '("flake8" "--max-line-length=120" "-"))
+    (add-hook 'eglot-managed-mode-hook
+              (lambda ()
+                (add-hook 'flymake-diagnostic-functions #'python-flymake t t))
+              nil t))
   :hook
-  (python-ts-mode . util/lsp-ensure))
+  (python-ts-mode . util/lsp-ensure)
+  (python-ts-mode . +lang-python-mode-setup))
 
 ;; }}}
 
