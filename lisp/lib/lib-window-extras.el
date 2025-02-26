@@ -130,12 +130,11 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
       (when (plist-get plist :disable-modeline)
         (set-window-parameter window 'mode-line-format 'none))
 
-      (set-window-parameter window 'quit-restore '(window nil nil nil))
       (set-window-parameter window 'no-delete-other-windows t)
       (set-window-parameter window 'window-popup side)
       (set-window-parameter window 'split-window #'+display-popup-disable-split-window)
-
       (set-window-buffer window buffer)
+      (set-window-dedicated-p window 'popup)
 
       (with-current-buffer buffer
         (setq-local window-size-fixed fixed))
@@ -143,7 +142,7 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
       (if (plist-get plist :select) window init-window))))
 
 (defun +display-buffer-in-side-window (buffer &optional alist plist)
- "Display BUFFER in side window according to ALIST and PLIST."
+  "Display BUFFER in side window according to ALIST and PLIST."
   (if (plist-get plist :ignore) 'fail
     (let* ((side (plist-get plist :side))
            (slot (plist-get plist :slot))
@@ -173,10 +172,9 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
                        (cond
                         ((equal fixed 'height) `((window-height . ,size)))
                         ((equal fixed 'width) `((window-width . ,size)))))))
-        (set-window-buffer window buffer))
+        (set-window-buffer window buffer)
+        (set-window-dedicated-p window 'popup))
        (t (user-error "Unable to create side window")))
-
-      (set-window-parameter window 'quit-restore '(window nil nil nil))
 
       (when (plist-get plist :disable-modeline)
         (set-window-parameter window 'mode-line-format 'none))
