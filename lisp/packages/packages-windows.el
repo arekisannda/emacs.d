@@ -73,7 +73,7 @@
       '(treemacs-mode
         ("^ \\*Treemacs.*\\*$" :regexp t)))
 
-(setq +wm-right-width 100)
+(setq +wm-right-width 95)
 (setq +wm-left-width 35)
 (setq +wm-bottom-height 20)
 
@@ -151,7 +151,8 @@
       :fixed width
       :regexp t)
 
-     (magit-diff-mode
+     ((magit-log-mode
+       magit-diff-mode)
       :custom +display-buffer-in-side-window
       :side right :slot 1 :size ,+wm-right-width
       :fixed width)

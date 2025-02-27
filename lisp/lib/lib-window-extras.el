@@ -107,7 +107,6 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
     (let* ((side (plist-get plist :side))
            (size (plist-get plist :size))
            (fixed (plist-get plist :fixed))
-           (quit-restore (plist-get plist :quit-restore))
            (init-window (selected-window))
            state
            parameters
@@ -133,6 +132,7 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
       (set-window-parameter window 'no-delete-other-windows t)
       (set-window-parameter window 'window-popup side)
       (set-window-parameter window 'split-window #'+display-popup-disable-split-window)
+      (set-window-parameter window 'quit-restore `(window window ,(util/window-get-mru-in-main) ,buffer))
       (set-window-buffer window buffer)
       (set-window-dedicated-p window 'popup)
 
@@ -148,7 +148,6 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
            (slot (plist-get plist :slot))
            (size (plist-get plist :size))
            (fixed (plist-get plist :fixed))
-           (quit-restore (plist-get plist :quit-restore))
            (init-window (selected-window))
            parameters
            window)
@@ -165,8 +164,7 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
               (display-buffer-in-side-window
                buffer
                (append alist
-                       `((dedicated . ,(plist-get plist :dedicated))
-                         (direction . ,(plist-get plist :direction))
+                       `((direction . ,(plist-get plist :direction))
                          (side      . ,side)
                          (slot      . ,slot))
                        (cond
@@ -178,6 +176,7 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
 
       (when (plist-get plist :disable-modeline)
         (set-window-parameter window 'mode-line-format 'none))
+      (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer))
       (set-window-parameter window 'no-delete-other-windows t)
 
       (with-current-buffer buffer
@@ -315,135 +314,6 @@ If the inititial window is not a side window, display BUFFER using `:static`"
         (setq window (funcall (plist-get rule-plist :action) buffer alist rule-plist)))
        (t 'fail))
       window)))
-
-(defun +window-display-buffer-in-directed-side-window (buffer alist)
-  "Custom display BUFFER in side window.
-ALIST is an association list of action symbols and values."
-  (let* ((side (or (cdr (assq 'side alist)) 'bottom))
-         (slot (or (cdr (assq 'slot alist)) 0))
-         (direction (or (cdr (assq 'direction alist)) 'vertical))
-         (left-or-right (memq side '(left right))))
-    (cond
-     ((not (memq side '(top bottom left right)))
-      (error "Invalid side %s specified" side))
-     ((not (numberp slot))
-      (error "Invalid slot %s specified" slot)))
-
-    (let* ((major (window-with-parameter 'window-side side nil t))
-           ;; `major' is the major window on SIDE, `windows' the list of
-           ;; life windows on SIDE.
-           (reversed (window--sides-reverse-on-frame-p (selected-frame)))
-           (windows
-            (cond
-             ((window-live-p major)
-              (list major))
-             ((window-valid-p major)
-              (let* ((first (window-child major))
-                     (next (window-next-sibling first))
-                     (windows (list next first)))
-                (setq reversed (> (window-parameter first 'window-slot)
-                                  (window-parameter next 'window-slot)))
-                (while (setq next (window-next-sibling next))
-                  (setq windows (cons next windows)))
-                (if reversed windows (nreverse windows))))))
-           (slots (when major (max 1 (window-child-count major))))
-           (max-slots
-            (nth (cond
-                  ((eq side 'left) 0)
-                  ((eq side 'top) 1)
-                  ((eq side 'right) 2)
-                  ((eq side 'bottom) 3))
-                 window-sides-slots))
-           (window--sides-inhibit-check t)
-           (alist (if (assq 'dedicated alist)
-                      alist
-                    (cons `(dedicated . ,(or display-buffer-mark-dedicated 'side))
-                          alist)))
-           window this-window this-slot prev-window next-window
-           best-window best-slot abs-slot)
-
-      (cond
-       ((and (numberp max-slots) (<= max-slots 0))
-        ;; No side-slots available on this side.  Don't raise an error,
-        ;; just return nil.
-        nil)
-       ((not windows)
-        ;; No major side window exists on this side, make one.
-        (window--make-major-side-window buffer side slot alist))
-       (t
-        ;; Scan windows on SIDE.
-        (catch 'found
-          (dolist (window windows)
-            (setq this-slot (window-parameter window 'window-slot))
-            (cond
-             ;; The following should not happen and probably be checked
-             ;; by window--sides-check.
-             ((not (numberp this-slot)))
-             ((= this-slot slot)
-              ;; A window with a matching slot has been found.
-              (setq this-window window)
-              (throw 'found t))
-             (t
-              ;; Check if this window has a better slot value wrt the
-              ;; slot of the window we want.
-              (setq abs-slot
-                    (if (or (and (> this-slot 0) (> slot 0))
-                            (and (< this-slot 0) (< slot 0)))
-                        (abs (- slot this-slot))
-                      (+ (abs slot) (abs this-slot))))
-              (unless (and best-slot (<= best-slot abs-slot))
-                (setq best-window window)
-                (setq best-slot abs-slot))
-              (if reversed
-                  (cond
-                   ((<= this-slot slot)
-                    (setq next-window window))
-                   ((not prev-window)
-                    (setq prev-window window)))
-                (cond
-                 ((<= this-slot slot)
-                  (setq prev-window window))
-                 ((not next-window)
-                  (setq next-window window))))))))
-
-        ;; `this-window' is the first window with the same SLOT.
-        ;; `prev-window' is the window with the largest slot < SLOT.  A new
-        ;; window will be created after it.
-        ;; `next-window' is the window with the smallest slot > SLOT.  A new
-        ;; window will be created before it.
-        ;; `best-window' is the window with the smallest absolute difference
-        ;; of its slot and SLOT.
-        (or (and this-window
-                 ;; Reuse `this-window'.
-                 (with-current-buffer buffer
-                   (setq window--sides-shown t))
-                 (window--display-buffer buffer this-window 'reuse alist))
-            (and (or (not max-slots) (< slots max-slots))
-                 (or (and next-window
-                          ;; Make new window before `next-window'.
-                          (let ((next-side (if (equal direction 'horizontal) 'left 'above))
-                                (window-combination-resize 'side))
-                            (setq window (split-window-no-error
-                                          next-window nil next-side))))
-                     (and prev-window
-                          ;; Make new window after `prev-window'.
-                          (let ((prev-side (if (equal direction 'horizontal) 'right 'below))
-                                (window-combination-resize 'side))
-                            (setq window (split-window-no-error
-                                          prev-window nil prev-side)))))
-                 (set-window-parameter window 'window-slot slot)
-                 (with-current-buffer buffer
-                   (setq window--sides-shown t))
-                 (window--display-buffer buffer window 'window alist))
-            (and best-window
-                 ;; Reuse `best-window'.
-                 (progn
-                   ;; Give best-window the new slot value.
-                   (set-window-parameter best-window 'window-slot slot)
-                   (with-current-buffer buffer
-                     (setq window--sides-shown t))
-                   (window--display-bufferk
-                    buffer best-window 'reuse alist)))))))))
 
 (defun +window-select-mru-main-window ()
   "Select most recently used main window."
