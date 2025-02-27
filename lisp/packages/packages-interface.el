@@ -273,18 +273,13 @@
           :foreground ,(doom-color 'orange))))
 
    (show-paren-match
-    ((nil :inherit highlight
+    ((nil :inherit shadow
           :weight bold
-          :underline t
-          :inverse-video nil
-          :font ,+fonts-fixed-pitch-face
-          :height ,+fonts-fixed-pitch-size
-          :foreground unspecified)))
+          :inverse-video t
+          :foreground ,(doom-color 'green))))
    (show-paren-mismatch
     ((nil :weight bold
-          :inverse-video t
-          :font ,+fonts-fixed-pitch-face
-          :height ,+fonts-fixed-pitch-size)))
+          :foreground ,(doom-color 'red))))
 
    (default
     ((nil :weight normal

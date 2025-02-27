@@ -31,6 +31,13 @@
 
 (use-package consult-eglot :after eglot)
 
+(use-package eglot-booster
+  :ensure (:type git :host github :repo "jdtsmith/eglot-booster")
+  :custom
+  (eglot-booster-io-only t)
+  :hook
+  (elpaca-after-init . eglot-booster-mode))
+
 (provide 'packages-lsp)
 
 ;;; packages-lsp.el ends here

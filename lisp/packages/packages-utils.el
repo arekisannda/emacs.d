@@ -167,11 +167,12 @@
   :config
   (defun +vertico-posframe-show-cursor (buffer window-point)
     (with-current-buffer buffer
+      (setq-local cursor-type 'box)
       (setq-local highlight-nonselected-windows t)
       (setq-local cursor-in-non-selected-windows 'box)
       (posframe-refresh buffer)))
-  (advice-add #'vertico-posframe--show :after #'+vertico-posframe-show-cursor)
-  )
+
+  (advice-add #'vertico-posframe--show :after #'+vertico-posframe-show-cursor))
 
 (use-package marginalia)
 
