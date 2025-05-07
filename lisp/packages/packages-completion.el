@@ -13,7 +13,7 @@
   :custom
   (completion-auto-help 'always)
   (corfu-preselect 'first)
-  (corfu-preview-current t)
+  (corfu-preview-current 'insert)
   (corfu-on-exact-match nil)
   (corfu-sort-override-function
    (lambda (candidates)
@@ -80,6 +80,7 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (plist-put cape--tex-properties :exit-function nil)
   :hook
   (eglot-managed-mode
    . (lambda ()
@@ -88,8 +89,7 @@
                     (cape-capf-super
                      #'eglot-completion-at-point
                      #'yasnippet-capf)))
-       (add-to-list 'completion-at-point-functions #'cape-file)))
-  )
+       (add-to-list 'completion-at-point-functions #'cape-file))))
 
 (use-package yasnippet-capf :after yasnippet
   :custom

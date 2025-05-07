@@ -7,6 +7,8 @@
   :custom-face
   (yas-field-highlight-face
    ((nil :inherit region)))
+  :custom
+  (yas-indent-line 'fixed)
   :hook
   (elpaca-after-init . yas-global-mode)
   :diminish yas-minor-mode)

@@ -17,60 +17,38 @@
 (use-package transient
   :custom
   (transient-show-popup t)
-  (transient-display-buffer-action nil)
+  (transient-display-buffer-action
+   '(display-buffer-in-side-window
+     (side . right)
+     (slot . 1)
+     (dedicated . t)))
   (transient-mode-line-format nil)
   (transient-force-fixed-pitch t))
-
-(use-package transient-posframe
-  :custom
-  (transient-posframe-poshandler #'posframe-poshandler-frame-center)
-  (transient-posframe-border-width 1)
-  (transient-posframe-parameters nil)
-  (transient-posframe-min-width 120)
-  (transient-posframe-min-height 30)
-  (transient-posframe-parameters
-   '((min-width . 120)
-     (min-height . 30)
-     (left-fringe . 10)
-     (right-fringe . 10)))
-  :custom-face
-  (transient-posframe
-   ((nil :inherit default :background ,(doom-color 'bg))))
-  (transient-posframe-border
-   ((nil :inherit default :background ,(doom-color 'fg-alt))))
-  :hook
-  (elpaca-after-init . transient-posframe-mode))
 
 (use-package which-key
   :ensure nil
   :custom
+  (which-key-popup-type 'side-window)
   (which-key-sort-order 'which-key-key-order)
   (which-key-show-prefix 'echo)
   (which-key-side-window-slot 0)
-  (which-key-popup-type 'side-window)
-  (which-key-side-window-location 'bottom)
-  (which-key-max-display-columns 4)
-  (which-key-min-column-description-width 35)
-  :hook
-  (elpaca-after-init . which-key-mode))
+  (which-key-side-window-location 'left)
+  (which-key-max-display-columns nil)
+  (which-key-side-window-max-width 40)
+  (which-key-min-column-description-width 40)
+  :init
+  (defun +which-key-buffer-width-setup ()
+    (treemacs-select-window))
 
-(use-package which-key-posframe
-  :custom
-  (which-key-posframe-poshandler #'posframe-poshandler-frame-center)
-  (which-key-posframe-border-width 1)
-  (which-key-posframe-parameters
-   '((min-width . 120)
-     (min-height . 20)
-     (left-fringe . nil)
-     (right-fringe . nil)))
-  (which-key-custom-show-popup-function #'which-key-posframe--show-buffer)
-  :custom-face
-  (which-key-posframe
-   ((nil :inherit default :background ,(doom-color 'bg))))
-  (which-key-posframe-border
-   ((nil :inherit default :background ,(doom-color 'fg-alt))))
+  (defun +which-key-buffer-post-display-setup (&rest _)
+    (when (buffer-live-p which-key--buffer)
+      (with-current-buffer which-key--buffer
+        (face-remap-add-relative 'default :background (doom-color 'bg-alt)))))
+
+  (advice-add #'which-key--show-popup :after #'+which-key-buffer-post-display-setup)
   :hook
-  (which-key-mode . which-key-posframe-mode))
+  (which-key-init-buffer . +which-key-buffer-width-setup)
+  (elpaca-after-init . which-key-mode))
 
 (use-package vertico
   :preface
@@ -217,7 +195,6 @@
   (flymake-show-diagnostics-at-end-of-line nil)
   (flymake-indicator-type nil)
   (flymake-fringe-indicator-position nil)
-  (flymake-disabled-backends)
   :hook
   (prog-mode . flymake-mode)
   (text-mode . flymake-mode))

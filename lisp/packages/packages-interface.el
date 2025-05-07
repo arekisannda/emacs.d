@@ -19,6 +19,8 @@
  `(font . ,(concat +fonts-fixed-pitch-face
                    (format "-%d" (/ +fonts-fixed-pitch-size 10)))))
 
+(use-package helpful)
+
 (use-package rainbow-delimiters)
 
 (use-package rainbow-mode
@@ -69,32 +71,47 @@
   :custom
   (doom-modeline-bar-width 2)
   (doom-modeline-height 15)
-  (doom-modeline-buffer-file-name-style 'auto)
+  (doom-modeline-buffer-file-name-style 'truncate-upto-root)
   (doom-modeline-buffer-file-state-icon nil)
   (doom-modeline-buffer-modification-icon nil)
   (doom-modeline-window-width-limit nil)
   (mode-line-right-align-edge 'right-fringe)
-  (visual-fill-column-width 120)
   :config
+
+  (defun custom-emacs-state (state)
+    (cond
+     ((equal state 'normal)   "NORMAL")
+     ((equal state 'insert)   "INSERT")
+     ((equal state 'replace)  "REPLCE")
+     ((equal state 'operator) "OPRTOR")
+     ((equal state 'motion)   "MOTION")
+     ((equal state 'emacs)    "EMACS")))
+
   (doom-modeline-def-segment evil
     "Display evil mode states."
     (when (bound-and-true-p evil-mode)
-      (let ((tag (cond
-                  ((not (evil-visual-state-p)) (upcase (symbol-name evil-state)))
-                  ((eq evil-visual-selection 'block) "V-BLOCK")
-                  ((eq evil-visual-selection 'line) "V-LINE")
-                  (t "VISUAL")))
+      (let (
+            ;; (tag (cond
+            ;;       ((not (evil-visual-state-p)) (upcase (symbol-name evil-state)))
+            ;;       ((eq evil-visual-selection 'block) "V-BLOCK")
+            ;;       ((eq evil-visual-selection 'line) "V-LINE")
+            ;;       (t "VISUAL")))
+            (tag (cond
+                  ((not (evil-visual-state-p)) "")
+                  ((eq evil-visual-selection 'block) "")
+                  ((eq evil-visual-selection 'line) "")
+                  (t "")))
             (face (cond
                    ((evil-normal-state-p) 'doom-modeline-evil-normal-state)
                    ((evil-emacs-state-p) 'doom-modeline-evil-emacs-state)
                    ((evil-insert-state-p) 'doom-modeline-evil-insert-state)
                    ((evil-motion-state-p) 'doom-modeline-evil-motion-state)
-                   ((evil-visual-state-p) 'doom-modeline-evil-visual-state)
                    ((evil-operator-state-p) 'doom-modeline-evil-operator-state)
                    ((evil-replace-state-p) 'doom-modeline-evil-replace-state)
+                   ((evil-visual-state-p) 'doom-modeline-evil-visual-state)
                    (t 'doom-modeline-evil-user-state))))
         (propertize
-         (format " %s " tag)
+         (format " " tag)
          'face (doom-modeline-face face)
          'help-echo (evil-state-property evil-state :name t)))))
 
@@ -126,8 +143,8 @@
 
   (doom-modeline-def-modeline
     '+default-modeline
-    '(evil vcs process buffer-info-extra buffer-info matches selection-info)
-    '(misc-info check repl minor-modes lsp major-mode minibuffer-depth buffer-position space))
+    '(evil vcs process buffer-info-extra buffer-info buffer-position)
+    '(misc-info minibuffer-depth matches selection-info lsp repl check major-mode))
 
   (defun +doom-modeline-set ()
     (doom-modeline-set-modeline '+default-modeline 'default))

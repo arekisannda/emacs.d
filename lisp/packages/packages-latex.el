@@ -37,6 +37,23 @@
 
 (use-package latex-math-preview :after latex)
 
+(use-package cdlatex
+  :custom
+  (cdlatex-use-dollar-to-ensure-math t)
+  (cdlatex-math-modify-alist
+   '(( ?l "\\mathbbm" "\\textbf" t nil nil ))))
+
+(use-package lazytab
+  :ensure (lazytab :type git :host github :repo "karthink/lazytab"))
+
+(defun +latex-scratch-buffer ()
+  "Open a new scratch buffer in LaTeX mode."
+  (interactive)
+  (let ((buffer (get-buffer-create "*latex-scratch*")))
+    (with-current-buffer buffer
+      (latex-mode))
+    (display-buffer buffer)))
+
 (provide 'packages-latex)
 
 ;;; packages-latex.el ends here

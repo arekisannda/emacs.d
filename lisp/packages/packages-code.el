@@ -121,6 +121,8 @@
   :config
   (setq origami-fold-style 'triple-braces))
 
+(use-package prettier)
+
 (provide 'packages-code)
 
 ;;; packages-code.el ends here

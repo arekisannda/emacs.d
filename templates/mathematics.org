@@ -1,0 +1,26 @@
+:PROPERTIES:
+:ID: ${id}
+:HEADER-ARGS: :cache yes
+:END:
+:SETTINGS:
+#+startup: showall
+#+startup: hideblocks
+
+#+latex_compiler: lualatex
+#+latex_header: \usepackage{bbm}
+#+latex_header: \usepackage{amsmath}
+#+latex_header: \usepackage{amssymb}
+#+latex_header: \usepackage{graphicx}
+#+latex_header: \usepackage{hyperref}
+#+latex_header: \usepackage{multirow}
+#+latex_header: \usepackage{makecell}
+#+latex_header: \usepackage{tikz}
+#+latex_header: \usetikzlibrary{positioning,chains,fit,shapes,calc}
+
+# Local Variables:
+# eval: (org-latex-preview 'buffer)
+# eval: (add-hook 'before-save-hook #'org-babel-execute-buffer nil t)
+# End:
+:END:
+#+title: ${title}
+#+filetags: :math:%^{Tags}:

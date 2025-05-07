@@ -2,18 +2,33 @@
 ;;; Commentary:
 
 ;;; Code:
+(require 'cl)
 (require 'util-strings)
 (require 'util-lang)
+
+(use-package ob-go)
+
+(use-package ob-rust)
+
+(use-package ob-typescript)
+
+(use-package ob-kotlin)
+
+(use-package ob-mermaid
+  :custom
+  (ob-mermaid-cli-path (executable-find "mmdc"))
+  :config
+  (setq org-babel-default-header-args:mermaid
+        '((:results . "file")
+          (:exports . "results")
+          (:theme . "dark")
+          (:background-color . "transparent"))))
+
+(use-package gnuplot)
 
 (use-package valign
   :custom
   (valign-fancy-bar t))
-
-(defcustom +org-table-heights '(:japanese 1.5)
-  "Custom table face height for Japanese text."
-  :type '(alist :key-type symbol :value-type number)
-  :group 'org-table
-  :group 'convenience)
 
 (defmacro +org-table-set-height (type)
   "Helper function to set table font height for TYPE."
@@ -24,18 +39,17 @@
 
 (defun +org-mode-setup ()
   "Setup to run for `org-mode` major modes."
-  ;; (display-line-numbers-mode 1)
-  ;; (setq-local left-margin-width 1)
-  ;; (setq-local right-margin-width 1)
-  (setq-local visual-fill-column 120)
   (visual-line-mode 1)
   (visual-fill-column-mode 1)
   (org-modern-mode 1)
-  (util/lang--add-to-capf-list (list #'cape-dabbrev
+  (util/lang--add-to-capf-list (list #'yasnippet-capf
+                                     #'cape-dabbrev
                                      #'cape-file
                                      #'cape-tex
                                      #'cape-elisp-block
-                                     #'cape-keyword))
+                                     #'cape-keyword
+                                     ))
+  ;; (display-line-numbers-mode 1)
   ;; (diff-hl-mode 1)
   (flyspell-mode)
   (valign-mode t)
@@ -58,13 +72,32 @@
      (interactive)
      (org-agenda nil ,key)))
 
+(defcustom +org-auto-hide-block-languages '()
+  "List of languages to auto hide."
+  :type '(repeat string)
+  :group 'org)
+
+(defun +org-fold-auto-hide-block-languages ()
+  "Fold blocks matching languages in `+org-auto-hide-block-languages'."
+  (interactive)
+  (org-block-map
+   (lambda ()
+     (let* ((element (org-element-at-point))
+            (lang (org-element-property :language element)))
+       (if (cl-some (lambda (l) (equal lang l)) +org-auto-hide-block-languages)
+           (org-fold--hide-wrapper-toggle element 'block 'hide nil))))))
+
 (use-package org
-  :ensure nil
-  :preface
+  :ensure `(org :repo "https://code.tecosaur.net/tec/org-mode.git/"
+                :branch "dev")
   :custom
+  (+org-auto-hide-block-languages '("mermaid"))
+
+  (org-pretty-entities-include-sub-superscripts nil)
   (org-use-tag-inheritance nil)
   (org-link-descriptive t)
   (org-startup-with-inline-images t)
+  (org-image-align 'center)
   (org-image-actual-width nil)
   (org-startup-indented t)
   (org-auto-align-tags nil)
@@ -73,6 +106,7 @@
   (org-special-ctrl-a/e t)
   (org-insert-heading-respect-content t)
   (org-cycle-level-faces nil)
+  (org-read-date-popup-calendar t)
 
   (org-src-preserve-indentation nil)
   (org-src-window-setup 'current-window)
@@ -89,21 +123,21 @@
   (org-fontify-quote-and-verse-blocks t)
 
   (org-todo-keywords
-   '((sequence "TODO" "PENDING" "CANCELLED" "DONE" )))
+   '((sequence "TODO" "ONGOING" "|" "DONE" "CANCELLED" )))
 
   (org-todo-keyword-faces
-   `(("TODO" . (nil :inherit default
-                    :weight bold
-                    :foreground ,(doom-darken (doom-color 'red) 0.2)))
-     ("PENDING" . (nil :inherit default
-                       :weight bold
-                       :foreground ,(doom-darken (doom-color 'orange) 0.2)))
-     ("CANCELLED" . (nil :inherit default
+   `(("TODO"      . (nil :inherit default
+                         :weight bold
+                         :foreground ,(doom-darken (doom-color 'red) 0.2)))
+     ("ONGOING"   . (nil :inherit default
                          :weight bold
                          :foreground ,(doom-darken (doom-color 'orange) 0.2)))
-     ("DONE" . (nil :inherit default
-                    :weight bold
-                    :foreground ,(doom-lighten (doom-color 'gray) 0.2)))))
+     ("CANCELLED" . (nil :inherit default
+                         :weight bold
+                         :foreground ,(doom-darken (doom-color 'gray) 0.2)))
+     ("DONE"      . (nil :inherit default
+                         :weight bold
+                         :foreground ,(doom-lighten (doom-color 'gray) 0.2)))))
 
   (org-agenda-window-setup 'current-window)
   (org-agenda-tags-column 0)
@@ -114,15 +148,24 @@
   (org-agenda-current-time-string
    "◀── now ─────────────────────────────────────────────────")
 
-  (org-latex-pdf-process '("pdflatex -interaction nonstopmode -output-directory %o %f"
-                           "bibtex %b"
-                           "pdflatex -interaction nonstopmode -output-directory %o %f"
-                           "pdflatex -interaction nonstopmode -output-directory %o %f"))
   (org-latex-logfiles-extensions (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc"
                                          "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf"
                                          "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf"
                                          "acn" "acr" "alg" "glg" "gls" "ist")))
   (org-latex-hyperref-template nil)
+  (org-highlight-latex-and-related '(native script entities))
+  (org-startup-with-latex-preview t)
+  (org-latex-preview-live '(inline block edit-special))
+  (org-latex-preview-process-default 'luadvisvgm)
+  (org-latex-preview-appearance-options
+   `( :foreground default
+      :align center
+      :background "Transparent"
+      :scale 2.0
+      :zoom ,(* (/ (face-attribute 'default :height) 100.0) 1.6)
+      :page-width nil
+      :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
+
 
   (org-agenda-files '("~/Agenda/date"
                       "~/Agenda/project"
@@ -130,6 +173,9 @@
                       "~/Agenda/general"))
   (org-src-block-faces
    `(("japanese" (:height 1.5 :foreground ,(doom-color 'violet)))))
+  (org-confirm-babel-evaluate nil)
+  (org-babel-default-header-args:go '((:wrap . "example")))
+  (org-plantuml-exec-mode 'plantuml)
   :config
   (dolist (face `((org-level-1 . 1.175)
                   (org-level-2 . 1.150)
@@ -140,50 +186,25 @@
                   (org-level-7 . 1.025)
                   (org-level-8 . 1.00)))
     (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
-  :hook
-  (org-agenda-mode . +org-agenda-configure)
-  (org-mode . +org-mode-setup)
-  (org-mode . embrace-org-mode-hook))
 
-(use-package org-crypt :after org
-  :ensure nil
-  :custom
-  (org-tags-exclude-from-inheritance (quote ("crypt")))
-  :config
-  (org-crypt-use-before-save-magic))
-
-(use-package ob-go)
-
-(use-package ob-rust)
-
-(use-package ob-typescript)
-
-(use-package ob-kotlin)
-
-(use-package gnuplot)
-
-(use-package emacs :after (ob-go ob-rust ob-kotlin ob-typescript gnuplot)
-  :ensure nil
-  :custom
-  (org-confirm-babel-evaluate nil)
-  (org-babel-default-header-args:go '((:wrap . "example")))
-  (org-plantuml-exec-mode 'plantuml)
-  :config
-  (util/update-alist
+  (org-babel-do-load-languages
    'org-babel-load-languages
    '((C . t)
-     (ba)
      (awk . t)
      (calc . t)
+     (ditaa . t)
      (emacs-lisp . t)
      (gnuplot . t)
      (go . t)
      (js . t)
-     (cpp . t)
      (kotlin . t)
+     (latex . t)
+     (mermaid . t)
+     (octave . t)
      (plantuml . t)
      (python . t)
      (rust . t)
+     (R . t)
      (shell . t)
      (sql . t)
      (sqlite . t)
@@ -196,11 +217,12 @@
      ("bash"       . shell)
      ("cpp"        . c++)
      ("desktop"    . conf-desktop)
-     ("dot"        . fundamental)
+     ("dot"        . graphviz-dot)
      ("elisp"      . emacs-lisp)
      ("go"         . go)
      ("javascript" . javascript)
      ("kotlin"     . kotlin)
+     ("mermaid"    . mermaid)
      ("ocaml"      . tuareg)
      ("python"     . python)
      ("rust"       . rust)
@@ -208,8 +230,34 @@
      ("shell"      . sh)
      ("sqlite"     . sql)
      ("toml"       . conf-toml)
-     ("typescript" . typescript)
-     )))
+     ("typescript" . typescript)))
+
+  (add-to-list 'org-latex-preview-process-alist
+               '(luadvisvgm :programs
+                            ("lualatex" "dvisvgm")
+                            :description "dvi > svg"
+                            :message "you need to install the programs: lualatex and dvisvgm."
+                            :image-input-type "dvi"
+                            :image-output-type "svg"
+                            :image-size-adjust (1.7 . 1.5)
+                            :latex-compiler
+                            ("dvilualatex --output-format dvi --shell-escape --interaction=nonstopmode --output-directory=/tmp %f")
+                            :image-converter
+                            ("dvisvgm --clipjoin --relative -n -b preview -o %B-%%9p.svg %f")))
+  :hook
+  (org-babel-after-execute . org-redisplay-inline-images)
+  (org-agenda-mode . +org-agenda-configure)
+  (org-mode . +org-mode-setup)
+  (org-mode . +org-fold-auto-hide-block-languages)
+  (org-mode . embrace-org-mode-hook)
+  (org-mode . org-cdlatex-mode))
+
+(use-package org-crypt :after org
+  :ensure nil
+  :custom
+  (org-tags-exclude-from-inheritance (quote ("crypt")))
+  :config
+  (org-crypt-use-before-save-magic))
 
 (use-package org-modern :after org
   :custom
@@ -230,8 +278,8 @@
   (org-modern-label
    ((nil :box (:line-width 5 :style flat-button)
          :height ,+fonts-fixed-pitch-size)))
-  :config
-  (global-org-modern-mode 1))
+  (org-block
+   ((nil :background ,(doom-color 'bg)))))
 
 (use-package org-contrib :after org
   :config
@@ -493,6 +541,15 @@
       :jump-to-captured t
       :immediate-finish t
       :unnarrowed t)
+     ("m" "mathematics"
+      plain "%?"
+      :target (file+head
+               "${id}.org"
+               ,(util/read-file-to-string
+                 (expand-file-name "templates/mathematics.org" user-emacs-directory)))
+      :jump-to-captured t
+      :immediate-finish t
+      :unnarrowed t)
      ("e" "encrypted"
       plain "%?"
       :target (file+head
@@ -565,8 +622,7 @@
   (org-roam-ui-follow t)
   (org-roam-ui-update-on-save t)
   (org-roam-ui-open-on-start nil)
-  :hook
-  (org-roam-ui-mode . org-roam-ui-sync-theme))
+  (org-roam-ui-sync-theme t))
 
 (defcustom +org-roam-ui-viewer-function nil
   "Function to launch org-roam-ui."

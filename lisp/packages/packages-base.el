@@ -68,6 +68,7 @@
           dictionary-mode
           ert-results-mode
           help-mode
+          helpful-mode
           Info-mode
           Man-mode
           speedbar-mode

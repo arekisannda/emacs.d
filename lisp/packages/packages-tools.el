@@ -9,7 +9,7 @@
   (treemacs-is-never-other-window t)
   (treemacs-display-in-side-window t)
   (treemacs-position 'left)
-  (treemacs-width 35)
+  (treemacs-width 40)
   (treemacs-RET-actions-config '((root-node-open . treemacs-toggle-node)
                                  (root-node-closed . treemacs-toggle-node)
                                  (dir-node-open . treemacs-toggle-node)
@@ -125,7 +125,7 @@
   (writeroom-fullscreen-effect 'maximized)
   (writeroom-restore-window-config t)
   (writeroom-mode-line t)
-  (writeroom-width 120))
+  (writeroom-width 100))
 
 (use-package vterm
   :elpaca (vterm :post-build
@@ -173,7 +173,7 @@ The optional ARGS are keyword arguments."
   :ensure nil
   :custom
   (project-vc-extra-root-markers '(".dir-locals.el"))
-  (project-vc-include-untracked nil)
+  (project-vc-include-untracked t)
   (project-vc-merge-submodules nil))
 
 (use-package ibuffer-project
@@ -364,6 +364,8 @@ Executes FN with ARGS."
         (treemacs))
     ((error quit)
      (tab-bar-close-tab))))
+
+(use-package ess)
 
 (provide 'packages-tools)
 

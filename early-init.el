@@ -38,6 +38,8 @@
               make-backup-files nil
               create-lockfiles nil
 
+              fill-column 100
+              visual-fill-column-width 100
               window-resize-pixelwise t
               frame-resize-pixelwise t
               hscroll-step 5
@@ -70,7 +72,7 @@
 (blink-cursor-mode -1)
 (menu-bar-mode -1)
 (electric-pair-mode -1)
-(winner-mode 1)
+(winner-mode -1)
 (global-eldoc-mode -1)
 (window-divider-mode 1)
 (epa-file-enable)

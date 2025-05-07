@@ -38,6 +38,14 @@
   :hook
   (elpaca-after-init . eglot-booster-mode))
 
+(defun +eldoc-close-buffer ()
+  "Helper function to kill Eldoc doc buffer."
+  (interactive)
+  (let (window)
+    (when (and (buffer-live-p eldoc--doc-buffer)
+               (setq window (get-buffer-window eldoc--doc-buffer)))
+      (quit-window t window))))
+
 (provide 'packages-lsp)
 
 ;;; packages-lsp.el ends here

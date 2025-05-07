@@ -31,14 +31,6 @@
 (dolist (path '("lisp"))
   (+recursive-load-path path))
 
-(defun eldoc-fancy (arg)
-  "`eldoc' the echo area by default and a prefix will swap to a buffer.
-ARG arguments."
-  (interactive "P")
-  (let ((eldoc-display-functions
-          (if arg '(eldoc-display-in-buffer) '(eldoc-display-in-echo-area))))
-    (eldoc t)))
-
 ;; enable configurations
 (require 'packages-base)
 (require 'packages-interface)
@@ -54,7 +46,6 @@ ARG arguments."
 (require 'packages-dashboard)
 (require 'packages-code)
 (require 'packages-dape)
-
 (require 'packages-modes)
 (require 'packages-emacs)
 

@@ -44,12 +44,17 @@
 
 ;; go {{{
 
+(defun +lang-go-mode-setup ()
+  "Setup to run for `go` modes."
+  (add-hook 'before-save-hook #'gofmt-before-save nil 'local))
+
 (use-package go-mode
   :custom
   (go-ts-mode-indent-offset 4)
   :mode
   ("\\.go\\'" . go-ts-mode)
   :hook
+  (go-ts-mode . +lang-go-mode-setup)
   (go-ts-mode . util/lsp-ensure))
 
 ;; }}}
@@ -198,6 +203,14 @@
   (setq-local truncate-lines t)
   (visual-line-mode -1))
 
+;; nix-mode {{{
+
+(use-package nix-mode
+  :mode
+  ("\\.nix\\'" . nix-mode))
+
+;; }}}
+
 ;; conf-mode {{{
 
 (use-package conf-mode
@@ -213,6 +226,19 @@
   (conf-mode . display-line-numbers-mode)
   (conf-mode . rainbow-delimiters-mode)
   (conf-mode . +lang-conf-mode-setup))
+
+;; }}}
+
+;; toml-mode {{{
+(use-package toml-ts-mode
+  :ensure nil
+  :mode
+  ("\\.toml\\'" . toml-ts-mode)
+  :hook
+  (toml-ts-mode . diff-hl-mode)
+  (toml-ts-mode . display-line-numbers-mode)
+  (toml-ts-mode . rainbow-delimiters-mode)
+  (toml-ts-mode . +lang-conf-mode-setup))
 
 ;; }}}
 
@@ -247,6 +273,23 @@
 
 ;; }}}
 
+;; css-mode {{{
+(use-package emacs
+  :ensure nil
+  :custom
+  (css-indent-offset 2))
+
+;; }}}
+
+;; xml-mode {{{
+(use-package emacs
+  :ensure nil
+  :mode
+  ("\\.opf\\'" . xml-mode)
+  ("\\.ncx\\'" . xml-mode))
+
+;; }}}
+
 ;; special-mode
 
 (defun +lang-special-mode-setup ()
@@ -261,6 +304,9 @@
   (special-mode . +lang-special-mode-setup))
 
 (use-package markdown-mode
+  :custom-face
+  (markdown-code-face
+   ((nil :background ,(doom-color 'bg))))
   :config
   (util/update-alist
    'markdown-code-lang-modes
@@ -273,6 +319,12 @@
      ("typescript" . typescript-mode)
      ("kotlin"     . kotlin-mode)
      )))
+
+(use-package tmux-mode)
+
+(use-package mermaid-mode)
+
+(use-package gnuplot-mode)
 
 (use-package emacs
   :ensure nil

@@ -1,10 +1,19 @@
-# -*- eval: (+org-table-set-height :japanese) -*-
 :PROPERTIES:
 :ID: ${id}
 :HEADER-ARGS: :eval no
 :END:
 :SETTINGS:
 #+startup: showall
+
+#+latex_compiler: lualatex
+#+latex_header: \usepackage{luatexja}
+#+latex_header: \usepackage{luatexja-fontspec}
+#+latex_header: \setmainfont{SauceCodePro Nerd Font Propo}
+#+latex_header: \setmainjfont{Source Han Sans JP}
+#+latex_header: \usepackage{graphicx}
+#+latex_header: \usepackage{hyperref}
+#+latex_header: \usepackage{multirow}
+#+latex_header: \usepackage{makecell}
 :END:
 #+title: ${title}
 #+filetags: :japanese:%^{Tags}:

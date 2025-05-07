@@ -134,7 +134,7 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
       (set-window-parameter window 'split-window #'+display-popup-disable-split-window)
       (set-window-parameter window 'quit-restore `(window window ,(util/window-get-mru-in-main) ,buffer))
       (set-window-buffer window buffer)
-      (set-window-dedicated-p window 'popup)
+      (set-window-dedicated-p window (plist-get plist :dedicated))
 
       (with-current-buffer buffer
         (setq-local window-size-fixed fixed))
@@ -166,18 +166,23 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
                (append alist
                        `((direction . ,(plist-get plist :direction))
                          (side      . ,side)
-                         (slot      . ,slot))
+                         (slot      . ,slot)
+                         (inhibit-same-window . t))
                        (cond
                         ((equal fixed 'height) `((window-height . ,size)))
-                        ((equal fixed 'width) `((window-width . ,size)))))))
-        (set-window-buffer window buffer)
-        (set-window-dedicated-p window 'popup))
+                        ((equal fixed 'width) `((window-width . ,size))))))))
        (t (user-error "Unable to create side window")))
 
       (when (plist-get plist :disable-modeline)
         (set-window-parameter window 'mode-line-format 'none))
-      (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer))
+      (if (not (window-parameter window 'quit-restore))
+          (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
+      ;; (if (or (eq slot 0)
+      ;;         (and (eq slot 1 ) (not (window-parameter window 'quit-restore))))
+      ;;     (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
       (set-window-parameter window 'no-delete-other-windows t)
+      (set-window-buffer window buffer)
+      (set-window-dedicated-p window (plist-get plist :dedicated))
 
       (with-current-buffer buffer
         (setq-local window-size-fixed fixed))

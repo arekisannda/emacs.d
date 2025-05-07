@@ -76,8 +76,15 @@
   (advice-add #'org-capture-finalize :after #'+emacs-dedicated-frame-exit-after)
   (advice-add #'org-capture-kill     :after #'+emacs-dedicated-frame-exit-after)
 
+  (defun +emacs-edit-keybinds ()
+    (interactive)
+    (find-file (expand-file-name "keybinds.org" user-emacs-directory)))
+
   (defun +emacs-load-keybinds ()
     (org-babel-load-file (expand-file-name "keybinds.org" user-emacs-directory)))
+
+  (defun +emacs-refresh-messages-buffer ()
+    (kill-buffer (messages-buffer)))
 
   :custom
   (read-quoted-char-radix 16)
@@ -93,6 +100,7 @@
   (minibuffer-setup . +emacs-minibuffer-setup)
   (minibuffer-exit . +emacs-minibuffer-exit)
   (emacs-startup . +emacs-load-keybinds)
+  (emacs-startup . +emacs-refresh-messages-buffer)
   (elpaca-after-init . +emacs-tuning-configurations)
   (before-save . +emacs-create-directory-on-save))
 

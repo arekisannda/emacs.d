@@ -5,165 +5,117 @@
 (require 'cl-lib)
 (require 'lib-window-extras)
 
-(setq +wm-ignore-list
-      '("*Capture*"))
-
-(setq +wm-bottom-rule-list
-      '(vterm-mode
-        comint-mode
-        eshell-mode
-        term-mode
-        elpaca-log-mode
-        log4e-mode
-        messages-buffer-mode
-        xref--xref-buffer-mode
-        grep-mode
-        occur-mode
-        compilation-mode
-        org-roam-mode
-        flycheck-error-list-mode
-        "*Org Select*"
-        "*remark-notes*"
-        "*Error*"))
-
-(setq +wm-bottom-rule-list-regex '())
-
-(setq +wm-bottom-side-rule-list
-      '(backtrace-mode
-        "*Org Links*"
-        "*diff-hl*"
-        "*diff-hl-show-hunk-diff-buffer*"
-        "*diff-hl-show-hunk-buffer*"
-        "*shell*"
-        "*Shell Command Output*"))
-
-(setq +wm-right-rule-list
-      '(elpaca-manager-mode
-        elpaca-ui-mode
-        elpaca-info-mode
-        Info-mode
-        Custom-mode
-        apropos-mode
-        tabulated-list-mode
-        ibuffer-mode
-        Buffer-menu-mode
-        bookmark-bmenu-mode
-        calendar-mode
-        eglot-list-connections-mode
-        magit-status-mode
-        magit-repolist-mode
-        Man-mode
-
-        "*info*"
-        "*Ibuffer*"
-        "*elpaca-manager*"
-        "*Customize Apropos*"))
-
-(setq +wm-right-rule-list-regex
-      '("^\\*Shortdoc.*\\*$"
-        "^\\*Customize.*\\*$"
-        "^\\*Org Agenda.*\\*$"
-        "^\\*Org Select\\*$"))
-
-(setq +wm-left-rule-list '())
-
-(setq +wm-left-rule-list-regex '())
-
-(setq +wm-skip-rule-match-list
-      '(treemacs-mode
-        ("^ \\*Treemacs.*\\*$" :regexp t)))
-
 (setq +wm-right-width 95)
-(setq +wm-left-width 35)
+(setq +wm-left-width 40)
 (setq +wm-bottom-height 20)
 
 (use-package shackle
   :custom
-  (aw-ignored-buffers
-   (append '(treemacs-mode
-             "*Calc Trail*"
-             " *LV*")
-           +wm-right-rule-list
-           +wm-bottom-rule-list))
   (shackle-default-rule nil)
   (shackle-rules
-   `((,+wm-ignore-list :ignore t)
-
-     (,+wm-bottom-rule-list
-      :custom +display-buffer-in-popup-window
-      :side below :size ,+wm-bottom-height
-      :fixed height
-      :quit-restore kill
-      :select t)
-
-     (,+wm-bottom-rule-list-regex
-      :custom +display-buffer-in-popup-window
-      :side below :size ,+wm-bottom-height
-      :fixed height
-      :quit-restore kill
-      :select t
-      :regexp t)
+   `((("*Capture*") :ignore t)
+     (("\\*Org Src.*\\*$") :same t :regexp t)
 
      ((flymake-diagnostics-buffer-mode
-       flymake-project-diagnostics-mode)
+       flymake-project-diagnostics-mode
+       elpaca-log-mode)
       :custom +display-buffer-in-popup-window
       :side below :size ,+wm-bottom-height
-      :quit-restore kill
-      :fixed height)
+      :dedicated right
+      :fixed height
+      :select t)
 
-     (,+wm-bottom-side-rule-list
+     ((backtrace-mode)
       :custom +display-buffer-in-side-window
       :side bottom :slot 0
       :fixed height
       :select t)
 
-     (,+wm-left-rule-list
-      :custom +display-buffer-in-side-window
-      :side left :slot 0 :size ,+wm-left-width
-      :select t)
+     ((elpaca-ui-mode
+       magit-status-mode
+       calc-mode
 
-     (,+wm-left-rule-list-regex
-      :custom +display-buffer-in-side-window
-      :side left :slot 0 :size ,+wm-left-width
-      :regexp t)
-
-     (,+wm-right-rule-list
+       "*Ibuffer*"
+       "*elpaca-manager*"
+       "*Customize Apropos*")
       :custom +display-buffer-in-side-window
       :side right :slot 0 :size ,+wm-right-width
+      :dedicated right
       :fixed width
       :select t)
 
-     (,+wm-right-rule-list-regex
+     (("^\\*Shortdoc.*\\*$"
+       "^\\*Customize.*\\*$"
+       "\\*Org .*\\*$")
       :custom +display-buffer-in-side-window
       :side right :slot 0 :size ,+wm-right-width
+      :dedicated right
       :fixed width
       :select t
       :regexp t)
 
-     (help-mode
+     ((help-mode
+       Info-mode
+       Man-mode
+
+       "*info*"
+       " *Agenda Commands*")
       :custom +display-buffer-in-side-window
       :side right :slot 0 :size ,+wm-right-width
       :fixed width)
 
-     ("^\\*eldoc.*\\*"
+     (("^\\*eldoc.*\\*"
+       "\\*eglot doc\\*")
       :custom +display-buffer-in-side-window
       :side right :slot 0 :size ,+wm-right-width
       :fixed width
       :regexp t)
 
      ((magit-log-mode
-       magit-diff-mode)
+       magit-diff-mode
+       calc-trail-mode)
       :custom +display-buffer-in-side-window
       :side right :slot 1 :size ,+wm-right-width
-      :fixed width)
+      :fixed width
+      :select t)
 
-     ((lisp-interaction-mode
+     ((vterm-mode
+       comint-mode
+       eshell-mode
+       term-mode
+       log4e-mode
+       messages-buffer-mode
+       xref--xref-buffer-mode
+       grep-mode
+       occur-mode
+       compilation-mode
+       org-roam-mode
+       lisp-interaction-mode
+       ert-results-mode
+
+       "*latex-scratch*"
        "*org-scratch*"
-       ert-results-mode)
-      :select t
+       "*Org Select*"
+       "*remark-notes*"
+       "*Error*")
+      :custom +display-buffer-in-popup-window
+      :side below :size ,+wm-bottom-height
+      :dedicated bottom
+      :fixed height
+      :select t)
+
+     (("*Org Links*"
+       "*diff-hl*"
+       "*diff-hl-show-hunk-diff-buffer*"
+       "*diff-hl-show-hunk-buffer*"
+       "*shell*"
+       "*Shell Command Output*")
       :custom +display-buffer-in-side-window
-      :side right :slot 1 :size ,+wm-right-width
-      :fixed width)
+      :side bottom :slot 0
+      :fixed height
+      :select t)
+
+     ;; base modes {{{
 
      ((prog-mode
        conf-mode)
@@ -197,6 +149,23 @@
         :fixed width
         :select t)
        (org-roam-mode :mru t :select t)))
+
+     ((Custom-mode
+       tabulated-list-mode
+       special-mode)
+      :custom +display-buffer-in-side-window
+      :side right :slot 0 :size ,+wm-right-width
+      :dedicated right
+      :fixed width
+      :select t)
+
+     ((calendar-mode)
+      :custom +display-buffer-in-popup-window
+      :side below :size ,+wm-bottom-height
+      :dedicated bottom
+      :select t)
+
+     ;; }}}
      ))
   :config
   (defun +shackle-condition-ignore-check (orig-func &rest args)
@@ -209,7 +178,8 @@
                   ((listp e) (string-match (car e) (buffer-name buffer)))
                   ((stringp e) (equal buffer-name e))
                   ((symbolp e) (eq buffer-mode e))))
-               +wm-skip-rule-match-list)
+               '(treemacs-mode
+                 ("^ \\*Treemacs.*\\*$" :regexp t)))
         (apply orig-func args))))
 
   (advice-add #'shackle-display-buffer-condition :around #'+shackle-condition-ignore-check)
