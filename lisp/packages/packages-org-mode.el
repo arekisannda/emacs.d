@@ -233,17 +233,19 @@
      ("typescript" . typescript)))
 
   (add-to-list 'org-latex-preview-process-alist
-               '(luadvisvgm :programs
-                            ("lualatex" "dvisvgm")
+               '(luadvisvgm :programs ("dvilualatex" "dvisvgm")
                             :description "dvi > svg"
                             :message "you need to install the programs: lualatex and dvisvgm."
                             :image-input-type "dvi"
                             :image-output-type "svg"
                             :image-size-adjust (1.7 . 1.5)
+                            :latex-precompiler
+                            ("dvilualatex --output-directory=/tmp o --ini --jobname=%b \"&%L\" mylatexformat.ltx %f")
                             :latex-compiler
-                            ("dvilualatex --output-format dvi --shell-escape --interaction=nonstopmode --output-directory=/tmp %f")
+                            ("dvilualatex --output-format=dvi --shell-escape --interaction=nonstopmode --output-directory=/tmp %f")
                             :image-converter
-                            ("dvisvgm --clipjoin --relative -n -b preview -o %B-%%9p.svg %f")))
+                            ("dvisvgm --page=1- --clipjoin --relative --no-fonts -v3 --bbox=preview --output=%B-%%9p.svg %f")))
+
   :hook
   (org-babel-after-execute . org-redisplay-inline-images)
   (org-agenda-mode . +org-agenda-configure)

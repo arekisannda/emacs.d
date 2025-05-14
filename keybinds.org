@@ -1135,6 +1135,7 @@
   "t"   '("typst toggle"       . org-typst-preview)
   "C-t" '("typst render"       . +org-typst-preview-render)
   "l"   '("latex toggle"       . org-latex-preview)
+  "L"   '("latex clear"        . org-latex-preview-clear-cache)
   "C-l" '("latex live"         . org-latex-preview-auto-mode)
   "r"   '("org link toggle"    . org-toggle-link-display)
   "i"   '("org image toggle"   . org-toggle-inline-images)
