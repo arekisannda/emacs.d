@@ -158,14 +158,14 @@
   (org-latex-preview-live '(inline block edit-special))
   (org-latex-preview-process-default 'luadvisvgm)
   (org-latex-preview-appearance-options
-   `( :foreground default
-      :align center
+   `( :foreground auto
       :background "Transparent"
       :scale 2.0
       :zoom ,(* (/ (face-attribute 'default :height) 100.0) 1.6)
       :page-width nil
       :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
-
+  (org-latex-pdf-process
+   '("latexmk -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"))
 
   (org-agenda-files '("~/Agenda/date"
                       "~/Agenda/project"
@@ -240,7 +240,7 @@
                             :image-output-type "svg"
                             :image-size-adjust (1.7 . 1.5)
                             :latex-precompiler
-                            ("dvilualatex --output-directory=/tmp o --ini --jobname=%b \"&%L\" mylatexformat.ltx %f")
+                            ("dvilualatex --output-directory=/tmp --ini --jobname=%b \"&%L\" mylatexformat.ltx %f")
                             :latex-compiler
                             ("dvilualatex --output-format=dvi --shell-escape --interaction=nonstopmode --output-directory=/tmp %f")
                             :image-converter

@@ -46,6 +46,7 @@
 
      (("^\\*Shortdoc.*\\*$"
        "^\\*Customize.*\\*$"
+       "^\\*ChatGPT.*\\*$"
        "\\*Org .*\\*$")
       :custom +display-buffer-in-side-window
       :side right :slot 0 :size ,+wm-right-width

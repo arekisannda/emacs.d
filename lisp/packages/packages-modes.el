@@ -194,7 +194,17 @@
 
 ;; }}}
 
+;; SCAD-mode {{{
+
+(use-package scad-mode)
+
+(use-package scad-dbus
+  :after scad-mode
+  :ensure (:type git :host github :repo "Lenbok/scad-dbus" :files (:defaults "*.el")))
+
 (use-package plantuml-mode)
+
+;; }}}
 
 ;;; conf-mode
 
@@ -290,18 +300,7 @@
 
 ;; }}}
 
-;; special-mode
-
-(defun +lang-special-mode-setup ()
-  "Setup to run for `special-mode` major modes."
-  (cond
-   ((string-match-p "\\*eldoc.*\\*" (buffer-name))
-    (visual-line-mode 1))))
-
-(use-package emacs
-  :ensure nil
-  :hook
-  (special-mode . +lang-special-mode-setup))
+;; markdown-mode {{{
 
 (use-package markdown-mode
   :custom-face
@@ -320,11 +319,28 @@
      ("kotlin"     . kotlin-mode)
      )))
 
+;; }}}
+
 (use-package tmux-mode)
 
 (use-package mermaid-mode)
 
 (use-package gnuplot-mode)
+
+;; special-mode {{{
+
+(defun +lang-special-mode-setup ()
+  "Setup to run for `special-mode` major modes."
+  (cond
+   ((string-match-p "\\*eldoc.*\\*" (buffer-name))
+    (visual-line-mode 1))))
+
+(use-package emacs
+  :ensure nil
+  :hook
+  (special-mode . +lang-special-mode-setup))
+
+;; }}}
 
 (use-package emacs
   :ensure nil

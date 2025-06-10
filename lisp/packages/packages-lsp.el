@@ -19,10 +19,11 @@
   ;; (eglot-extend-to-xref nil)
   ;; (eglot-highlight-symbol-face ((t (:inherit (lazy-highlight)))))
   :config
-  ;; (setf (alist-get '(c-mode c-ts-mode c++-mode c++-ts-mode objc-mode)
-  ;;                  eglot-server-programs nil nil #'equal)
-  ;;       '("clangd" "--clang-tidy")
+  (setf (alist-get '(scad-mode)
+                   eglot-server-programs nil nil #'equal)
+        '("openscad-lsp" "--stdio"))
   ;; (fset #'jsonrpc--log-event #'ignore)
+
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
   :hook
   (eglot-managed-mode . (lambda ()

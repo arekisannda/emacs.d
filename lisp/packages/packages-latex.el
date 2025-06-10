@@ -39,9 +39,21 @@
 
 (use-package cdlatex
   :custom
-  (cdlatex-use-dollar-to-ensure-math t)
+  (cdlatex-use-dollar-to-ensure-math nil)
   (cdlatex-math-modify-alist
-   '(( ?l "\\mathbbm" "\\textbf" t nil nil ))))
+   '(( ?l "\\mathbbm" "\\textbf" t nil nil )))
+  (cdlatex-env-alist
+   '(("tikzpicture"
+      "\\begin{tikzpicture}
+?
+\\end{tikzpicture}"
+      nil)
+     ("axis"
+      "\\begin{axis}
+?
+\\end{axis}"
+      nil)
+     )))
 
 (use-package lazytab
   :ensure (lazytab :type git :host github :repo "karthink/lazytab"))
