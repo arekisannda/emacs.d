@@ -86,6 +86,16 @@
   (defun +emacs-refresh-messages-buffer ()
     (kill-buffer (messages-buffer)))
 
+  (defun +emacs-sudo-find-file ()
+    (interactive)
+    (let ((default-directory "/sudo::/"))
+        (call-interactively #'find-file)))
+
+  (defun +emacs-remote-find-file ()
+    (interactive)
+    (let ((default-directory "/sshx:"))
+        (call-interactively #'find-file)))
+
   :custom
   (read-quoted-char-radix 16)
   (display-line-numbers-type 'relative)

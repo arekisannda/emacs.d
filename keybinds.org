@@ -675,6 +675,8 @@
  "d"   '("find dir"     . consult-dir)
  "r"   '("find recent"  . consult-recent-file)
  "F"   '("find file"    . find-file)
+ "C-f" '("sudo file"    . +emacs-sudo-find-file)
+ "C-F" '("remote file"  . +emacs-remote-find-file)
  "f"   '("find pfile"   . project-find-file)
  "B"   '("find buffer"  . consult-buffer)
  "b"   '("find pbuffer" . consult-project-buffer)
