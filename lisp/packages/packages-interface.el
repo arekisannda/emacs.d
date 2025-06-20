@@ -5,10 +5,11 @@
 (require 'util-helpers)
 (require 'util-windows)
 
-(defvar +fonts-fixed-pitch-face "SauceCodePro Nerd Font Mono")
-(defvar +fonts-fixed-pitch-italic-face "SauceCodePro Nerd Font Mono")
-(defvar +fonts-variable-pitch-face "SauceCodePro Nerd Font Propo")
-(set-frame-font "SauceCodePro Nerd Font Propo 9" nil t)
+
+(defvar +fonts-fixed-pitch-face "SauceCodePro NFM")
+(defvar +fonts-fixed-pitch-italic-face "SauceCodePro NFM")
+(defvar +fonts-variable-pitch-face "SauceCodePro NFP")
+(set-frame-font "SauceCodePro NFP 9" nil t)
 
 (defvar +fonts-fixed-pitch-size 90)
 (defvar +fonts-variable-pitch-size 90)

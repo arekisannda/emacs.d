@@ -8,7 +8,7 @@
 #+latex_compiler: lualatex
 #+latex_header: \usepackage{luatexja}
 #+latex_header: \usepackage{luatexja-fontspec}
-#+latex_header: \setmainfont{SauceCodePro Nerd Font Propo}
+#+latex_header: \setmainfont{SauceCodePro NFP}
 #+latex_header: \setmainjfont{Source Han Sans JP}
 #+latex_header: \usepackage{graphicx}
 #+latex_header: \usepackage{hyperref}
