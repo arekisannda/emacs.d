@@ -5,11 +5,14 @@
 (require 'util-helpers)
 (require 'util-windows)
 
-
 (defvar +fonts-fixed-pitch-face "SauceCodePro NFM")
 (defvar +fonts-fixed-pitch-italic-face "SauceCodePro NFM")
 (defvar +fonts-variable-pitch-face "SauceCodePro NFP")
 (set-frame-font "SauceCodePro NFP 9" nil t)
+(set-fontset-font "fontset-default" 'han
+                  (font-spec :family "Source Han Sans" :size 16))
+(set-fontset-font "fontset-default" 'kana
+                  (font-spec :family "Source Han Sans" :size 16))
 
 (defvar +fonts-fixed-pitch-size 90)
 (defvar +fonts-variable-pitch-size 90)
@@ -76,6 +79,7 @@
   (doom-modeline-buffer-file-state-icon nil)
   (doom-modeline-buffer-modification-icon nil)
   (doom-modeline-window-width-limit nil)
+  (doom-modeline-env-version nil)
   (mode-line-right-align-edge 'right-fringe)
   :config
 
@@ -144,8 +148,8 @@
 
   (doom-modeline-def-modeline
     '+default-modeline
-    '(evil vcs process buffer-info-extra buffer-info buffer-position)
-    '(misc-info minibuffer-depth matches selection-info lsp repl check major-mode))
+    '(evil buffer-info-extra buffer-info buffer-position)
+    '(misc-info minibuffer-depth selection-info lsp repl check major-mode))
 
   (defun +doom-modeline-set ()
     (doom-modeline-set-modeline '+default-modeline 'default))

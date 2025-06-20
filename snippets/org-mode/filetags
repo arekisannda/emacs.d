@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: filetag
+# key: filetag
+# --
+#+FILETAGS: :${1}:

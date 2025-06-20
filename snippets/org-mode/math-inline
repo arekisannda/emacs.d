@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: math-inline
+# key: mi
+# group: math
+# --
+\\(`yas-selected-text`$0\\)

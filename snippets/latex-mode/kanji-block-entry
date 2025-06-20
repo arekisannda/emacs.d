@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: kanji-block-entry
+# key: ke
+# group: kanji
+# --
+&& \\\\ \hline & & \\\\
+\multirow[c]{3}*{\LARGE ${1}} & definition: & ${2}\\\\
+                              & kun-yomi: & ${3}\\\\
+                              & on-yomi:  & ${4}\\\\
+$0

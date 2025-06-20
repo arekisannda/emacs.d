@@ -22,7 +22,7 @@
    ;; Please note the list `("-d" "en_US")` contains ACTUAL parameters passed to hunspell
    ;; You could use `("-d" "en_US,en_US-med")` to check with multiple dictionaries
    '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
-  (ispell-program-name "/usr/bin/aspell")
+  (ispell-program-name (executable-find "aspell"))
   (ispell-extra-args '("-a" "soundslike" "--sug-mode=ultra" "--lang=en_US"))
   (ispell-silently-savep t)
   :preface
@@ -64,7 +64,6 @@ Also position fit window to BUFFER and select it."
         (fit-window-to-buffer window nil nil nil nil t))))
   :init
   (advice-add #'ispell-display-buffer :override #'+ispell-display-buffer-override))
-
 
 (use-package google-translate
   :custom

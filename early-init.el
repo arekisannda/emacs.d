@@ -34,9 +34,10 @@
               find-file-visit-truename t
               confirm-nonexistent-file-or-buffer nil
               confirm-kill-processes nil
-              auto-save-default nil
+              auto-save-default t
               make-backup-files nil
               create-lockfiles nil
+              custom-unlispify-tag-names nil
 
               fill-column 100
               visual-fill-column-width 100
@@ -72,7 +73,7 @@
 (blink-cursor-mode -1)
 (menu-bar-mode -1)
 (electric-pair-mode -1)
-(winner-mode -1)
+(winner-mode 1)
 (global-eldoc-mode -1)
 (window-divider-mode 1)
 (epa-file-enable)
@@ -85,47 +86,7 @@
 
 ;; setup elpaca package manager
 
-;; elpaca 0.7 {{{
-;;  (defvar elpaca-installer-version 0.7)
-;;  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-;;  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-;;  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-;;  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.                  :ref nil :depth 1
-;;                                :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-;;                                :build (:not elpaca--activate-package)))
-;;  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-;;         (build (expand-file-name "elpaca/" elpaca-builds-directory))
-;;         (order (cdr elpaca-order))
-;;         (default-directory repo))
-;;    (add-to-list 'load-path (if (file-exists-p build) build repo))
-;;    (unless (file-exists-p repo)
-;;      (make-directory repo t)
-;;      (when (< emacs-major-version 28) (require 'subr-x))
-;;      (condition-case-unless-debug err
-;;          (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-;;                   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-;;                                                   ,@(when-let ((depth (plist-get order :depth)))
-;;                                                       (list (format "--depth=%d" depth) "--no-single-branch"))
-;;                                                   ,(plist-get order :repo) ,repo))))
-;;                   ((zerop (call-process "git" nil buffer t "checkout"
-;;                                         (or (plist-get order :ref) "--"))))
-;;                   (emacs (concat invocation-directory invocation-name))
-;;                   ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-;;                                         "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-;;                   ((require 'elpaca))
-;;                   ((elpaca-generate-autoloads "elpaca" repo)))
-;;              (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-;;            (error "%s" (with-current-buffer buffer (buffer-string))))
-;;        ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-;;    (unless (require 'elpaca-autoloads nil t)
-;;      (require 'elpaca)
-;;      (elpaca-generate-autoloads "elpaca" repo)
-;;      (load "./elpaca-autoloads")))
-;;  (add-hook 'after-init-hook #'elpaca-process-queues)
-;;  (elpaca `(,@elpaca-order))
-;; }}}
-
-(defvar elpaca-installer-version 0.9)
+(defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -140,7 +101,7 @@
   (add-to-list 'load-path (if (file-exists-p build) build repo))
   (unless (file-exists-p repo)
     (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
+    (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
         (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
                   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
@@ -160,7 +121,7 @@
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
@@ -168,12 +129,21 @@
 (elpaca elpaca-use-package
   ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode))
+
 ;; Assume :elpaca t unless otherwise specified.
 (setq use-package-always-ensure t)
 (setq elpaca-hide-initial-build nil)
 (setq elpaca-hide-status-during-build nil)
 
 (unless init-file-debug (server-start))
+
+(defmacro maybe-ensure (nixos-alt default-alt)
+  "Return NIXOS-ALT if EMACS_NIXOS is set, otherwise DEFAULT-ALT.
+NIXOS-ALT and DEFAULT-ALT can be nil, t, or a plist for :ensure."
+  `(if (getenv "EMACS_NIX")
+       ,nixos-alt
+     ,default-alt))
+
 
 (provide 'early-init)
 

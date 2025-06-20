@@ -51,7 +51,7 @@
                                      ))
   ;; (display-line-numbers-mode 1)
   ;; (diff-hl-mode 1)
-  (flyspell-mode)
+  ;; (flyspell-mode)
   (valign-mode t)
 
   (let ((font-family (org-entry-get (point-min) "font-family" t))
@@ -71,6 +71,18 @@
   `(defun ,(intern (concat "+org-agenda-list-key-" key)) ()
      (interactive)
      (org-agenda nil ,key)))
+
+(defmacro +org-capture-key (key)
+  "Create Org-capture shortcut functions for KEY."
+  `(defun ,(intern (concat "+org-capture-key-" key)) ()
+     (interactive)
+     (org-capture nil ,key)))
+
+(defmacro +org-capture-open (description file)
+  "Create Org-capture FILE shortcut functions for DESCRIPTION."
+  `(defun ,(intern (concat "+org-capture-open-" description)) ()
+     (interactive)
+     (org-open-file (concat org-directory "/" ,file))))
 
 (defcustom +org-auto-hide-block-languages '()
   "List of languages to auto hide."
@@ -106,7 +118,8 @@
   (org-special-ctrl-a/e t)
   (org-insert-heading-respect-content t)
   (org-cycle-level-faces nil)
-  (org-read-date-popup-calendar t)
+  (org-read-date-popup-calendar nil)
+  (org-read-date-display-live t)
 
   (org-src-preserve-indentation nil)
   (org-src-window-setup 'current-window)
@@ -151,7 +164,7 @@
   (org-latex-logfiles-extensions (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc"
                                          "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf"
                                          "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf"
-                                         "acn" "acr" "alg" "glg" "gls" "ist")))
+                                         "acn" "acr" "alg" "glg" "gls" "ist" "ltjruby")))
   (org-latex-hyperref-template nil)
   (org-highlight-latex-and-related '(native script entities))
   (org-startup-with-latex-preview t)
@@ -167,15 +180,29 @@
   (org-latex-pdf-process
    '("latexmk -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"))
 
-  (org-agenda-files '("~/Agenda/date"
-                      "~/Agenda/project"
-                      "~/Agenda/work"
-                      "~/Agenda/general"))
   (org-src-block-faces
    `(("japanese" (:height 1.5 :foreground ,(doom-color 'violet)))))
   (org-confirm-babel-evaluate nil)
   (org-babel-default-header-args:go '((:wrap . "example")))
   (org-plantuml-exec-mode 'plantuml)
+
+  (org-default-notes-file "todo.org")
+  (org-capture-templates
+   '(("t" "Todo"
+      entry (file+headline "todo.org" "Tasks")
+      "* TODO %?\n  %i\n"
+      :unnarrowed t)
+     ("s" "Schedule"
+      entry (file+datetree "schedule.org")
+      "%T %?"
+      :time-prompt t
+      :tree-type month
+      :unnarrowed t)
+     ("j" "Journal"
+      entry (file+olp+datetree "journal.org")
+      "%T %?"
+      :unnarrowed t)))
+
   :config
   (dolist (face `((org-level-1 . 1.175)
                   (org-level-2 . 1.150)
@@ -236,13 +263,13 @@
                '(luadvisvgm :programs ("dvilualatex" "dvisvgm")
                             :description "dvi > svg"
                             :message "you need to install the programs: lualatex and dvisvgm."
-                            :image-input-type "dvi"
-                            :image-output-type "svg"
                             :image-size-adjust (1.7 . 1.5)
                             :latex-precompiler
                             ("dvilualatex --output-directory=/tmp --ini --jobname=%b \"&%L\" mylatexformat.ltx %f")
                             :latex-compiler
                             ("dvilualatex --output-format=dvi --shell-escape --interaction=nonstopmode --output-directory=/tmp %f")
+                            :image-input-type "dvi"
+                            :image-output-type "svg"
                             :image-converter
                             ("dvisvgm --page=1- --clipjoin --relative --no-fonts -v3 --bbox=preview --output=%B-%%9p.svg %f")))
 
@@ -288,7 +315,7 @@
   (require 'ox-extra)
   (ox-extras-activate '(latex-header-blocks ignore-headlines)))
 
-(use-package org-super-agenda
+(use-package org-super-agenda :after org
   :custom
   (org-agenda-custom-commands
    '(("n" "Next View"
@@ -329,6 +356,8 @@
                            :order 0
                            )
                     (:auto-category t
+                                    :auto-parent t
+                                    :auto-group t
                                     :order 9)
                     ))))))
      ))
@@ -509,7 +538,7 @@
   :group 'org-roam
   :group 'convenience)
 
-(use-package org-roam
+(use-package org-roam :after org
   :custom
   (+org-roam-default-profile "notes")
   (org-roam-node-display-template (concat "${title:40} " (propertize "${tags:80}" 'face 'org-tag)))

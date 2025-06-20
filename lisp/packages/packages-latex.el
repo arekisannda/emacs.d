@@ -11,7 +11,8 @@
                                      #'cape-file
                                      #'cape-tex
                                      #'cape-keyword))
-  (flyspell-mode))
+  ;; (flyspell-mode)
+  )
 
 (use-package latex
   :ensure
@@ -56,7 +57,7 @@
      )))
 
 (use-package lazytab
-  :ensure (lazytab :type git :host github :repo "karthink/lazytab"))
+  :ensure (lazytab :type git :host github :repo "karthink/lazytab" :ref "1cc4969c81cfa5ca87db598417c4193ada1470e4"))
 
 (defun +latex-scratch-buffer ()
   "Open a new scratch buffer in LaTeX mode."

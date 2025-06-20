@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: typst-block
+# key: typstblock
+# --
+#[\$ $0 \$#]

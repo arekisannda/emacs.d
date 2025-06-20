@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: gnuplot
+# key: <gpt
+# --
+#+begin_src gnuplot :file images/`(org-id-get)`_`(replace-regexp-in-string " +" "_" (downcase (org-get-title)))`_`(truncate (float-time))`.png
+reset
+set term pngcairo size 500,200 font "Arial,`(/ +fonts-fixed-pitch-size 10)`"
+unset key
+set grid
+set autoscale fix
+set xrange [${2}:${3}]
+set yrange [${4}:${5}]
+${0}
+#+end_src

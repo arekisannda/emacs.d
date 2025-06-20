@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: mermaid
+# key: <mmd
+# --
+#+begin_src mermaid :file images/`(org-id-get)`_`(replace-regexp-in-string " +" "_" (downcase (org-get-title)))`_`(truncate (float-time))`.png
+`yas-selected-text` ${0}
+#+end_src

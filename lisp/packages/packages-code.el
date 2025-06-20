@@ -29,7 +29,7 @@
           (make            . ("https://github.com/alemuller/tree-sitter-make"))
           (markdown        . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown" "v0.3.2" "tree-sitter-markdown/src"))
           (markdown-inline . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown" "v0.3.2" "tree-sitter-markdown-inline/src"))
-          (nix             . ("https://github.com/nix-community/tree-sitter-nix" "v0.0.2"))
+          (nix             . ("https://github.com/nix-community/tree-sitter-nix"))
           (python          . ("https://github.com/tree-sitter/tree-sitter-python.git"))
           (rust            . ("https://github.com/tree-sitter/tree-sitter-rust.git"))
           (toml            . ("https://github.com/tree-sitter/tree-sitter-toml"))
@@ -83,6 +83,7 @@
   (leetcode-solution-mode . (lambda () (eglot--managed-mode -1))))
 
 (use-package exercism
+  :disabled
   :ensure (exercism :type git :host github :repo "arekisannda/exercism.el")
   :custom
   (exercism-enable-log-to-message-buffer nil)
@@ -93,7 +94,7 @@
 (use-package rfc-mode)
 
 (use-package treesit-fold
-  :ensure (treesit-fold :type git :host github :repo "abougouffa/treesit-fold"))
+  :ensure (treesit-fold :type git :host github :repo "emacs-tree-sitter/treesit-fold" :tag "0.2.0"))
 
 (use-package hideshow
   :ensure nil
@@ -122,7 +123,7 @@
   :config
   (setq origami-fold-style 'triple-braces))
 
-(use-package prettier)
+(use-package prettier-js)
 
 (provide 'packages-code)
 

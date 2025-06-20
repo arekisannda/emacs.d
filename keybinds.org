@@ -1,7 +1,9 @@
 :PROPERTIES:
 :HEADER-ARGS: :results none
 :END:
+:SETTINGS:
 #+startup: content
+:END:
 
 * Setup
 ** Keybind Hydras
@@ -43,6 +45,14 @@
   ("c" #'diff-hl-show-hunk-copy-original-text :hint nil))
 (hydra-set-property #'+hydra-git-hunk :verbosity 0)
 #+end_src
+*** Evil
+#+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-evil-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'evil-prev-buffer "prev buffer")
+  ("]" #'evil-next-buffer "next buffer"))
+(hydra-set-property #'+hydra-evil-motion :verbosity 0)
+#+end_src
 *** Flymake
 #+begin_src emacs-lisp :tangle yes
 (defhydra +hydra-flymake-motion
@@ -76,6 +86,15 @@
   ("o" #'org-remark-view "view"))
 (hydra-set-property #'+hydra-org-remark-motion :verbosity 0)
 #+end_src
+*** Origami
+#+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-origami-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'origami-previous-fold "prev fold")
+  ("]" #'origami-next-fold "next fold")
+  ("TAB" #'origami-toggle-node "toggle"))
+(hydra-set-property #'+hydra-origami-motion :verbosity 0)
+#+end_src
 *** Text Scaling
 #+begin_src emacs-lisp :tangle yes
 (defhydra +hydra-text-scale
@@ -92,15 +111,6 @@
   ("[" #'xref-go-back "prev xref")
   ("]" #'xref-go-forward "next xref"))
 (hydra-set-property #'+hydra-xref-motion :verbosity 0)
-#+end_src
-*** Evil
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-evil-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  "text scale"
-  ("[" #'evil-prev-buffer "prev buffer")
-  ("]" #'evil-next-buffer "next buffer"))
-(hydra-set-property #'+hydra-evil-motion :verbosity 0)
 #+end_src
 ** Disable Keybinds
 #+begin_src emacs-lisp :tangle yes
@@ -136,12 +146,29 @@
  "k"      '("widget-prev"   . widget-backward)
  "j"      '("widget-next"   . widget-forward))
 #+end_src
+*** Flymake
+#+begin_src emacs-lisp :tangle yes
+(general-create-definer +keybinds-flymake
+  :prefix-command '+keybinds-flymake-command)
+
+(+keybinds-flymake
+  "l" '("buffer errors"  . flymake-show-buffer-diagnostics)
+  "L" '("project errors" . flymake-show-project-diagnostics))
+#+end_src
 *** Google Translate
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'google-translate-minibuffer-keymap
  "<tab>"     '("next translation" . google-translate-next-translation-direction)
  "<backtab>" '("prev translation" . google-translate-previous-translation-direction))
+#+end_src
+*** Helpful
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :keymaps 'global
+ "C-h F" '("helpful function" . helpful-callable)
+ "C-h V" '("helpful variable" . helpful-variable)
+ "C-h K" '("helpful key"      . helpful-key))
 #+end_src
 *** Org Agenda
 #+begin_src emacs-lisp :tangle yes
@@ -150,9 +177,26 @@
 
 (+keybinds-org-agenda
   "." '("org-agenda" . org-agenda)
+
   "a" `("agenda"     . ,(+org-agenda-list-key "a"))
   "n" `("Next View"  . ,(+org-agenda-list-key "n"))
   "t" `("Todo View"  . ,(+org-agenda-list-key "t")))
+#+end_src
+*** Org Capture
+#+begin_src emacs-lisp :tangle yes
+(general-create-definer +keybinds-org-capture
+  :prefix-command '+keybinds-org-capture-command)
+
+(+keybinds-org-capture
+  ;;; capture
+  "t" `("capture todo"     . ,(+org-capture-key "t"))
+  "s" `("capture schedule" . ,(+org-capture-key "s"))
+  "j" `("capture journal"  . ,(+org-capture-key "j"))
+
+  ;;; view capt
+  "T" `("view todo"     . ,(+org-capture-open "todo" "todo.org"))
+  "S" `("view schedule" . ,(+org-capture-open "schedule" "schedule.org"))
+  "J" `("view journal"  . ,(+org-capture-open "journal" "journal.org")))
 #+end_src
 *** Org Remark
 #+begin_src emacs-lisp :tangle yes
@@ -241,22 +285,15 @@
   "d" '("daily capture" . org-roam-dailies-capture-today)
   "D" '("date capture"  . org-roam-dailies-capture-date))
 #+end_src
-*** Flymake
-#+begin_src emacs-lisp :tangle yes
-(general-create-definer +keybinds-flymake
-  :prefix-command '+keybinds-flymake-command)
-
-(+keybinds-flymake
-  "l" '("buffer errors"  . flymake-show-buffer-diagnostics)
-  "L" '("project errors" . flymake-show-project-diagnostics))
-#+end_src
-*** Helpful
+*** RFC
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
- :keymaps 'global
- "C-h F" '("helpful function" . helpful-callable)
- "C-h V" '("helpful variable" . helpful-variable)
- "C-h K" '("helpful key"      . helpful-key))
+ :states 'motion
+ :keymaps 'rfc-mode-map
+
+ "] ]" '("next section" . rfc-mode-next-section)
+ "[ [" '("prev section" . rfc-mode-previous-section)
+ "g s" '("goto section" . rfc-mode-goto-section))
 #+end_src
 ** Coding
 *** Exercism
@@ -303,7 +340,11 @@
   "O" '("show fold all"      . hs-show-all)
   "o" '("show fold"          . hs-show-block)
   "f" '("toggle fold"        . hs-toggle-hiding)
-  "d" '("toggle origami"     . origami-toggle-all-nodes))
+
+  "D" '("toggle origami"     . origami-toggle-all-nodes)
+  "d" '("open origami"       . origami-toggle-node)
+  "[" '("prev origamil"      . +hydra-origami-motion/origami-previous-fold)
+  "]" '("next origami"       . +hydra-origami-motion/origami-next-fold))
 #+end_src
 *** Treesit-Fold
 #+begin_src emacs-lisp :tangle yes
@@ -325,15 +366,28 @@
   "f" '("toggle fold"        . treesit-fold-toggle))
 #+end_src
 ** Language
-*** Typst
+*** Elisp
+**** ERT
 #+begin_src emacs-lisp :tangle yes
-(general-create-definer +keybinds-typst-exec
-  :prefix-command '+keybinds-typst-exec-command)
+(general-create-definer +keybinds-elisp-exec
+  :prefix-command '+keybinds-elisp-exec-command)
 
-(+keybinds-typst-exec
-  "d" '("display"      . typst-ts-watch-display-buffer)
-  "w" '("toggle watch" . typst-ts-watch-mode)
-  "c" '("compile"      . typst-ts-compile))
+(+keybinds-elisp-exec
+  "t" '("ert"  . ert))
+#+end_src
+*** Markdown
+#+begin_src emacs-lisp :tangle yes
+(general-create-definer +keybinds-markdown-exec
+  :prefix-command '+keybinds-markdown-exec-command)
+
+(+keybinds-markdown-exec
+  "v" '("markdown view" . markdown-view-mode))
+
+(general-create-definer +keybinds-markdown-view-exec
+  :prefix-command '+keybinds-markdown-view-exec-command)
+
+(+keybinds-markdown-view-exec
+  "v" '("markdown"      . markdown-mode))
 #+end_src
 *** Rust
 **** Cargo
@@ -351,6 +405,16 @@
   "b" '("cargo bench"  . cargo-process-bench)
   "t" '("cargo test"   . cargo-process-test))
 #+end_src
+*** Typst
+#+begin_src emacs-lisp :tangle yes
+(general-create-definer +keybinds-typst-exec
+  :prefix-command '+keybinds-typst-exec-command)
+
+(+keybinds-typst-exec
+  "d" '("display"      . typst-ts-watch-display-buffer)
+  "w" '("toggle watch" . typst-ts-watch-mode)
+  "c" '("compile"      . typst-ts-compile))
+#+end_src
 *** YAML
 **** yaml-pro-ts-fold
 #+begin_src emacs-lisp :tangle yes
@@ -365,16 +429,6 @@
   "A" '("block beg comment"  . util/folding-add-fold-surround)
   "e" '("inline end comment" . util/folding-add-fold-inline-end)
   "E" '("block end comment"  . util/folding-add-fold-surround-end))
-
-#+end_src
-*** Elisp
-**** ERT
-#+begin_src emacs-lisp :tangle yes
-(general-create-definer +keybinds-elisp-exec
-  :prefix-command '+keybinds-elisp-exec-command)
-
-(+keybinds-elisp-exec
-  "t" '("ert"  . ert))
 #+end_src
 ** Debugging
 *** DAP
@@ -410,6 +464,7 @@
  "w"    '("workspace"       . +keybinds-workspace-command)
  "t"    '("tabs"            . +keybinds-tabs-command)
  "a"    '("agenda"          . +keybinds-org-agenda-command)
+ "s"    '("capture"         . +keybinds-org-capture-command)
  "f"    '("notes"           . +keybinds-org-roam-command)
  "e"    '("flymake"         . +keybinds-flymake-command)
 
@@ -422,28 +477,31 @@
   :prefix-command '+keybinds-workspace-command)
 
 (+keybinds-workspace
-  "p" '("switch project"    . project-switch-project)
-  "d" '("forget project"    . project-forget-project)
-  "D" '("forget project in" . project-forget-projects-under)
-  "K" '("clear project"     . +clear-project)
+  "p"   '("switch project"    . project-switch-project)
+  "d"   '("forget project"    . project-forget-project)
+  "D"   '("forget project in" . project-forget-projects-under)
+  "K"   '("clear project"     . +clear-project)
 
-  "+" '("treemacs add"      . treemacs-add-project-to-workspace)
-  "-" '("treemacs remove"   . treemacs-remove-project-from-workspace)
-  "=" '("treemacs edit"     . treemacs-edit-workspaces)
+  "+"   '("treemacs add"      . treemacs-add-project-to-workspace)
+  "-"   '("treemacs remove"   . treemacs-remove-project-from-workspace)
+  "="   '("treemacs edit"     . treemacs-edit-workspaces)
 
-  "W" '("define activity"   . activities-define)
-  "w" '("switch activity"   . activities-switch)
-  "q" '("suspend activity"  . activities-suspend)
-  "Q" '("revert activity"   . activities-revert)
-  "r" '("resume activity"   . activities-resume)
-  "d" '("kill activity"     . activities-kill)
-  "n" '("new activity"      . activities-new)
-  "D" '("discard activity"  . activities-discard)
-  "S" '("save activities"   . activities-save-all)
+  "n"   '("define activity"   . activities-define)
+  "N"   '("new activity"      . activities-new)
+  "r"   '("switch activity"   . activities-resume)
+  "q"   '("suspend activity"  . activities-suspend)
+  "Q"   '("revert activity"   . activities-revert)
+  "x"   '("kill activity"     . activities-kill)
+  "X"   '("discard activity"  . activities-discard)
+  "w"   '("save activities"   . activities-save-all)
 
-  "P" '("project activity"  . +activites-new-project)
+  "C-E" '("envrc deny"        . envrc-deny)
+  "E"   '("envrc allow"       . envrc-allow)
+  "e"   '("envrc load"        . envrc-reload)
 
-  "l" '("apply layout"      . +layout-choose-windows-layout))
+  "P"   '("project activity"  . +activities-new-project)
+
+  "l"   '("apply layout"      . +layout-choose-windows-layout))
 #+end_src
 ** Buffers
 #+begin_src emacs-lisp :tangle yes
@@ -461,28 +519,18 @@
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'global
+
+ "C-<prior>" '("scroll up"           . +buffer-scroll-up)
+ "C-<next>"  '("scroll down"         . +buffer-scroll-down)
  "S-<next>"  '("scroll left"         . +buffer-scroll-left)
  "S-<prior>" '("scroll right"        . +buffer-scroll-right)
- "<prior>"   '("scroll up"           . +buffer-scroll-up)
- "<next>"    '("scroll down"         . +buffer-scroll-down)
+ "S-C-<prior>" '("scroll up"         . scroll-down-command)
+ "S-C-<next>"  '("scroll down"       . scroll-up-command)
 
  "M-<prior>" '("owindow scroll up"   . +buffer-scroll-other-up)
  "M-<next>"  '("owindow scroll down" . +buffer-scroll-other-down))
 #+end_src
 ** Windows
-*** Select
-#+begin_src emacs-lisp :tangle yes
-(general-define-key
- :states         '(normal visual emacs motion)
- :prefix-map     '+keybinds-window--map
- :prefix         "C-<escape>"
- :global-prefix  "C-<escape>"
-
- "h" '("select treemacs" . treemacs-select-window)
- "l" '("select right"    . +window-select-right-side-window)
- "j" '("select bottom"   . +window-select-bottom-side-window)
- "k" '("select main"     . +window-select-mru-main-window))
-#+end_src
 *** Navigation
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
@@ -494,9 +542,11 @@
 
 (general-define-key
  :keymaps 'override
- "C-/"       '("ace-window"     . ace-window)
  "M-0"       '("focus treemacs" . treemacs-select-window)
- "M-DEL"     '("focus last"     . evil-window-mru))
+ "M-DEL"     '("focus last"     . evil-window-mru)
+ "C-/"       '("ace window"     . ace-select-window)
+ "C-?"      '("ace window"     . ace-swap-window)
+ )
 #+end_src
 ** Tabs
 #+begin_src emacs-lisp :tangle yes
@@ -577,21 +627,22 @@
  :keymaps 'embark-bookmark-map
   "o"   '("embark-ace bookmark" . +vertico-embark-ace-bookmark-jump))
 #+end_src
-** Terminal
-*** VTerm
+** Terminal** VTerm
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'vterm-mode-map
 
- "<escape>"    '("escape"              . vterm--self-insert)
- "C-S-<next>"  '("scroll left"         . +buffer-scroll-left)
- "C-S-<prior>" '("scroll right"        . +buffer-scroll-right)
- "C-<prior>"   '("scroll up"           . +buffer-scroll-up)
- "C-<next>"    '("scroll down"         . +buffer-scroll-down)
+ "<escape>"  '("escape"              . vterm--self-insert)
+ "C-<prior>" '("scroll up"           . +buffer-scroll-up)
+ "C-<next>"  '("scroll down"         . +buffer-scroll-down)
+ "S-<next>"  '("scroll left"         . +buffer-scroll-left)
+ "S-<prior>" '("scroll right"        . +buffer-scroll-right)
+ "S-C-<prior>" '("scroll up"         . scroll-down-command)
+ "S-C-<next>"  '("scroll down"       . scroll-up-command)
 
- "M-<prior>"   '("owindow scroll up"   . +buffer-scroll-other-up)
- "M-<next>"    '("owindow scroll down" . +buffer-scroll-other-down)
- "M-:"         '("eval"                . eval-expression))
+ "M-<prior>" '("owindow scroll up"   . +buffer-scroll-other-up)
+ "M-<next>"  '("owindow scroll down" . +buffer-scroll-other-down)
+ "M-:"       '("eval"                . eval-expression))
 #+end_src
 **** Disable Keybinds
 #+begin_src emacs-lisp :tangle yes
@@ -608,13 +659,20 @@
   "!" '("normal-mode"      . normal-mode)
   "@" '("fundamental-mode" . fundamental-mode)
   "I" '("image-mode"       . image-mode)
-  "r" '("rainbow-mode"     . rainbow-mode))
+  "r" '("rainbow-mode"     . rainbow-mode)
+  "#" '("impatient-mode"   . impatient-mode))
 #+end_src
 *** Help
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
+ :states '(normal insert visual emacs motion)
  :keymaps 'help-map
- "g" '("Emacs Docs" . +emacs-open-docs))
+ "g"     '("Emacs Docs" . +emacs-open-docs))
+
+(general-define-key
+ :states '(normal insert visual emacs motion)
+ :keymaps '(help-mode-map helpful-mode-map)
+ "TAB"   '("button forward" . forward-button))
 #+end_src
 *** Tabulated List
 #+begin_src emacs-lisp :tangle yes
@@ -683,11 +741,11 @@
 
  "C-n" '("find notes"   . org-roam-node-find)
  "C-m" '("find man"     . consult-man)
- "C-m" '("find man"     . consult-man)
  "C-k" '("find kmacro"  . consult-kmacro)
  "C-c" '("find command" . consult-mode-command)
  "C-h" '("find history" . consult-history)
  "C-i" '("find info"    . consult-info)
+ "C-d" '("find rfc"     . rfc-mode-browse)
 
  "C-r" '("find reg"     . consult-register)
  "C-b" '("find marks"   . consult-bookmark)
@@ -719,6 +777,7 @@
  "C-s" '("toggle spelling"      . flyspell-mode)
  "g"   '("git"                  . +keybinds-editor-git-command)
  "i"   '("insert"               . +keybinds-editor-insert-command)
+ "C-i" '("insert"               . +keybinds-editor-insert-command)
  "m"   '("motion"               . +keybinds-editor-motion-command)
  "w"   '("writing"              . +keybinds-editor-writing-command)
 
@@ -750,7 +809,12 @@
          (derived-mode-p 'rust-mode)
          '("rust exec"          . +keybinds-cargo-exec-command)
          (derived-mode-p 'emacs-lisp-mode)
-         '("elisp exec"         . +keybinds-elisp-exec-command)))
+         '("elisp exec"         . +keybinds-elisp-exec-command)
+         (derived-mode-p 'markdown-view-mode)
+         '("markdown exec"       . +keybinds-markdown-view-exec-command)
+         (derived-mode-p 'markdown-mode)
+         '("markdown exec"       . +keybinds-markdown-exec-command)
+         ))
 #+end_src
 ** Text Insertion
 #+begin_src emacs-lisp :tangle yes
@@ -860,6 +924,12 @@
  "C-SPC"   '("completion"       . completion-at-point)
  "C-S-SPC" '("completion"       . completion-preview-insert)
  "M-SPC"   '("completion extra" . +keybinds-completion-extra-command))
+
+(general-define-key
+ :keymaps 'evil-ex-completion-map
+ "TAB"      '("insert"           . corfu-insert)
+ "<tab>"    '("insert"           . corfu-insert))
+
 #+end_src
 **** Corfu
 #+begin_src emacs-lisp :tangle yes
@@ -876,13 +946,13 @@
  [remap end-of-buffer]             #'corfu-last
  [remap move-beginning-of-line]    #'corfu-prompt-beginning
  [remap move-end-of-line]          #'corfu-prompt-end
- [remap evil-force-normal-state]   #'corfu-quit
+ [remap keyboard-quit]             #'corfu-quit
+ [remap completion-at-point]       (lambda() (interactive) (insert " "))
 
- "<escape>" '("abort"            . corfu-quit)
+ "SPC"      '("seperator"        . corfu-insert-separator)
  "C-g"      '("abort"            . corfu-quit)
- "SPC"      '("insert seperator" . corfu-insert-separator)
- "TAB"      '("complete"         . corfu-complete)
- "RET"      '("insert"           . corfu-insert)
+ "TAB"      '("insert"           . corfu-insert)
+ "RET"      '("complete"         . corfu-complete)
  "<up>"     '("previous"         . corfu-previous)
  "<down>"   '("next"             . corfu-next)
  "M-?"      '("info doc"         . corfu-info-documentation)
@@ -979,21 +1049,37 @@
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'evil-window-map
- "=" '("balance windows" . balance-windows)
- "O" '("clear windows"   . +clear-all-windows)
+ "="         '("balance windows" . balance-windows)
+ "O"         '("clear windows"   . +window-kill-non-main-windows)
 
- "u" '("undo window"     . winner-undo)
- "U" '("redo window"     . winner-redo)
+ "u"         '("undo window"     . winner-undo)
+ "U"         '("redo window"     . winner-redo)
 
- "Q" '("quit all"        . evil-quit-all)
+ "Q"         '("quit all"        . evil-quit-all)
 
- "V" '("vsplit"          . evil-window-vsplit)
- "v" `("vsplit focus"    . ,(+window-split-focus-other-window evil-window-vsplit))
- "S" '("ssplit"          . evil-window-split)
- "s" `("ssplit focus"    . ,(+window-split-focus-other-window evil-window-split))
+ "V"         '("vsplit"          . evil-window-vsplit)
+ "v"         `("vsplit focus"    . ,(+window-split-focus-other-window evil-window-vsplit))
+ "S"         '("ssplit"          . evil-window-split)
+ "s"         `("ssplit focus"    . ,(+window-split-focus-other-window evil-window-split))
 
- "d" '("toggle buffer"   . +toggle-dedicated-window-buffer)
- "m" '("window purpose"  . +window-set-purpose))
+ "H"         '("open left"       . windmove-display-left)
+ "J"         '("open down"       . windmove-display-down)
+ "K"         '("open up"         . windmove-display-up)
+ "L"         '("open right"      . windmove-display-right)
+ "M-h"       '("open ace left"   . +windmove-display-ace-left)
+ "M-j"       '("open ace down"   . +windmove-display-ace-down)
+ "M-k"       '("open ace up"     . +windmove-display-ace-up)
+ "M-l"       '("open ace right"  . +windmove-display-ace-right)
+ "."         '("open ace"        . +windmove-display-ace-window)
+
+ "C-<left>"  '("focus treemacs"  . treemacs-select-window)
+ "C-<down>"  '("select bottom"   . +window-select-bottom-side-window)
+ "C-<right>" `("select right 0"  . ,(+window-select-right-side-slot 0))
+ "C-<up>"    `("select right 1"  . ,(+window-select-right-side-slot 1))
+ "p"         '("select main"     . +window-select-mru-main-window)
+
+ "d"         '("toggle buffer"   . +toggle-dedicated-window-buffer)
+ "m"         '("window purpose"  . +window-set-purpose))
 #+end_src
 *** Emacs
 #+begin_src emacs-lisp :tangle yes
@@ -1015,8 +1101,9 @@
   "=" (general-predicate-dispatch nil
         (derived-mode-p 'yaml-ts-mode)
         '("indent"             . yaml-pro-format-ts)
-        (derived-mode-p 'css-ts-mode)
-        '("indent"             . prettier-prettify)
+        (derived-mode-p '(css-ts-mode
+                          html-mode))
+        '("indent"             . prettier-js-prettify)
         t
         '("indent"             . util/indent-buffer))
 
@@ -1038,9 +1125,7 @@
 
 (general-define-key
  :states '(normal visual emacs motion)
- "C-SPC" (general-predicate-dispatch nil
-           (derived-mode-p 'prog-mode)
-           '("lsp" . +keybinds-editor-lsp-command)))
+ "C-SPC" '("lsp" . +keybinds-editor-lsp-command))
 
 (+keybinds-editor-lsp
   "<escape>" #'+eldoc-close-buffer
@@ -1051,7 +1136,9 @@
   "I" '("implementation"   . eglot-find-implementation)
   "r" '("references"       . xref-find-references)
   "R" '("rename"           . eglot-rename)
-  "t" '("type definition"  . eglot-find-typeDefinition))
+  "t" '("type definition"  . eglot-find-typeDefinition)
+  "f" '("action fix"       . eglot-code-action-quickfix)
+  "a" '("action rewrite"   . eglot-code-action-rewrite))
 #+end_src
 *** Text View
 #+begin_src emacs-lisp :tangle yes

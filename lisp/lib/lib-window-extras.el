@@ -5,16 +5,6 @@
 (require 'cl-lib)
 (require 'util-windows)
 
-(setq-default window-sides-slots '(3 0 3 1))
-(setq-default window-sides-vertical nil)
-(setq-default window-persistent-parameters
-              '((window-slot . writable) ;
-                (window-side . writable)
-                (window-purpose . writable)
-                (window-popup . writable)
-                (clone-of . t)
-                (no-delete-other-windows . t)))
-
 (defun +toggle-dedicated-window-buffer (&optional window)
   "Toggle window WINDOW's dedication to its current buffer on or off.
 WINDOW defaults to the selected window."
@@ -64,16 +54,23 @@ If NOSELECT is nil, select and return window."
   :group 'window
   :group 'convenience)
 
-(defun +window-select-right-side-window (&optional prefix)
+(defun +window-select-right-side-window (slot &optional prefix)
   "Toggle right side-window.
 
 With double-prefix PREFIX \\[universal-argument], delete right side windows."
-  (interactive "p")
-  (let ((params '((window-side . right))))
+  (let ((params `((window-side . right)
+                  (window-slot . ,slot))))
     (pcase prefix
       (16 (util/window-with-parameters-delete params))
+      (4 (util/window-with-parameters-delete '((window-side . right))))
       (_ (util/window-toggle-window params
                                     +window-init-right-side-window-function)))))
+
+(defmacro +window-select-right-side-slot (slot)
+  "Define a command for a specific right-side window SLOT."
+  `(defun ,(intern (format "+window-select-right-side-window-slot-%s" slot)) (&optional prefix)
+     (interactive "p")
+     (+window-select-right-side-window ,slot prefix)))
 
 (defun +window-select-bottom-side-window (&optional prefix)
   "Select bottom side-window.
@@ -82,9 +79,16 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
   (interactive "p")
   (let ((params '((window-popup . below))))
     (pcase prefix
-      (16 (util/window-with-parameters-delete params))
+      (4 (util/window-with-parameters-delete params))
       (_ (util/window-toggle-window params
                                     +window-init-bottom-side-window-function)))))
+
+(defcustom +window-kill-non-main-windows-ignore-modes '(treemacs-mode
+                                                        vterm-mode)
+  "A list of modes to ignore when closing non-main windows."
+  :type '(repeat symbol)
+  :group 'window
+  :group 'convenience)
 
 (defun +window-kill-non-main-windows ()
   "Kill side windows and pop up windows."
@@ -93,7 +97,9 @@ With double-prefix PREFIX \\[universal-argument], delete bottom side-windows."
    (lambda (window)
      (if (or (window-parameter window 'window-side)
              (window-parameter window 'window-popup))
-         (delete-window window)))
+         (with-selected-window window
+           (unless (derived-mode-p +window-kill-non-main-windows-ignore-modes)
+             (delete-window window)))))
    'nomini
    nil))
 
@@ -360,6 +366,52 @@ If the inititial window is not a side window, display BUFFER using `:static`"
            (select-frame-set-input-focus frame)
            ,@body)
        (+window-make-frame-with-params ,params ,@body))))
+
+(defun +windmove-display-in-direction (dir &optional arg)
+  "Display the next buffer in the window at direction DIR.
+The next buffer is the buffer displayed by the next command invoked
+immediately after this command (ignoring reading from the minibuffer).
+Create a new window if there is no window in that direction.
+
+By default, select the new window with a displayed buffer.
+If `windmove-display-no-select' is `ignore', then allow the next command
+to decide what window it selects.  With other non-nil values of
+`windmove-display-no-select', this function reselects
+a previously selected old window.
+
+If prefix ARG is \\[universal-argument], reselect a previously selected old window.
+If `windmove-display-no-select' is non-nil, the meaning of
+the prefix argument is reversed and it selects the new window.
+
+When `switch-to-buffer-obey-display-actions' is non-nil,
+`switch-to-buffer' commands are also supported."
+  (let ((no-select (xor (consp arg) windmove-display-no-select)))
+    (display-buffer-override-next-command
+     (lambda (_buffer alist)
+       (let* ((type 'window)
+              (window (split-window nil nil dir)))
+         (balance-windows)
+         (cons window type)))
+     (lambda (old-window new-window)
+       (when (and (not (eq windmove-display-no-select 'ignore))
+                  (window-live-p (if no-select old-window new-window)))
+         (select-window (if no-select old-window new-window))))
+     (format "[display-%s]" dir)
+     )))
+
+(defun +windmove-display-in-direction-around (fn dir &optional args)
+  "`windmove-display-in-direction' around wrapper.
+Use custom `+windmove-display-in-direction' for cardinal DIR;
+default to original FN for all others."
+  (cond
+   ((or (eq dir 'left)
+        (eq dir 'up)
+        (eq dir 'down)
+        (eq dir 'right))
+    (apply #'+windmove-display-in-direction dir args))
+   (t (apply fn dir args))))
+
+(advice-add #'windmove-display-in-direction :around #'+windmove-display-in-direction-around)
 
 (provide 'lib-window-extras)
 

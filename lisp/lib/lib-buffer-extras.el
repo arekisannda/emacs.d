@@ -53,15 +53,31 @@
   (unless +buffer-scroll-up-function (error "Scroll function not set"))
   (funcall +buffer-scroll-up-function +buffer-scroll-lines))
 
+(defcustom +buffer-other-param '((window-side . right))
+  "Parameter for selecting other window."
+  :type '(repeat string)
+  :group 'buffer
+  :group 'convenience)
+
 (defun +buffer-scroll-other-down ()
   "Scroll other window down."
   (interactive)
-  (scroll-other-window +buffer-scroll-lines))
+  (let* ((params +buffer-other-param)
+         (side-window (util/window-with-parameters params nil t)))
+    (with-selected-window side-window
+      (funcall (or (command-remapping #'scroll-up-command)
+                   #'scroll-up-command)
+               +buffer-scroll-lines))))
 
 (defun +buffer-scroll-other-up ()
   "Scroll other window up."
   (interactive)
-  (scroll-other-window-down +buffer-scroll-lines))
+  (let* ((params +buffer-other-param)
+         (side-window (util/window-with-parameters params nil t)))
+    (with-selected-window side-window
+      (funcall (or (command-remapping #'scroll-down-command)
+                   #'scroll-down-command)
+               +buffer-scroll-lines))))
 
 (defun +buffer-minibuffer-scroll-other-down ()
   "Scroll other window down."

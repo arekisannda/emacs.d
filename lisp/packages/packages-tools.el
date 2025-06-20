@@ -5,7 +5,7 @@
 
 (use-package treemacs
   :custom
-  (treemacs-user-mode-line-format '((:eval (doom-modeline-format--+treemacs-modeline))))
+  (treemacs-user-mode-line-format nil)
   (treemacs-is-never-other-window t)
   (treemacs-display-in-side-window t)
   (treemacs-position 'left)
@@ -31,10 +31,6 @@
           (mapcar #'treemacs-workspace->name treemacs--workspaces)))
 
   (defun +treemacs--set-faces ()
-    (setq-local doom-modeline-workspace-name t)
-    (face-remap-add-relative 'doom-modeline-bar
-                             :background (doom-color 'bg-alt)
-                             :foreground (doom-color 'bg-alt))
     (face-remap-add-relative 'default :background (doom-color 'bg-alt))
     (face-remap-add-relative 'treemacs-hl-line-face :background (doom-color 'bg))
     (face-remap-add-relative 'treemacs-peek-mode-indicator-face :background (doom-color 'green))
@@ -71,7 +67,9 @@
 
   (defun +treemacs--setup ()
     (treemacs-filewatch-mode 1)
-    (treemacs-fringe-indicator-mode -1))
+    (treemacs-fringe-indicator-mode 'only-when-focused)
+    (setq mode-line-format nil)
+    )
   :hook
   (kill-emacs . +treemacs--clean-workspaces)
   (treemacs-mode . +treemacs--set-faces)
@@ -81,9 +79,9 @@
   :config
   (treemacs-load-theme "nerd-icons"))
 
-(use-package treemacs-evil :after treemacs)
+(use-package treemacs-evil :after (treemacs evil))
 
-(use-package treemacs-magit :after treemacs)
+(use-package treemacs-magit :after (treemacs magit))
 
 (use-package treemacs-tab-bar :after treemacs
   :config (treemacs-set-scope-type 'Tabs))
@@ -151,9 +149,8 @@
   "Open vterm and run COMMAND.
 The optional ARGS are keyword arguments."
   (interactive "sEnter command: ")
-  (let ((buffer-name (or (plist-get args :title) "*vterm*"))
-        (buffer))
-    (setq buffer (vterm buffer-name))
+  (let* ((buffer-name (or (plist-get args :title) "*vterm*"))
+         (buffer (vterm buffer-name)))
     (vterm-send-string (format "exec %s" command))
     (vterm-send-return)
     buffer))
@@ -187,13 +184,51 @@ The optional ARGS are keyword arguments."
                (unless (eq ibuffer-sorting-mode 'project-file-relative)
                  (ibuffer-do-sort-by-project-file-relative)))))
 
+
+(defcustom +activities-save-all-skip '()
+  "List of functions to skip `activities-save-all'."
+  :type '(set (function :tag "functions")))
+
 (use-package activities
   :custom
   (activities-name-prefix "@")
+  (activities-always-persist t)
+  (activities-anti-save-predicates
+   '(active-minibuffer-window
+     activities--backtrace-visible-p))
+
+  (activities-window-persistent-parameters
+   (list (cons 'header-line-format 'writable)
+         (cons 'mode-line-format 'writable)
+         (cons 'tab-line-format 'writable)
+         (cons 'no-other-window 'writable)
+         (cons 'no-delete-other-windows 'writable)
+         (cons 'window-preserved-size 'writable)
+         (cons 'window-side 'writable)
+         (cons 'window-slot 'writable)
+         (cons 'window-popup 'writable)))
+
+  (activities-mode-idle-frequency 30)
+  (+activities-save-all-skip
+   '((lambda() (when (fboundp 'treemacs-is-treemacs-window-selected?) (treemacs-is-treemacs-window-selected?)))))
+  (activities-bookmark-store nil)
   :init
   (activities-mode)
   (activities-tabs-mode)
-  (setf tab-bar-tab-face-function #'tab-bar-tab-face-default)
+
+  (defun +activities-save-all-around (fn &rest args)
+    (unless (run-hook-with-args-until-success '+activities-save-all-skip)
+      (apply fn args)))
+
+  (advice-add #'activities-save-all :around #'+activities-save-all-around)
+
+  (defun +activities-suspend-eglot (activity)
+    (activities-with activity
+      (let* ((project-name (activities--project-name)))
+        (+eglot--shutdown-project project-name))))
+
+  (advice-add #'activities-suspend :before #'+activities-suspend-eglot)
+
   ;; Prevent `edebug' default bindings from interfering.
   (setq edebug-inhibit-emacs-lisp-mode-bindings t))
 
@@ -228,7 +263,18 @@ The optional ARGS are keyword arguments."
 
 (use-package affe
   :custom
-  (affe-find-command "rg --color=never --files --hidden --glob=!.git/*"))
+  (affe-find-command "rg --color=never --no-ignore --files --hidden --glob=!.git/*")
+  (affe-regexp-compiler #'affe-orderless-regexp-compiler)
+  :init
+  (defun affe-orderless-regexp-compiler (input _type _ignorecase)
+    (setq input (cdr (orderless-compile input)))
+    (cons input (apply-partially #'orderless--highlight input t)))
+  (setq affe-regexp-compiler #'affe-orderless-regexp-compiler)
+  :config
+  ;; Manual preview key for `affe-grep'
+  (consult-customize
+   affe-grep
+   :preview-key nil))
 
 (use-package embark
   :custom
@@ -307,8 +353,13 @@ Executes FN with ARGS."
 
 (use-package orderless
   :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-styles '(orderless partial-completion basic))
+  ;; (completion-styles '(orderless))
+  (completion-category-defaults nil)
+  (completion-category-overrides nil)
+  (completion-ignore-case t)
+  (orderless-smart-case nil)
+  ;; (completion-category-overrides '((file (styles basic partial-completion))))
   :init
   (setq completion-category-defaults nil)
   (defun +consult-orderless-regexp-compiler (input type &rest _config)
@@ -353,19 +404,26 @@ Executes FN with ARGS."
   (tab-bar-new-tab)
   (dashboard-open))
 
-(defun +activites-new-project ()
+(defun +activities-new-project ()
   "Create new activity with project."
   (interactive)
   (+create-new-tab)
   (condition-case err
       (progn
-        (call-interactively #'project-switch-project)
-        (call-interactively #'activities-define)
-        (treemacs))
+        (let ((default-directory "~/"))
+          (call-interactively #'project-switch-project)
+          (call-interactively #'activities-define)
+          (treemacs)))
     ((error quit)
      (tab-bar-close-tab))))
 
 (use-package ess)
+
+(use-package pdf-tools
+  :mode
+  ("\\.pdf\\'" . pdf-view-mode))
+
+(use-package impatient-mode)
 
 (provide 'packages-tools)
 

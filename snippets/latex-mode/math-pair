@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: math-pair
+# key: mpr
+# group: math
+# --
+(`yas-selected-text`$0)

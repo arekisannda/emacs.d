@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: emacs configuration header
+# key: config-header
+# key: cfgheader
+# --
+
+;;; ${1:name}.el --- ${2:Description} -*- lexical-binding: t; -*-
+;;; Commentary:
+${3:}
+;;; Code:
+
+(provide '${4:$1})
+
+;;; $1.el ends here

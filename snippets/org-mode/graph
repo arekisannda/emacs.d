@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: graph
+# key: graph
+# --
+#+begin_src octave :results file
+figure( 1, "visible", "off" );
+${2:}
+print -dpng ${1:octave-chart}.png;
+ans = "$1.png";
+#+end_src
+

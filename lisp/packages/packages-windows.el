@@ -9,6 +9,19 @@
 (setq +wm-left-width 40)
 (setq +wm-bottom-height 20)
 
+(setq-default window-sides-slots '(3 0 3 1))
+(setq-default window-sides-vertical nil)
+(setq-default even-window-sizes nil)
+(setq-default window-persistent-parameters
+              '((window-slot . writable) ;
+                (window-side . writable)
+                (window-purpose . writable)
+                (window-popup . writable)
+                (clone-of . t)
+                (no-delete-other-windows . t)))
+;; (setq-default fit-window-to-buffer nil)
+;; (advice-add 'fit-window-to-buffer :override #'ignore)
+
 (use-package shackle
   :custom
   (shackle-default-rule nil)
@@ -16,31 +29,23 @@
    `((("*Capture*") :ignore t)
      (("\\*Org Src.*\\*$") :same t :regexp t)
 
-     ((flymake-diagnostics-buffer-mode
-       flymake-project-diagnostics-mode
-       elpaca-log-mode)
-      :custom +display-buffer-in-popup-window
-      :side below :size ,+wm-bottom-height
-      :dedicated right
-      :fixed height
-      :select t)
+     ;; right-0 {{{
 
-     ((backtrace-mode)
+     (("^\\*eldoc.*\\*"
+       "^ \\*eglot doc\\*"
+       "^\\*yasnippet-capf-doc\\*"
+       "^\\*corfu doc.*\\**")
       :custom +display-buffer-in-side-window
-      :side bottom :slot 0
-      :fixed height
-      :select t)
+      :side right :slot 0 :size ,+wm-right-width
+      :fixed width
+      :regexp t)
 
      ((elpaca-ui-mode
        magit-status-mode
-       calc-mode
 
-       "*Ibuffer*"
-       "*elpaca-manager*"
        "*Customize Apropos*")
       :custom +display-buffer-in-side-window
       :side right :slot 0 :size ,+wm-right-width
-      :dedicated right
       :fixed width
       :select t)
 
@@ -50,7 +55,6 @@
        "\\*Org .*\\*$")
       :custom +display-buffer-in-side-window
       :side right :slot 0 :size ,+wm-right-width
-      :dedicated right
       :fixed width
       :select t
       :regexp t)
@@ -65,40 +69,59 @@
       :side right :slot 0 :size ,+wm-right-width
       :fixed width)
 
-     (("^\\*eldoc.*\\*"
-       "\\*eglot doc\\*")
-      :custom +display-buffer-in-side-window
-      :side right :slot 0 :size ,+wm-right-width
-      :fixed width
-      :regexp t)
+     ;; }}}
 
-     ((magit-log-mode
-       magit-diff-mode
-       calc-trail-mode)
+     ;; right-1 {{{
+
+     ((flymake-diagnostics-buffer-mode
+       flymake-project-diagnostics-mode
+       magit-log-mode)
       :custom +display-buffer-in-side-window
       :side right :slot 1 :size ,+wm-right-width
       :fixed width
       :select t)
 
-     ((vterm-mode
+     ((magit-diff-mode)
+      :custom +dynamic-display-buffer
+      :static (
+               :action +display-buffer-in-side-window
+               :side right :slot 1 :size ,+wm-right-width
+               :fixed width
+               :select t)
+      :dynamic
+      (((text-mode)
+        :action +display-buffer-in-side-window
+        :side right :slot 1 :size ,+wm-right-width
+        :fixed width)
+       ))
+
+     ;; }}}
+
+     ;; bottom {{{
+
+     ((
        comint-mode
+       elpaca-log-mode
+       ert-results-mode
        eshell-mode
-       term-mode
+       grep-mode
+       lisp-interaction-mode
        log4e-mode
        messages-buffer-mode
-       xref--xref-buffer-mode
-       grep-mode
        occur-mode
-       compilation-mode
        org-roam-mode
-       lisp-interaction-mode
-       ert-results-mode
+       term-mode
+       vterm-mode
+       xref--xref-buffer-mode
 
+       "*Error*"
+       "*Ibuffer*"
+       "*Org Select*"
+       "*elpaca-manager*"
        "*latex-scratch*"
        "*org-scratch*"
-       "*Org Select*"
        "*remark-notes*"
-       "*Error*")
+       )
       :custom +display-buffer-in-popup-window
       :side below :size ,+wm-bottom-height
       :dedicated bottom
@@ -116,28 +139,28 @@
       :fixed height
       :select t)
 
+     (("^\\*EGLOT.*events\\*$"
+       "^ \\*EGLOT.*stderr\\*$")
+      :custom +display-buffer-in-popup-window
+      :side below :size ,+wm-bottom-height
+      :dedicated bottom
+      :fixed height
+      :select t
+      :regexp t)
+
+     ;; }}}
+
+     ((pdf-view-mode)
+      :mru t
+      :select t)
+
      ;; base modes {{{
 
-     ((prog-mode
-       conf-mode)
-      :custom +dynamic-display-buffer
-      :static (:mru t :select t)
-      :dynamic
-      (((help-mode
-         prog-mode)
-        :action +display-buffer-in-side-window
-        :side right :slot 1 :size ,+wm-right-width
-        :fixed width
-        :select t)
-
-       (embark-collect-mode :mru t :select t)
-
-       ((backtrace-mode
-         compilation-mode)
-        :action +display-buffer-in-side-window
-        :side right :slot 0 :size ,+wm-right-width
-        :fixed width
-        :select t)))
+     ((backtrace-mode)
+      :custom +display-buffer-in-side-window
+      :side bottom :slot 0
+      :fixed height
+      :select t)
 
      (outline-mode
       :custom +dynamic-display-buffer
@@ -165,6 +188,33 @@
       :side below :size ,+wm-bottom-height
       :dedicated bottom
       :select t)
+
+     ((compilation-mode)
+      :custom +display-buffer-in-popup-window
+      :side below :size ,+wm-bottom-height
+      :dedicated bottom
+      :fixed height)
+
+     ((prog-mode
+       text-mode
+       conf-mode)
+      :custom +dynamic-display-buffer
+      :static (:mru t :select t)
+      :dynamic
+      (((help-mode
+         prog-mode
+         Custom-mode
+         embark-collect-mode)
+        :mru t :select t)
+
+
+       ((backtrace-mode
+         compilation-mode)
+        :action +display-buffer-in-side-window
+        :side right :slot 0 :size ,+wm-right-width
+        :fixed width
+        :select t))
+      )
 
      ;; }}}
      ))

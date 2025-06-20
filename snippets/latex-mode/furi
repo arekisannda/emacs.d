@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: ruby-furi
+# key: rb
+# group: kanji
+# --
+\ruby{${1}}{${2}}

@@ -72,6 +72,7 @@
 
   (defun +emacs-dedicated-frame-exit-after (&rest r)
     (when (frame-parameter nil '+dedicated-frame) (delete-frame nil nil)))
+
   (advice-add #'kill-current-buffer  :after #'+emacs-dedicated-frame-exit-after)
   (advice-add #'org-capture-finalize :after #'+emacs-dedicated-frame-exit-after)
   (advice-add #'org-capture-kill     :after #'+emacs-dedicated-frame-exit-after)
@@ -80,7 +81,7 @@
     (interactive)
     (find-file (expand-file-name "keybinds.org" user-emacs-directory)))
 
-  (defun +emacs-load-keybinds ()
+  (defun +emacs-load-files ()
     (org-babel-load-file (expand-file-name "keybinds.org" user-emacs-directory)))
 
   (defun +emacs-refresh-messages-buffer ()
@@ -89,14 +90,20 @@
   (defun +emacs-sudo-find-file ()
     (interactive)
     (let ((default-directory "/sudo::/"))
-        (call-interactively #'find-file)))
+      (call-interactively #'find-file)))
 
   (defun +emacs-remote-find-file ()
     (interactive)
     (let ((default-directory "/sshx:"))
-        (call-interactively #'find-file)))
+      (call-interactively #'find-file)))
+
+  (defun +emacs-httpd-server-project (&optional project)
+    (interactive)
+    (httpd-serve-directory (or project (project-root (project-current)))))
 
   :custom
+  (scroll-conservatively most-positive-fixnum)
+  (scroll-error-top-bottom t)
   (read-quoted-char-radix 16)
   (display-line-numbers-type 'relative)
   (minibuffer-message-clear-timeout 0)
@@ -109,7 +116,7 @@
   (messages-buffer-mode . +emacs-message-buffer-setup)
   (minibuffer-setup . +emacs-minibuffer-setup)
   (minibuffer-exit . +emacs-minibuffer-exit)
-  (emacs-startup . +emacs-load-keybinds)
+  (emacs-startup . +emacs-load-files)
   (emacs-startup . +emacs-refresh-messages-buffer)
   (elpaca-after-init . +emacs-tuning-configurations)
   (before-save . +emacs-create-directory-on-save))

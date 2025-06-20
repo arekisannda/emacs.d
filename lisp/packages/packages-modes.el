@@ -9,6 +9,13 @@
   (setq-local truncate-lines t)
   (visual-line-mode -1)
 
+  (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
+  (rainbow-delimiters-mode 1)
+  (origami-mode 1)
+  ;; (flyspell-prog-mode)
+  (indent-bars-mode 1)
+
   (setq-local origami-fold-style 'triple-braces)
   (origami-close-all-nodes (current-buffer)))
 
@@ -19,18 +26,20 @@
 (use-package emacs
   :ensure nil
   :hook
-  (prog-mode . +lang-prog-mode-setup)
-  (prog-mode . diff-hl-mode)
-  (prog-mode . display-line-numbers-mode)
-  (prog-mode . rainbow-delimiters-mode)
-  (prog-mode . origami-mode)
-  (prog-mode . flyspell-prog-mode)
-  (prog-mode . indent-bars-mode)
   (prog-mode . +lang-prog-mode-setup))
 
 ;; }}}
 
 ;; rust {{{
+
+(defun +lang-rust-cargo-setup ()
+  "Setup to run for `cargo` modes."
+  (setq-local cargo-process--custom-path-to-bin (executable-find "cargo"))
+  (setq-local cargo-process--rustc-cmd (executable-find "rustc")))
+
+(defun +lang-rust-mode-setup ()
+  "Setup to run for `rust` modes."
+  (add-hook '+envrc-update-hook #'+lang-rust-cargo-setup))
 
 (use-package cargo)
 
@@ -38,15 +47,20 @@
   :mode
   ("\\.rs\\'" . rust-ts-mode)
   :hook
-  (rust-ts-mode . util/lsp-ensure))
+  (rust-ts-mode . +lang-rust-mode-setup))
 
 ;; }}}
 
 ;; go {{{
 
+(defun +lang-go-flymake-setup ()
+  "Setup to run for `flymake-golanci`."
+  (setq-local flymake-golangci-executable (executable-find "golangci-lint")))
+
 (defun +lang-go-mode-setup ()
   "Setup to run for `go` modes."
-  (add-hook 'before-save-hook #'gofmt-before-save nil 'local))
+  (add-hook 'before-save-hook #'gofmt-before-save nil 'local)
+  (add-hook '+envrc-update-hook #'+lang-go-flymake-setup))
 
 (use-package go-mode
   :custom
@@ -54,8 +68,7 @@
   :mode
   ("\\.go\\'" . go-ts-mode)
   :hook
-  (go-ts-mode . +lang-go-mode-setup)
-  (go-ts-mode . util/lsp-ensure))
+  (go-ts-mode . +lang-go-mode-setup))
 
 ;; }}}
 
@@ -68,7 +81,6 @@
 (use-package emacs
   :ensure nil
   :hook
-  (c-ts-base-mode . util/lsp-ensure)
   (c-ts-base-mode . +lang-clang-mode-setup))
 
 ;; }}}
@@ -87,17 +99,7 @@
                 (add-hook 'flymake-diagnostic-functions #'python-flymake t t))
               nil t))
   :hook
-  (python-ts-mode . util/lsp-ensure)
   (python-ts-mode . +lang-python-mode-setup))
-
-;; }}}
-
-;; csharp {{{
-
-(use-package emacs
-  :ensure nil
-  :hook
-  (csharp-ts-mode . util/lsp-ensure))
 
 ;; }}}
 
@@ -126,7 +128,6 @@
 
 (use-package lua-mode
   :hook
-  (lua-mode . util/lsp-ensure)
   (lua-mode . +lang-lua-mode-setup))
 
 ;; }}}
@@ -151,12 +152,6 @@
   (typst-ts-mode-enable-raw-blocks-highlight t)
   (typst-ts-mode-highlight-raw-blocks-at-startup t)
   :hook
-  (typst-ts-mode . diff-hl-mode)
-  (typst-ts-mode . display-line-numbers-mode)
-  (typst-ts-mode . rainbow-delimiters-mode)
-  (typst-ts-mode . origami-mode)
-  (typst-ts-mode . flyspell-prog-mode)
-  (typst-ts-mode . indent-bars-mode)
   (typst-ts-mode . +lang-prog-mode-setup))
 
 ;; }}}
@@ -215,9 +210,11 @@
 
 ;; nix-mode {{{
 
-(use-package nix-mode
+(use-package nix-ts-mode
   :mode
-  ("\\.nix\\'" . nix-mode))
+  ("\\.nix\\'" . nix-ts-mode))
+
+(use-package nix-mode)
 
 ;; }}}
 

@@ -4,6 +4,7 @@
 ;;; Code:
 (require 'lib-layouts)
 (require 'cl-lib)
+(require 'windmove)
 
 (use-package posframe
   :custom
@@ -29,7 +30,7 @@
   :ensure nil
   :custom
   (which-key-popup-type 'side-window)
-  (which-key-sort-order 'which-key-key-order)
+  (which-key-sort-order 'which-key-description-order)
   (which-key-show-prefix 'echo)
   (which-key-side-window-slot 0)
   (which-key-side-window-location 'left)
@@ -174,7 +175,8 @@
           (?F aw-split-window-fair "Split Fair Window")
           (?v aw-split-window-vert "Split Vert Window")
           (?b aw-split-window-horz "Split Horz Window")
-          (?? aw-show-dispatch-help)))
+          (?? aw-show-dispatch-help)
+          ))
 
   (defun +window-check-aw-ignored-p (orig-func &rest args)
     ;; Ignore side-windows or popup-windows
@@ -185,6 +187,58 @@
        (t (apply orig-func args)))))
 
   (advice-add #'aw-ignored-p :around #'+window-check-aw-ignored-p)
+
+  (defun +windmove-display-ace-window (&optional arg)
+    "Display the next buffer in window to the specified with ace-window.
+
+If prefix ARG is \\[universal-argument], reselect a previously selected old window.
+If `windmove-display-no-select' is non-nil, the meaning of
+the prefix argument is reversed and it selects the new window."
+    (interactive "P")
+    (let ((no-select (xor (consp arg) windmove-display-no-select)))
+      (display-buffer-override-next-command
+       (lambda (_buffer alist)
+         (let* ((type 'window)
+                (window (ace-select-window)))
+           (cons window type)))
+       (lambda (old-window new-window)
+         (when (and (not (eq windmove-display-no-select 'ignore))
+                    (window-live-p (if no-select old-window new-window)))
+           (select-window (if no-select old-window new-window))))
+       (format "[display-ace]")
+       )))
+
+  (defun +windmove-display-ace-in-direction (dir &optional arg)
+    (let ((no-select (xor (consp arg) windmove-display-no-select)))
+      (display-buffer-override-next-command
+       (lambda (_buffer alist)
+         (let* ((type 'window)
+                (window (ace-select-window)))
+           (setq window (split-window nil nil dir) type 'window)
+           (balance-windows)
+           (cons window type)))
+       (lambda (old-window new-window)
+         (when (and (not (eq windmove-display-no-select 'ignore))
+                    (window-live-p (if no-select old-window new-window)))
+           (select-window (if no-select old-window new-window))))
+       (format "[display-ace-%s]" dir)
+       )))
+
+  (defun +windmove-display-ace-left (&optional arg)
+    (interactive "P")
+    (+windmove-display-ace-in-direction 'left arg))
+
+  (defun +windmove-display-ace-up (&optional arg)
+    (interactive "P")
+    (+windmove-display-ace-in-direction 'up arg))
+
+  (defun +windmove-display-ace-down (&optional arg)
+    (interactive "P")
+    (+windmove-display-ace-in-direction 'down arg))
+
+  (defun +windmove-display-ace-right (&optional arg)
+    (interactive "P")
+    (+windmove-display-ace-in-direction 'right arg))
   :hook
   (elpaca-after-init . ace-window-posframe-mode))
 
@@ -195,19 +249,64 @@
   (flymake-show-diagnostics-at-end-of-line nil)
   (flymake-indicator-type nil)
   (flymake-fringe-indicator-position nil)
+  :custom-face
+  (flymake-warning
+   ((nil :underline (:style wave :color ,(doom-color 'orange)))))
+  :init
+  (defun +flymake-show-buffer-diagnostics ()
+    "Show a list of Flymake diagnostics for current buffer."
+    (interactive)
+    (unless flymake-mode
+      (user-error "Flymake mode is not enabled in the current buffer"))
+    (let* ((name (flymake--diagnostics-buffer-name))
+           (source (current-buffer))
+           (target (or (get-buffer name)
+                       (with-current-buffer (get-buffer-create name)
+                         (flymake-diagnostics-buffer-mode)
+                         (current-buffer)))))
+      (with-current-buffer target
+        (setq flymake--diagnostics-buffer-source source)
+        (revert-buffer)
+        (display-buffer (current-buffer)
+                        `((display-buffer-reuse-window
+                           display-buffer-below-selected))))))
+
+  (advice-add #'flymake-show-buffer-diagnostics :override #'+flymake-show-buffer-diagnostics)
+
+  (defun +flymake-show-project-diagnostics ()
+    "Show a list of Flymake diagnostics for the current project."
+    (interactive)
+    (let* ((prj (project-current))
+           (root (project-root prj))
+           (buffer (flymake--project-diagnostics-buffer root)))
+      (with-current-buffer buffer
+        (flymake-project-diagnostics-mode)
+        (setq-local flymake--project-diagnostic-list-project prj)
+        (revert-buffer)
+        (display-buffer (current-buffer)
+                        `((display-buffer-reuse-window
+                           display-buffer-at-bottom))))))
+
+  (advice-add #'flymake-show-project-diagnostics :override #'+flymake-show-project-diagnostics)
   :hook
   (prog-mode . flymake-mode)
   (text-mode . flymake-mode))
 
-(use-package flymake-python-pyflakes
-  :custom
-  (flymake-python-pyflakes-executable "flake8")
+(use-package flymake-ruff
   :hook
-  (python-ts-mode . flymake-python-pyflakes-load))
+  (python-ts-mode . flymake-ruff-load))
 
 (use-package flymake-golangci
   :hook
   (go-ts-mode . flymake-golangci-load))
+
+(use-package flymake-clippy
+  :hook
+  (rust-ts-mode . flymake-clippy-setup-backend))
+
+(use-package flymake-json
+  :hook
+  (json-mode . flymake-json-load))
 
 (provide 'packages-utils)
 

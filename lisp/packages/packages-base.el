@@ -20,9 +20,7 @@
 
 (use-package general)
 
-(use-package hydra
-  :init
-  (setq hydra-key-doc-function nil))
+(use-package hydra)
 
 (use-package compat)
 
@@ -39,9 +37,11 @@
   (evil-want-integration t)
   (evil-default-state 'normal)
   (evil-undo-system 'undo-fu)
+  (evil-split-window-below nil)
+  (evil-vsplit-window-right nil)
   (+buffer-scroll-left-function #'evil-scroll-column-left)
   (+buffer-scroll-right-function #'evil-scroll-column-right)
-  (+buffer-scroll-up-function #'evil-scroll-line-up)
+  (+buffer-scroll-up-function #'evil-scroll-line-up )
   (+buffer-scroll-down-function #'evil-scroll-line-down)
   :config
   (setq evil-emacs-state-modes
@@ -73,6 +73,7 @@
           Man-mode
           speedbar-mode
           undo-tree-visualizer-mode
+          rfc-mode
           woman-mode))
   :hook
   (elpaca-after-init . evil-mode))
@@ -97,6 +98,7 @@
 (use-package evil-args :after evil)
 
 (use-package evil-snipe :after evil
+  :diminish evil-snipe-mode
   :custom
   (evil-snipe-enable-highlight t)
   :hook
@@ -171,6 +173,21 @@
   (setq editorconfig-lisp-use-default-indent t)
   (editorconfig-mode t)
   :diminish editorconfig-mode)
+
+(defvar-local +envrc-update-hook '()
+  "Buffer-local hook to run after `envrc--update'.")
+
+(defun +envrc--update-after-setup ()
+  "Setup to run after `envrc--update'."
+  (run-hooks '+envrc-update-hook))
+
+(use-package envrc
+  :custom
+  (envrc-show-summary-in-minibuffer nil)
+  :hook
+  (elpaca-after-init . envrc-global-mode)
+  :init
+  (advice-add #'envrc--update :after #'+envrc--update-after-setup))
 
 (use-package nerd-icons
   :custom

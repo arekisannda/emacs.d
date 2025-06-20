@@ -8,8 +8,9 @@
 #+latex_compiler: lualatex
 #+latex_header: \usepackage{luatexja}
 #+latex_header: \usepackage{luatexja-fontspec}
+#+latex_header: \usepackage{luatexja-ruby}
 #+latex_header: \setmainfont{SauceCodePro NFP}
-#+latex_header: \setmainjfont{Source Han Sans JP}
+#+latex_header: \setmainjfont[Scale=MatchLowercase,Script=kana]{Source Han Sans}
 #+latex_header: \usepackage{graphicx}
 #+latex_header: \usepackage{hyperref}
 #+latex_header: \usepackage{multirow}
