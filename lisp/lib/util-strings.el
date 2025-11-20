@@ -21,6 +21,11 @@
   "Add property FACE to STR."
   (prog1 str (add-face-text-property 0 (length str) face nil str)))
 
+(defmacro util/strings-insert-pair (desc open close)
+  `(defun ,(intern (format "+insert-pair-%s" desc)) (&optional arg)
+     (interactive "P")
+     (insert-pair arg ,open ,close)))
+
 (provide 'util-strings)
 
 ;;; util-strings.el ends here

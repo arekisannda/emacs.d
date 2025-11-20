@@ -7,21 +7,15 @@
   (shut-up
     (display-line-numbers-mode 1))
 
-  (util/lang--add-to-capf-list (list #'cape-dabbrev
-                                     #'cape-file
-                                     #'cape-tex
-                                     #'cape-keyword))
-  ;; (flyspell-mode)
-  )
+  (util/add-capf-hooks
+   #'cape-dabbrev
+   #'cape-file
+   #'cape-tex
+   #'cape-keyword)
+
+  (flyspell-mode))
 
 (use-package latex
-  :ensure
-  (auctex :version (lambda (_) (require 'tex-site) AUCTeX-version)
-          :files ("*.el" "*.info" "dir" "doc" "etc" "images" "latex" "style")
-          :pre-build (("./autogen.sh")
-                      ("./configure"
-                       "--with-texmf-dir=$EMACS_USER_DIRECTORY/var")
-                      ("make")))
   :custom
   (TeX-engine 'xetex)
   (TeX-electric-math (cons "$" "$"))
@@ -42,7 +36,7 @@
   :custom
   (cdlatex-use-dollar-to-ensure-math nil)
   (cdlatex-math-modify-alist
-   '(( ?l "\\mathbbm" "\\textbf" t nil nil )))
+   '(( ?l "\\mathbb" "\\textbf" t nil nil )))
   (cdlatex-env-alist
    '(("tikzpicture"
       "\\begin{tikzpicture}
@@ -56,15 +50,14 @@
       nil)
      )))
 
-(use-package lazytab
-  :ensure (lazytab :type git :host github :repo "karthink/lazytab" :ref "1cc4969c81cfa5ca87db598417c4193ada1470e4"))
+(use-package lazytab)
 
 (defun +latex-scratch-buffer ()
   "Open a new scratch buffer in LaTeX mode."
   (interactive)
   (let ((buffer (get-buffer-create "*latex-scratch*")))
     (with-current-buffer buffer
-      (latex-mode))
+      (LaTeX-mode))
     (display-buffer buffer)))
 
 (provide 'packages-latex)

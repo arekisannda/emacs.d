@@ -3,6 +3,7 @@
 
 ;;; Code:
 (require 'hideshow)
+(require 'cl-lib)
 
 (defun util/read-file-to-string (file)
   "Read entire content of FILE to string."
@@ -45,11 +46,29 @@
   "Unload FEATURE if present."
   (and (featurep feature) (unload-feature feature t)))
 
+(defvar-local util/fold-type nil)
+(defvar-local util/fold-show-all nil)
+(defvar-local util/fold-hide nil)
+
+(defun util/get-fold-overlays ()
+  "Retrieve fold overlays."
+  (when (and (boundp 'util/fold-type) util/fold-type)
+    (cl-remove-if-not
+     (lambda (ov) (eq (overlay-get ov 'invisible) util/fold-type))
+     (overlays-in (point-min) (point-max)))))
+
 (defun util/indent-buffer ()
   "Indent BUFFER."
   (interactive)
   (save-excursion
-    (indent-region (point-min) (point-max))))
+    (let ((overlay-starts (mapcar #'overlay-start (util/get-fold-overlays))))
+      (and (functionp util/fold-show-all) (funcall util/fold-show-all))
+      (indent-region (point-min) (point-max))
+      (when (functionp util/fold-hide)
+        (dolist (starts overlay-starts)
+          (goto-char starts)
+          (funcall util/fold-hide)
+          )))))
 
 (defmacro util/custom-faces (&rest faces)
   "Customize FACES."

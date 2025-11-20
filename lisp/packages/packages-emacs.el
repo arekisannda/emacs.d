@@ -4,9 +4,7 @@
 ;;; Code:
 (require 'util-helpers)
 
-(use-package emacs
-  :ensure nil
-  ;;:diminish auto-revert-mode
+(use-package nil ;; emacs configurations
   :preface
   (defun +emacs-tuning-configurations ()
     ;; performance tuning
@@ -15,8 +13,7 @@
     (setq-default read-process-output-max (* 1024 1024)))
 
   (defcustom +emacs-read-only-rules
-    (list (format "^%s" (expand-file-name elpaca-directory))
-          (format "^%s" (expand-file-name package-user-dir))
+    (list (format "^%s" (expand-file-name package-user-dir))
           "^/usr/share/emacs/")
     "List of read-only file prefixes."
     :group 'convenience
@@ -82,10 +79,12 @@
     (find-file (expand-file-name "keybinds.org" user-emacs-directory)))
 
   (defun +emacs-load-files ()
+    (interactive)
     (org-babel-load-file (expand-file-name "keybinds.org" user-emacs-directory)))
 
   (defun +emacs-refresh-messages-buffer ()
-    (kill-buffer (messages-buffer)))
+    (with-current-buffer (messages-buffer)
+      (messages-buffer-mode)))
 
   (defun +emacs-sudo-find-file ()
     (interactive)
@@ -101,6 +100,16 @@
     (interactive)
     (httpd-serve-directory (or project (project-root (project-current)))))
 
+  (defun +emacs-client-open-new ()
+    (interactive)
+    (dashboard-refresh-buffer))
+
+  (defun +emacs-client-open ()
+    (interactive)
+    (with-current-buffer (window-buffer (windex-get-mru-in-main))
+      (display-buffer (current-buffer))
+      (beginning-of-line)))
+
   :custom
   (scroll-conservatively most-positive-fixnum)
   (scroll-error-top-bottom t)
@@ -110,7 +119,12 @@
   (+emacs-read-only-rules
    (append +emacs-read-only-rules
            '("/node_modules/"
-             "/vendor/")))
+             "/vendor/"
+             "^/nix/store/")))
+  (+buffer-other-window-selector
+   (lambda ()
+     (or (windex-window-with-parameters '((window-side . right)) nil t)
+         (windex-window-with-parameters '((window-popup . below)) nil t))))
   :hook
   (find-file . +emacs-set-read-only-by-rules)
   (messages-buffer-mode . +emacs-message-buffer-setup)
@@ -118,7 +132,7 @@
   (minibuffer-exit . +emacs-minibuffer-exit)
   (emacs-startup . +emacs-load-files)
   (emacs-startup . +emacs-refresh-messages-buffer)
-  (elpaca-after-init . +emacs-tuning-configurations)
+  (after-init . +emacs-tuning-configurations)
   (before-save . +emacs-create-directory-on-save))
 
 (provide 'packages-emacs)

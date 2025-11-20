@@ -5,6 +5,9 @@
 
 ;; Prevent package.el loading packages prior to their init-file loading.
 (setq package-enable-at-startup nil)
+
+;; Allows packages to be managed externally
+(setq use-package-always-ensure nil)
 ;;
 ;; In noninteractive sessions, prioritize non-byte-compiled source files to
 ;; prevent the use of stale byte-code. Otherwise, it saves us a little IO time
@@ -34,15 +37,16 @@
               find-file-visit-truename t
               confirm-nonexistent-file-or-buffer nil
               confirm-kill-processes nil
+              confirm-kill-emacs #'y-or-n-p
               auto-save-default t
               make-backup-files nil
               create-lockfiles nil
               custom-unlispify-tag-names nil
 
-              fill-column 100
-              visual-fill-column-width 100
-              window-resize-pixelwise t
-              frame-resize-pixelwise t
+              fill-column 120
+              visual-fill-column-width 120
+              window-resize-pixelwise nil
+              frame-resize-pixelwise nil
               hscroll-step 5
               scroll-step 5
               tab-width 4
@@ -57,6 +61,9 @@
               display-line-numbers-width 4
               display-line-numbers-widen t
               cursor-in-non-selected-windows nil
+              split-height-threshold nil
+              split-width-threshold 160
+              parens-require-spaces nil
 
               truncate-lines t
               truncate-partial-width-windows nil
@@ -73,77 +80,32 @@
 (blink-cursor-mode -1)
 (menu-bar-mode -1)
 (electric-pair-mode -1)
-(winner-mode 1)
 (global-eldoc-mode -1)
 (window-divider-mode 1)
 (epa-file-enable)
 (auth-source-pass-enable)
+
+(defvar +fonts-fixed-pitch-face "SauceCodePro NFM")
+(defvar +fonts-fixed-pitch-italic-face "SauceCodePro NFM")
+(defvar +fonts-variable-pitch-face "SauceCodePro NFP")
+(defvar +fonts-fixed-pitch-size 90)
+(defvar +fonts-variable-pitch-size 90)
+(defvar +fonts-tab-size 100)
+
+(add-to-list
+ 'default-frame-alist
+ `(font . ,(concat +fonts-fixed-pitch-face
+                   (format " %d" (/ +fonts-fixed-pitch-size 10)))))
+
+(set-fontset-font "fontset-default" 'han (font-spec :family "Source Han Sans"))
+(set-fontset-font "fontset-default" 'kana (font-spec :family "Source Han Sans"))
 
 (setq-default frame-title-format
               '((:eval (if init-file-debug (propertize "[DEBUG] " 'face '(:foreground "#ffffff" ))))
                 "%F"
                 (:eval (if tab-bar-mode (format ": %s" (cdr (assq 'name (tab-bar--current-tab))))))))
 
-;; setup elpaca package manager
-
-(defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1 :inherit ignore
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
-
-;; Install use-package support
-(elpaca elpaca-use-package
-  ;; Enable :elpaca use-package keyword.
-  (elpaca-use-package-mode))
-
-;; Assume :elpaca t unless otherwise specified.
-(setq use-package-always-ensure t)
-(setq elpaca-hide-initial-build nil)
-(setq elpaca-hide-status-during-build nil)
-
 (unless init-file-debug (server-start))
-
-(defmacro maybe-ensure (nixos-alt default-alt)
-  "Return NIXOS-ALT if EMACS_NIXOS is set, otherwise DEFAULT-ALT.
-NIXOS-ALT and DEFAULT-ALT can be nil, t, or a plist for :ensure."
-  `(if (getenv "EMACS_NIX")
-       ,nixos-alt
-     ,default-alt))
-
 
 (provide 'early-init)
 

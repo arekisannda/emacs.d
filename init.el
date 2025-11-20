@@ -5,14 +5,17 @@
 
 ;; (profiler-start 'cpu+mem)
 
+(require 'package)
+(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+
+;; prevent FOUC
 (use-package doom-themes
   :config
   (load-theme 'doom-monokai-pro t))
 
-(elpaca-wait)
-
 (require 'cl-lib)
-
 ;; load configuration files
 (defvar +user-config-dir (expand-file-name "~/.config"))
 (defvar +user-packages-dir (expand-file-name "lisp/packages" user-emacs-directory))
@@ -33,20 +36,19 @@
 
 ;; enable configurations
 (require 'packages-base)
+
 (require 'packages-interface)
-(require 'packages-utils)
 (require 'packages-writing)
 (require 'packages-windows)
 (require 'packages-tools)
-(require 'packages-completion)
-(require 'packages-lsp)
-(require 'packages-latex)
-(require 'packages-org-mode)
 (require 'packages-snippets)
+(require 'packages-completion)
 (require 'packages-dashboard)
+(require 'packages-lsp)
 (require 'packages-code)
 (require 'packages-dape)
-(require 'packages-modes)
+(require 'packages-latex)
+(require 'packages-org-mode)
 (require 'packages-emacs)
 
 (provide 'config/init)

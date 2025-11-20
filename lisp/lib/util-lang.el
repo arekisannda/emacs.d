@@ -10,13 +10,18 @@
   (cl-loop for mode in mode-alist do
            (util/dedup-add-to-list 'auto-mode-alist mode)))
 
-(defun util/lang--add-to-capf-list (capf-list)
-  "Update `completion-at-point-functions` with CAPF-LIST."
+(defun util/add-capf-hooks (&rest capf-list)
+  "Add CAPF-LIST hooks from `completion-at-point-functions`."
   (dolist (capf capf-list)
-    (add-to-list 'completion-at-point-functions capf)))
+    (add-hook 'completion-at-point-functions capf nil t)))
+
+(defun util/remove-capf-hooks (&rest capf-list)
+  "Remove CAPF-LIST hooks from `completion-at-point-functions`."
+  (dolist (capf capf-list)
+    (remove-hook 'completion-at-point-functions capf t)))
 
 (defcustom util/lsp-default-disabled-modes '(org-mode
-                                            emacs-lisp-mode)
+                                             emacs-lisp-mode)
   "List of LSP-disabled modes by default."
   :type '(repeat symbol)
   :group 'eglot

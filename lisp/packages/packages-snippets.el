@@ -12,8 +12,6 @@
   (yas-keymap-disable-hook
    (lambda () (and (frame-live-p corfu--frame)
                    (frame-visible-p corfu--frame))))
-  :hook
-  (elpaca-after-init . yas-global-mode)
   :diminish yas-minor-mode)
 
 (use-package yasnippet-snippets :after yasnippet

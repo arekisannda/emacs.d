@@ -19,23 +19,43 @@
                                  (tag-node-open . treemacs-toggle-node-prefer-tag-visit)
                                  (tag-node-closed . treemacs-toggle-node-prefer-tag-visit)
                                  (tag-node . treemacs-visit-node-in-most-recently-used-window)))
+  (treemacs-collapse-dirs 0)
+  (treemacs-sorting 'alphabetic-numeric-asc)
+  :custom-face
+  (treemacs-window-background-face
+   ((nil :background ,(doom-color 'bg-alt))))
+  (treemacs-hl-line-face
+   ((nil :background ,(doom-color 'bg))))
+  (treemacs-peek-mode-indicator-face
+   ((nil :background ,(doom-color 'green))))
   :preface
+  (defun +treemacs--setup-peek-buffer (path)
+    "Setup the peek buffer and window for PATH."
+    (let* ((inhibit-message t)
+           (file-buffer (get-file-buffer path))
+           (next-window (next-window (selected-window)))
+           (window (if file-buffer next-window
+                     next-window)))
+      (save-selected-window
+        (select-window window)
+        (unless treemacs--pre-peek-state
+          (setf treemacs--pre-peek-state (list window (window-buffer window))))
+        (if file-buffer
+            (switch-to-buffer file-buffer :norecord)
+          (find-file-existing path)
+          (add-to-list 'treemacs--peeked-buffers (current-buffer))))))
+
+  (advice-add #'treemacs--setup-peek-buffer :override #'+treemacs--setup-peek-buffer)
+
   (defun +treemacs--clean-workspaces ()
     "Find top-level headings that are not 'Default' or don't match the pattern 'Tab :' and cut them."
     (interactive)
     (require 'treemacs)
     (mapc (lambda (workspace)
             (when (and (not (string= workspace "Default"))
-                       (not (string-match-p "Tab @" workspace)))
+                       (not (string-match-p "^Tab @" workspace)))
               (treemacs-do-remove-workspace workspace nil)))
           (mapcar #'treemacs-workspace->name treemacs--workspaces)))
-
-  (defun +treemacs--set-faces ()
-    (face-remap-add-relative 'default :background (doom-color 'bg-alt))
-    (face-remap-add-relative 'treemacs-hl-line-face :background (doom-color 'bg))
-    (face-remap-add-relative 'treemacs-peek-mode-indicator-face :background (doom-color 'green))
-    (face-remap-add-relative 'mode-line-inactive :background (doom-color 'bg-alt))
-    (redraw-display))
   :config
   (defun +treemacs--popup-window-override ()
     "Pop up a side window and buffer for treemacs."
@@ -68,11 +88,9 @@
   (defun +treemacs--setup ()
     (treemacs-filewatch-mode 1)
     (treemacs-fringe-indicator-mode 'only-when-focused)
-    (setq mode-line-format nil)
-    )
+    (setq mode-line-format nil))
   :hook
   (kill-emacs . +treemacs--clean-workspaces)
-  (treemacs-mode . +treemacs--set-faces)
   (treemacs-mode . +treemacs--setup))
 
 (use-package treemacs-nerd-icons :after treemacs
@@ -88,10 +106,11 @@
 
 (use-package magit
   :custom
-  (magit-repository-directories
-   (list `(,(expand-file-name "~/Code/") . 1)))
   (magit-commit-diff-inhibit-same-window t)
   (magit-save-repository-buffers 'dontask)
+  (magit-commit-show-diff nil)
+  (magit-branch-direct-configure nil)
+  (magit-refresh-status-buffer nil)
   :custom-face
   (magit-header-line
    ((nil :weight bold
@@ -114,9 +133,17 @@
 
 (use-package forge :after (magit transient))
 
-(use-package ranger
+(use-package diff-hl :after magit
+  :custom
+  (diff-hl-show-staged-changes nil)
+  (diff-hl-flydiff-delay 0.1)
+  :init
+  (setq diff-hl-show-hunk-map (make-sparse-keymap)
+        diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
   :hook
-  (elpaca-after-init . ranger-override-dired-mode))
+  (window-setup . diff-hl-flydiff-mode)
+  (magit-pre-refresh . diff-hl-magit-pre-refresh)
+  (magit-post-refresh . diff-hl-magit-post-refresh))
 
 (use-package writeroom-mode
   :custom
@@ -125,25 +152,7 @@
   (writeroom-mode-line t)
   (writeroom-width 100))
 
-(use-package vterm
-  :elpaca (vterm :post-build
-                 (progn
-                   (setq vterm-always-compile-module t)
-                   (require 'vterm)
-                   ;;print compilation info for elpaca
-                   (with-current-buffer (get-buffer-create vterm-install-buffer-name)
-                     (goto-char (point-min))
-                     (while (not (eobp))
-                       (message "%S"
-                                (buffer-substring (line-beginning-position)
-                                                  (line-end-position)))
-                       (forward-line)))
-                   (when-let ((so (expand-file-name "./vterm-module.so"))
-                              ((file-exists-p so)))
-                     (make-symbolic-link
-                      so (expand-file-name (file-name-nondirectory so)
-                                           "../../builds/vterm")
-                      'ok-if-already-exists)))))
+(use-package vterm)
 
 (defun +vterm-run-command (command &rest args)
   "Open vterm and run COMMAND.
@@ -167,7 +176,6 @@ The optional ARGS are keyword arguments."
       (switch-to-buffer-other-window vterm-buffer))))
 
 (use-package project
-  :ensure nil
   :custom
   (project-vc-extra-root-markers '(".dir-locals.el"))
   (project-vc-include-untracked t)
@@ -206,21 +214,25 @@ The optional ARGS are keyword arguments."
          (cons 'window-preserved-size 'writable)
          (cons 'window-side 'writable)
          (cons 'window-slot 'writable)
-         (cons 'window-popup 'writable)))
+         (cons 'window-popup 'writable)
+         (cons 'window-purpose 'writable)))
 
-  (activities-mode-idle-frequency 30)
+  (activities-mode-idle-frequency (if init-file-debug most-positive-fixnum 30))
   (+activities-save-all-skip
    '((lambda() (when (fboundp 'treemacs-is-treemacs-window-selected?) (treemacs-is-treemacs-window-selected?)))))
   (activities-bookmark-store nil)
   :init
-  (activities-mode)
-  (activities-tabs-mode)
+  (when init-file-debug
+    (advice-add #'activities-save-all :override #'ignore)
+    (advice-add #'activities-save :override #'ignore)
+    (advice-add #'+activities-save-all-around :override #'ignore))
 
-  (defun +activities-save-all-around (fn &rest args)
-    (unless (run-hook-with-args-until-success '+activities-save-all-skip)
-      (apply fn args)))
+  (unless init-file-debug
+    (defun +activities-save-all-around (fn &rest args)
+      (unless (run-hook-with-args-until-success '+activities-save-all-skip)
+        (apply fn args)))
 
-  (advice-add #'activities-save-all :around #'+activities-save-all-around)
+    (advice-add #'activities-save-all :around #'+activities-save-all-around))
 
   (defun +activities-suspend-eglot (activity)
     (activities-with activity
@@ -230,7 +242,10 @@ The optional ARGS are keyword arguments."
   (advice-add #'activities-suspend :before #'+activities-suspend-eglot)
 
   ;; Prevent `edebug' default bindings from interfering.
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t))
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+  :hook
+  (after-init . activities-mode)
+  (activities-mode . activities-tabs-mode))
 
 (use-package gptel
   :custom
@@ -281,6 +296,10 @@ The optional ARGS are keyword arguments."
   (embark-indicators '(+vertico-embark-which-key-indicator
                        embark-highlight-indicator
                        embark-isearch-highlight-indicator))
+  :custom-face
+  (embark-selected
+   ((nil :inherit unspecified
+         :foreground ,(doom-color 'magenta))))
   :hook
   (embark-collect-mode . consult-preview-at-point-mode)
   :config
@@ -419,11 +438,140 @@ Executes FN with ARGS."
 
 (use-package ess)
 
-(use-package pdf-tools
-  :mode
-  ("\\.pdf\\'" . pdf-view-mode))
+(use-package helpful)
 
 (use-package impatient-mode)
+
+(use-package prettier-js)
+
+(use-package rfc-mode
+  :custom-face
+  (rfc-mode-browser-status-face
+   ((nil :inherit font-lock-string-face)))
+  (rfc-mode-browser-ref-face
+   ((nil :inherit font-lock-operator-face)))
+  (rfc-mode-browser-title-face
+   ((nil :inherit font-lock-operator-face))))
+
+(use-package rainbow-mode
+  :defer t
+  :custom
+  (rainbow-r-colors-alist '())
+  (rainbow-html-colors-alist '()))
+
+(use-package leetcode
+  :defer t
+  :custom
+  (leetcode-prefer-language "golang")
+  (leetcode-prefer-sql "mysql")
+  (leetcode-save-solutions t)
+  :config
+  (defun +leetcode--solving-window-layout-override ()
+    (delete-other-windows)
+    (setq leetcode--description-window (selected-window))
+    (setq leetcode--code-window (split-root-window-right))
+    (setq leetcode--testcase-window (split-window-below))
+    (other-window 1)
+    (setq leetcode--result-window (split-window-below))
+    (select-window leetcode--code-window))
+
+  (defun +leetcode--display-result-override (buffer &optional alist)
+    (set-window-buffer leetcode--result-window buffer)
+    leetcode--result-window)
+
+  (defun +leetcode--display-testcase-override (buffer &optional alist)
+    (set-window-buffer leetcode--testcase-window buffer)
+    leetcode--testcase-window)
+
+  (defun +leetcode--display-detail-override (buffer &optional alist)
+    (set-window-buffer leetcode--description-window buffer)
+    leetcode--description-window)
+
+  (defun +leetcode--display-code-override (buffer &optional alist)
+    (set-window-buffer leetcode--code-window buffer)
+    leetcode--code-window)
+
+  (advice-add #'leetcode--solving-window-layout :override #'+leetcode--solving-window-layout-override)
+  (advice-add #'leetcode--display-result :override #'+leetcode--display-result-override)
+  (advice-add #'leetcode--display-testcase :override #'+leetcode--display-testcase-override)
+  (advice-add #'leetcode--display-detail :override #'+leetcode--display-detail-override)
+  (advice-add #'leetcode--display-code :override #'+leetcode--display-code-override)
+  :hook
+  (leetcode-solution-mode . (lambda () (eglot--managed-mode -1))))
+
+(use-package exercism :disabled
+  :defer t
+  :custom
+  (exercism-enable-log-to-message-buffer nil)
+  (exercism-open-url-on-submit nil)
+  woman :hook
+  (after-init . exercism-setup))
+
+(use-package shr
+  :defer t
+  :custom
+  (shr-image-animate nil)
+  (shr-use-fonts nil)
+  (shr-bullet "• ")
+  (shr-hr-line "—")
+  (shr-indentation 2)
+  (shr-max-width 100))
+
+(use-package devdocs
+  :defer t)
+
+(use-package man
+  :defer t
+  :custom
+  (Man-width-max nil))
+
+(use-package emacsql
+  :hook
+  (after-init . emacsql-fix-vector-indentation))
+
+(use-package compile
+  :custom
+  (compilation-ask-about-save nil)
+  :config
+  (defun +colorize-compilation-buffer ()
+    (ansi-color-apply-on-region compilation-filter-start (point)))
+  :hook
+  (compilation-filter . +colorize-compilation-buffer))
+
+(use-package rmsbolt
+  :config
+  (defun +rmsbolt-quit ()
+    (interactive)
+    (rmsbolt-mode -1)
+    (if-let* ((buffer (get-buffer rmsbolt-output-buffer))
+              (window (get-buffer-window buffer)))
+        (quit-window t (get-buffer-window (get-buffer rmsbolt-output-buffer)))
+      )
+    ;; HACK: relies on rmsbolt closing assembly windows and focusing source window
+    (window-state-put +rmsbolt-layout-state (frame-root-window) 'safe))
+
+  (defun +rmsbolt-start ()
+    (interactive)
+    (unless (rmsbolt--get-lang)
+      (user-error "rmsbolt unsupported language"))
+    (setq-local +rmsbolt-layout-state (window-state-get (frame-root-window) t))
+    (delete-other-windows)
+    (rmsbolt))
+
+  (defun +rmsbolt-toggle (&optional arg)
+    (interactive "p")
+    (pcase arg
+      (4 (+rmsbolt-quit))
+      (_ (if rmsbolt-mode
+             (+rmsbolt-quit)
+           (+rmsbolt-start)))
+      )))
+
+(use-package two-column
+  :custom
+  (2C-beyond-fill-column 4)
+  (2C-window-width 120)
+  (2C-mode-line-format ("%e" (:eval (doom-modeline-format--+default-modeline)))))
 
 (provide 'packages-tools)
 

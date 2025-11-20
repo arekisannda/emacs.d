@@ -3,18 +3,24 @@
 
 ;;; Code:
 
-(use-package ispell
-  :ensure nil
+(use-package dictionary
+  :defer t
   :custom
-  (ispell-complete-word-dict
-   (cond ((file-readable-p "/usr/dict/web2") "/usr/dict/web2")
-         ((file-readable-p "/usr/share/dict/web2") "/usr/share/dict/web2")
-         ((file-readable-p "/usr/dict/words") "/usr/dict/words")
-         ((file-readable-p "/usr/lib/dict/words") "/usr/lib/dict/words")
-         ((file-readable-p "/usr/share/dict/words") "/usr/share/dict/words")
-         ((file-readable-p "/usr/share/lib/dict/words")
-          "/usr/share/lib/dict/words")
-         ((file-readable-p "/sys/dict") "/sys/dict")))
+  (dictionary-use-single-buffer t)
+  (dictionary-server "dict.org")
+  (dictionary-display-definition-function #'dictionary-display-definition-in-help-buffer)
+  :preface
+  (defun +dictionary-word-etymology (&optional word)
+    "Search WORD etymology."
+    (interactive
+     (list (read-string "Word: " (current-word))))
+    (browse-url (format "https://etymonline.com/word/%s" word)))
+  )
+
+(use-package ispell
+  :defer t
+  :custom
+  (text-mode-ispell-word-completion nil)
   (ispell-local-dictionary "en_US")
   (ispell-dictionary "en_US")
   (ispell-local-dictionary "en_US")
@@ -25,6 +31,7 @@
   (ispell-program-name (executable-find "aspell"))
   (ispell-extra-args '("-a" "soundslike" "--sug-mode=ultra" "--lang=en_US"))
   (ispell-silently-savep t)
+  (ispell-quietly t)
   :preface
   (defun +ispell-display-buffer-override (buffer)
     "Show BUFFER in new window below selected one.
@@ -34,7 +41,7 @@ Also position fit window to BUFFER and select it."
            (window
             (or (get-buffer-window buffer)
                 (and unsplittable
-                     ;; If frame is unsplittable, temporarily disable that...
+                     ;; If frame is unsplittable, temporarily disable that
                      (let ((frame (selected-frame)))
                        (modify-frame-parameters frame '((unsplittable . nil)))
                        (prog1
@@ -64,6 +71,11 @@ Also position fit window to BUFFER and select it."
         (fit-window-to-buffer window nil nil nil nil t))))
   :init
   (advice-add #'ispell-display-buffer :override #'+ispell-display-buffer-override))
+
+(use-package flyspell
+  :defer t
+  :custom
+  (flyspell-delay 0))
 
 (use-package google-translate
   :custom

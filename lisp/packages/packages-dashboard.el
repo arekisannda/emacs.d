@@ -2,16 +2,15 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'util-windows)
-
 (setq +dashboard-widget-actions
-  '((recents   . consult-recent-file)
-    (bookmarks . consult-bookmark)
-    (projects  . project-switch-project)
-    (files     . find-file)
-    (git       . (lambda () (interactive) (+vterm-run-command "gh dash" :title "*gh dash*")))
-    (agenda    . (lambda () (interactive) (org-agenda nil "a")))
-    (configs   . (lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))))))
+  '((recents    . consult-recent-file)
+    (bookmarks  . consult-bookmark)
+    (projects   . project-switch-project)
+    (files      . find-file)
+    (workspaces . activities-resume)
+    (git        . (lambda () (interactive) (+vterm-run-command "gh dash" :title "*gh dash*")))
+    (agenda     . (lambda () (interactive) (org-agenda nil "a")))
+    (configs    . (lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))))))
 
 (defun +dashboard-get-action (item)
   "Get the action to be used for ITEM."
@@ -40,7 +39,7 @@ The optional ARGS are keyword arguments."
                          'font-lock-constant-face))))
 
 (defun +dashboard-insert-file-shortmenu (&rest _)
-  "Add project dashboard widget."
+  "Add file dashboard widget."
   (+dashboard-insert-shortmenu 'files
                                :title "Find File"
                                :icon "nf-oct-file"
@@ -52,6 +51,13 @@ The optional ARGS are keyword arguments."
                                :title "Open Project"
                                :icon "nf-oct-rocket"
                                :shortcut "p"))
+
+(defun +dashboard-insert-workspace-shortmenu (&rest _)
+  "Add workspace dashboard widget."
+  (+dashboard-insert-shortmenu 'workspaces
+                               :title "Open Workspace"
+                               :icon "nf-oct-inbox"
+                               :shortcut "w"))
 
 (defun +dashboard-insert-org-agenda-shortmenu (&rest _)
   "Add Org agenda dashboard widget."
@@ -114,22 +120,24 @@ The optional ARGS are keyword arguments."
   (dashboard-items
    '((agenda . 15)
      bookmarks
-     git
+     workspaces
      projects
      files
      recents
+     git
      configs))
 
   (dashboard-item-generators
    '((configs . +dashboard-insert-user-configs-shortmenu)
      (recents . +dashboard-insert-recents-shortmenu)
+     (workspaces . +dashboard-insert-workspace-shortmenu)
      (git . +dashboard-insert-git-dash-shortmenu)
      (bookmarks . +dashboard-insert-bookmark-shortmenu)
      (projects . +dashboard-insert-project-shortmenu)
      (files . +dashboard-insert-file-shortmenu)
      (agenda . dashboard-insert-agenda)))
   :hook
-  (elpaca-after-init . dashboard-insert-startupify-lists)
+  (after-init . dashboard-insert-startupify-lists)
   (doom-modeline-mode . dashboard-setup-startup-hook))
 
 (provide 'packages-dashboard)

@@ -2,9 +2,10 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'cl)
+(require 'cl-lib)
 (require 'util-strings)
 (require 'util-lang)
+(require 'mule-util)
 
 (use-package ob-go)
 
@@ -26,6 +27,8 @@
 
 (use-package gnuplot)
 
+(use-package gnuplot-mode)
+
 (use-package valign
   :custom
   (valign-fancy-bar t))
@@ -39,28 +42,34 @@
 
 (defun +org-mode-setup ()
   "Setup to run for `org-mode` major modes."
-  (visual-line-mode 1)
-  (visual-fill-column-mode 1)
-  (org-modern-mode 1)
-  (util/lang--add-to-capf-list (list #'yasnippet-capf
-                                     #'cape-dabbrev
-                                     #'cape-file
-                                     #'cape-tex
-                                     #'cape-elisp-block
-                                     #'cape-keyword
-                                     ))
-  ;; (display-line-numbers-mode 1)
-  ;; (diff-hl-mode 1)
-  ;; (flyspell-mode)
-  (valign-mode t)
-
+  (setq-local face-font-rescale-alist
+              `(("-cdac$" . 1.3)
+                (,(font-spec :family "Source Han Sans") . 1.3)))
   (let ((font-family (org-entry-get (point-min) "font-family" t))
         (font-height (org-entry-get (point-min) "font-height" t)))
     (when font-family
       (setq-local buffer-face-mode-face `(:family ,font-family)))
     (when font-height
-      (setq-local buffer-face-mode-face `(:height ,(string-to-number font-height))))
-    (buffer-face-mode)))
+      (setq-local buffer-face-mode-face `(:height ,(string-to-number font-height)))))
+
+  (visual-line-mode 1)
+  (visual-fill-column-mode 1)
+  (org-modern-mode 1)
+  (flyspell-mode)
+  (buffer-face-mode 1)
+  (completion-preview-mode 1)
+  (yas-minor-mode 1)
+
+  (util/add-capf-hooks
+   #'yasnippet-capf
+   #'cape-file
+   #'cape-tex
+   #'cape-elisp-block
+   #'cape-keyword)
+
+  (util/remove-capf-hooks
+   #'pcomplete-completions-at-point
+   t))
 
 (defun +org-agenda-configure ()
   "Org-agenda configuration."
@@ -95,13 +104,22 @@
   (org-block-map
    (lambda ()
      (let* ((element (org-element-at-point))
-            (lang (org-element-property :language element)))
-       (if (cl-some (lambda (l) (equal lang l)) +org-auto-hide-block-languages)
+            (lang (org-element-property :language element))
+            (params (org-element-property :parameters element))
+            (hidden (and params (string-match-p ":hidden t" params))))
+       (if (or hidden (cl-some (lambda (l) (equal lang l)) +org-auto-hide-block-languages))
            (org-fold--hide-wrapper-toggle element 'block 'hide nil))))))
 
+(defun +org-agenda-get-categories (file)
+  "Return list of categories in org FILE."
+  (with-current-buffer (org-capture-target-buffer file)
+    (let (categories)
+      (org-map-entries
+       (lambda ()
+         (add-to-list 'categories (org-get-category) t)))
+      categories)))
+
 (use-package org
-  :ensure `(org :repo "https://code.tecosaur.net/tec/org-mode.git/"
-                :branch "dev")
   :custom
   (+org-auto-hide-block-languages '("mermaid"))
 
@@ -128,7 +146,7 @@
 
   (org-hide-emphasis-markers t)
   (org-pretty-entities t)
-  (org-ellipsis " ... ") ;; folding symbol
+  (org-ellipsis (concat " " (truncate-string-ellipsis) " ")) ;; folding symbol
   (org-use-sub-superscripts '{})
 
   (org-fontify-whole-heading-line t)
@@ -139,19 +157,63 @@
    '((sequence "TODO" "ONGOING" "|" "DONE" "CANCELLED" )))
 
   (org-todo-keyword-faces
-   `(("TODO"      . (nil :inherit default
-                         :weight bold
-                         :foreground ,(doom-darken (doom-color 'red) 0.2)))
-     ("ONGOING"   . (nil :inherit default
-                         :weight bold
-                         :foreground ,(doom-darken (doom-color 'orange) 0.2)))
-     ("CANCELLED" . (nil :inherit default
-                         :weight bold
-                         :foreground ,(doom-darken (doom-color 'gray) 0.2)))
-     ("DONE"      . (nil :inherit default
-                         :weight bold
-                         :foreground ,(doom-lighten (doom-color 'gray) 0.2)))))
+   `(("TODO"      . (
+                     :inherit default
+                     :weight bold
+                     :foreground ,(doom-darken (doom-color 'red) 0.2)))
+     ("ONGOING"   . (
+                     :inherit default
+                     :weight bold
+                     :foreground ,(doom-darken (doom-color 'orange) 0.2)))
+     ("CANCELLED" . (
+                     :inherit default
+                     :weight bold
+                     :foreground ,(doom-darken (doom-color 'fg-alt) 0.3)))
+     ("DONE"      . (
+                     :inherit default
+                     :weight bold
+                     :foreground ,(doom-color 'fg-alt) 0.2))))
 
+  (org-src-block-faces
+   `(("japanese" (:height 1.5 :foreground ,(doom-color 'violet)))))
+  (org-confirm-babel-evaluate nil)
+  (org-plantuml-exec-mode 'plantuml)
+
+  (org-default-notes-file "todo.org")
+  (org-expiry-inactive-timestamps t)
+  (org-capture-templates
+   '(("t" "Todo"
+      entry
+      (file+headline
+       "todo.org"
+       (lambda ()
+         (let* ((categories (+org-agenda-get-categories "todo.org"))
+                (choice (completing-read "Category: " categories)))
+           choice)))
+      "* TODO %?\n  %i\n"
+      :unnarrowed t)
+     ("s" "Schedule"
+      entry (file+olp+datetree "schedule.org")
+      "%T %?\n"
+      :time-prompt t
+      :tree-type month
+      :unnarrowed t)
+     ("d" "Schedule Deadline"
+      entry (file+olp+datetree "schedule.org")
+      "%T %?\nDEADLINE: %^{DEADLINE}T\n"
+      :time-prompt t
+      :tree-type month
+      :unnarrowed t)
+     ("j" "Journal"
+      entry (file+olp+datetree "journal.org")
+      "%T %?\n %i\n"
+      :unnarrowed t)))
+  :hook
+  (org-mode . +org-mode-setup)
+  (org-mode . +org-fold-auto-hide-block-languages))
+
+(use-package nil ;; org-agenda
+  :custom
   (org-agenda-window-setup 'current-window)
   (org-agenda-tags-column 0)
   (org-agenda-block-separator ?─)
@@ -161,59 +223,13 @@
   (org-agenda-current-time-string
    "◀── now ─────────────────────────────────────────────────")
 
-  (org-latex-logfiles-extensions (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc"
-                                         "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf"
-                                         "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf"
-                                         "acn" "acr" "alg" "glg" "gls" "ist" "ltjruby")))
-  (org-latex-hyperref-template nil)
-  (org-highlight-latex-and-related '(native script entities))
-  (org-startup-with-latex-preview t)
-  (org-latex-preview-live '(inline block edit-special))
-  (org-latex-preview-process-default 'luadvisvgm)
-  (org-latex-preview-appearance-options
-   `( :foreground auto
-      :background "Transparent"
-      :scale 2.0
-      :zoom ,(* (/ (face-attribute 'default :height) 100.0) 1.6)
-      :page-width nil
-      :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
-  (org-latex-pdf-process
-   '("latexmk -f -pdf -%latex -interaction=nonstopmode -output-directory=%o %f"))
+  :hook
+  (org-agenda-mode . +org-agenda-configure))
 
-  (org-src-block-faces
-   `(("japanese" (:height 1.5 :foreground ,(doom-color 'violet)))))
-  (org-confirm-babel-evaluate nil)
+(use-package nil ;; org-babel
+  :custom
   (org-babel-default-header-args:go '((:wrap . "example")))
-  (org-plantuml-exec-mode 'plantuml)
-
-  (org-default-notes-file "todo.org")
-  (org-capture-templates
-   '(("t" "Todo"
-      entry (file+headline "todo.org" "Tasks")
-      "* TODO %?\n  %i\n"
-      :unnarrowed t)
-     ("s" "Schedule"
-      entry (file+datetree "schedule.org")
-      "%T %?"
-      :time-prompt t
-      :tree-type month
-      :unnarrowed t)
-     ("j" "Journal"
-      entry (file+olp+datetree "journal.org")
-      "%T %?"
-      :unnarrowed t)))
-
-  :config
-  (dolist (face `((org-level-1 . 1.175)
-                  (org-level-2 . 1.150)
-                  (org-level-3 . 1.125)
-                  (org-level-4 . 1.100)
-                  (org-level-5 . 1.075)
-                  (org-level-6 . 1.050)
-                  (org-level-7 . 1.025)
-                  (org-level-8 . 1.00)))
-    (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
-
+  :init
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((C . t)
@@ -241,6 +257,7 @@
    'org-src-lang-modes
    '(("C"          . c)
      ("C++"        . c++)
+     ("cmake"      . cmake)
      ("bash"       . shell)
      ("cpp"        . c++)
      ("desktop"    . conf-desktop)
@@ -257,32 +274,96 @@
      ("shell"      . sh)
      ("sqlite"     . sql)
      ("toml"       . conf-toml)
+     ("gnuplot"    . gnuplot)
      ("typescript" . typescript)))
 
-  (add-to-list 'org-latex-preview-process-alist
-               '(luadvisvgm :programs ("dvilualatex" "dvisvgm")
-                            :description "dvi > svg"
-                            :message "you need to install the programs: lualatex and dvisvgm."
-                            :image-size-adjust (1.7 . 1.5)
-                            :latex-precompiler
-                            ("dvilualatex --output-directory=/tmp --ini --jobname=%b \"&%L\" mylatexformat.ltx %f")
-                            :latex-compiler
-                            ("dvilualatex --output-format=dvi --shell-escape --interaction=nonstopmode --output-directory=/tmp %f")
-                            :image-input-type "dvi"
-                            :image-output-type "svg"
-                            :image-converter
-                            ("dvisvgm --page=1- --clipjoin --relative --no-fonts -v3 --bbox=preview --output=%B-%%9p.svg %f")))
-
   :hook
-  (org-babel-after-execute . org-redisplay-inline-images)
-  (org-agenda-mode . +org-agenda-configure)
-  (org-mode . +org-mode-setup)
-  (org-mode . +org-fold-auto-hide-block-languages)
-  (org-mode . embrace-org-mode-hook)
+  (org-babel-after-execute . org-redisplay-inline-images))
+
+(use-package nil ;; org-embrace
+  :after (org embrace)
+  :init
+  (defun +embrace-with-org-block ()
+    (let ((block-type (completing-read
+                       "Org block type: "
+                       '(center comment example export justifyleft justifyright
+                                quote src verse))))
+      (cond ((string= block-type "src")
+             (cons
+              (concat (format "#+begin_src %s"
+                              (completing-read "Language: "
+                                               (embrace--get-org-src-block-modes)))
+                      (let ((args (read-string "Arguments: ")))
+                        (unless (string= args "")
+                          (format " %s" args))))
+              "#+end_src"))
+            ((string= block-type "export")
+             (cons (format "#+begin_export %s"
+                           (completing-read "Format: "
+                                            '(ascii beamer html latex texinfo)))
+                   "#+end_export"))
+            (t
+             (setq block-type (downcase block-type))
+             (cons (format "#+begin_%s" block-type)
+                   (format "#+end_%s" block-type))))))
+
+  (defun +embrace-org-mode-hook ()
+    (dolist (lst '((?= "=" . "=")
+                   (?~ "~" . "~")
+                   (?/ "/" . "/")
+                   (?* "*" . "*")
+                   (?_ "_" . "_")
+                   (?+ "+" . "+")
+                   (?k "@@html:<kbd>@@" . "@@html:</kbd>@@")))
+      (embrace-add-pair (car lst) (cadr lst) (cddr lst)))
+    (embrace-add-pair-regexp ?l "#\\+begin_.*" "#\\+end_.*" 'embrace-with-org-block
+                             (embrace-build-help "#+begin_*" "#+end") t))
+  (advice-add #'embrace-with-org-block :override #'+embrace-with-org-block)
+  (advice-add #'embrace-org-mode-hook :override #'+embrace-org-mode-hook)
+  :hook
+  (org-mode . embrace-org-mode-hook))
+
+(use-package nil ;; org-latex
+  :custom
+  (org-latex-logfiles-extensions (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc"
+                                         "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf"
+                                         "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf"
+                                         "acn" "acr" "alg" "glg" "gls" "ist" "ltjruby")))
+  (org-latex-hyperref-template nil)
+  (org-highlight-latex-and-related '(native script entities))
+  (org-startup-with-latex-preview t)
+  (org-export-with-latex 'luadvisvgm)
+  (org-html-with-latex 'luadvisvgm)
+  (org-latex-preview-live '(inline block edit-special))
+  (org-latex-preview-process-default 'luadvisvgm)
+  (org-latex-preview-appearance-options
+   `( :foreground auto
+      :background auto
+      :scale nil
+      :zoom 1.3
+      :page-width nil
+      :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
+  (org-latex-pdf-process
+   '("lualatex -shell-escape -interaction nonstopmode %f"))
+  :init
+  (add-to-list
+   'org-latex-preview-process-alist
+   '(luadvisvgm :programs ("dvilualatex" "dvisvgm")
+                :description "dvi > svg"
+                :message "you need to install the programs: lualatex and dvisvgm."
+                :image-size-adjust (1.7 . 1.5)
+                :latex-precompiler
+                ("dvilualatex --output-directory=/tmp --ini --jobname=%b \"&%L\" mylatexformat.ltx %f")
+                :latex-compiler
+                ("dvilualatex --output-directory=/tmp --output-format=dvi --shell-escape --interaction=nonstopmode %f")
+                :image-input-type "dvi"
+                :image-output-type "svg"
+                :image-converter
+                ("dvisvgm --page=1- --clipjoin --relative --no-fonts -v3 --bbox=preview --output=%B-%%9p.svg %f")))
+  :hook
   (org-mode . org-cdlatex-mode))
 
 (use-package org-crypt :after org
-  :ensure nil
   :custom
   (org-tags-exclude-from-inheritance (quote ("crypt")))
   :config
@@ -294,13 +375,45 @@
   (org-modern-timestamp nil)
   (org-modern-todo nil)
   (org-modern-todo-faces nil)
-  (org-modern-star "○")
-  (org-modern-replace-stars "○")
+  (org-modern-star 'replace)
+  (org-modern-replace-stars "○○○◦◦◦∙")
   (org-modern-internal-target '(" ↪ " t " "))
   (org-modern-radio-target '("  " t " "))
-  (org-modern-progress '("󰝦" "󰪞" "󰪟" "󰪠" "󰪡" "󰪢" "󰪣" "󰪤" "󰪥"))
+  (org-modern-progress nil)
   (org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦")))
   :custom-face
+  (org-level-1
+   ((nil :weight regular
+         :foreground ,(doom-color 'blue)
+         :height 1.20)))
+  (org-level-2
+   ((nil :weight regular
+         :foreground ,(doom-color 'dark-blue)
+         :height 1.20)))
+  (org-level-3
+   ((nil :weight regular
+         :foreground ,(doom-color 'violet)
+         :height 1.20)))
+  (org-level-4
+   ((nil :weight regular
+         :foreground ,(doom-color 'magenta)
+         :height 1.10)))
+  (org-level-5
+   ((nil :weight regular
+         :foreground ,(doom-color 'red)
+         :height 1.10)))
+  (org-level-6
+   ((nil :weight regular
+         :foreground ,(doom-color 'orange)
+         :height 1.10)))
+  (org-level-7
+   ((nil :weight regular
+         :foreground ,(doom-color 'yellow)
+         :height 1.00)))
+  (org-level-8
+   ((nil :inherit default
+         :foreground ,(doom-color 'fg)
+         :height 1.00)))
   (org-checkbox
    ((nil :box nil
          :height ,+fonts-fixed-pitch-size)))
@@ -318,52 +431,36 @@
 (use-package org-super-agenda :after org
   :custom
   (org-agenda-custom-commands
-   '(("n" "Next View"
+   '(("n" "Today View"
       ((agenda "" ((org-agenda-span 'day)
                    (org-super-agenda-groups
-                    '((:name "Today"
-                             :time-grid t
-                             :todo "TODAY"
-                             :scheduled today
-                             :order 0)
-                      (:habit t)
-                      (:name "Due Today"
-                             :deadline today
-                             :order 2)
-                      (:name "Due Soon"
-                             :deadline future
-                             :order 8)
-                      (:name "Overdue"
-                             :deadline past
-                             :order 7)
+                    '(( :name "Today"
+                        :time-grid t
+                        :scheduled today
+                        :discard (:deadline t)
+                        :order 0)
+                      ( :habit t)
+                      ( :name "Due Today"
+                        :deadline today
+                        :order 2)
+                      ( :name "Due Soon"
+                        :deadline future
+                        :order 8)
+                      ( :name "Overdue"
+                        :deadline past
+                        :order 7)
                       ))))
-       (todo "" ((org-agenda-overriding-header "")
-                 (org-super-agenda-groups
-                  '((:name "Inbox"
-                           :file-path "inbox"
-                           :order 0
-                           )
-                    (:discard (:todo "TODO"))
-                    (:auto-category t
-                                    :order 9)
-                    ))))))
+       ))
      ("t" "Todo View"
-      (
-       (todo "" ((org-agenda-overriding-header "")
+      ((todo "" ((org-agenda-overriding-header "Tasks")
                  (org-super-agenda-groups
-                  '((:name "Inbox"
-                           :file-path "inbox"
-                           :order 0
-                           )
-                    (:auto-category t
-                                    :auto-parent t
-                                    :auto-group t
-                                    :order 9)
-                    ))))))
+                  '((:auto-category t)
+                    (:discard (:todo "CANCELLED"))
+                    ))))
+       ))
      ))
-
   :hook
-  (elpaca-after-init . org-super-agenda-mode))
+  (after-init . org-super-agenda-mode))
 
 (use-package org-remark :after org
   :custom
@@ -388,13 +485,13 @@
     `(list t :height ,height))
 
   (defmacro +org-remark-event-face (color height)
-    `(list t :foreground ,color :height ,height))
+    `(list t :foreground unspecified :height ,height))
 
   (defmacro +org-remark-highlight-face (color)
-    `(list t :foreground ,color :inverse-video t))
+    `(list t :foreground unspecified :inverse-video t))
 
   (defmacro +org-remark-color-face (color)
-    `(list t :foreground ,color))
+    `(list t :foreground unspecified))
 
   (org-remark-create "size-025" (+org-remark-height-face 0.25))
   (org-remark-create "size-050" (+org-remark-height-face 0.50))
@@ -442,7 +539,7 @@
                       (doom-lighten (doom-color 'violet) 0.1)))
   (org-remark-create "hl-gray"
                      (+org-remark-highlight-face
-                      (doom-lighten (doom-color 'grey) 0.1)))
+                      (doom-lighten (doom-color 'fg-alt) 0.1)))
 
   (org-remark-create "yellow"
                      (+org-remark-color-face
@@ -473,60 +570,21 @@
                       (doom-color 'violet)))
   (org-remark-create "gray"
                      (+org-remark-color-face
-                      (doom-color 'grey)))
+                      (doom-color 'fg-alt)))
   )
-
-(defcustom +org-roam-default-profile "default"
-  "Default Org-roam profile."
-  :type 'string
-  :group 'org-roam
-  :group 'convenience)
-
-(defvar +org-roam-current-profile "default")
 
 (defcustom +org-roam-profiles `(("default"
                                  :description "Default Org-roam"
                                  :directory ,(expand-file-name "~/org-roam")
                                  :db-location ,(locate-user-emacs-file "org-roam.db")))
   "Profiles for switching between different note org-roam repositories."
-  :type '(repeat
-          (list :tag "Org-roam Profile"
-                (string :tag "Name")
-                (string :tag "Description")
-                (string :tag "Directory")
-                (string :tag "DB Path")))
+  :type '(alist :key-type (string :tag "Name")
+                :value-type (plist :options
+                                   (((const :tag "Description" :description) string)
+                                    ((const :tag "Directory" :directory) string)
+                                    ((const :tag "DB Path" :db-location) string))))
   :group 'org-roam
   :group 'convenience)
-
-(defun +org-roam--profile-candidate-entry (cand)
-  "Create Org-roam profile CAND entry."
-  (let* ((profile-name (car cand))
-         (description (plist-get (cdr cand) :description)))
-    (list (util/strings-pad-string profile-name 20) `(:description ,(format "%s" description)))))
-
-(defun +org-roam--profile-annotations (cand)
-  "Retrieve profile CAND description."
-  (let* ((option (car (last (assoc cand minibuffer-completion-table))))
-         (description (plist-get option :description)))
-    (concat " " (util/strings-add-font-lock description 'font-lock-comment-face))))
-
-(defun +org-roam-switch-profile (&optional profile-name)
-  "Load Org-roam PROFILE-NAME."
-  (interactive)
-
-  (unless profile-name
-    (setq completion-extra-properties '(:annotation-function +org-roam--profile-annotations))
-    (setq profile-name (s-trim
-                        (completing-read
-                         "Org-roam profile: "
-                         (mapcar #'+org-roam--profile-candidate-entry +org-roam-profiles)))))
-
-  (let* ((profile (cdr (assoc profile-name +org-roam-profiles))))
-    (unless profile (error "Invalid profile name"))
-    (setq +org-roam-current-profile profile-name)
-    (setq org-roam-directory (plist-get profile :directory))
-    (setq org-roam-db-location (plist-get profile :db-location))
-    (org-roam-db-sync)))
 
 (defcustom +org-roam-node-types '("capture"
                                   "concept"
@@ -538,12 +596,11 @@
   :group 'org-roam
   :group 'convenience)
 
-(use-package org-roam :after org
+(use-package org-roam :after (org persist emacsql)
   :custom
-  (+org-roam-default-profile "notes")
   (org-roam-node-display-template (concat "${title:40} " (propertize "${tags:80}" 'face 'org-tag)))
   (org-roam-database-connector 'sqlite-builtin)
-  (org-roam-completion-everywhere t)
+  (org-roam-completion-everywhere nil)
   (org-roam-capture-templates
    `(("d" "default"
       plain "%?"
@@ -553,7 +610,9 @@
                  (expand-file-name "templates/default.org" user-emacs-directory)))
       :jump-to-captured t
       :immediate-finish t
-      :unnarrowed t)
+      :unnarrowed t
+      :empty-lines-before 1
+      :prepend t)
      ("c" "code"
       plain "%?"
       :target (file+head
@@ -562,7 +621,9 @@
                  (expand-file-name "templates/code.org" user-emacs-directory)))
       :jump-to-captured t
       :immediate-finish t
-      :unnarrowed t)
+      :unnarrowed t
+      :empty-lines-before 1
+      :prepend t)
      ("j" "japanese"
       plain "%?"
       :target (file+head
@@ -571,7 +632,9 @@
                  (expand-file-name "templates/japanese.org" user-emacs-directory)))
       :jump-to-captured t
       :immediate-finish t
-      :unnarrowed t)
+      :unnarrowed t
+      :empty-lines-before 1
+      :prepend t)
      ("m" "mathematics"
       plain "%?"
       :target (file+head
@@ -580,7 +643,9 @@
                  (expand-file-name "templates/mathematics.org" user-emacs-directory)))
       :jump-to-captured t
       :immediate-finish t
-      :unnarrowed t)
+      :unnarrowed t
+      :empty-lines-before 1
+      :prepend t)
      ("e" "encrypted"
       plain "%?"
       :target (file+head
@@ -591,69 +656,130 @@
                   (expand-file-name "templates/default.org" user-emacs-directory))))
       :jump-to-captured t
       :immediate-finish t
-      :unnarrowed t)))
+      :unnarrowed t
+      :empty-lines-before 1
+      :prepend t)))
   :init
-  (+org-roam-switch-profile +org-roam-default-profile)
-  (org-roam-db-autosync-enable)
+  (defun +org-roam--profile-candidate-entry (cand)
+    "Create Org-roam profile CAND entry."
+    (let* ((profile-name (car cand))
+           (description (plist-get (cdr cand) :description)))
+      (list (util/strings-pad-string profile-name 20) `(:description ,(format "%s" description)))))
+
+  (defun +org-roam--profile-annotations (cand)
+    "Retrieve profile CAND description."
+    (let* ((option (car (last (assoc cand minibuffer-completion-table))))
+           (description (copy-sequence (plist-get option :description))))
+      (concat " " (util/strings-add-font-lock description 'font-lock-comment-face))))
+
+  (defun +org-roam--profile-prompter ()
+    "`org-roam--profile' prompter function."
+    (let* ((completion-extra-properties '(:annotation-function +org-roam--profile-annotations)))
+      (s-trim
+       (completing-read
+        "Org-roam profile: "
+        (mapcar #'+org-roam--profile-candidate-entry +org-roam-profiles)))))
+
+  (defmacro +org-roam-with-profile (profile-name &rest body)
+    "Run BODY with org-roam profile with PROFILE-NAME."
+    (declare (indent 1))
+    `(let* ((profile (cdr (assoc ,profile-name +org-roam-profiles))))
+       (unless profile (error "Invalid profile name"))
+       (let ((org-roam-directory (plist-get profile :directory))
+             (org-roam-db-location (plist-get profile :db-location)))
+         (org-roam-db-sync)
+         ,@body)
+       (org-roam-db-sync)))
+
+  (defun +org-roam-switch-profile (&optional profile-name)
+    "Load Org-roam PROFILE-NAME."
+    (interactive)
+    (let* ((profile-name (or profile-name (+org-roam--profile-prompter))))
+      (let* ((profile (cdr (assoc profile-name +org-roam-profiles))))
+        (unless profile (error "Invalid profile name"))
+        (setq +org-roam-current-profile profile-name
+              org-roam-directory (plist-get profile :directory)
+              org-roam-db-location (plist-get profile :db-location))
+        (org-roam-db-sync))))
+
+  (defun +org-roam-node-remove ()
+    "Remove node."
+    (interactive)
+    (let* ((file (buffer-file-name (current-buffer)))
+           (roam-p (org-roam-file-p file))
+           (id (and roam-p
+                    (car (car (org-roam-db-query [:select id :from nodes :where (= file $s1)] file)))))
+           (node (org-roam-node-from-id id))
+           (target (org-roam-node-read (and node (org-roam-node-title node))))
+           (target-file (org-roam-node-file target)))
+      (when (y-or-n-p (format "Delete node '%s'?" (org-roam-node-title target)))
+        (delete-file target-file)
+        (if-let* ((buffer (find-buffer-visiting target-file)))
+            (kill-buffer-ask buffer)))
+      (org-roam-db-sync)))
+
+  (defun +org-roam--list-tags ()
+    "List Org-roam tags."
+    (let ((sql [:select :distinct [tags:tag]
+                :from tags
+                :order-by [[tags:tag] :asc]]))
+      (mapcar #'car (org-roam-db-query sql))))
+
+  (defun +org-roam--list-nodes-with-tags (tags)
+    "List Org-roam files with TAGS."
+    (mapcar #'cdr (org-roam-node-read--completions
+                   (lambda (node)
+                     (let ((ntags (org-roam-node-tags node)))
+                       (cl-every (lambda (t) (member t ntags)) tags))))))
+
+  (defun +org-roam-node-find-by-filetag (&optional tag)
+    "Find an Org-roam node by filetag TAG."
+    (interactive
+     (list (completing-read "Tag: " (+org-roam--list-tags) nil t)))
+    (org-roam-node-find nil (format "#%s" tag)))
+
+  (defun +org-roam-node-find-uncategorized ()
+    "Find Org-roam node non-categorized by PACER."
+    (interactive)
+    (org-roam-node-find nil nil
+                        (lambda (node)
+                          (seq-every-p
+                           (lambda (tag) (not (member tag (org-roam-node-tags node))))
+                           +org-roam-node-types))))
+
+  (defun +org-roam-node-find-captures ()
+    "Find Org-roam node not processed by PACER."
+    (interactive)
+    (org-roam-node-find nil nil
+                        (lambda (node)
+                          (member "capture" (org-roam-node-tags node)))))
+
+  (with-demoted-errors "Variable `+org-roam-default-profile' failed to load persisted data: %S"
+    (persist-defvar +org-roam-current-profile "notes" "`org-roam' default profile."))
+
+  (+org-roam-switch-profile +org-roam-current-profile)
+
   :config
-  (cl-defmethod org-roam-node-type ((node org-roam-node))
-    "Return the TYPE of NODE."
-    (condition-case nil
-        (let ((tags (org-roam-node-tags node)))
-          (car (seq-some
-                (lambda (tag) (member tag tags))
-                +org-roam-node-types)))
-      (error ""))))
+  (defun +org-roam-node-find (&optional arg)
+    "`org-roam-node-find' wrapper.
 
-(defun +org-roam-node-remove ()
-  "Remove node."
-  (interactive)
-  (let* ((file (buffer-file-name (current-buffer)))
-         (roam-p (org-roam-file-p file))
-         (id (and roam-p
-                  (car (car (org-roam-db-query [:select id :from nodes :where (= file $s1)] file)))))
-         (node (org-roam-node-from-id id))
-         (target (org-roam-node-read (and node (org-roam-node-title node))))
-         (target-file (org-roam-node-file target)))
-    (when (y-or-n-p (format "Delete node '%s'?" (org-roam-node-title target)))
-      (delete-file target-file)
-      (if-let* ((buffer (find-buffer-visiting target-file)))
-          (kill-buffer-ask buffer)))
-    (org-roam-db-sync)))
+With prefix ARG \\[universal-argument], one-shot note selection for profile."
+    (interactive "p")
+    (pcase arg
+      (4 (let ((profile-name (+org-roam--profile-prompter)))
+           (+org-roam-with-profile profile-name (org-roam-node-find))))
+      (_ (org-roam-node-find))))
 
-(defun +org-roam--list-tags ()
-  "List Org-roam tags."
-  (let ((sql "SELECT DISTINCT tags.tag FROM tags ORDER BY tags.tag COLLATE NOCASE ASC"))
-    (mapcar #'car (org-roam-db-query sql))))
-
-(defun +org-roam-node-find-by-filetag (&optional tag)
-  "Find an Org-roam node by filetag TAG."
-  (interactive
-   (list (completing-read "Tag: " (+org-roam--list-tags) nil t)))
-  (org-roam-node-find nil (format "#%s" tag)))
-
-(defun +org-roam-node-find-uncategorized ()
-  "Find Org-roam node non-categorized by PACER."
-  (interactive)
-  (org-roam-node-find nil nil
-                      (lambda (node)
-                        (seq-every-p
-                         (lambda (tag) (not (member tag (org-roam-node-tags node))))
-                         +org-roam-node-types))))
-
-(defun +org-roam-node-find-captures ()
-  "Find Org-roam node not processed by PACER."
-  (interactive)
-  (org-roam-node-find nil nil
-                      (lambda (node)
-                        (member "capture" (org-roam-node-tags node)))))
+  (org-roam-db-autosync-mode))
 
 (use-package org-roam-ui :after org-roam
   :custom
   (org-roam-ui-follow t)
   (org-roam-ui-update-on-save t)
   (org-roam-ui-open-on-start nil)
-  (org-roam-ui-sync-theme t))
+  (org-roam-ui-sync-theme t)
+  :hook
+  (window-setup . org-roam-ui-mode))
 
 (defcustom +org-roam-ui-viewer-function nil
   "Function to launch org-roam-ui."
@@ -676,7 +802,6 @@
     (display-buffer buffer)))
 
 (use-package edraw :after (org ox)
-  :ensure (:host github :repo "misohena/el-easydraw" :files (:defaults "*.el"))
   :custom
   (edraw-default-document-properties
    '((width . 600)
@@ -712,8 +837,7 @@
   (org-download-image-dir "./images")
   (org-download-screenshot-method "grim -g \"$(slurp)\" %s"))
 
-(use-package org-typst-preview
-  :ensure (:type git :host github :repo "remimimimimi/org-typst-preview.el"))
+(use-package org-typst-preview)
 
 (defun +org-typst-preview-render (&optional arg)
   "Render/clear `Typst` preview in buffer.

@@ -11,4 +11,3 @@
 :END:
 #+title: ${title}
 #+filetags: :%^{Tags}:reference:
-
