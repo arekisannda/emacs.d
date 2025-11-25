@@ -99,51 +99,171 @@
 
 (use-package treemacs-evil :after (treemacs evil))
 
-(use-package treemacs-magit :after (treemacs magit))
-
 (use-package treemacs-tab-bar :after treemacs
   :config (treemacs-set-scope-type 'Tabs))
 
-(use-package magit
+(use-package diff-hl :after (magit)
   :custom
-  (magit-commit-diff-inhibit-same-window t)
-  (magit-save-repository-buffers 'dontask)
-  (magit-commit-show-diff nil)
-  (magit-branch-direct-configure nil)
-  (magit-refresh-status-buffer nil)
-  :custom-face
-  (magit-header-line
-   ((nil :weight bold
-         :foreground ,(doom-color 'fg)
-         :background ,(doom-color 'bg-alt)
-         :box (:line-width (1 . 1) :color ,(doom-color 'bg-alt) :style nil))))
-  :config
-  (defun +magit-repolist-setup-override (columns)
-    (unless magit-repository-directories
-      (user-error "You need to customize `magit-repository-directories' %s"
-                  "before you can list repositories"))
-    (with-current-buffer (get-buffer-create "*Magit Repositories*")
-      (magit-repolist-mode)
-      (setq-local magit-repolist-columns columns)
-      (magit-repolist-setup-1)
-      (magit-repolist-refresh)
-      (pop-to-buffer (current-buffer))))
-
-  (advice-add #'magit-repolist-setup :override #'+magit-repolist-setup-override))
-
-(use-package forge :after (magit transient))
-
-(use-package diff-hl :after magit
-  :custom
-  (diff-hl-show-staged-changes nil)
   (diff-hl-flydiff-delay 0.1)
   :init
   (setq diff-hl-show-hunk-map (make-sparse-keymap)
         diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
+  :config
+  (advice-add #'diff-hl-show-hunk
+              :before
+              (lambda (&optional _)
+                (let ((inhibit-message t))
+                  (cond
+                   ((derived-mode-p 'org-mode) (org-fold-show-all))
+                   ((derived-mode-p 'prog-mode) (funcall util/fold-show-all))
+                   ))))
+
+  (defun frame-live-visible-p (frame)
+    (and frame (frame-live-p frame) (frame-visible-p frame)))
+
+  (defun diff-hl-posframe-scroll-up (arg)
+    "Scroll up ARG lines in the childframe."
+    (interactive "p")
+    (when diff-hl-show-hunk--frame
+      (with-selected-frame diff-hl-show-hunk--frame
+        (windex-scroll-up))))
+
+  (defun diff-hl-posframe-scroll-down (arg)
+    "Scroll down ARG lines in the childframe."
+    (interactive "p")
+    (when diff-hl-show-hunk--frame
+      (with-selected-frame diff-hl-show-hunk--frame
+        (windex-scroll-down))))
   :hook
   (window-setup . diff-hl-flydiff-mode)
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh))
+
+(use-package diff-hl-show-hunk-posframe :after (diff-hl posframe)
+  :custom
+  (diff-hl-show-hunk-function #'diff-hl-show-hunk-posframe)
+  (diff-hl-show-hunk-posframe-show-header-line nil)
+  (diff-hl-show-hunk-posframe-internal-border-width 1)
+  (diff-hl-show-hunk-posframe-poshandler nil)
+  (diff-hl-show-hunk-posframe-parameters nil)
+  (diff-hl-show-hunk-posframe-internal-border-color (face-attribute 'popup-border :background nil t))
+  (diff-hl-show-staged-changes nil)
+  :config
+  (defun +diff-hl-show-hunk--posframe-hide ()
+    "Hide the posframe and clean up buffer."
+    (interactive)
+    (diff-hl-show-hunk-posframe--transient-mode -1)
+    (when (frame-live-p diff-hl-show-hunk--frame)
+      (make-frame-invisible diff-hl-show-hunk--frame t)))
+
+  (advice-add #'diff-hl-show-hunk--posframe-hide :override #'+diff-hl-show-hunk--posframe-hide)
+
+  (defun +diff-hl-show-hunk-hide ()
+    "Hide the current shown hunk."
+    (interactive)
+    (diff-hl-show-hunk--posframe-hide))
+
+  (advice-add #'diff-hl-show-hunk-hide :override #'+diff-hl-show-hunk-hide)
+
+  (defun +diff-hl-show-hunk-posframe (buffer &optional _line)
+    "Implementation to show the hunk in a posframe."
+    (save-excursion
+
+      (unless (require 'posframe nil t)
+        (user-error
+         (concat
+          "`diff-hl-show-hunk-posframe' requires the `posframe' package."
+          "  Please install it or customize `diff-hl-show-hunk-function'.")))
+
+      (unless (posframe-workable-p)
+        (user-error
+         "Package `posframe' is not workable.  Please customize diff-hl-show-hunk-function"))
+
+      (diff-hl-show-hunk--posframe-hide)
+      (setq diff-hl-show-hunk--hide-function #'diff-hl-show-hunk--posframe-hide)
+
+      ;; put an overlay to override read-only-mode keymap
+      (with-current-buffer buffer
+        ;; Change face size
+        (buffer-face-set 'diff-hl-show-hunk-posframe)
+
+        (let ((full-overlay (make-overlay 1 (1+ (buffer-size)))))
+          (overlay-put full-overlay
+                       'keymap diff-hl-show-hunk-posframe--transient-mode-map)))
+
+      (setq posframe-mouse-banish nil)
+      (setq diff-hl-show-hunk--original-frame last-event-frame)
+      (move-beginning-of-line 1)
+
+      (let* ((hunk-overlay diff-hl-show-hunk--original-overlay)
+             (width (let ((edges (window-edges (selected-window))))
+                      (- (nth 2 edges) (nth 0 edges) 10))))
+        (setq
+         diff-hl-show-hunk--frame
+         (posframe-show buffer
+                        :poshandler #'posframe-poshandler-point-1
+                        :internal-border-width diff-hl-show-hunk-posframe-internal-border-width
+                        :internal-border-color diff-hl-show-hunk-posframe-internal-border-color
+                        :hidehandler nil
+                        :min-height (when diff-hl-show-hunk-posframe-show-header-line 10)
+                        :min-width width
+                        :max-height 30
+                        :max-width width
+                        :respect-header-line diff-hl-show-hunk-posframe-show-header-line
+                        :respect-tab-line nil
+                        :respect-mode-line nil
+                        :override-parameters diff-hl-show-hunk-posframe-parameters)
+         ))
+
+      (with-selected-frame diff-hl-show-hunk--frame
+        (with-current-buffer buffer
+          (diff-hl-show-hunk-posframe--transient-mode 1)
+          (when diff-hl-show-hunk-posframe-show-header-line
+            (setq header-line-format (diff-hl-show-hunk-posframe--header-line)))
+          (goto-char (point-min))
+          (setq buffer-quit-function #'diff-hl-show-hunk--posframe-hide)
+          (select-window (window-main-window diff-hl-show-hunk--frame))
+
+          ;; Make cursor visible (mainly for selecting text in posframe)
+          (setq cursor-type 'box)
+
+          ;; Recenter around point
+          (recenter)
+          ))))
+
+  (advice-add #'diff-hl-show-hunk-posframe :override #'+diff-hl-show-hunk-posframe)
+
+  (defun +diff-hl-show-hunk-previous ()
+    "Go to previous hunk/change and show it."
+    (interactive)
+    (let* ((point (when diff-hl-show-hunk--original-overlay
+                    (overlay-start diff-hl-show-hunk--original-overlay)))
+           (previous-overlay (diff-hl-show-hunk--next-hunk t point)))
+      (if (not previous-overlay)
+          (message "There is no previous change")
+        (diff-hl-show-hunk-hide)
+        (diff-hl-show-hunk--goto-hunk-overlay previous-overlay)
+        (recenter)
+        (move-beginning-of-line 1)
+        (diff-hl-show-hunk))))
+
+  (advice-add #'diff-hl-show-hunk-previous :override #'+diff-hl-show-hunk-previous)
+
+  (defun +diff-hl-show-hunk-next ()
+    "Go to next hunk/change and show it."
+    (interactive)
+    (let* ((point (when diff-hl-show-hunk--original-overlay
+                    (overlay-start diff-hl-show-hunk--original-overlay)))
+           (next-overlay (diff-hl-show-hunk--next-hunk nil point)))
+      (if (not next-overlay)
+          (message "There is no next change")
+        (diff-hl-show-hunk-hide)
+        (diff-hl-show-hunk--goto-hunk-overlay next-overlay)
+        (recenter)
+        (move-beginning-of-line 1)
+        (diff-hl-show-hunk))))
+
+  (advice-add #'diff-hl-show-hunk-next :override #'+diff-hl-show-hunk-next))
 
 (use-package writeroom-mode
   :custom
@@ -175,106 +295,13 @@ The optional ARGS are keyword arguments."
       (multi-vterm-internal)
       (switch-to-buffer-other-window vterm-buffer))))
 
-(use-package project
-  :custom
-  (project-vc-extra-root-markers '(".dir-locals.el"))
-  (project-vc-include-untracked t)
-  (project-vc-merge-submodules nil))
-
-(use-package ibuffer-project
-  :preface
-  (defun +ibuffer-list ()
-    (interactive)
-    (ibuffer nil nil nil t nil nil nil))
-  :hook
-  (ibuffer . (lambda ()
-               (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups))
-               (unless (eq ibuffer-sorting-mode 'project-file-relative)
-                 (ibuffer-do-sort-by-project-file-relative)))))
-
-
-(defcustom +activities-save-all-skip '()
-  "List of functions to skip `activities-save-all'."
-  :type '(set (function :tag "functions")))
-
-(use-package activities
-  :custom
-  (activities-name-prefix "@")
-  (activities-always-persist t)
-  (activities-anti-save-predicates
-   '(active-minibuffer-window
-     activities--backtrace-visible-p))
-
-  (activities-window-persistent-parameters
-   (list (cons 'header-line-format 'writable)
-         (cons 'mode-line-format 'writable)
-         (cons 'tab-line-format 'writable)
-         (cons 'no-other-window 'writable)
-         (cons 'no-delete-other-windows 'writable)
-         (cons 'window-preserved-size 'writable)
-         (cons 'window-side 'writable)
-         (cons 'window-slot 'writable)
-         (cons 'window-popup 'writable)
-         (cons 'window-purpose 'writable)))
-
-  (activities-mode-idle-frequency (if init-file-debug most-positive-fixnum 30))
-  (+activities-save-all-skip
-   '((lambda() (when (fboundp 'treemacs-is-treemacs-window-selected?) (treemacs-is-treemacs-window-selected?)))))
-  (activities-bookmark-store nil)
-  :init
-  (when init-file-debug
-    (advice-add #'activities-save-all :override #'ignore)
-    (advice-add #'activities-save :override #'ignore)
-    (advice-add #'+activities-save-all-around :override #'ignore))
-
-  (unless init-file-debug
-    (defun +activities-save-all-around (fn &rest args)
-      (unless (run-hook-with-args-until-success '+activities-save-all-skip)
-        (apply fn args)))
-
-    (advice-add #'activities-save-all :around #'+activities-save-all-around))
-
-  (defun +activities-suspend-eglot (activity)
-    (activities-with activity
-      (let* ((project-name (activities--project-name)))
-        (+eglot--shutdown-project project-name))))
-
-  (advice-add #'activities-suspend :before #'+activities-suspend-eglot)
-
-  ;; Prevent `edebug' default bindings from interfering.
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-  :hook
-  (after-init . activities-mode)
-  (activities-mode . activities-tabs-mode))
-
 (use-package gptel
   :custom
   (gptel-default-mode 'org-mode)
   :config
-  (gptel-api-key-from-auth-source))
-
-(use-package consult
-  :custom
-  (consult-preview-key nil)
-  (consult-narrow-key "<")
-  (register-preview-delay 0.5)
-  (register-preview-function #'consult-register-format)
-  (xref-show-xrefs-function #'consult-xref)
-  (xref-show-definitions-function #'consult-xref)
-  :config
-  ;; Disable preview for consult-grep commands
-  (consult-customize
-   consult-ripgrep
-   consult-git-grep
-   consult-buffer
-   consult-project-buffer
-   consult-grep
-   consult-recent-file
-   :preview-key nil)
+  (gptel-api-key-from-auth-source)
   :hook
-  (completion-list-mode . consult-preview-at-point-mode))
-
-(use-package consult-dir :after consult)
+  (gptel-mode . visual-fill-column-mode--disable))
 
 (use-package affe
   :custom
@@ -366,43 +393,9 @@ Executes FN with ARGS."
   (advice-add #'embark-completing-read-prompter
               :around #'+vertico-embark-hide-which-key-indicator))
 
-(use-package embark-consult
+(use-package embark-consult :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
-
-(use-package orderless
-  :custom
-  (completion-styles '(orderless partial-completion basic))
-  ;; (completion-styles '(orderless))
-  (completion-category-defaults nil)
-  (completion-category-overrides nil)
-  (completion-ignore-case t)
-  (orderless-smart-case nil)
-  ;; (completion-category-overrides '((file (styles basic partial-completion))))
-  :init
-  (setq completion-category-defaults nil)
-  (defun +consult-orderless-regexp-compiler (input type &rest _config)
-    (setq input (cdr (orderless-compile input)))
-    (cons
-     (mapcar (lambda (r) (consult--convert-regexp r type)) input)
-     (lambda (str) (orderless--highlight input t str))))
-
-  ;; OPTION 1: Activate globally for all consult-grep/ripgrep/find/...
-  ;; (setq consult--regexp-compiler #'+consult-orderless-regexp-compiler)
-
-  ;; OPTION 2: Activate only for some commands, e.g., consult-ripgrep!
-  (defun +consult-with-orderless (&rest args)
-    (minibuffer-with-setup-hook
-        (lambda ()
-          (setq-local consult--regexp-compiler #'+consult-orderless-regexp-compiler))
-      (apply args)))
-  (advice-add #'consult-ripgrep :around #'+consult-with-orderless)
-
-  (keymap-substitute project-prefix-map #'project-find-regexp #'consult-ripgrep)
-  (cl-nsubstitute-if
-   '(consult-ripgrep "Find regexp")
-   (pcase-lambda (`(,cmd _)) (eq cmd #'project-find-regexp))
-   project-switch-commands))
 
 (defun +clear-project ()
   "Clear project and reset windows."

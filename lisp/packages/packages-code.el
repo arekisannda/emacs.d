@@ -8,6 +8,29 @@
 
 (setq +fold-replacement (concat " " (truncate-string-ellipsis) " "))
 
+(defcustom elisp-initial-hide-level '()
+  "Set initial hide level ."
+  :type '(repeat (cons (choice (const t) directory file)
+                       (choice (const nil) (integer :tag "Level"))))
+  :group 'hideshow)
+
+(defun elisp-hide-check-level (buffer-name entry)
+  (let* ((pred (car entry))
+         (level (cdr entry)))
+    (cond
+     ((and (booleanp pred) pred) t)
+     ((string-empty-p buffer-name) nil)
+     ((and (directory-name-p pred) (file-in-directory-p buffer-name pred)) t)
+     ((and (string= pred (file-name-nondirectory buffer-name))) t)
+     )))
+
+(defun elisp-hide-level ()
+  (let* ((fn (apply-partially #'elisp-hide-check-level (or (buffer-file-name) "")))
+         (level (cdr (cl-find-if fn elisp-initial-hide-level))))
+    (save-excursion
+      (goto-char (point-min))
+      (when level (hs-hide-level level)))))
+
 (use-package treesit
   :custom
   (treesit-font-lock-level 4)
@@ -49,6 +72,14 @@
 (use-package treesit-fold :after treesit
   :custom
   (treesit-fold-replacement +fold-replacement)
+  :custom-face
+  (treesit-fold-replacement-face
+   ((nil :inherit fold-replacement-face
+         :box unspecified
+         :weight unspecified
+         :foreground unspecified
+         :background unspecified
+         )))
   :hook
   (treesit-fold-mode-on . (lambda () (setq-local util/fold-type 'treesit-fold
                                                  util/fold-show-all #'treesit-fold-open-all
@@ -57,37 +88,37 @@
                                                   util/fold-show-all nil
                                                   util/fold-hide nil))))
 
-(use-package hideshows
-  :preface
-  (defun +hs-mode-fold-overlay (ov)
-    "Format fold overlay OV."
-    (when (eq 'code (overlay-get ov 'hs))
-      (overlay-put ov 'display
-                   (propertize +fold-replacement
-                               'face
-                               `((
-                                  :foreground ,(doom-color 'fg-alt)
-                                  :box nil
-                                  :weight bold))))))
-  (defvar +hs-mode-overlay-fold-function #'+hs-mode-fold-overlay)
+(defun +hs-mode-fold-overlay (ov)
+  "Format fold overlay OV."
+  (when (eq 'code (overlay-get ov 'hs))
+    (overlay-put
+     ov
+     'display
+     (propertize +fold-replacement 'face 'treesit-fold-replacement-face))))
+
+(use-package hideshow
   :custom
-  (hs-set-up-overlay +hs-mode-overlay-fold-function)
-  :custom-face
-  (treesit-fold-replacement-face
-   ((nil :foreground ,(doom-color 'fg-alt)
-         :box nil
-         :weight bold)))
+  (hs-set-up-overlay #'+hs-mode-fold-overlay)
   :hook
-  (hs-minor-mode-on . (lambda () (setq-local util/fold-type 'hs
-                                             util/fold-show-all #'hs-show-all
-                                             util/fold-hide #'hs-hide-block)))
+  (hs-minor-mode     . elisp-hide-level)
+  (hs-minor-mode-on  . (lambda () (setq-local util/fold-type 'hs
+                                              util/fold-show-all #'hs-show-all
+                                              util/fold-hide #'hs-hide-block)))
   (hs-minor-mode-off . (lambda () (setq-local util/fold-type nil
                                               util/fold-show-all nil
                                               util/fold-hide nil))))
 
 (use-package origami
   :custom
-  (origami-fold-replacement +fold-replacement))
+  (origami-fold-replacement +fold-replacement)
+  :custom-face
+  (origami-fold-replacement-face
+   ((nil :inherit fold-replacement-face
+         :box unspecified
+         :weight unspecified
+         :foreground unspecified
+         :background unspecified
+         ))))
 
 (defun +lang-prog-mode-setup ()
   "Prog-mode setup."
@@ -101,12 +132,13 @@
   (rainbow-delimiters-mode 1)
   (origami-mode 1)
   (flyspell-prog-mode)
-  (flymake-mode)
+  (flymake-mode 1)
   (indent-bars-mode 1)
   (yas-minor-mode 1)
 
-  (when (treesit-fold-ready-p)
-    (treesit-fold-mode 1))
+  (cond
+   ((treesit-fold-ready-p) (treesit-fold-mode 1))
+   ((derived-mode-p 'emacs-lisp-mode) (hs-minor-mode 1)))
 
   (util/add-capf-hooks
    #'cape-file
@@ -243,8 +275,6 @@
 
 (use-package elisp-mode
   :hook
-  (emacs-lisp-mode . hs-minor-mode)
-  (emacs-lisp-mode . hs-hide-all)
   (emacs-lisp-mode . eldoc-mode)
   (emacs-lisp-mode . +lang-elisp-mode-setup))
 

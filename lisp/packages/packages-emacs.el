@@ -110,21 +110,15 @@
       (display-buffer (current-buffer))
       (beginning-of-line)))
 
+  (advice-add #'bookmark-jump :after (lambda (&rest _) (pulse-momentary-highlight-one-line (point))))
+
   :custom
-  (scroll-conservatively most-positive-fixnum)
-  (scroll-error-top-bottom t)
-  (read-quoted-char-radix 16)
-  (display-line-numbers-type 'relative)
   (minibuffer-message-clear-timeout 0)
   (+emacs-read-only-rules
    (append +emacs-read-only-rules
            '("/node_modules/"
              "/vendor/"
              "^/nix/store/")))
-  (+buffer-other-window-selector
-   (lambda ()
-     (or (windex-window-with-parameters '((window-side . right)) nil t)
-         (windex-window-with-parameters '((window-popup . below)) nil t))))
   :hook
   (find-file . +emacs-set-read-only-by-rules)
   (messages-buffer-mode . +emacs-message-buffer-setup)

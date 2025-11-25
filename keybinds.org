@@ -1,4 +1,4 @@
-# -*- display-line-numbers: t; diff-hl-mode: t-*-
+# -*- display-line-numbers: t; diff-hl-mode: t -*-
 :PROPERTIES:
 :HEADER-ARGS: :results none
 :END:
@@ -7,139 +7,6 @@
 :END:
 
 * Setup
-** Keybind Hydras
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
-*** DAP
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-dap-motion
-  (:foreign-key exit :exit nil :timeout nil)
-  "dap motion"
-  ("i" #'dap-step-in "step-in")
-  ("o" #'dap-step-out "step-out")
-  ("n" #'dap-next "next")
-  ("C" #'dap-continue "continue"))
-
-(defhydra +hydra-dap-session
-  (:foreign-key exit :exit nil :timeout nil)
-  "dap session"
-  ("S" #'dap-ui-sessions "sessions")
-  ("d" #'dap-ui-delete-session "delete session"))
-#+end_src
-*** Dape
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-dape-motion
-  (:foreign-key exit :exit nil :timeout nil)
-  "dape motion"
-  ("i" #'dape-step-in "step-in")
-  ("o" #'dape-step-out "step-out")
-  ("n" #'dape-next "next")
-  ("C" #'dape-continue "continue")
-
-  ("<next>" #'dape-step-in "step-in")
-  ("<prior>" #'dape-step-out "step-out")
-  ("<down>" #'dape-next "next")
-  ("<end>" #'dape-continue "continue"))
-(hydra-set-property #'+hydra-dape-motion :verbosity 0)
-#+end_src
-*** Diff-Hl
-#+begin_src emacs-lisp :tangle yes
-(setq diff-hl-show-hunk--current-footer
-      "(q)Quit  (j)Next  (k)Previous  (s)Stage  (d)Revert  (c)Copy original")
-
-(defhydra +hydra-git-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("[" #'diff-hl-previous-hunk "prev hunk")
-  ("]" #'diff-hl-next-hunk "next hunk"))
-(hydra-set-property #'+hydra-git-motion :verbosity 0)
-
-(defhydra +hydra-git-hunk
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  "git"
-  ("i" #'diff-hl-show-hunk :hint nil)
-  ("j" #'diff-hl-show-hunk-next :hint nil)
-  ("k" #'diff-hl-show-hunk-previous :hint nil)
-  ("s" #'diff-hl-show-hunk-stage-hunk :hint nil)
-  ("d" #'diff-hl-show-hunk-revert-hunk :hint nil)
-  ("c" #'diff-hl-show-hunk-copy-original-text :hint nil))
-(hydra-set-property #'+hydra-git-hunk :verbosity 0)
-#+end_src
-*** Evil
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-evil-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("["   #'evil-prev-buffer "prev buffer")
-  ("]"   #'evil-next-buffer "next buffer")
-  ("M-[" (lambda ()
-           (interactive)
-           (+buffer-with-other-window (evil-prev-buffer))) "other prev buffer")
-  ("M-]" (lambda ()
-           (interactive)
-           (+buffer-with-other-window (evil-next-buffer))) "other next buffer"))
-(hydra-set-property #'+hydra-evil-motion :verbosity 0)
-#+end_src
-*** Flymake
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-flymake-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("[" #'flymake-goto-prev-error "prev error")
-  ("]" #'flymake-goto-next-error "next error"))
-(hydra-set-property #'+hydra-flymake-motion :verbosity 0)
-#+end_src
-*** Help-Mode
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-help-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("[" #'help-go-back "prev help")
-  ("]" #'help-go-forward "next help"))
-(hydra-set-property #'+hydra-help-motion :verbosity 0)
-#+end_src
-*** Org-mode
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-org-src-block-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("[" #'org-babel-previous-src-block "prev block")
-  ("]" #'org-babel-next-src-block "next block"))
-(hydra-set-property #'+hydra-org-src-block-motion :verbosity 0)
-#+end_src
-*** Org-Remarks
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-org-remark-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("[" #'org-remark-prev "prev remark")
-  ("]" #'org-remark-next "next remark")
-  ("o" #'org-remark-view "view"))
-(hydra-set-property #'+hydra-org-remark-motion :verbosity 0)
-#+end_src
-*** Origami
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-origami-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("C-<up>"    #'origami-previous-fold "prev fold")
-  ("C-<down>"  #'origami-next-fold "next fold")
-  ("C-<left>"  #'origami-previous-fold "prev fold")
-  ("C-<right>" #'origami-next-fold "next fold")
-  ("C-SPC"     #'origami-toggle-node "toggle"))
-(hydra-set-property #'+hydra-origami-motion :verbosity 0)
-#+end_src
-*** Text Scaling
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-text-scale
-  (:foreign-key exit :exit nil :timeout nil)
-  "text scale"
-  ("+" #'text-scale-increase "increase")
-  ("-" #'text-scale-decrease "decrease"))
-(hydra-set-property #'+hydra-text-scale :verbosity 0)
-#+end_src
-*** XREF
-#+begin_src emacs-lisp :tangle yes
-(defhydra +hydra-xref-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("[" #'xref-go-back "prev xref")
-  ("]" #'xref-go-forward "next xref"))
-(hydra-set-property #'+hydra-xref-motion :verbosity 0)
-#+end_src
 ** Disable Keybinds
 :PROPERTIES:
 :VISIBILITY: folded
@@ -159,7 +26,8 @@
  "C-?"
 
  "C-c M-g" ; magit-file-dispatch
- "<f1>" ; fullscreen
+ "<f1>"
+ "<f11>" ; fullscreen
 
  "C-0"
  "C-1"
@@ -228,6 +96,12 @@
 #+end_src
 *** Flymake
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-flymake-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'flymake-goto-prev-error "prev error")
+  ("]" #'flymake-goto-next-error "next error"))
+(hydra-set-property #'+hydra-flymake-motion :verbosity 0)
+
 (general-create-definer +keybinds-flymake
   :prefix-command '+keybinds-flymake-command)
 
@@ -247,6 +121,24 @@
 #+end_src
 *** Org Agenda
 #+begin_src emacs-lisp :tangle yes
+(defmacro +org-agenda-list-key (key)
+  "Create Org-agenda shortcut functions for KEY."
+  `(defun ,(intern (concat "+org-agenda-list-key-" key)) ()
+     (interactive)
+     (org-agenda nil ,key)))
+
+(defmacro +org-capture-key (key)
+  "Create Org-capture shortcut functions for KEY."
+  `(defun ,(intern (concat "+org-capture-key-" key)) ()
+     (interactive)
+     (org-capture nil ,key)))
+
+(defmacro +org-capture-open (description file)
+  "Create Org-capture FILE shortcut functions for DESCRIPTION."
+  `(defun ,(intern (concat "+org-capture-open-" description)) ()
+     (interactive)
+     (org-open-file (concat org-directory "/" ,file))))
+
 (general-create-definer +keybinds-org-agenda
   :prefix-command '+keybinds-org-agenda-command)
 
@@ -270,6 +162,13 @@
 #+end_src
 *** Org Remark
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-org-remark-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'org-remark-prev "prev remark")
+  ("]" #'org-remark-next "next remark")
+  ("o" #'org-remark-view "view"))
+(hydra-set-property #'+hydra-org-remark-motion :verbosity 0)
+
 (general-create-definer +keybinds-org-remark
   :prefix-command '+keybinds-org-remark-command)
 
@@ -355,6 +254,37 @@
 (general-define-key
  :keymaps 'magit-repolist-mode-map
  "<return>" '("status" . magit-repolist-status))
+
+(general-define-key
+ :states '(normal motion emacs)
+ :keymaps '(magit-status-mode-map
+            magit-diff-mode-map)
+ "C-1" #'magit-section-show-level-1
+ "C-2" #'magit-section-show-level-2
+ "C-3" #'magit-section-show-level-3
+ "C-4" #'magit-section-show-level-4
+
+ "1"   #'digit-argument
+ "2"   #'digit-argument
+ "3"   #'digit-argument
+ "4"   #'digit-argument)
+#+end_src
+*** CDLaTex
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :keymaps 'org-cdlatex-mode-map
+ "`" nil
+ "C-`" '("math symbol" . cdlatex-math-symbol))
+#+end_src
+*** GPTel
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :states '(normal visual motion emacs insert)
+ :keymaps 'gptel-mode-map
+ :prefix "C-c"
+
+ "<return>"   nil
+ "C-<return>" #'gptel-send)
 #+end_src
 ** Coding
 *** Compilation
@@ -363,15 +293,15 @@
   :prefix-command '+keybinds-compilation-command)
 
 (+keybinds-compilation
-  "C-<f1>"   '("compile"   . project-compile)
-  "<f1>"     '("compile"   . compile)
-  "C-S-<f1>" '("recompile" . project-recompile)
-  "S-<f1>"   '("recompile" . recompile)
+  "C-<f1>"   '("compile project"   . project-compile)
+  "<f1>"     '("compile"           . compile)
+  "C-S-<f1>" '("recompile project" . project-recompile)
+  "S-<f1>"   '("recompile"         . recompile)
 
-  "c"        '("compile"   . project-compile)
-  "C"        '("compile"   . compile)
-  "R"        '("recompile" . recompile)
-  "r"        '("recompile" . project-recompile))
+  "c"        '("compile project"   . project-compile)
+  "C"        '("compile"           . compile)
+  "R"        '("recompile project" . recompile)
+  "r"        '("recompile"         . project-recompile))
 #+end_src
 *** DevDocs
 #+begin_src emacs-lisp :tangle yes
@@ -429,6 +359,15 @@
 #+end_src
 *** Origami
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-origami-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("C-<up>"    #'origami-previous-fold "prev fold")
+  ("C-<down>"  #'origami-next-fold "next fold")
+  ("C-<left>"  #'origami-previous-fold "prev fold")
+  ("C-<right>" #'origami-next-fold "next fold")
+  ("C-SPC"     #'origami-toggle-node "toggle"))
+(hydra-set-property #'+hydra-origami-motion :verbosity 0)
+
 (general-create-definer +keybinds-origami-fold
   :prefix-command '+keybinds-origami-fold-command)
 
@@ -477,14 +416,16 @@
 #+end_src
 ** Language
 *** Elisp
-**** ERT
 #+begin_src emacs-lisp :tangle yes
 (general-create-definer +keybinds-elisp-exec
   :prefix-command '+keybinds-elisp-exec-command)
 
 (+keybinds-elisp-exec
   "t" '("ert"           . ert)
-  "!" '("toggle debug"  . toggle-debug-on-error))
+  "!" '("toggle debug"  . toggle-debug-on-error)
+
+  "e" '("eval region"   . eval-region)
+  "E" '("eval buffer"   . eval-buffer))
 #+end_src
 *** Markdown
 #+begin_src emacs-lisp :tangle yes
@@ -538,11 +479,26 @@
 ** Debugging
 *** Dape
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-dape-motion
+  (:foreign-key exit :exit nil :timeout nil)
+  "dape motion"
+  ("i" #'dape-step-in "step-in")
+  ("o" #'dape-step-out "step-out")
+  ("n" #'dape-next "next")
+  ("C" #'dape-continue "continue")
+
+  ("<next>" #'dape-step-in "step-in")
+  ("<prior>" #'dape-step-out "step-out")
+  ("<down>" #'dape-next "next")
+  ("<end>" #'dape-continue "continue"))
+(hydra-set-property #'+hydra-dape-motion :verbosity 0)
+
 (general-create-definer +keybinds-dape-debugger
   :prefix-command '+keybinds-dape-debugger-command)
 
 (+keybinds-dape-debugger
   "q"           '("quit"               . dape-quit)
+  "C-S-<f8>"    '("quit"               . dape-quit)
 
   "s"           '("start"              . dape)
   "r"           '("restart"            . dape-restart)
@@ -569,39 +525,33 @@
   "<end>"       '("continue"           . +hydra-dape-motion/dape-continue)
   )
 #+end_src
-*** DAP
-#+begin_src emacs-lisp :tangle yes
-(general-create-definer +keybinds-dap-debugger
-  :prefix-command '+keybinds-dap-debugger-command)
-
-(+keybinds-dap-debugger
-  "D" '("start"              . dap-debug)
-  "R" '("restart"            . dap-debug-restart)
-  "K" '("clear breakpoints"  . dap-breakpoint-delete-all)
-  "l" '("list breakpoints"   . dap-ui-breakpoints-list)
-  "d" '("toggle breakpoint"  . dap-breakpoint-toggle)
-  "m" '("add message"        . dap-breakpoint-log-message)
-  "c" '("add condition"      . dap-breakpoint-condition)
-  "h" '("add hit condiition" . dap-breakpoint-hit-condition)
-  "i" '("step-in"            . +hydra-dap-motion/dap-step-in)
-  "o" '("step-out"           . +hydra-dap-motion/dap-step-out)
-  "n" '("next"               . +hydra-dap-motion/dap-next)
-  "C" '("continue"           . +hydra-dap-motion/dap-continue)
-  "S" '("list sessions"      . +hydra-dap-session/dap-ui-sessions))
-#+end_src
 * Interface
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'override
- "C-<f1>" '("compilation" . +keybinds-compilation-command)
- "<f1>"   '("compilation" . +keybinds-compilation-command)
- "<f5>"   '("assembly"    . +rmsbolt-toggle)
- "<f8>"   '("debugger"    . +keybinds-dape-debugger-command)
- "<f9>"   '("mini switch" . switch-to-minibuffer)
- "<f10>"  '("menu"        . menu-bar-open)
- "<f11>"  '("mru"         . evil-window-mru)
- "<f12>"  '("tree"        . treemacs-select-window)
+ "<f1>"    '("compilation" . +keybinds-compilation-command)
+ "<f5>"    '("assembly"    . +rmsbolt-toggle)
+ "<f8>"    '("debugger"    . +keybinds-dape-debugger-command)
+ "<f9>"    '("mini switch" . switch-to-minibuffer)
+ "<f10>"   '("menu"        . menu-bar-open)
+ "<f11>"   '("mru"         . evil-window-mru)
+ "<f12>"   '("tree"        . treemacs-select-window)
+
+ "C-<f1>"  '("compilation" . +keybinds-compilation-command)
+ "C-<f5>"  '("assembly"    . +rmsbolt-toggle)
+ "C-<f8>"  '("debugger"    . +keybinds-dape-debugger-command)
+ "C-<f9>"  '("mini switch" . switch-to-minibuffer)
+ "C-<f10>" '("menu"        . menu-bar-open)
+ "C-<f11>" '("mru"         . evil-window-mru)
+ "C-<f12>" '("tree"        . treemacs-select-window)
  )
+
+(defhydra +hydra-text-scale
+  (:foreign-key exit :exit nil :timeout nil)
+  "text scale"
+  ("+" #'text-scale-increase "increase")
+  ("-" #'text-scale-decrease "decrease"))
+(hydra-set-property #'+hydra-text-scale :verbosity 1)
 
 (general-define-key
  :keymaps        'override
@@ -684,28 +634,20 @@
 (general-define-key
  :keymaps 'global
 
- "C-<prior>"   '("scroll up"         . +buffer-scroll-up)
- "C-<next>"    '("scroll down"       . +buffer-scroll-down)
- "S-<next>"    '("scroll left"       . +buffer-scroll-left)
- "S-<prior>"   '("scroll right"      . +buffer-scroll-right)
- "C-S-<prior>" '("scroll up"         . scroll-down-command)
- "C-S-<next>"  '("scroll down"       . scroll-up-command)
+ "C-<prior>"   '("scroll up"          . windex-scroll-up)
+ "C-<next>"    '("scroll down"        . windex-scroll-down)
+ "S-<next>"    '("scroll left"        . windex-scroll-left)
+ "S-<prior>"   '("scroll right"       . windex-scroll-right)
+ "C-S-<prior>" '("scroll up"          . scroll-down-command)
+ "C-S-<next>"  '("scroll down"        . scroll-up-command)
 
- "M-<prior>" (general-predicate-dispatch  nil
-               (and eldoc-box--frame
-                    (frame-live-p eldoc-box--frame)
-                    (frame-visible-p eldoc-box--frame))
-               '("eldoc scroll up"   . eldoc-box-scroll-up)
-               t
-               '("other scroll up"   . +buffer-scroll-other-up))
+ "M-<prior>" (general-predicate-dispatch                       '("scroll" . windex-scroll-other-up)
+               (frame-live-visible-p eldoc-box--frame)         '("scroll" . eldoc-box-scroll-up)
+               (frame-live-visible-p diff-hl-show-hunk--frame) '("scroll" . diff-hl-posframe-scroll-up))
 
- "M-<next>" (general-predicate-dispatch  nil
-              (and eldoc-box--frame
-                   (frame-live-p eldoc-box--frame)
-                   (frame-visible-p eldoc-box--frame))
-              '("eldoc scroll down" . eldoc-box-scroll-down) 
-              t
-              '("other scroll down" . +buffer-scroll-other-down)))
+ "M-<next>" (general-predicate-dispatch                        '("scroll" . windex-scroll-other-down)
+              (frame-live-visible-p eldoc-box--frame)          '("scroll" . eldoc-box-scroll-down)
+              (frame-live-visible-p diff-hl-show-hunk--frame)  '("scroll" . diff-hl-posframe-scroll-down)))
 #+end_src
 ** Windows
 *** Navigation
@@ -754,8 +696,8 @@
  :keymaps 'minibuffer-local-map
  "C-<prior>" '("scroll up"         . vertico-scroll-down)
  "C-<next>"  '("scroll down"       . vertico-scroll-up)
- "M-<prior>" '("other scroll up"   . +buffer-minibuffer-scroll-other-up)
- "M-<next>"  '("other scroll down" . +buffer-minibuffer-scroll-other-down)
+ "M-<prior>" '("other scroll up"   . windex-scroll-minibuffer-scroll-other-up)
+ "M-<next>"  '("other scroll down" . windex-scroll-minibuffer-scroll-other-down)
  "C-S-SPC"   '("embark select"     . embark-select)
  "<escape>"  '("abort"             . abort-minibuffers)
  "C-S-a"     '("select all"        . mark-whole-buffer)
@@ -816,15 +758,15 @@
  "C-S-l"       #'vterm-clear-scrollback
  "C-u"         #'vterm--self-insert
  
- "C-<prior>"   '("scroll up"           . +buffer-scroll-up)
- "C-<next>"    '("scroll down"         . +buffer-scroll-down)
- "S-<next>"    '("scroll left"         . +buffer-scroll-left)
- "S-<prior>"   '("scroll right"        . +buffer-scroll-right)
+ "C-<prior>"   '("scroll up"           . windex-scroll-up)
+ "C-<next>"    '("scroll down"         . windex-scroll-down)
+ "S-<next>"    '("scroll left"         . windex-scroll-left)
+ "S-<prior>"   '("scroll right"        . windex-scroll-right)
  "C-S-<prior>" '("scroll up"           . scroll-down-command)
  "C-S-<next>"  '("scroll down"         . scroll-up-command)
 
- "M-<prior>"   '("owindow scroll up"   . +buffer-scroll-other-up)
- "M-<next>"    '("owindow scroll down" . +buffer-scroll-other-down)
+ "M-<prior>"   '("owindow scroll up"   . windex-scroll-other-up)
+ "M-<next>"    '("owindow scroll down" . windex-scroll-other-down)
  "M-:"         '("eval"                . eval-expression))
 #+end_src
 **** Disable Keybinds
@@ -854,6 +796,12 @@
 #+end_src
 *** Help
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-help-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'help-go-back "prev help")
+  ("]" #'help-go-forward "next help"))
+(hydra-set-property #'+hydra-help-motion :verbosity 0)
+
 (general-define-key
  :keymaps 'help-map
  "F" '("helpful function" . helpful-callable)
@@ -862,6 +810,7 @@
  "g" '("Emacs Docs"       . +emacs-open-docs))
 
 (general-define-key
+ :states '(normal motion visual emacs)
  :keymaps '(help-mode-map helpful-mode-map)
  "<tab>" '("button forward" . forward-button)
  "C-o"   '("previous"       . +hydra-help-motion/help-go-back)
@@ -885,36 +834,35 @@
   "."   '("embark act"        . embark-act)
   "?"   '("embark act all"    . embark-act-all)
   "f"   '("dired buffer"      . dired)
-  "s"   '("scratch"           . scratch-buffer)
-  "S"   '("org scratch"       . +org-scratch-buffer)
-  "T"   '("latex scratch"     . +latex-scratch-buffer)
-  "v"   '("toggle term"       . multi-vterm-project)
-  "V"   '("create term"       . +vterm-custom-multi-vterm)
-
   "m"   '("magit"             . magit)
   "M"   '("list repositories" . magit-list-repositories)
+  "l"   '("translate"         . google-translate-smooth-translate)
 
+  "C-s" '("scratch"           . scratch-buffer)
+  "C-S" '("org scratch"       . +org-scratch-buffer)
+  "C-t" '("latex scratch"     . +latex-scratch-buffer)
+  "C-p" '("prompt"            . gptel)
   "C-e" '("eshell"            . project-eshell)
-  "e"   '("eval region"       . eval-region)
-  "E"   '("eval buffer"       . eval-buffer)
-
-  "l"   '("translate"         . google-translate-smooth-translate))
+  "C-v" '("toggle term"       . multi-vterm-project))
 #+end_src
 ** Search
 #+begin_src emacs-lisp :tangle yes
+(defun +imenup ()
+  (or (and imenu-prev-index-position-function
+           imenu-extract-index-name-function)
+	  (and imenu-generic-expression)))
+
 (general-define-key
  :states        '(normal insert visual emacs motion)
  :prefix-map    '+keybinds-search--map
  :prefix        ";"
  :global-prefix "C-;"
 
+ "b"   '("find buffer"  . consult-buffer)
  "f"   '("project file" . project-find-file)
  "F"   '("find file"    . find-file)
  "C-F" '("remote file"  . +emacs-remote-find-file)
  "C-f" '("sudo file"    . +emacs-sudo-find-file)
-
- "b"   '("project buf"  . consult-project-buffer)
- "B"   '("find buffer"  . consult-buffer)
 
  "d"   '("find dir"     . consult-dir)
  "g"   '("find ripgrep" . consult-ripgrep)
@@ -929,17 +877,15 @@
  "C-r" '("find reg"     . consult-register)
  "C-y" '("find yank"    . consult-yank-replace)
 
- ";"   (general-predicate-dispatch nil
-         t                           '("find"         . affe-find))
+ ";"   (general-predicate-dispatch  '("find"    . affe-find))
 
- "h"   (general-predicate-dispatch nil
-         (derived-mode-p 'rfc-mode)  '("find heading" . rfc-mode-goto-section)
-         (derived-mode-p 'org-mode)  '("find heading" . consult-org-heading)
-         (derived-mode-p 'prog-mode) '("imenu"        . consult-imenu)
-         t                           '("find line"    . consult-outline))
+ "h"   (general-predicate-dispatch  '("headin"  . consult-outline)
+         (derived-mode-p 'rfc-mode) '("heading" . rfc-mode-goto-section)
+         (derived-mode-p 'org-mode) '("heading" . consult-org-heading)
+         (+imenup)                  '("headin"  . consult-imenu))
 
  "s"   (general-predicate-dispatch nil
-         (eglot-managed-p)           '("symbols"      . consult-eglot-symbols)))
+         (eglot-managed-p)         '("symbols"  . consult-eglot-symbols)))
 #+end_src
 * Editor
 #+begin_src emacs-lisp :tangle yes
@@ -949,65 +895,53 @@
  :prefix        ","
  :global-prefix "C-,"
 
- "C-c" '("cursor"               . +keybinds-editor-cursor-command)
+ "C-c" '("cursor"          . +keybinds-editor-cursor-command)
 
- "C-f" '("toggle focus"         . writeroom-mode)
- "C-s" '("toggle spelling"      . flyspell-mode)
- "g"   '("git"                  . +keybinds-editor-git-command)
- "i"   '("insert"               . +keybinds-editor-insert-command)
- "C-i" '("insert"               . +keybinds-editor-insert-command)
- "m"   '("motion"               . +keybinds-editor-motion-command)
- "w"   '("writing"              . +keybinds-editor-writing-command)
+ "C-f" '("toggle focus"    . writeroom-mode)
+ "C-s" '("toggle spelling" . flyspell-mode)
+ "g"   '("git"             . +keybinds-editor-git-command)
+ "i"   '("insert"          . +keybinds-editor-insert-command)
+ "C-i" '("insert"          . +keybinds-editor-insert-command)
+ "m"   '("motion"          . +keybinds-editor-motion-command)
+ "w"   '("writing"         . +keybinds-editor-writing-command)
+ "F"   '("origami"         . +keybinds-origami-fold-command)
 
- "C-v" (general-predicate-dispatch nil
-         (derived-mode-p 'org-mode)
-         '("org view"           . +keybinds-org-view-command)
-         t
-         '("view"               . +keybinds-editor-view-command))
+ "C-n" (general-predicate-dispatch            '("view" . +keybinds-editor-view-command)
+         (derived-mode-p 'org-mode)           '("view" . +keybinds-org-view-command))
 
- "f"   (general-predicate-dispatch nil
-         (treesit-fold-ready-p)
-         '("fold"               . +keybinds-editor-ts-fold-command)
-         t
-         '("fold"               . +keybinds-hs-fold-command))
+ "f"   (general-predicate-dispatch            '("fold" . +keybinds-hs-fold-command)
+         (treesit-fold-ready-p)               '("fold" . +keybinds-editor-ts-fold-command))
 
- ","   (general-predicate-dispatch nil
-         (derived-mode-p 'org-mode)
-         '("org edit"           . +keybinds-org-edit-command)
-         t
-         '("edit"               . +keybinds-editor-edit-command))
+ ","   (general-predicate-dispatch            '("edit" . +keybinds-editor-edit-command)
+         (derived-mode-p 'org-mode)           '("edit" . +keybinds-org-edit-command))
 
  "."   (general-predicate-dispatch nil
-         (derived-mode-p 'org-mode)
-         '("org exec"           . +keybinds-org-exec-command)
-         (derived-mode-p 'typst-ts-mode)
-         '("typst exec"         . +keybinds-typst-exec-command)
-         (derived-mode-p 'rust-mode)
-         '("rust exec"          . +keybinds-cargo-exec-command)
-         (derived-mode-p 'emacs-lisp-mode)
-         '("elisp exec"         . +keybinds-elisp-exec-command)
-         (derived-mode-p 'markdown-view-mode)
-         '("markdown exec"      . +keybinds-markdown-view-exec-command)
-         (derived-mode-p 'markdown-mode)
-         '("markdown exec"      . +keybinds-markdown-exec-command)
-         (derived-mode-p 'yaml-ts-mode)
-         '("yaml exec"          . +keybinds-yaml-ts-pro-command)
-         )
-
- "C-SPC" '("origami"            . +keybinds-origami-fold-command))
+         (derived-mode-p 'org-mode)           '("exec" . +keybinds-org-exec-command)
+         (derived-mode-p 'typst-ts-mode)      '("exec" . +keybinds-typst-exec-command)
+         (derived-mode-p 'rust-mode)          '("exec" . +keybinds-cargo-exec-command)
+         (derived-mode-p 'emacs-lisp-mode)    '("exec" . +keybinds-elisp-exec-command)
+         (derived-mode-p 'markdown-view-mode) '("exec" . +keybinds-markdown-view-exec-command)
+         (derived-mode-p 'markdown-mode)      '("exec" . +keybinds-markdown-exec-command)
+         (derived-mode-p 'yaml-ts-mode)       '("exec" . +keybinds-yaml-ts-pro-command))
+ )
 #+end_src
 ** Text Insertion
 #+begin_src emacs-lisp :tangle yes
+(defmacro +strings-insert-pair (desc open close)
+  `(defun ,(intern (format "+insert-pair-%s" desc)) (&optional arg)
+     (interactive "P")
+     (insert-pair arg ,open ,close)))
+
 (general-define-key
  :keymaps 'global
 
- "M-("  `("pair parens"   . ,(util/strings-insert-pair "parentheses" ?\( ?\)))
- "M-{"  `("pair braces"   . ,(util/strings-insert-pair "braces" ?\{ ?\}))
- "M-["  `("pair brackets" . ,(util/strings-insert-pair "brackets" ?\[ ?\]))
- "M-\"" `("pair quotes"   . ,(util/strings-insert-pair "quotes" ?\" ?\"))
- "M-'"  `("pair apost"    . ,(util/strings-insert-pair "apostrophe" ?\' ?\'))
- "M-`"  `("pair ticks"    . ,(util/strings-insert-pair "ticks" ?\` ?\`))
- "M-<"  `("pair carets"   . ,(util/strings-insert-pair "carets" ?\< ?\>)))
+ "M-("  `("pair parens"   . ,(+strings-insert-pair "parentheses" ?\( ?\)))
+ "M-{"  `("pair braces"   . ,(+strings-insert-pair "braces" ?\{ ?\}))
+ "M-["  `("pair brackets" . ,(+strings-insert-pair "brackets" ?\[ ?\]))
+ "M-\"" `("pair quotes"   . ,(+strings-insert-pair "quotes" ?\" ?\"))
+ "M-'"  `("pair apost"    . ,(+strings-insert-pair "apostrophe" ?\' ?\'))
+ "M-`"  `("pair ticks"    . ,(+strings-insert-pair "ticks" ?\` ?\`))
+ "M-<"  `("pair carets"   . ,(+strings-insert-pair "carets" ?\< ?\>)))
 
 (general-create-definer +keybinds-editor-insert
   :prefix-command '+keybinds-editor-insert-command)
@@ -1072,11 +1006,11 @@
   "x" '("snipe til next"     . evil-snipe-x)
   "X" '("snipe til prev"     . evil-snipe-X)
 
-  "b" `("line to bottom-ish" . ,(+buffer-scroll-line-to 90))
+  "b" `("line to bottom-ish" . ,(windex-scroll-line-to 90))
   "B" '("line to bottom"     . evil-scroll-line-to-bottom)
-  "m" `("line to center-ish" . ,(+buffer-scroll-line-to 25))
+  "m" `("line to center-ish" . ,(windex-scroll-line-to 40))
   "M" '("line to center"     . evil-scroll-line-to-center)
-  "t" `("line to top-ish"    . ,(+buffer-scroll-line-to 10))
+  "t" `("line to top-ish"    . ,(windex-scroll-line-to 10))
   "T" '("line to top"        . evil-scroll-line-to-top))
 #+end_src
 ** Writing
@@ -1124,22 +1058,22 @@
 (general-define-key
  :keymaps 'corfu-map
 
- [remap next-line]                 #'corfu-next
- [remap previous-line]             #'corfu-previous
- [remap +buffer-scroll-other-up]   #'corfu-popupinfo-scroll-down
- [remap +buffer-scroll-other-down] #'corfu-popupinfo-scroll-up
- [remap +buffer-scroll-up]         #'corfu-scroll-down
- [remap +buffer-scroll-down]       #'corfu-scroll-up
- [remap scroll-down-command]       #'corfu-scroll-down
- [remap scroll-up-command]         #'corfu-scroll-up
- [remap beginning-of-buffer]       #'corfu-first
- [remap end-of-buffer]             #'corfu-last
- [remap move-beginning-of-line]    #'corfu-prompt-beginning
- [remap move-end-of-line]          #'corfu-prompt-end
- [remap keyboard-quit]             #'corfu-quit
- [remap evil-normal-state]         (lambda () (interactive) (corfu-quit) (evil-normal-state))
- [remap completion-at-point]       #'corfu-insert-separator
- [remap indent-for-tab-command]    #'corfu-insert
+ [remap next-line]                #'corfu-next
+ [remap previous-line]            #'corfu-previous
+ [remap windex-scroll-other-up]   #'corfu-popupinfo-scroll-down
+ [remap windex-scroll-other-down] #'corfu-popupinfo-scroll-up
+ [remap windex-scroll-up]         #'corfu-scroll-down
+ [remap windex-scroll-down]       #'corfu-scroll-up
+ [remap scroll-down-command]      #'corfu-scroll-down
+ [remap scroll-up-command]        #'corfu-scroll-up
+ [remap beginning-of-buffer]      #'corfu-first
+ [remap end-of-buffer]            #'corfu-last
+ [remap move-beginning-of-line]   #'corfu-prompt-beginning
+ [remap move-end-of-line]         #'corfu-prompt-end
+ [remap keyboard-quit]            #'corfu-quit
+ [remap evil-normal-state]        (lambda () (interactive) (corfu-quit) (evil-normal-state))
+ [remap completion-at-point]      #'corfu-insert-separator
+ [remap indent-for-tab-command]   #'corfu-insert
 
  "C-SPC"    '("separator"        . corfu-insert-separator)
  "C-g"      '("abort"            . corfu-quit)
@@ -1166,8 +1100,13 @@
  :states '(normal motion visual emacs)
  "\\"   (general-predicate-dispatch #'evil-execute-in-emacs-state
           (derived-mode-p '(eshell-mode vterm-mode)) nil
+          evil-emacs-state-minor-mode nil
           evil-execute-in-emacs-state-buffer #'ignore)
- "C-w" '("evil-window" . evil-window-map))
+ "C-w" '("evil-window" . evil-window-map)
+ "'"   nil
+ "`"   nil
+ "m"   '("bookmark"    . bookmark-set)
+ )
 #+end_src
 *** Normal
 #+begin_src emacs-lisp :tangle yes
@@ -1179,10 +1118,7 @@
  "K"   '("jump out arg" . evil-jump-out-args)
 
  "u"   '("undo"         . undo-fu-only-undo)
- "U"   '("redo"         . undo-fu-only-redo)
-
- "[ x" '("prev xref"    . +hydra-xref-motion/xref-go-back)
- "] x" '("next xref"    . +hydra-xref-motion/xref-go-forward))
+ "U"   '("redo"         . undo-fu-only-redo))
 #+end_src
 *** Insert
 #+begin_src emacs-lisp :tangle yes
@@ -1195,6 +1131,12 @@
 #+end_src
 *** Motion
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-xref-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'xref-go-back "prev xref")
+  ("]" #'xref-go-forward "next xref"))
+(hydra-set-property #'+hydra-xref-motion :verbosity 0)
+
 (general-define-key
  :keymaps 'motion
  "<escape>" '("quit"        . keyboard-quit)
@@ -1203,13 +1145,14 @@
  "H"        '("prev arg"    . evil-backward-arg)
 
  "[ x"      '("prev xref"   . +hydra-xref-motion/xref-go-back)
- "] x"      '("prev xref"   . +hydra-xref-motion/xref-go-forward))
+ "] x"      '("prev xref"   . +hydra-xref-motion/xref-go-forward)
+ )
 #+end_src
 *** Emacs
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'emacs
- "<escape>" (general-predicate-dispatch #'keyboard-quit
+ "<escape>" (general-predicate-dispatch    #'keyboard-quit
               (derived-mode-p 'vterm-mode) #'vterm--self-insert))
 #+end_src
 *** Object
@@ -1227,6 +1170,17 @@
 #+end_src
 *** Window
 #+begin_src emacs-lisp :tangle yes
+(function-with-selector-window windex-scroll-other-window-selector #'evil-prev-buffer)
+(function-with-selector-window windex-scroll-other-window-selector #'evil-next-buffer)
+
+(defhydra +hydra-evil-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("["   #'evil-prev-buffer "prev buffer")
+  ("]"   #'evil-next-buffer "next buffer")
+  ("M-[" #'evil-prev-buffer-with-selector-window "other prev buffer")
+  ("M-]" #'evil-next-buffer-with-selector-window "other next buffer"))
+(hydra-set-property #'+hydra-evil-motion :verbosity 0)
+
 (general-define-key
  :keymaps 'evil-window-map
  "="   '("balance windows" . balance-windows)
@@ -1262,8 +1216,8 @@
 
  "["   '("prev buffer"     . +hydra-evil-motion/evil-prev-buffer)
  "]"   '("next buffer"     . +hydra-evil-motion/evil-next-buffer)
- "M-[" '("prev buffer"     . +hydra-evil-motion/lambda-M-\[)
- "M-]" '("next buffer"     . +hydra-evil-motion/lambda-M-\])
+ "M-[" '("prev buffer"     . +hydra-evil-motion/evil-prev-buffer-with-selector-window)
+ "M-]" '("next buffer"     . +hydra-evil-motion/evil-next-buffer-with-selector-window)
 
  "d"   '("toggle buffer"   . toggle-window-dedicated)
  "m"   '("window purpose"  . windex-set-window-purpose))
@@ -1275,13 +1229,9 @@
 
 (+keybinds-editor-edit
   "+" '("sort lines"      . sort-lines)
-  "=" (general-predicate-dispatch nil
-        (derived-mode-p 'yaml-ts-mode)
-        '("indent"        . yaml-pro-format-ts)
-        (derived-mode-p '(css-ts-mode html-mode))
-        '("indent"        . prettier-js-prettify)
-        t
-        '("indent"        . util/indent-buffer))
+  "=" (general-predicate-dispatch                 '("indent" . util/indent-buffer)
+        (derived-mode-p 'yaml-ts-mode)            '("indent" . yaml-pro-format-ts)
+        (derived-mode-p '(css-ts-mode html-mode)) '("indent" . prettier-js-prettify))
 
   "c" '("comment line"    . evilnc-comment-or-uncomment-lines)
   "C" '("comment block"   . evilnc-comment-or-uncomment-paragraphs)
@@ -1326,9 +1276,9 @@
   :prefix-command '+keybinds-editor-view-command)
 
 (+keybinds-editor-view
-  "F"   '("narrow function" . narrow-to-defun)
-  "R"   '("narrow region"   . narrow-to-region)
-  "v"   '("widen"           . widen)
+  "C-f" '("narrow function" . narrow-to-defun)
+  "C-n" '("narrow region"   . narrow-to-region)
+  "C-q" '("widen"           . widen)
   "C-c" '("clone"           . +emacs-ro-clone-indirect-buffer))
 #+end_src
 ** Org-mode
@@ -1398,6 +1348,12 @@
 #+end_src
 *** Command Execution
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-org-src-block-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'org-babel-previous-src-block "prev block")
+  ("]" #'org-babel-next-src-block "next block"))
+(hydra-set-property #'+hydra-org-src-block-motion :verbosity 0)
+
 (general-create-definer +keybinds-org-exec
   :prefix-command '+keybinds-org-exec-command)
 
@@ -1431,15 +1387,35 @@
 *** Version Control
 **** Git
 #+begin_src emacs-lisp :tangle yes
+(defhydra +hydra-git-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("s"         #'diff-hl-show-hunk-stage-hunk "stage")
+  ("d"         #'diff-hl-show-hunk-revert-hunk "revert")
+  ("c"         #'diff-hl-show-hunk-copy-original-text "copy")
+  ("k"         #'diff-hl-show-hunk-previous "prev hunk")
+  ("j"         #'diff-hl-show-hunk-next "next hunk")
+  ("i"         #'diff-hl-show-hunk "show hunk")
+
+  ("M-<prior>" #'diff-hl-posframe-scroll-up)
+  ("M-<next>"  #'diff-hl-posframe-scroll-down))
+(hydra-set-property #'+hydra-git-motion :verbosity 1)
+
+(general-define-key
+ :keymaps 'diff-hl-show-hunk-posframe--transient-mode-map
+ "M-<prior>" '("scroll up"   . +hydra-git-motion/diff-hl-posframe-scroll-up)
+ "M-<next>"  '("scroll down" . +hydra-git-motion/diff-hl-posframe-scroll-down)
+ "k"         '("prev hunk"   . +hydra-git-motion/diff-hl-show-hunk-previous)
+ "j"         '("next hunk"   . +hydra-git-motion/diff-hl-show-hunk-next))
+
 (general-create-definer +keybinds-editor-git
   :prefix-command '+keybinds-editor-git-command)
 
 (+keybinds-editor-git
-  "i" '("inspect hunk" . +hydra-git-hunk/diff-hl-show-hunk)
   "s" '("stage hunk"   . diff-hl-stage-current-hunk)
   "d" '("delete hunk"  . diff-hl-revert-hunk)
 
-  "[" '("prev hunk"    . +hydra-git-motion/diff-hl-previous-hunk)
-  "]" '("next hunk"    . +hydra-git-motion/diff-hl-next-hunk))
+  "i" '("inspect hunk" . +hydra-git-motion/diff-hl-show-hunk)
+  "k" '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
+  "j" '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
 #+end_src
 

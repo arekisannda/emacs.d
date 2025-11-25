@@ -1,7 +1,6 @@
 # -*- mode: snippet -*-
 # name: emacs configuration header
-# key: config-header
-# key: cfgheader
+# key: cfg
 # --
 
 ;;; ${1:name}.el --- ${2:Description} -*- lexical-binding: t; -*-

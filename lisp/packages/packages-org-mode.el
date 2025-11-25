@@ -75,24 +75,6 @@
   "Org-agenda configuration."
   (setq-local window-size-fixed 'width))
 
-(defmacro +org-agenda-list-key (key)
-  "Create Org-agenda shortcut functions for KEY."
-  `(defun ,(intern (concat "+org-agenda-list-key-" key)) ()
-     (interactive)
-     (org-agenda nil ,key)))
-
-(defmacro +org-capture-key (key)
-  "Create Org-capture shortcut functions for KEY."
-  `(defun ,(intern (concat "+org-capture-key-" key)) ()
-     (interactive)
-     (org-capture nil ,key)))
-
-(defmacro +org-capture-open (description file)
-  "Create Org-capture FILE shortcut functions for DESCRIPTION."
-  `(defun ,(intern (concat "+org-capture-open-" description)) ()
-     (interactive)
-     (org-open-file (concat org-directory "/" ,file))))
-
 (defcustom +org-auto-hide-block-languages '()
   "List of languages to auto hide."
   :type '(repeat string)
@@ -779,7 +761,7 @@ With prefix ARG \\[universal-argument], one-shot note selection for profile."
   (org-roam-ui-open-on-start nil)
   (org-roam-ui-sync-theme t)
   :hook
-  (window-setup . org-roam-ui-mode))
+  (window-setup . (lambda () (unless init-file-debug (org-roam-ui-mode)))))
 
 (defcustom +org-roam-ui-viewer-function nil
   "Function to launch org-roam-ui."

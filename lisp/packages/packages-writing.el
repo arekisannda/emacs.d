@@ -88,8 +88,6 @@ Also position fit window to BUFFER and select it."
 
 (use-package migemo :disabled)
 
-(use-package powerthesaurus)
-
 (provide 'packages-writing)
 
 ;;; packages-writing.el ends here

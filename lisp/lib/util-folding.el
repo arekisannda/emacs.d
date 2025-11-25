@@ -4,15 +4,6 @@
 ;;; Code:
 (require 'util-strings)
 
-(defun util/folding--insert-fold-start (comment-str &optional info annotate)
-  "Add start fold comment using COMMENT-STR.
-If ANNOTATE is present, annotate comment with INFO."
-  (let ((description (if (or (not annotate)
-                             (util/strings-blank-or-nil-p info))
-                         " "
-                       (format " %s " info))))
-    (insert-before-markers (concat comment-str description "{{{"))))
-
 (defun util/folding--insert-fold-end (comment-str &optional info annotate)
   "Add end fold comment using COMMENT-STR.
 If ANNOTATE is present, annotate comment with INFO."
@@ -21,6 +12,15 @@ If ANNOTATE is present, annotate comment with INFO."
                          ""
                        (format " %s" info))))
     (insert-before-markers (concat comment-str " }}}" description ))))
+
+(defun util/folding--insert-fold-start (comment-str &optional info annotate)
+  "Add start fold comment using COMMENT-STR.
+If ANNOTATE is present, annotate comment with INFO."
+  (let ((description (if (or (not annotate)
+                             (util/strings-blank-or-nil-p info))
+                         " "
+                       (format " %s " info))))
+    (insert-before-markers (concat comment-str description "{{{"))))
 
 (defun util/folding--add-fold-inline (rbegin rend comment-str &optional info &key annotate-end)
   "Add inline braces using COMMENT-STR to region between RBEGIN and REND.

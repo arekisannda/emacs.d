@@ -2,11 +2,14 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'util-helpers)
-
 (defface popup-border
   '((((type tty)) :inherit mode-line-inactive))
   "Face used for popup borders."
+  :group 'basic-faces)
+
+(defface fold-replacement-face
+  '((((type tty)) :inherit 'font-lock-comment-face))
+  "Face used for fold replacement face."
   :group 'basic-faces)
 
 (use-package doom-modeline
@@ -87,7 +90,7 @@
                    ((evil-visual-state-p) 'doom-modeline-evil-visual-state)
                    (t 'doom-modeline-evil-user-state))))
         (propertize
-         (format " " tag)
+         (propertize " " 'display `(space :width (8)))
          'face (doom-modeline-face face)
          'help-echo (evil-state-property evil-state :name t)))))
 
@@ -147,7 +150,7 @@
   (indent-bars-starting-column 0)
   (indent-bars-color-by-depth nil)
   (indent-bars-color `(,(doom-blend (doom-color 'vertical-bar) (doom-color 'bg) 0.5)))
-   ;; '(highlight :face-bg t :blend 0.2))
+  ;; '(highlight :face-bg t :blend 0.2))
   (indent-bars-highlight-current-depth nil)
   ;; '(:face default :blend 0.4))
   (indent-bars-pad-frac 0.0)
@@ -158,7 +161,7 @@
   (indent-bars-treesit-ignore-blank-lines-types '("module"))
   (indent-bars-display-on-blank-lines 'least))
 
-(use-package nil
+(use-package nil ; _faces_
   :custom-face
   (match
    ((nil :inherit unspecified
@@ -251,6 +254,11 @@
          :foreground ,(doom-darken (doom-blend (doom-color 'red) (doom-color 'orange) 0.3) 0.3)
          :background ,(doom-darken (doom-blend (doom-color 'red) (doom-color 'orange) 0.3) 0.3)
          )))
+
+  (fold-replacement-face
+   ((nil :foreground ,(doom-color 'dark-blue)
+         :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg) 0.2)
+         :weight bold)))
 
   (diff-refine-removed
    ((nil  :inverse-video nil

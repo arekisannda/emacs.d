@@ -100,6 +100,7 @@ The optional ARGS are keyword arguments."
 
 (use-package dashboard :after (nerd-icons consult doom-modeline)
   :custom
+  (dashboard-buffer-name " *dashboard*")
   (dashboard-icon-type 'nerd-icons)
   (dashboard-startup-banner (expand-file-name "assets/logo.png" user-emacs-directory))
   (dashboard-banner-logo-title nil)

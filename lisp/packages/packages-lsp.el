@@ -39,7 +39,6 @@ If it is not set, use ALTERNATIVE instead."
                                        :inlayHintProvider
                                        :signatureHelpProvider))
   ;; (eglot-extend-to-xref nil)
-  ;; (eglot-highlight-symbol-face ((t (:inherit (lazy-highlight)))))
   :config
   (let ((nixd         '("nixd" :name "nixd"))
         (tinymist     '("tinymist" :name "tinymist"))
@@ -112,7 +111,7 @@ If it is not set, use ALTERNATIVE instead."
   (evil-insert-state-entry . eldoc--disable)
   (evil-insert-state-exit  . eldoc--enable))
 
-(use-package eldoc-box :after eldoc
+(use-package eldoc-box :after (eldoc windex-scroll)
   :preface
   (defun +eldoc-box-max-width ()
     (let ((max-width 800)
@@ -145,14 +144,14 @@ If it is not set, use ALTERNATIVE instead."
     (interactive "p")
     (when eldoc-box--frame
       (with-selected-frame eldoc-box--frame
-        (+buffer-scroll-up))))
+        (windex-scroll-up))))
 
   (defun eldoc-box-scroll-down (arg)
     "Scroll down ARG lines in the childframe."
     (interactive "p")
     (when eldoc-box--frame
       (with-selected-frame eldoc-box--frame
-        (+buffer-scroll-down))))
+        (windex-scroll-down))))
 
   (defun eldoc-box--enable ()
     "Enable eldoc-box hover.

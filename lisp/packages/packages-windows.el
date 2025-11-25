@@ -10,6 +10,7 @@
 (setq +wm-left-width 40)
 (setq +wm-bottom-height 20)
 
+(setq-default windmove-allow-all-windows t)
 (setq-default switch-to-buffer-obey-display-actions t)
 (setq-default window-combination-limit 'window-size)
 (setq-default window-sides-slots '(3 0 3 2))
@@ -21,7 +22,9 @@
                 (window-purpose          . writable)
                 (window-popup            . writable)
                 (clone-of                . t)
-                (no-delete-other-windows . t)))
+                (no-other-window         . t)
+                (no-delete-other-windows . t)
+                (window-preserved-size   . t)))
 
 (defmacro +window-split (splitfn)
   "Split window with SPLITFN."
@@ -84,6 +87,14 @@
            (window-parameter window 'window-popup)))))
   (windex-window-aw-filter-functions windex-window-filter-functions)
   :config
+  (defmacro function-with-selector-window (selector-fn fn)
+    (let ((fn-name (util/function-name fn)))
+      `(defun ,(intern (concat fn-name "-with-selector-window")) (&rest args)
+         ,(format "Call `%s' with ARGS on window returned by selector." fn-name)
+         (interactive)
+         (windex-with-selector-window ,selector-fn
+           (apply (intern ,fn-name) args)))))
+
   (windex--enable-ace-window)
   (windex--enable-windmove-in-direction-split))
 
@@ -167,185 +178,59 @@
                     ( :type row :nodes ((:type buf) (:type buf))))))
      )))
 
-(defun +display-buffer-in-side-window (buffer &optional alist plist)
-  "Display BUFFER in side window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
-    (let* ((side (plist-get plist :side))
-           (slot (plist-get plist :slot))
-           (size (plist-get plist :size))
-           (fixed (plist-get plist :fixed))
-           (init-window (window-normalize-window nil))
-           parameters
-           window)
+(use-package windex-scroll :after (evil)
+  :custom
+  (windex-scroll-other-window-selector
+   (lambda ()
+     (or (windex-window-with-parameters '((window-side . right)) nil t)
+         (windex-window-with-parameters '((window-popup . below)) nil t))))
 
-      (if (and side slot)
-          (setq parameters `((window-side . ,side) (window-slot . ,slot)))
-        (user-error "Missing side window parameters"))
-
-      (cond
-       ;; if reuse flag is set and if buffer is visible, reuse the window
-       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
-        (select-window window))
-       ((setq window
-              (display-buffer-in-side-window
-               buffer
-               (append alist
-                       `((direction           . ,(plist-get plist :direction))
-                         (side                . ,side)
-                         (slot                . ,slot)
-                         (inhibit-same-window . t))
-                       (cond
-                        ((equal fixed 'height) `((window-height . ,size)))
-                        ((equal fixed 'width) `((window-width . ,size))))))))
-       (t (user-error "Unable to create side window")))
-
-      (when (plist-get plist :disable-modeline)
-        (set-window-parameter window 'mode-line-format 'none))
-      (unless (window-parameter window 'quit-restore)
-        (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
-      (when (plist-get plist :no-other)
-        (set-window-parameter window 'no-other-window t))
-      (set-window-buffer window buffer)
-      (set-window-dedicated-p window (plist-get plist :dedicated))
-
-      (with-current-buffer buffer
-        (setq-local window-size-fixed fixed))
-
-      (if (plist-get plist :select) window init-window))))
-
-(defun +display-buffer-in-purposed-window (buffer &optional alist plist)
-  "Display BUFFER in window with specified purpose according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
-    (let* ((purpose-list (plist-get plist :purpose))
-           (init-window (window-normalize-window nil))
-           window)
-      (cond
-       ;; if reuse flag is set and if buffer is visible, reuse the window
-       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
-        (select-window window))
-       ((setq window (get-buffer-window buffer))
-        (select-window window))
-       ;; return first window with purpose matching an element from `purpose-list`
-       ;; if `purpose-list` contains multiple matched elements, return window of the
-       ;; matched element from the list.
-       ((setq window (cl-some (lambda (purpose) (windex-window-with-purpose purpose)) purpose-list))
-        (set-window-buffer window buffer))
-       (t (user-error "Unable to find window with the requested purpose")))
-
-      (if (plist-get plist :select) window init-window))))
-
-(defun +display-buffer-in-mru-main-window (buffer &optional alist plist)
-  "Display BUFFER in most recently used window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
-    (let* ((init-window (window-normalize-window nil))
-           window)
-      (cond
-       ;; if reuse flag is set and if buffer is visible, reuse the window
-       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
-        (select-window window))
-       ((setq window (windex-get-mru-in-main))
-        (set-window-buffer window buffer))
-       (t (user-error "Unable to get main window")))
-
-      (if (plist-get plist :select) window init-window))))
-
-(defun +display-buffer-in-lru-main-window (buffer &optional alist plist)
-  "Display BUFFER in least recently used window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
-    (let* ((init-window (window-normalize-window nil))
-           window)
-      (cond
-       ;; if reuse flag is set and if buffer is visible, reuse the window
-       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
-        (select-window window))
-       ((setq window (util/window-get-lru-in-main))
-        (set-window-buffer window buffer))
-       (t (user-error "Unable to get main window")))
-
-      (if (plist-get plist :select) window init-window))))
-
-(defun +dynamic-display-buffer--match-action (buffer-or-name action-list)
-  "Return action from ACTION-LIST for BUFFER-OR-NAME."
-  (cl-loop for (condition . plist) in action-list
-           when (shackle--match buffer-or-name condition plist)
-           return plist
-           finally return nil))
-
-(defun +dynamic-display-buffer (buffer &optional alist plist)
-  "DISPLAY BUFFER according to ALIST, PLIST, and the inititial window.
-
-If the inititial window is a side window, display BUFFER using the rules
-defined in `:dynamic`.  `:dynamic` is a list of
-rules (CONDITION . ACTION-PLIST), and each condition can be a symbol or string.
-A symbol is interpreted as a major-mode; a string, the buffer name or
-a regular expression if `:regexp` is present in the action plist.
-
-Additional ACTION-PLIST options:
-
-:action and a function name or lambda:
-
-Function with arguments BUFFER-OR-NAME, ALIST, and PLIST.
-
-:mru and t:
-
-Open BUFFER in the most recently used window
-
-:lru and t:
-
-Open BUFFER in the least recently used window
-
-If the inititial window is not a side window, display BUFFER using `:static`"
-  (if (plist-get plist :ignore) 'fail
-    (let* ((init-window (window-normalize-window nil))
-           window
-           rule-plist)
-      (unless (setq rule-plist (+dynamic-display-buffer--match-action
-                                (window-buffer init-window)
-                                (plist-get plist :dynamic)))
-        (setq rule-plist (plist-get plist :static)))
-
-      (cond
-       ((plist-get rule-plist :same)
-        (setq window (display-buffer--maybe-same-window buffer alist)))
-       ((and (plist-get rule-plist :reuse) (setq window (get-buffer-window buffer)))
-        (setq window (display-buffer-reuse-window buffer alist)))
-       ((plist-get rule-plist :mru)
-        (setq window (+display-buffer-in-mru-main-window buffer alist rule-plist)))
-       ((plist-get rule-plist :lru)
-        (setq window (+display-buffer-in-lru-main-window buffer alist rule-plist)))
-       ((setq action (plist-get rule-plist :action))
-        (setq window (funcall (plist-get rule-plist :action) buffer alist rule-plist)))
-       (t 'fail))
-      window)))
-
-(defun +display-buffer-in-pop-up-window (buffer &optional alist plist)
-  (let ((frame (shackle--splittable-frame)))
-    (when frame
-      (if (plist-get plist :ignore) 'fail
-        (let* ((init-window (window-normalize-window nil))
-               parameters
-               window)
-          (with-current-buffer buffer
-            (if (get-buffer-window buffer)
-                (display-buffer-reuse-window buffer alist)
-              (let* ((lines (count-lines (point-min) (point-max)))
-                     (window (split-window (frame-root-window frame) (min -20 (max -20 (- lines))))))
-                (window--display-buffer buffer window 'window alist)
-                (set-window-dedicated-p window t)
-                (if (plist-get plist :select) window init-window)))
-            ))
-        ))
-    ))
+  (windex-scroll-left-function #'evil-scroll-column-left)
+  (windex-scroll-right-function #'evil-scroll-column-right)
+  (windex-scroll-up-function #'evil-scroll-line-up )
+  (windex-scroll-down-function #'evil-scroll-line-down))
 
 (use-package shackle :after windex
   :custom
   (shackle-default-rule nil)
   (shackle-rules
-   `((("\\*Capture\\*"
-       "\\*Warnings\\*"
-       "\\*Flymake log\\*"
+   `((("^\\*Capture\\*$"
+       "^\\*Warnings\\*$"
+       "^\\*Flymake log\\*$"
        "^\\*Activities (error): .*\\*$")
       :ignore t)
+
+     (("^ \\*transient\\*$"
+       "^ \\*CDLaTeX Help\\*")
+      :custom +dynamic-display-buffer
+      :static ( :action +display-buffer-in-pop-up-window
+                :select t)
+      :dynamic
+      (((".*")
+        :if (lambda (window)
+              (equal (window-parameter window 'window-side) 'bottom))
+        :action +display-buffer-in-side-window
+        :side bottom
+        :slot 0
+        :size ,+wm-bottom-height
+        :fixed height
+        :select t)
+
+       ((".*")
+        :if (lambda (window)
+              (equal (window-parameter window 'window-side) 'right))
+        :action +display-buffer-in-side-window
+        :side right
+        :slot 1
+        :size ,+wm-right-width
+        :fixed width
+        :select t
+        )
+
+       ((".*")
+        :if (lambda (window) (window-parameter window 'window-popup))
+        :same t :select t)
+       ))
 
      (("^\\*diff-hl\\*"
        "^\\*diff-hl-revert\\*"
@@ -354,7 +239,7 @@ If the inititial window is not a side window, display BUFFER using `:static`"
        "^\\*Deletions\\*$"
        "^ widget-choose$"
        "^\\*Ibuffer confirmation\\*"
-       "^ \\*CDLaTeX Help\\*"
+       "^\\*Local Variables\\*$"
 
        backtrace-mode)
       :custom +display-buffer-in-pop-up-window
@@ -376,37 +261,22 @@ If the inititial window is not a side window, display BUFFER using `:static`"
       :fixed width
       :select t)
 
-     ((magit-diff-mode
-       magit-log-mode)
-      :custom +dynamic-display-buffer
-      :static
-      ( :action +display-buffer-in-side-window
-        :side right
-        :slot 1
-        :size ,+wm-right-width
-        :fixed width
-        :select t)
-      :dynamic
-      (((text-mode)
-        :action +display-buffer-in-side-window
-        :side right
-        :slot 1
-        :size ,+wm-right-width
-        :fixed width)
-       ))
-
      (("^COMMIT_EDITMSG$"
+       "^CAPTURE-.*\\.org$"
        "^\\*Org .*\\*$"
        "^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
        "^\\*Shortdoc.*\\*$"
        "^\\*Customize.*\\*$"
-       "^\\*ChatGPT.*\\*$"
        "^\\*Man.*\\*$"
        "^\\*WoMan.*\\*$"
+       "^\\*IBuffer\\*$"
 
        magit-status-mode
        magit-repolist-mode
+       magit-diff-mode
+       magit-log-mode
+       forge-repository-list-mode
        devdocs-mode
        dictionary-mode)
       :custom +display-buffer-in-side-window
@@ -442,7 +312,13 @@ If the inititial window is not a side window, display BUFFER using `:static`"
        "^\\*shell\\*$"
        "^\\*Command Line\\*$"
        "^\\*\\(.*-\\)?eshell\\*$"
+       "^\\*Calculator\\*$"
+       "^ \\*EGLOT [^\s]* stderr\\*$"
+       "^\\*[^\s]*[\s]+events\\*$"
+       "^\\*ChatGPT.*\\*$"
 
+       dired-mode
+       calc-mode
        compilation-mode
        eshell-mode
        comint-mode
@@ -467,33 +343,19 @@ If the inititial window is not a side window, display BUFFER using `:static`"
       :fixed height
       :select t)
 
-     ;;; base mode fallback
-
-     ((outline-mode)
-      :custom +dynamic-display-buffer
-      :static (:mru t :select t)
-      :dynamic
-      (((org-agenda-mode)
-        :if (lambda (&rest _) org-agenda-follow-mode)
-        :action +display-buffer-in-side-window
-        :side right
-        :slot 1
-        :size ,+wm-right-width
-        :fixed width
-        :select t)
-       (org-roam-mode :mru t :select t)
-       ))
-
-     ((help-mode
-       Info-mode)
+     (("^\\*Calc Trail\\*$"
+       calc-trail-mode)
       :custom +display-buffer-in-side-window
-      :side right
-      :slot 0
-      :size ,+wm-right-width
-      :fixed width)
+      :side bottom
+      :slot 1
+      :size ,+wm-bottom-height
+      :fixed height)
 
+     ;;; base mode fallback
      ((Custom-mode
-       special-mode)
+       special-mode
+       help-mode
+       Info-mode)
       :custom +display-buffer-in-side-window
       :side right
       :slot 0
@@ -504,33 +366,236 @@ If the inititial window is not a side window, display BUFFER using `:static`"
      ((prog-mode
        text-mode
        conf-mode
+       outline-mode
        fundamental-mode)
       :custom +dynamic-display-buffer
       :static (:same t :select t)
       :dynamic
-      (((".*")
+      (((org-agenda-mode)
+        :if (lambda (&rest _) org-agenda-follow-mode)
+        :action +display-buffer-in-side-window
+        :side right
+        :slot 1
+        :size ,+wm-right-width
+        :fixed width
+        :select t)
+
+       ((".*")
         :if (lambda (window)
               (or (window-parameter window 'window-side)
                   (window-parameter window 'window-popup)))
-        :mru t :select t )
+        :mru t :select t :reuse t)
+
+       ((".*")
+        :if (lambda (window)
+              (and (not (and (window-parameter window 'window-side)
+                             (window-parameter window 'window-popup)))
+                   (window-dedicated-p window)))
+        :mru t :select t :reuse t)
+
+       (org-roam-mode :mru t :select t)
 
        ((flymake-project-diagnostics-mode
          flymake-diagnostics-buffer-mode
          lisp-interaction-mode)
-        :mru t :select t )
+        :mru t :select t :reuse t)
+
+       ((embark-collect-mode)
+        :mru t :reuse t)
 
        ((help-mode
          Custom-mode
-         embark-collect-mode)
-        :mru t :select t)
+         dired-mode)
+        :mru t :select t :reuse t)
 
        ((prog-mode
          text-mode
-         conf-mode)
-        :same t :select t)
+         conf-mode
+         outline-mode)
+        :same t :select t :reuse t)
        ))
      ))
   :config
+  (defun +display-buffer-in-side-window (buffer &optional alist plist)
+    "Display BUFFER in side window according to ALIST and PLIST."
+    (if (plist-get plist :ignore) 'fail
+      (let* ((side (plist-get plist :side))
+             (slot (plist-get plist :slot))
+             (size (plist-get plist :size))
+             (fixed (plist-get plist :fixed))
+             (init-window (window-normalize-window nil))
+             parameters
+             window)
+
+        (if (and side slot)
+            (setq parameters `((window-side . ,side) (window-slot . ,slot)))
+          (user-error "Missing side window parameters"))
+
+        (cond
+         ;; if reuse flag is set and if buffer is visible, reuse the window
+         ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+          (select-window window))
+         ((setq window
+                (display-buffer-in-side-window
+                 buffer
+                 `(,@alist
+                   (direction             . ,(plist-get plist :direction))
+                   (side                  . ,side)
+                   (slot                  . ,slot)
+                   (inhibit-same-window   . t)
+                   (window-height         . ,(and (find side '(bottom top)) size))
+                   (window-width          . ,(and (find side '(right left)) size))
+                   )
+                 )))
+         (t (user-error "Unable to create side window")))
+
+        (when (plist-get plist :disable-modeline)
+          (set-window-parameter window 'mode-line-format 'none))
+        (unless (window-parameter window 'quit-restore)
+          (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
+        (when (plist-get plist :no-other)
+          (set-window-parameter window 'no-other-window t))
+        (set-window-buffer window buffer)
+        (set-window-dedicated-p window (plist-get plist :dedicated))
+        (set-window-parameter window 'no-other-window t)
+        (window-preserve-size window (not (eq fixed 'height)) t)
+
+        (with-current-buffer buffer
+          (setq-local window-size-fixed fixed))
+
+        (if (plist-get plist :select) window init-window))))
+
+  (defun +display-buffer-in-purposed-window (buffer &optional alist plist)
+    "Display BUFFER in window with specified purpose according to ALIST and PLIST."
+    (if (plist-get plist :ignore) 'fail
+      (let* ((purpose-list (plist-get plist :purpose))
+             (init-window (window-normalize-window nil))
+             window)
+        (cond
+         ;; if reuse flag is set and if buffer is visible, reuse the window
+         ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+          (select-window window))
+         ((setq window (get-buffer-window buffer))
+          (select-window window))
+         ;; return first window with purpose matching an element from `purpose-list`
+         ;; if `purpose-list` contains multiple matched elements, return window of the
+         ;; matched element from the list.
+         ((setq window (cl-some (lambda (purpose) (windex-window-with-purpose purpose)) purpose-list))
+          (set-window-buffer window buffer))
+         (t (user-error "Unable to find window with the requested purpose")))
+
+        (if (plist-get plist :select) window init-window))))
+
+  (defun +display-buffer-in-mru-main-window (buffer &optional alist plist)
+    "Display BUFFER in most recently used window according to ALIST and PLIST."
+    (if (plist-get plist :ignore) 'fail
+      (let* ((init-window (window-normalize-window nil))
+             window)
+        (cond
+         ;; if reuse flag is set and if buffer is visible, reuse the window
+         ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+          (select-window window))
+         ((setq window (windex-get-mru-in-main))
+          (set-window-buffer window buffer))
+         (t (user-error "Unable to get main window")))
+
+        (if (plist-get plist :select) window init-window))))
+
+  (defun +display-buffer-in-lru-main-window (buffer &optional alist plist)
+    "Display BUFFER in least recently used window according to ALIST and PLIST."
+    (if (plist-get plist :ignore) 'fail
+      (let* ((init-window (window-normalize-window nil))
+             window)
+        (cond
+         ;; if reuse flag is set and if buffer is visible, reuse the window
+         ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+          (select-window window))
+         ((setq window (util/window-get-lru-in-main))
+          (set-window-buffer window buffer))
+         (t (user-error "Unable to get main window")))
+
+        (if (plist-get plist :select) window init-window))))
+
+  (defun +dynamic-display-buffer--match-action (buffer-or-name action-list)
+    "Return action from ACTION-LIST for BUFFER-OR-NAME."
+    (cl-loop for (condition . plist) in action-list
+             when (shackle--match buffer-or-name condition plist)
+             return plist
+             finally return nil))
+
+  (defun +dynamic-display-buffer (buffer &optional alist plist)
+    "DISPLAY BUFFER according to ALIST, PLIST, and the inititial window.
+
+If the inititial window is a side window, display BUFFER using the rules
+defined in `:dynamic`.  `:dynamic` is a list of
+rules (CONDITION . ACTION-PLIST), and each condition can be a symbol or string.
+A symbol is interpreted as a major-mode; a string, the buffer name or
+a regular expression if `:regexp` is present in the action plist.
+
+Additional ACTION-PLIST options:
+
+:action and a function name or lambda:
+
+Function with arguments BUFFER-OR-NAME, ALIST, and PLIST.
+
+:mru and t:
+
+Open BUFFER in the most recently used window
+
+:lru and t:
+
+Open BUFFER in the least recently used window
+
+If the inititial window is not a side window, display BUFFER using `:static`"
+    (if (plist-get plist :ignore) 'fail
+      (let* ((init-window (window-normalize-window nil))
+             window
+             rule-plist)
+        (unless (setq rule-plist (+dynamic-display-buffer--match-action
+                                  (window-buffer init-window)
+                                  (plist-get plist :dynamic)))
+          (setq rule-plist (plist-get plist :static)))
+
+        (cond
+         ((plist-get rule-plist :same)
+          (setq window (display-buffer-same-window buffer alist)))
+         ((and (plist-get rule-plist :reuse) (setq window (get-buffer-window buffer)))
+          (setq window (display-buffer-reuse-window buffer alist)))
+         ((plist-get rule-plist :mru)
+          (setq window (+display-buffer-in-mru-main-window buffer alist rule-plist)))
+         ((plist-get rule-plist :lru)
+          (setq window (+display-buffer-in-lru-main-window buffer alist rule-plist)))
+         ((setq action (plist-get rule-plist :action))
+          (setq window (funcall (plist-get rule-plist :action) buffer alist rule-plist)))
+         (t 'fail))
+        window)))
+
+  (defun +display-buffer-in-pop-up-window (buffer &optional alist plist)
+    (let ((frame (shackle--splittable-frame)))
+      (when frame
+        (if (plist-get plist :ignore) 'fail
+          (let* ((init-window (window-normalize-window nil))
+                 (alist `(,@alist
+                          (window-popup          . bottom)
+                          (no-other-window       . t)
+                          (dedicated             . t)
+                          (window-preserved-size . t)
+                          ))
+                 parameters
+                 window)
+            (with-current-buffer buffer
+              (if (get-buffer-window buffer)
+                  (display-buffer-reuse-window buffer alist)
+                (let* ((lines (count-lines (point-min) (point-max)))
+                       (window (split-window (frame-root-window frame) (min -20 (max -20 (- lines))))))
+                  (window--display-buffer buffer window 'window alist)
+                  (set-window-parameter window 'no-other-window t)
+                  (window-preserve-size window nil t)
+                  (if (plist-get plist :select) window init-window)))
+              ))
+          ))
+      ))
+
   (defun +shackle-condition-ignore-check (orig-func &rest args)
     (let* ((buffer (get-buffer-create (nth 0 args)))
            (buffer-name (buffer-name buffer))
@@ -542,8 +607,7 @@ If the inititial window is not a side window, display BUFFER using `:static`"
                   ((stringp e) (string= buffer-name e))
                   ((symbolp e) (eq buffer-mode e))))
                `(,which-key-buffer-name
-                 ,transient--buffer-name
-                 ))
+                 ,embrace--help-buffer-name))
         (apply orig-func args))))
 
   (advice-add #'shackle-display-buffer-condition :around #'+shackle-condition-ignore-check)
@@ -580,7 +644,6 @@ When BUFFER-OR-NAME matches CONDITION, PLIST is returned."
   (winner-dont-bind-my-keys t)
   :hook
   (window-setup . winner-mode))
-
 
 (provide 'packages-windows)
 

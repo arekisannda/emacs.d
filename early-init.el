@@ -47,8 +47,6 @@
               visual-fill-column-width 120
               window-resize-pixelwise nil
               frame-resize-pixelwise nil
-              hscroll-step 5
-              scroll-step 5
               tab-width 4
               tab-bar-show nil
               tab-bar-separator ""
@@ -58,12 +56,26 @@
               window-divider-default-right-width 1
               window-divider-default-bottom-width 1
               mouse-avoidance-mode 'banish
+              display-line-numbers-type 'relative
               display-line-numbers-width 4
               display-line-numbers-widen t
               cursor-in-non-selected-windows nil
               split-height-threshold nil
               split-width-threshold 160
               parens-require-spaces nil
+              resize-mini-windows 'grow-only
+              max-mini-window-height 0.25
+              read-quoted-char-radix 16
+
+              hscroll-step 1
+              scroll-step 1
+              scroll-preserve-screen-position t
+              scroll-conservatively most-positive-fixnum
+              scroll-margin 0
+              scroll-error-top-bottom nil
+              switch-to-buffer-preserve-window-point t
+              auto-window-vscroll nil
+              redisplay-dont-pause t
 
               truncate-lines t
               truncate-partial-width-windows nil
