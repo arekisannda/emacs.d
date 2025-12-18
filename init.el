@@ -1,26 +1,19 @@
-;; init.el --- Emacs Configuration Init -*- lexical-binding: t; -*-
-;;; Commentary:
-
-;;; Code:
+;; init.el  -*- lexical-binding: t; -*-
 
 ;; (profiler-start 'cpu+mem)
 
-(require 'package)
-(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+;; (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-;; prevent FOUC
-(use-package doom-themes
-  :config
-  (load-theme 'doom-monokai-pro t))
-
-(require 'cl-lib)
-;; load configuration files
-(defvar +user-config-dir (expand-file-name "~/.config"))
-(defvar +user-packages-dir (expand-file-name "lisp/packages" user-emacs-directory))
-(setq custom-file (expand-file-name "custom.el.gpg" user-emacs-directory))
-(load custom-file 'noerror)
+(defun +load (path &rest args)
+  (condition-case err
+      (let ((path (expand-file-name path user-emacs-directory)))
+        (if (file-directory-p path)
+            (dolist (file (directory-files-recursively path "\\.el$"))
+              (apply #'load file args))
+          (apply #'load path args)))
+    (error nil)))
 
 (defun +recursive-load-path (path)
   "Recursively load sub-directories in PATH."
@@ -31,25 +24,24 @@
         (when (file-directory-p subdir)
           (add-to-list 'load-path subdir))))))
 
-(dolist (path '("lisp"))
-  (+recursive-load-path path))
+(dolist (path '("lisp/lib")) (+recursive-load-path path))
+
+;; prevent FOUC
+(use-package doom-themes
+  :config
+  (load-theme 'doom-monokai-pro t))
 
 ;; enable configurations
-(require 'packages-interface)
-(require 'packages-base)
+(setq custom-file "custom.el.gpg")
 
-(require 'packages-writing)
-(require 'packages-windows)
-(require 'packages-tools)
-(require 'packages-completion)
-(require 'packages-dashboard)
-(require 'packages-lsp)
-(require 'packages-code)
-(require 'packages-dape)
-(require 'packages-latex)
-(require 'packages-org-mode)
-(require 'packages-emacs)
+(+load custom-file 'noerror)
+(+load "lisp/packages/emacs")
+(+load "lisp/packages/ui")
+(+load "lisp/packages/editor")
+(+load "lisp/packages/completion")
+(+load "lisp/packages/input")
+(+load "lisp/packages/lang")
+(+load "lisp/packages/org")
+(+load "lisp/packages/tools")
 
-(provide 'config/init)
-
-;;; init.el ends here
+(put 'narrow-to-region 'disabled nil)

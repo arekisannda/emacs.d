@@ -1,7 +1,4 @@
-;;; early-init.el --- Emacs early-init -*- lexical-binding: t; -*-
-;;; Commentary:
-
-;;; Code:
+;;; early-init.el  -*- lexical-binding: t; -*-
 
 ;; Prevent package.el loading packages prior to their init-file loading.
 (setq package-enable-at-startup nil)
@@ -18,7 +15,7 @@
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)
 
-(setq message-log-max 2000)
+(setq message-log-max nil)
 (setq warning-minimum-level :emergency)
 
 (when (getenv-internal "DEBUG")
@@ -44,14 +41,11 @@
               custom-unlispify-tag-names nil
 
               fill-column 120
-              visual-fill-column-width 120
               window-resize-pixelwise nil
               frame-resize-pixelwise nil
               tab-width 4
               tab-bar-show nil
               tab-bar-separator ""
-              fringe-indicator-alist nil
-              bookmark-fringe-mark nil
               window-divider-default-places t
               window-divider-default-right-width 1
               window-divider-default-bottom-width 1
@@ -66,6 +60,13 @@
               resize-mini-windows 'grow-only
               max-mini-window-height 0.25
               read-quoted-char-radix 16
+
+              left-margin-width 0
+              right-margin-width 0
+              fringe-indicator-alist nil
+              left-fringe-width 16
+              right-fringe-width 16
+              bookmark-fringe-mark nil
 
               hscroll-step 1
               scroll-step 1
@@ -91,8 +92,6 @@
 (scroll-bar-mode -1)
 (blink-cursor-mode -1)
 (menu-bar-mode -1)
-(electric-pair-mode -1)
-(global-eldoc-mode -1)
 (window-divider-mode 1)
 (epa-file-enable)
 (auth-source-pass-enable)
@@ -118,7 +117,4 @@
                 (:eval (if tab-bar-mode (format ": %s" (cdr (assq 'name (tab-bar--current-tab))))))))
 
 (unless init-file-debug (server-start))
-
-(provide 'early-init)
-
-;;; early-init.el ends here
+(when init-file-debug (toggle-debug-on-error))
