@@ -13,7 +13,7 @@
           (css             . ("https://github.com/tree-sitter/tree-sitter-css"))
           (dockerfile      . ("https://github.com/camdencheek/tree-sitter-dockerfile"))
           (elisp           . ("https://github.com/Wilfred/tree-sitter-elisp"))
-          (go              . ("https://github.com/tree-sitter/tree-sitter-go" "v0.23.4"))
+          (go              . ("https://github.com/tree-sitter/tree-sitter-go" "v0.25.4"))
           (gomod           . ("https://github.com/camdencheek/tree-sitter-go-mod" "v1.0.2"))
           (html            . ("https://github.com/tree-sitter/tree-sitter-html"))
           (javascript      . ("https://github.com/tree-sitter/tree-sitter-javascript"))

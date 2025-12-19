@@ -50,23 +50,21 @@
 
   ;; Prevent `edebug' default bindings from interfering.
   (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-  :hook
-  (after-init . activities-mode)
-  (activities-mode . activities-tabs-mode))
-
-(with-eval-after-load 'activities
+  :config
   (defun +activities-new-project ()
     "Create new activity with project."
     (interactive)
     (+create-new-tab)
     (condition-case err
-        (progn
-          (let ((default-directory "~/"))
-            (call-interactively #'project-switch-project)
-            (treemacs)
-            (activities-define (project-name (project-current)))
-            (call-interactively #'activities-revert)
-            ))
+        (let ((default-directory "~/")
+              (activity nil))
+          (call-interactively #'project-switch-project)
+          (setq activity (call-interactively #'activities-define))
+          (treemacs--init)
+          (setq activity (activities-define (activities-activity-name activity) :forcep t))
+          (activities-revert activity))
       ((error quit)
        (tab-bar-close-tab))))
-  )
+  :hook
+  (after-init . activities-mode)
+  (activities-mode . activities-tabs-mode))

@@ -61,6 +61,7 @@
               max-mini-window-height 0.25
               read-quoted-char-radix 16
 
+              mode-line-format nil
               left-margin-width 0
               right-margin-width 0
               fringe-indicator-alist nil

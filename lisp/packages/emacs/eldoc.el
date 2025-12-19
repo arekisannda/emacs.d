@@ -96,7 +96,8 @@ If INTERACTIVE, display it.  Else, return said buffer."
       (with-current-buffer buf
         (setq-local truncate-lines t)
         (visual-fill-column-mode -1)
-        (visual-line-mode -1)
+        (visual-line-mode 1)
+        (word-wrap-whitespace-mode)
         (rename-buffer buf-name)
         (display-buffer (current-buffer)))))
 

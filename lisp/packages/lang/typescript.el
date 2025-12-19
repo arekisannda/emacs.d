@@ -2,6 +2,12 @@
 
 (require 'util-lang)
 
+(use-package js
+  :config
+  (util/update-alist
+   'major-mode-remap-alist
+   '((javascript-mode . js-ts-mode))))
+
 (use-package typescript-mode
   :config
   (util/update-alist

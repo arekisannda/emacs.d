@@ -6,6 +6,11 @@
 (require 'util-helpers)
 (require 'mule-util)
 
+(use-package emacsql
+  :defer t
+  :hook
+  (after-init . emacsql-fix-vector-indentation))
+
 (defcustom +org-roam-profiles `(("default"
                                  :description "Default Org-roam"
                                  :directory ,(expand-file-name "~/org-roam")
@@ -211,8 +216,11 @@ With prefix ARG \\[universal-argument], one-shot note selection for profile."
   (org-roam-ui-update-on-save t)
   (org-roam-ui-open-on-start nil)
   (org-roam-ui-sync-theme t)
+  :config
+  (defun +org-roam-ui-startup ()
+    (unless init-file-debug (org-roam-ui-mode)))
   :hook
-  (window-setup . (lambda () (unless init-file-debug (org-roam-ui-mode)))))
+  (window-setup . +org-roam-ui-startup))
 
 (defcustom +org-roam-ui-viewer-function nil
   "Function to launch org-roam-ui."
@@ -224,4 +232,4 @@ With prefix ARG \\[universal-argument], one-shot note selection for profile."
   "Launch custom org-roam-ui viewer."
   (interactive)
   (util/quiet
-    (funcall +org-roam-ui-viewer-function)))
+   (funcall +org-roam-ui-viewer-function)))

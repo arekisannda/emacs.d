@@ -96,7 +96,7 @@ The optional ARGS are keyword arguments."
                                :icon "nf-oct-git_branch"
                                :shortcut "g"))
 
-(use-package dashboard :after (nerd-icons consult doom-modeline)
+(use-package dashboard
   :custom
   (dashboard-buffer-name " *dashboard*")
   (dashboard-icon-type 'nerd-icons)
@@ -137,4 +137,4 @@ The optional ARGS are keyword arguments."
      (agenda . dashboard-insert-agenda)))
   :hook
   (after-init . dashboard-insert-startupify-lists)
-  (doom-modeline-mode . dashboard-setup-startup-hook))
+  (after-init . dashboard-setup-startup-hook))

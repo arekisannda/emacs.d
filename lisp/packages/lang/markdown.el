@@ -9,12 +9,10 @@
   :config
   (util/update-alist
    'markdown-code-lang-modes
-   '(
-     ("go"         . go-ts-mode)
+   '(("go"         . go-mode)
      ("rust"       . rust-mode)
      ("diff"       . diff-mode)
      ("python"     . python-mode)
      ("javascript" . javascript-mode)
      ("typescript" . typescript-mode)
-     ("kotlin"     . kotlin-mode)
-     )))
+     ("kotlin"     . kotlin-mode))))

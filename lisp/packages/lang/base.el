@@ -12,7 +12,6 @@
   (display-line-numbers-mode 1)
   (rainbow-delimiters-mode 1)
   (flyspell-prog-mode)
-  (flymake-mode 1)
   (indent-bars-mode 1)
   (yas-minor-mode 1)
 

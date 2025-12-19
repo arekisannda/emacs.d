@@ -154,3 +154,7 @@
   :custom
   (rainbow-r-colors-alist '())
   (rainbow-html-colors-alist '()))
+
+(use-package nerd-icons
+  :custom
+  (nerd-icons-font-family "SauceCodePro Nerd Font Mono"))

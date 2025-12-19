@@ -1,4 +1,4 @@
-;;; editor/folding.el -*- lexical-binding: t; -*-
+;;; editor/fold.el -*- lexical-binding: t; -*-
 
 (require 'util-lang)
 (require 'mule-util)

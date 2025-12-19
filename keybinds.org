@@ -24,6 +24,8 @@
  "C-M-\\"
  "C-\\"
  "C-?"
+ "M-("
+ "M-)"
 
  "C-c M-g" ; magit-file-dispatch
  "<f11>" ; fullscreen
@@ -816,6 +818,14 @@
       (org-mode))
     (display-buffer buffer)))
 
+(defun +edit-keybinds ()
+  (interactive)
+  (find-file (expand-file-name "keybinds.org" user-emacs-directory)))
+
+(defun +httpd-server-project (&optional project)
+  (interactive)
+  (httpd-serve-directory (or project (project-root (project-current)))))
+
 (general-create-definer +keybinds-tools
   :prefix-command '+keybinds-tools-command)
 
@@ -947,18 +957,17 @@
 (defmacro +strings-insert-char (char)
   `(lambda () (interactive) (insert ,char)))
 
-
 (general-define-key
  :keymaps 'global
 
  "M-("  (+strings-insert-pair "parens" ?\( ?\))
- "M-)"  (+strings-insert-char ?\))
+ "M-)"  (+strings-end-of-pair "parens" ?\( ?\))
  "M-{"  (+strings-insert-pair "braces" ?\{ ?\})
- "M-}"  (+strings-insert-char ?\})
+ "M-}"  (+strings-end-of-pair "braces" ?\{ ?\})
  "M-["  (+strings-insert-pair "brackets" ?\[ ?\])
- "M-]"  (+strings-insert-char ?\])
+ "M-]"  (+strings-end-of-pair "brackets" ?\[ ?\])
  "M-<"  (+strings-insert-pair "carets" ?\< ?\>)
- "M->"  (+strings-insert-char ?\>)
+ "M->"  (+strings-end-of-pair "carets" ?\< ?\>)
  "M-\"" (+strings-insert-pair "quotes" ?\" ?\")
  "M-'"  (+strings-insert-pair "apostrophe" ?\' ?\')
  "M-`"  (+strings-insert-pair "ticks" ?\` ?\`)
@@ -1165,6 +1174,9 @@
  :keymaps 'motion
  "<escape>" '("quit"        . keyboard-quit)
 
+ "<up>"     '("previous"    . previous-line)
+ "<down>"   '("next"        . next-line)
+
  "L"        '("next arg"    . evil-forward-arg)
  "H"        '("prev arg"    . evil-backward-arg)
 
@@ -1290,7 +1302,7 @@
         (derived-mode-p '(css-ts-mode
                           yaml-ts-mode
                           html-mode))  '("indent" . prettier-js)
-        eglot--managed-mode            '("indent" . eglot-format-buffer))
+        (eglot-managed-p)              '("indent" . eglot-format-buffer))
 
   "c" '("comment line"    . evilnc-comment-or-uncomment-lines)
   "C" '("comment block"   . evilnc-comment-or-uncomment-paragraphs)

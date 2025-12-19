@@ -1,17 +1,19 @@
 ;;; ui/popup.el -*- lexical-binding: t; -*-
 
+(require 'util-windows)
+
 (use-package transient
   :custom
   (transient-show-popup t)
   (transient-display-buffer-action
-   '(+display-buffer-in-pop-up-window
+   '(util/windows-display-buffer-in-pop-up-window
      (dedicated . t)))
   (transient-mode-line-format nil)
   (transient-force-fixed-pitch t))
 
 (use-package posframe
   :custom
-  (posframe-inhibit-double-buffering nil)
+  (posframe-inhibit-double-buffering t)
   (posframe-mouse-banish-function #'posframe-mouse-banish-simple)
   :config
   (defun +posframe-show-refresh (buffer &rest _)

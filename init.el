@@ -8,12 +8,22 @@
 
 (defun +load (path &rest args)
   (condition-case err
-      (let ((path (expand-file-name path user-emacs-directory)))
+      (let ((path (expand-file-name path user-emacs-directory))
+            (noerror (nth 0 args))
+            (nomessage (or (nth 1 args) 'nomessage))
+            (nosuffix (nth 2 args))
+            (must-suffix (nth 3 args)))
         (if (file-directory-p path)
             (dolist (file (directory-files-recursively path "\\.el$"))
-              (apply #'load file args))
-          (apply #'load path args)))
+              (load file noerror nomessage nosuffix must-suffix))
+          (if (string-suffix-p ".org" path t)
+              (org-babel-load-file path)
+            (load path noerror nomessage nosuffix must-suffix))))
     (error nil)))
+
+(defmacro +on (hook &rest body)
+  (declare (indent 1))
+  `(add-hook ',(intern (concat (util/function-name hook) "-hook")) (lambda () ,@body)))
 
 (defun +recursive-load-path (path)
   "Recursively load sub-directories in PATH."
@@ -40,8 +50,17 @@
 (+load "lisp/packages/editor")
 (+load "lisp/packages/completion")
 (+load "lisp/packages/input")
-(+load "lisp/packages/lang")
 (+load "lisp/packages/org")
 (+load "lisp/packages/tools")
+(+load "lisp/packages/lang")
+
+(+on window-setup
+  (defvar packages/emacs-gc-cons-threshold (* 1024 1024 100))
+  (setq-default gc-cons-threshold packages/emacs-gc-cons-threshold)
+  (setq-default read-process-output-max (* 1024 1024))
+  (setq message-log-max 2000)
+  (with-current-buffer (messages-buffer) (messages-buffer-mode))
+
+  (+load "keybinds.org"))
 
 (put 'narrow-to-region 'disabled nil)

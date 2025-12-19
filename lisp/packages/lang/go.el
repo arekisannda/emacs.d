@@ -4,16 +4,18 @@
 
 (defun +lang-go-flymake-setup ()
   "Setup to run for `flymake-golanci`."
-  (setq-local flymake-golangci-executable (executable-find "golangci-lint"))
-  (flymake-golangci-load))
+  (when-let ((exec (executable-find "golangci-lint")))
+    (setq-local flymake-golangci-executable exec)
+    (flymake-golangci-load)))
 
 (defun +lang-go-mode-setup ()
   "Setup to run for `go` modes."
   (add-hook 'before-save-hook #'gofmt-before-save nil 'local)
   (when (featurep 'envrc)
-    (add-hook '+envrc-update-hook #'+lang-go-flymake-setup nil t)))
+    (add-hook '+envrc-update-hook #'+lang-go-flymake-setup nil t))
+  (+lang-go-flymake-setup))
 
-(use-package flymake-golangci :defer t)
+(use-package flymake-golangci)
 
 (use-package go-mode
   :custom

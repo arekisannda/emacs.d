@@ -2,16 +2,19 @@
 
 (require 'util-lang)
 
-(use-package flymake-ruff :defer t)
+(defun +lang-python-flymake-setup ()
+  "Setup to run for `flymake-ruff`."
+  (when-let ((exec (executable-find "ruff")))
+    (setq-local flymake-ruff-program exec)
+    (flymake-ruff-load)))
 
 (defun +lang-python-mode-setup ()
-  (setq-local python-flymake-command '("flake8" "--max-line-length=120" "-"))
-  (add-hook 'eglot-managed-mode-hook
-            (lambda ()
-              (add-hook 'flymake-diagnostic-functions #'python-flymake t t))
-            nil t))
+  (remove-hook 'flymake-diagnostic-functions #'python-flymake t)
+  (if (envrc--env-dir-p default-dire)
+      (add-hook '+envrc-update-hook #'+lang-python-flymake-setup nil t))
+  (+lang-python-flymake-setup))
 
-(use-package python-ts-mode
+(use-package python
   :custom
   (python-indent-offset 4)
   :config
@@ -19,5 +22,6 @@
    'major-mode-remap-alist
    '((python-mode . python-ts-mode)))
   :hook
-  (python-ts-mode . +lang-python-mode-setup)
-  (python-ts-mode . flymake-ruff-load))
+  (python-ts-mode . +lang-python-mode-setup))
+
+(use-package flymake-ruff)

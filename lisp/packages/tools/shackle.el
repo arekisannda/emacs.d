@@ -4,12 +4,33 @@
 (require 'util-strings)
 (require 'util-windows)
 
-(setq +wm-right-width 110)
-(setq +wm-left-width 40)
-(setq +wm-bottom-height 20)
+(setq +shackle-max-width 120)
+(setq +shackle-min-right-width 110)
+(setq +shackle-min-left-width 40)
+(setq +shackle-min-bottom-height 20)
+
+(defun +shackle-get-dimensions (side)
+  (let ((min-width (or (and (eq side 'left) +shackle-min-left-width)
+                       (and (eq side 'right) +shackle-min-right-width)))
+        (min-height +shackle-min-bottom-height)
+        (avail-width (let ((edges (window-edges (frame-root-window))))
+                       (- (nth 2 edges) (nth 0 edges) 40))))
+    `((window-width . ,(min +shackle-max-width
+                            (max min-width
+                                 (/ avail-width (/ (frame-width) +shackle-max-width)))))
+      (window-height . ,(and (cl-find side '(bottom top)) min-height))
+      )))
+
+(defun +shackle-switch-function (buffer-or-name action-list)
+  "Return action from ACTION-LIST for BUFFER-OR-NAME."
+  (cl-loop for (condition . plist) in action-list
+           when (shackle--match buffer-or-name condition plist)
+           return plist
+           finally return nil))
 
 (use-package shackle :after windex
   :custom
+  (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
   (shackle-default-rule nil)
   (shackle-rules
    `((("^\\*Capture\\*$"
@@ -19,11 +40,14 @@
        "^ \\*http.*\\*")
       :ignore t)
 
+     ((scad-preview-mode)
+      :same t)
+
      ((treemacs-mode)
       :custom util/windows-display-buffer-in-side-window
       :side left
       :slot 0
-      :size ,+wm-left-width
+      :size +shackle-get-dimensions
       :fixed width
       :select t)
 
@@ -49,22 +73,22 @@
       :custom util/windows-display-buffer-in-side-window
       :side bottom
       :slot 0
-      :size ,+wm-bottom-height
+      :size ,+shackle-min-bottom-height
       :fixed height)
 
      (("^ \\*transient\\*$"
        "^ \\*CDLaTeX Help\\*")
-      :custom +dynamic-display-buffer
-      :fallback ( :action +display-buffer-in-pop-up-window
+      :custom util/windows-display-buffer-by-condition
+      :fallback ( :action util/windows-display-buffer-in-pop-up-window
                   :select t)
-      :dynamic
+      :conditions
       (((".*")
         :if (lambda (window)
               (equal (window-parameter window 'window-side) 'bottom))
         :action util/windows-display-buffer-in-side-window
         :side bottom
         :slot 0
-        :size ,+wm-bottom-height
+        :size ,+shackle-min-bottom-height
         :fixed height
         :select t)
 
@@ -74,7 +98,7 @@
         :action util/windows-display-buffer-in-side-window
         :side right
         :slot 1
-        :size ,+wm-right-width
+        :size +shackle-get-dimensions
         :fixed width
         :dedicated t
         :select t)
@@ -93,7 +117,7 @@
        "^\\*Ibuffer confirmation\\*"
        "^\\*Local Variables\\*$"
        backtrace-mode)
-      :custom +display-buffer-in-pop-up-window
+      :custom util/windows-display-buffer-in-pop-up-window
       :select t)
 
      ((dashboard-mode
@@ -119,7 +143,7 @@
       :custom util/windows-display-buffer-in-side-window
       :side right
       :slot 0
-      :size ,+wm-right-width
+      :size +shackle-get-dimensions
       :fixed width
       :select t)
 
@@ -135,7 +159,7 @@
       :custom util/windows-display-buffer-in-side-window
       :side right
       :slot 0
-      :size ,+wm-right-width
+      :size +shackle-get-dimensions
       :fixed width)
 
      (("^\\*Error\\*$"
@@ -175,7 +199,7 @@
       :custom util/windows-display-buffer-in-side-window
       :side bottom
       :slot 0
-      :size ,+wm-bottom-height
+      :size ,+shackle-min-bottom-height
       :fixed height
       :select t)
 
@@ -183,7 +207,7 @@
       :custom util/windows-display-buffer-in-side-window
       :side bottom
       :slot 1
-      :size ,+wm-bottom-height
+      :size ,+shackle-min-bottom-height
       :fixed height
       :select t)
 
@@ -192,7 +216,7 @@
       :custom util/windows-display-buffer-in-side-window
       :side bottom
       :slot 1
-      :size ,+wm-bottom-height
+      :size ,+shackle-min-bottom-height
       :fixed height)
 
      ;;; base mode fallback
@@ -203,7 +227,7 @@
       :custom util/windows-display-buffer-in-side-window
       :side right
       :slot 0
-      :size ,+wm-right-width
+      :size +shackle-get-dimensions
       :fixed width
       :select t)
 
@@ -212,15 +236,15 @@
        conf-mode
        outline-mode
        fundamental-mode)
-      :custom +dynamic-display-buffer
+      :custom util/windows-display-buffer-by-condition
       :fallback (:same t :select t)
-      :dynamic
+      :conditions
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
         :action util/windows-display-buffer-in-side-window
         :side right
         :slot 1
-        :size ,+wm-right-width
+        :size +shackle-get-dimensions
         :fixed width
         :select t)
 
@@ -234,7 +258,7 @@
         :if (lambda (window)
               (and (not (and (window-parameter window 'window-side)
                              (window-parameter window 'window-popup)))
-                         (window-dedicated-p window)))
+                   (window-dedicated-p window)))
         :mru t :select t :reuse t)
 
        (org-roam-mode :mru t :select t)

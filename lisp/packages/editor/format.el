@@ -1,4 +1,4 @@
-;;; editor/formatting.el -*- lexical-binding: t; -*-
+;;; editor/format.el -*- lexical-binding: t; -*-
 
 (use-package editorconfig
   :config

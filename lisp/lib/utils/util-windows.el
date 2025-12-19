@@ -34,8 +34,10 @@
                  (side                  . ,side)
                  (slot                  . ,slot)
                  (inhibit-same-window   . t)
-                 (window-height         . ,(and (cl-find side '(bottom top)) size))
-                 (window-width          . ,(and (cl-find side '(right left)) size))
+                 ,@(if (and size (functionp size))
+                       (funcall size side)
+                     (list (cons 'window-height (and (cl-find side '(bottom top)) size))
+                           (cons 'window-width  (and (cl-find side '(right left)) size))))
                  )
                )))
        (t (user-error "Unable to create side window")))
@@ -86,18 +88,17 @@
 
       (if (plist-get plist :select) window init-window))))
 
-(defun +dynamic-display-buffer--match-action (buffer-or-name action-list)
-  "Return action from ACTION-LIST for BUFFER-OR-NAME."
-  (cl-loop for (condition . plist) in action-list
-           when (shackle--match buffer-or-name condition plist)
-           return plist
-           finally return nil))
+(defcustom util/windows-display-buffer-by-condition-switch-function #'ignore
+  "Switch function for `util/windows-display-buffer-by-condition'."
+  :type 'function
+  :group 'window
+  :group 'convenience)
 
-(defun +dynamic-display-buffer (buffer &optional alist plist)
+(defun util/windows-display-buffer-by-condition (buffer &optional alist plist)
   "DISPLAY BUFFER according to ALIST, PLIST, and the inititial window.
 
 If the inititial window is a side window, display BUFFER using the rules
-defined in `:dynamic`.  `:dynamic` is a list of
+defined in `:conditions`.  `:conditions` is a list of
 rules (CONDITION . ACTION-PLIST), and each condition can be a symbol or string.
 A symbol is interpreted as a major-mode; a string, the buffer name or
 a regular expression if `:regexp` is present in the action plist.
@@ -121,9 +122,9 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
     (let* ((init-window (window-normalize-window nil))
            window
            rule-plist)
-      (unless (setq rule-plist (+dynamic-display-buffer--match-action
-                                (window-buffer init-window)
-                                (plist-get plist :dynamic)))
+      (unless (setq rule-plist (funcall util/windows-display-buffer-by-condition-switch-function
+                                        (window-buffer init-window)
+                                        (plist-get plist :conditions)))
         (setq rule-plist (plist-get plist :fallback)))
 
       (cond
@@ -140,7 +141,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
        (t 'fail))
       window)))
 
-(defun +display-buffer-in-pop-up-window (buffer &optional alist plist)
+(defun util/windows-display-buffer-in-pop-up-window (buffer &optional alist plist)
   (let ((frame (shackle--splittable-frame)))
     (when frame
       (if (plist-get plist :ignore) 'fail
@@ -165,7 +166,6 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
             ))
         ))
     ))
-
 
 (provide 'util-windows)
 

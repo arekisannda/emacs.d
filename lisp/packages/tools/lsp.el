@@ -68,11 +68,12 @@ If it is not set, use ALTERNATIVE instead."
       (dolist (server servers)
         (eglot-shutdown server))))
 
-  (setq eglot-stay-out-of nil)
+  (setq eglot-stay-out-of '(flymake))
   :autoload eglot-managed-p
   :hook
   (prog-mode . util/lsp-ensure-modes)
   (text-mode . util/lsp-ensure-modes)
+  (eglot-managed-mode . flymake-mode)
   (eglot-managed-mode . eldoc-mode))
 
 (use-package consult-eglot :after eglot)

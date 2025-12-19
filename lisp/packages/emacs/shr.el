@@ -7,4 +7,4 @@
   (shr-bullet "• ")
   (shr-hr-line "—")
   (shr-indentation 2)
-  (shr-max-width 100))
+  (shr-max-width nil))
