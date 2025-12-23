@@ -3,7 +3,69 @@
 
 ;;; Code:
 
-(defun util/window-popup-fit-window-to-buffer (window &rest _)
+(defcustom util/windows-max-width 120
+  "Windowx max width in characters."
+  :type 'integer)
+
+(defcustom util/windows-min-right-width 110
+  "Right side window min width in characters."
+  :type 'integer)
+
+(defcustom util/windows-min-left-width 40
+  "Left side window min width in characters."
+  :type 'integer)
+
+(defcustom util/windows-min-bottom-height 20
+  "Bottom side window min width in lines."
+  :type 'integer)
+
+(setq util/windows-bottom-preset-size-0
+      `( :custom util/windows-display-buffer-in-side-window
+         :side bottom
+         :slot 0
+         :size ,util/windows-min-bottom-height
+         :fixed height))
+
+(setq util/windows-bottom-select-preset-size-0
+      `(,@util/windows-bottom-preset-size-0 :select t))
+
+(setq util/windows-bottom-preset-size-1
+      `( :custom util/windows-display-buffer-in-side-window
+         :side bottom
+         :slot 1
+         :size ,util/windows-min-bottom-height
+         :fixed height))
+
+(setq util/windows-bottom-select-preset-size-1
+      `(,@util/windows-bottom-preset-size-1 :select t))
+
+(setq util/windows-left-preset-size-0
+      `( :custom util/windows-display-buffer-in-side-window
+         :side left
+         :slot 0
+         :size ,util/windows-min-left-width
+         :fixed width))
+
+(setq util/windows-right-preset-0
+      `( :custom util/windows-display-buffer-in-side-window
+         :side right
+         :slot 0
+         :fixed width))
+
+(setq util/windows-right-select-preset-0
+      `(,@util/windows-right-preset-0 :select t))
+
+(setq util/windows-right-preset-1
+      `( :custom util/windows-display-buffer-in-side-window
+         :side right
+         :slot 1
+         :fixed width))
+
+(setq util/windows-right-select-preset-1
+      `(,@util/windows-right-preset-1 :select t))
+
+
+(defun util/windows-popup-fit-window-to-buffer (window &rest _)
   "Configured  `fit-to-window-buffer' for popup WINDOW."
   (fit-window-to-buffer window 20 1))
 

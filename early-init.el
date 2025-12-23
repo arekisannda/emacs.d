@@ -117,5 +117,9 @@
                 "%F"
                 (:eval (if tab-bar-mode (format ": %s" (cdr (assq 'name (tab-bar--current-tab))))))))
 
-(unless init-file-debug (server-start))
+(unless init-file-debug
+  (condition-case err
+      (server-start)
+    (error nil)))
+
 (when init-file-debug (toggle-debug-on-error))

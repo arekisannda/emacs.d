@@ -4,20 +4,17 @@
 (require 'util-strings)
 (require 'util-windows)
 
-(setq +shackle-max-width 120)
-(setq +shackle-min-right-width 110)
-(setq +shackle-min-left-width 40)
-(setq +shackle-min-bottom-height 20)
-
 (defun +shackle-get-dimensions (side)
-  (let ((min-width (or (and (eq side 'left) +shackle-min-left-width)
-                       (and (eq side 'right) +shackle-min-right-width)))
-        (min-height +shackle-min-bottom-height)
+  (let ((min-width (or (and (eq side 'left) util/windows-min-left-width)
+                       (and (eq side 'right) util/windows-min-right-width)))
+        (max-width (or (and (eq side 'left) util/windows-min-left-width)
+                       (and (eq side 'right) util/windows-max-width)))
+        (min-height util/windows-min-bottom-height)
         (avail-width (let ((edges (window-edges (frame-root-window))))
                        (- (nth 2 edges) (nth 0 edges) 40))))
-    `((window-width . ,(min +shackle-max-width
+    `((window-width . ,(min max-width
                             (max min-width
-                                 (/ avail-width (/ (frame-width) +shackle-max-width)))))
+                                 (/ avail-width (/ (frame-width) util/windows-max-width)))))
       (window-height . ,(and (cl-find side '(bottom top)) min-height))
       )))
 
@@ -44,11 +41,8 @@
       :same t)
 
      ((treemacs-mode)
-      :custom util/windows-display-buffer-in-side-window
-      :side left
-      :slot 0
-      :size +shackle-get-dimensions
-      :fixed width
+      ,@util/windows-left-preset-size-0
+      :dedicated t
       :select t)
 
      ((magit-mode)
@@ -70,11 +64,7 @@
 
        compilation-mode)
       :if (lambda (window) compilation-display-buffer)
-      :custom util/windows-display-buffer-in-side-window
-      :side bottom
-      :slot 0
-      :size ,+shackle-min-bottom-height
-      :fixed height)
+      ,@util/windows-bottom-preset-size-0)
 
      (("^ \\*transient\\*$"
        "^ \\*CDLaTeX Help\\*")
@@ -86,22 +76,15 @@
         :if (lambda (window)
               (equal (window-parameter window 'window-side) 'bottom))
         :action util/windows-display-buffer-in-side-window
-        :side bottom
-        :slot 0
-        :size ,+shackle-min-bottom-height
-        :fixed height
-        :select t)
+        ,@util/windows-bottom-select-preset-size-0)
 
        ((".*")
         :if (lambda (window)
               (equal (window-parameter window 'window-side) 'right))
         :action util/windows-display-buffer-in-side-window
-        :side right
-        :slot 1
+        ,@util/windows-right-select-preset-1
         :size +shackle-get-dimensions
-        :fixed width
-        :dedicated t
-        :select t)
+        :dedicated t)
 
        ((".*")
         :if (lambda (window) (window-parameter window 'window-popup))
@@ -140,12 +123,8 @@
 
        devdocs-mode
        dictionary-mode)
-      :custom util/windows-display-buffer-in-side-window
-      :side right
-      :slot 0
-      :size +shackle-get-dimensions
-      :fixed width
-      :select t)
+      ,@util/windows-right-select-preset-0
+      :size +shackle-get-dimensions)
 
      (("^\\*org-roam\\*$"
        "^\\*eldoc.*\\*"
@@ -156,11 +135,8 @@
 
        org-roam-mode
        man-common)
-      :custom util/windows-display-buffer-in-side-window
-      :side right
-      :slot 0
-      :size +shackle-get-dimensions
-      :fixed width)
+      ,@util/windows-right-preset-0
+      :size +shackle-get-dimensions)
 
      (("^\\*Error\\*$"
        "^\\*Dired log\\*$"
@@ -196,57 +172,36 @@
        embark-collect-mode
        calendar-mode
        tabulated-list-mode)
-      :custom util/windows-display-buffer-in-side-window
-      :side bottom
-      :slot 0
-      :size ,+shackle-min-bottom-height
-      :fixed height
-      :select t)
+      ,@util/windows-bottom-select-preset-size-0)
 
      (("^\\*Edit Formulas\\*")
-      :custom util/windows-display-buffer-in-side-window
-      :side bottom
-      :slot 1
-      :size ,+shackle-min-bottom-height
-      :fixed height
-      :select t)
+      ,@util/windows-bottom-select-preset-size-1)
 
      (("^\\*Calc Trail\\*$"
+
        calc-trail-mode)
-      :custom util/windows-display-buffer-in-side-window
-      :side bottom
-      :slot 1
-      :size ,+shackle-min-bottom-height
-      :fixed height)
+      ,@util/windows-bottom-preset-size-1)
 
      ;;; base mode fallback
      ((Custom-mode
        special-mode
        help-mode
        Info-mode)
-      :custom util/windows-display-buffer-in-side-window
-      :side right
-      :slot 0
-      :size +shackle-get-dimensions
-      :fixed width
-      :select t)
+      ,@util/windows-right-select-preset-0
+      :size +shackle-get-dimensions)
 
      ((prog-mode
        text-mode
        conf-mode
-       outline-mode
-       fundamental-mode)
+       outline-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback (:same t :select t)
       :conditions
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
         :action util/windows-display-buffer-in-side-window
-        :side right
-        :slot 1
-        :size +shackle-get-dimensions
-        :fixed width
-        :select t)
+        ,@util/windows-right-select-preset-1
+        :size +shackle-get-dimensions)
 
        ((".*")
         :if (lambda (window)
@@ -283,12 +238,16 @@
       (unless (cl-some
                (lambda (e)
                  (cond
-                  ((listp e) (string-match (car e) buffer-name))
+                  ((and (stringp e) (string-match-p e buffer-name)) t)
                   ((stringp e) (string= buffer-name e))
                   ((symbolp e) (eq buffer-mode e))))
                `(,which-key-buffer-name
                  ,embrace--help-buffer-name
                  ,code-review-buffer-name
+                 leetcode--problems-mode
+                 leetcode--problem-detail-mode
+                 "^\\*leetcode-result-.*\\*$"
+                 "^\\*leetcode-testcase-.*\\*$"
                  eww-mode))
         (apply orig-func args))))
 

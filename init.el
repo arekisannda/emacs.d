@@ -42,9 +42,9 @@
   (load-theme 'doom-monokai-pro t))
 
 ;; enable configurations
-(setq custom-file "custom.el.gpg")
+(setq custom-file (expand-file-name "custom.el.gpg" user-emacs-directory))
 
-(+load custom-file 'noerror)
+(load custom-file 'noerror)
 (+load "lisp/packages/emacs")
 (+load "lisp/packages/ui")
 (+load "lisp/packages/editor")
@@ -60,6 +60,9 @@
   (setq-default read-process-output-max (* 1024 1024))
   (setq message-log-max 2000)
   (with-current-buffer (messages-buffer) (messages-buffer-mode))
+
+  (pcase (getenv "XDG_CURRENT_DESKTOP")
+    ("sway" (+load "lisp/scripts/swaywm")))
 
   (+load "keybinds.org"))
 

@@ -145,8 +145,8 @@
   :config
   (setq embrace--help-buffer-name " *embrace-help*")
   (defun +embrace--show-help-buffer (help-string)
-    (let ((alist '((window-width  . #'util/window-popup-fit-window-to-buffer)
-                   (window-height . #'util/window-popup-fit-window-to-buffer)
+    (let ((alist '((window-width  . #'util/windows-popup-fit-window-to-buffer)
+                   (window-height . #'util/windows-popup-fit-window-to-buffer)
                    (window-popup  . bottom)
                    (dedicated . t))))
       (embrace--setup-help-buffer)

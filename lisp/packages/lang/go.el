@@ -10,7 +10,7 @@
 
 (defun +lang-go-mode-setup ()
   "Setup to run for `go` modes."
-  (add-hook 'before-save-hook #'gofmt-before-save nil 'local)
+  (add-hook 'before-save-hook #'gofmt-before-save nil t)
   (when (featurep 'envrc)
     (add-hook '+envrc-update-hook #'+lang-go-flymake-setup nil t))
   (+lang-go-flymake-setup))

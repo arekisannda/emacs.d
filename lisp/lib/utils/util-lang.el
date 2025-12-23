@@ -27,16 +27,19 @@
   :group 'eglot
   :group 'convenience)
 
+(defvar-local util/lsp-disabled nil)
+
 (defun util/lsp-ensure ()
   "Helper function to enable LSP."
   (interactive)
-  (unless (bound-and-true-p +lsp-disable)
+  (unless (bound-and-true-p util/lsp-disabled)
     (eglot-ensure)))
 
 (defun util/lsp-ensure-modes ()
   "Helper wrapper function to enable LSP."
   (unless (derived-mode-p util/lsp-default-disabled-modes)
-    (util/lsp-ensure)))
+    (add-hook 'hack-local-variables-hook #'util/lsp-ensure t t)
+    t))
 
 (provide 'util-lang)
 

@@ -1,6 +1,9 @@
 ;;; lang/scad.el -*- lexical-binding: t; -*-
 
 (use-package scad-mode
+  :custom
+  (scad-preview-colorscheme '("Tomorrow" . "Tomorrow Night"))
+  (scad-preview-camera '(0 0 0 45 0 45 400))
   :config
   (defun +scad-preview-start ()
     (interactive)

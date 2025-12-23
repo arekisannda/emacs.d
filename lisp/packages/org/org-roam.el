@@ -218,7 +218,10 @@ With prefix ARG \\[universal-argument], one-shot note selection for profile."
   (org-roam-ui-sync-theme t)
   :config
   (defun +org-roam-ui-startup ()
-    (unless init-file-debug (org-roam-ui-mode)))
+    (unless init-file-debug
+      (condition-case err
+          (org-roam-ui-mode)
+        (error nil))))
   :hook
   (window-setup . +org-roam-ui-startup))
 

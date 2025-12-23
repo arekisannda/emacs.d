@@ -54,8 +54,8 @@
     (when (and which-key-preserve-window-configuration
                (not which-key--saved-window-configuration))
       (setq which-key--saved-window-configuration (current-window-configuration)))
-    (let* ((alist `((window-width  . #'util/window-popup-fit-window-to-buffer)
-                    (window-height . #'util/window-popup-fit-window-to-buffer)
+    (let* ((alist `((window-width  . #'util/windows-popup-fit-window-to-buffer)
+                    (window-height . #'util/windows-popup-fit-window-to-buffer)
                     (window-popup  . bottom)
                     (dedicated . t))))
       (cond
@@ -63,13 +63,13 @@
         (delete-windows-on which-key--buffer)
         (let ((w (split-window (frame-root-window nil) nil nil)))
           (window--display-buffer which-key--buffer w 'window alist)
-          (util/window-popup-fit-window-to-buffer w)))
+          (util/windows-popup-fit-window-to-buffer w)))
        ((get-buffer-window which-key--buffer)
         (display-buffer-reuse-window which-key--buffer alist))
        (t
         (let ((w (split-window (frame-root-window nil) nil nil)))
           (window--display-buffer which-key--buffer w 'window alist)
-          (util/window-popup-fit-window-to-buffer w)))
+          (util/windows-popup-fit-window-to-buffer w)))
        )))
   :hook
   (after-init . which-key-mode))

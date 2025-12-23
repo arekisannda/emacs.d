@@ -56,9 +56,9 @@
     (setq-local corfu-auto nil
                 tab-always-indent nil))
   :hook
-  (eshell-mode . +corfu-auto-disable)
-  (after-init . global-corfu-mode)
-  (minibuffer-setup . +corfu-auto-disable))
+  (eshell-mode       . +corfu-auto-disable)
+  (after-init        . global-corfu-mode)
+  (minibuffer-setup  . +corfu-auto-disable))
 
 (use-package nerd-icons-corfu :after corfu
   :init

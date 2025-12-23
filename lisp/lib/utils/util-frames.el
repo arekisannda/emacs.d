@@ -5,12 +5,14 @@
 
 (defmacro util/frames-make-frame-with-params (params &rest body)
   "Create new frames with PARAMS and run BODY."
+  (declare (indent 1))
   `(let ((frame (make-frame ,params)))
      (select-frame-set-input-focus frame)
      ,@body))
 
 (defmacro util/frames-select-frame-with-params (params &rest body)
   "Select frames with PARAMS or create it then run BODY."
+  (declare (indent 1))
   `(let ((frame (cl-find-if
                  (lambda (f)
                    (seq-every-p

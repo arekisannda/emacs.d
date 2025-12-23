@@ -298,6 +298,88 @@
  "q" #'code-review-comment-quit
  )
 #+end_src
+*** SCAD Preview
+#+begin_src emacs-lisp :tangle yes
+(defun +scad-preview-reset ()
+  (interactive nil scad-preview-mode)
+  (scad--preview-reset))
+
+(defun +scad-preview-top ()
+  (interactive nil scad-preview-mode)
+  (setq-local scad-preview-camera '(0 0 0 0 0 0 400)
+              scad-preview-projection (default-value 'scad-preview-projection))
+  (scad--preview-render))
+
+(defun +scad-preview-bottom ()
+  (interactive nil scad-preview-mode)
+  (setq-local scad-preview-camera '(0 0 0 180 0 0 400)
+              scad-preview-projection (default-value 'scad-preview-projection))
+  (scad--preview-render))
+
+(defun +scad-preview-front ()
+  (interactive nil scad-preview-mode)
+  (setq-local scad-preview-camera '(0 0 0 90 0 0 400)
+              scad-preview-projection (default-value 'scad-preview-projection))
+  (scad--preview-render))
+
+(defun +scad-preview-back ()
+  (interactive nil scad-preview-mode)
+  (setq-local scad-preview-camera '(0 0 0 90 0 180 400)
+              scad-preview-projection (default-value 'scad-preview-projection))
+  (scad--preview-render))
+
+(defun +scad-preview-left ()
+  (interactive nil scad-preview-mode)
+  (setq-local scad-preview-camera '(0 0 0 90 0 90 400)
+              scad-preview-projection (default-value 'scad-preview-projection))
+  (scad--preview-render))
+
+(defun +scad-preview-right ()
+  (interactive nil scad-preview-mode)
+  (setq-local scad-preview-camera '(0 0 0 90 0 -90 400)
+              scad-preview-projection (default-value 'scad-preview-projection))
+  (scad--preview-render))
+
+(general-define-key
+ :states 'emacs
+ :keymap 'scad-preview-mode-map
+
+ "C-r"       #'+scad-preview-reset
+ "C-4"       #'+scad-preview-top
+ "C-5"       #'+scad-preview-bottom
+ "C-8"       #'+scad-preview-front
+ "C-9"       #'+scad-preview-back
+ "C-6"       #'+scad-preview-left
+ "C-7"       #'+scad-preview-right
+
+ "<up>"      #'scad-preview-rotate-x+
+ "<down>"    #'scad-preview-rotate-x-
+ "<left>"    #'scad-preview-rotate-z+
+ "<right>"   #'scad-preview-rotate-z-
+ "<prior>"   #'scad-preview-rotate-y-
+ "<next>"    #'scad-preview-rotate-y+
+
+ "S-<up>"    #'scad-preview-translate-y+
+ "S-<down>"  #'scad-preview-translate-y-
+ "S-<left>"  #'scad-preview-translate-x-
+ "S-<right>" #'scad-preview-translate-x+
+ "S-<prior>" #'scad-preview-translate-z+
+ "S-<next>"  #'scad-preview-translate-z-)
+#+end_src
+*** EWW
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :keymaps 'eww-link-keymap
+ "<tab>" #'shr-next-link
+ "C-i"   #'eww-forward-url)
+
+(general-define-key
+ :states '(normal visual motion emacs insert)
+ :keymaps 'eww-mode-map
+
+ "C-o"   '("previous" . eww-back-url)
+ "C-i"   '("next"     . eww-forward-url))
+#+end_src
 ** Coding
 *** DevDocs
 #+begin_src emacs-lisp :tangle yes
@@ -455,6 +537,7 @@
  "C-S-<f5>" #'dape-quit
 
  "<f6>"     (general-predicate-dispatch #'+rmsbolt-toggle
+              (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
               dape-active-mode          #'+hydra-dape-motion/dape-step-in)
 
  "<f7>"     (general-predicate-dispatch nil
@@ -1083,33 +1166,36 @@
 #+end_src
 **** Corfu
 #+begin_src emacs-lisp :tangle yes
+
+(defun +corfu-normal-state ()
+  (interactive)
+  (corfu-quit)
+  (evil-normal-state))
+
 (general-define-key
  :keymaps 'corfu-map
 
- [remap next-line]                #'corfu-next
- [remap previous-line]            #'corfu-previous
- [remap windex-scroll-other-up]   #'corfu-popupinfo-scroll-down
- [remap windex-scroll-other-down] #'corfu-popupinfo-scroll-up
- [remap windex-scroll-up]         #'corfu-scroll-down
- [remap windex-scroll-down]       #'corfu-scroll-up
- [remap scroll-down-command]      #'corfu-scroll-down
- [remap scroll-up-command]        #'corfu-scroll-up
- [remap beginning-of-buffer]      #'corfu-first
- [remap end-of-buffer]            #'corfu-last
- [remap move-beginning-of-line]   #'corfu-prompt-beginning
- [remap move-end-of-line]         #'corfu-prompt-end
- [remap keyboard-quit]            #'corfu-quit
- [remap evil-normal-state]        (lambda () (interactive) (corfu-quit) (evil-normal-state))
- [remap completion-at-point]      #'corfu-insert-separator
- [remap indent-for-tab-command]   #'corfu-insert
+ [remap next-line]                   #'corfu-next
+ [remap previous-line]               #'corfu-previous
+ [remap windex-scroll-up]            #'corfu-scroll-down
+ [remap windex-scroll-down]          #'corfu-scroll-up
+ [remap scroll-down-command]         #'corfu-scroll-down
+ [remap scroll-up-command]           #'corfu-scroll-up
+ [remap beginning-of-buffer]         #'corfu-first
+ [remap end-of-buffer]               #'corfu-last
+ [remap move-beginning-of-line]      #'corfu-prompt-beginning
+ [remap move-end-of-line]            #'corfu-prompt-end
+ [remap keyboard-quit]               #'corfu-quit
+ [remap evil-normal-state]           #'corfu-normal-state
+ [remap completion-at-point]         #'corfu-insert-separator
+ [remap indent-for-tab-command]      #'corfu-insert
 
  "C-SPC"    '("separator"        . corfu-insert-separator)
  "C-g"      '("abort"            . corfu-quit)
  "<return>" '("complete"         . corfu-insert)
  "<tab>"    '("insert"           . corfu-insert)
  "<up>"     '("previous"         . corfu-previous)
- "<down>"   '("next"             . corfu-next)
- "M-?"      '("info doc"         . corfu-popupinfo-documentation))
+ "<down>"   '("next"             . corfu-next))
 #+end_src
 **** Additional Completions
 #+begin_src emacs-lisp :tangle yes
@@ -1222,13 +1308,14 @@
   `(lambda ()
      (interactive)
      (funcall #',splitfn)
-     (balance-windows (window-parent))))
+     (balance-windows (window-main-window))))
 
 (defmacro +window-split-focus-other-window (splitfn)
   "Focus other window after calling SPLITFN."
   `(lambda ()
      (interactive)
      (funcall #',splitfn)
+     (balance-windows (window-main-window))
      (other-window 1)))
 
 (defmacro +aw-select-with-filter (filter-list)
@@ -1262,10 +1349,10 @@
 
  "Q"   '("quit all"        . evil-quit-all)
 
- "V"   `("vsplit"          . evil-window-vsplit)
- "v"   `("vsplit focus"    . ,(+window-split-focus-other-window evil-window-vsplit))
- "S"   `("ssplit"          . evil-window-split)
- "s"   `("ssplit focus"    . ,(+window-split-focus-other-window evil-window-split))
+ "V"   `("vsplit"          . ,(+window-split split-window-right))
+ "v"   `("vsplit focus"    . ,(+window-split-focus-other-window split-window-right))
+ "S"   `("ssplit"          . ,(+window-split split-window-below))
+ "s"   `("ssplit focus"    . ,(+window-split-focus-other-window split-window-below))
 
  "H"   '("open left"       . windmove-display-left)
  "J"   '("open down"       . windmove-display-down)
