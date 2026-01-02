@@ -24,7 +24,9 @@
     (interactive "p")
     (pcase arg
       (4 (+rmsbolt-quit))
-      (_ (if rmsbolt-mode
+      (_ (if (and rmsbolt-mode
+                  (buffer-live-p (get-buffer rmsbolt-output-buffer))
+                  (window-live-p (get-buffer-window rmsbolt-output-buffer)))
              (+rmsbolt-quit)
            (+rmsbolt-start)))
       )))

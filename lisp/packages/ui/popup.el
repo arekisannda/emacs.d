@@ -57,7 +57,10 @@
     (let* ((alist `((window-width  . #'util/windows-popup-fit-window-to-buffer)
                     (window-height . #'util/windows-popup-fit-window-to-buffer)
                     (window-popup  . bottom)
-                    (dedicated . t))))
+                    (dedicated     . t))))
+
+      (with-current-buffer which-key--buffer
+        (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt))))
       (cond
        ((eq which-key--multiple-locations t)
         (delete-windows-on which-key--buffer)

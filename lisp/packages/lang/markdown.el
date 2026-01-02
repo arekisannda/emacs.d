@@ -6,6 +6,8 @@
   :custom-face
   (markdown-code-face
    ((nil :background unspecified :inherit tooltip)))
+  :custom
+  (markdown-fontify-code-blocks-natively t)
   :config
   (util/update-alist
    'markdown-code-lang-modes

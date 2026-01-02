@@ -13,4 +13,14 @@
   :hook
   (after-init . envrc-global-mode)
   :init
-  (advice-add #'envrc--update :after #'+envrc--update-after-setup))
+  (advice-add #'envrc--update :after #'+envrc--update-after-setup)
+  :config
+  (defun +envrc-root ()
+    (let* ((envrc-dir (envrc--find-env-dir))
+           (project (project-current))
+           (project-dir (and project (project-root project))))
+      (cond
+       ((and envrc-dir (envrc--env-dir-p envrc-dir)) envrc-dir)
+       ((and project-dir (envrc--env-dir-p project-dir)) (expand-file-name project-dir))
+       ))
+    ))

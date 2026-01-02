@@ -49,12 +49,12 @@
   (setq evil-normal-state-modes
         (delete-dups
          (append '(code-review-mode
-                   eww-mode
                    Custom-mode)
                  evil-normal-state-modes)))
 
   (setq evil-motion-state-modes
         '(apropos-mode
+          eww-mode
           color-theme-mode
           tabulated-list
           command-history-mode
@@ -79,14 +79,13 @@
   (advice-add #'evil-next-visual-line :around (evil-move-or-goto-line-around t))
   (advice-add #'evil-previous-visual-line :around (evil-move-or-goto-line-around nil))
   :hook
-  (after-init              . evil-mode)
-  (evil-insert-state-entry . +eldoc--disable)
-  (evil-insert-state-exit  . +eldoc--enable))
+  (after-init . evil-mode))
 
 (use-package evil-collection :after evil
   :custom
   (evil-collection-mode-list
    '(info
+     w3m
      dired
      ibuffer
      (custom cus-edit)
@@ -151,6 +150,7 @@
                    (dedicated . t))))
       (embrace--setup-help-buffer)
       (with-current-buffer embrace--help-buffer
+        (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
         (erase-buffer)
         (insert help-string)
         (goto-char (point-min)))

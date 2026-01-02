@@ -138,9 +138,8 @@
       (with-selected-frame diff-hl-show-hunk--frame
         (with-current-buffer buffer
           (setq-local truncate-lines t)
-          (face-remap-add-relative 'default 'treemacs-window-background-face)
-          (face-remap-add-relative 'fringe  'treemacs-window-background-face)
-          (visual-fill-column-mode -1)
+          (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
+          (face-remap-add-relative 'fringe  `(nil :background ,(doom-color 'bg-alt)))
           (visual-line-mode -1)
           (diff-hl-show-hunk-posframe--transient-mode 1)
           (when diff-hl-show-hunk-posframe-show-header-line

@@ -42,7 +42,6 @@
 
      ((treemacs-mode)
       ,@util/windows-left-preset-size-0
-      :dedicated t
       :select t)
 
      ((magit-mode)
@@ -97,6 +96,8 @@
        "^\\*diff-hl-show-hunk-buffer\\*"
        "^\\*Deletions\\*$"
        "^ widget-choose$"
+       "^ \\*which-key\\*$"
+       "^ \\*embrace-help\\*$"
        "^\\*Ibuffer confirmation\\*"
        "^\\*Local Variables\\*$"
        backtrace-mode)
@@ -111,8 +112,11 @@
        "^\\*Org Select\\*$")
       :same t :select t)
 
+     (("^\\*Org .*\\*$")
+      :custom util/windows-display-buffer-in-pop-up-window
+      :select t)
+
      (("^CAPTURE-.*\\.org$"
-       "^\\*Org .*\\*$"
        "^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
        "^\\*Shortdoc.*\\*$"
@@ -120,7 +124,11 @@
        "^\\*Man.*\\*$"
        "^\\*WoMan.*\\*$"
        "^\\*IBuffer\\*$"
+       "^\\*eww\\*$"
+       "^\\*w3m\\*$"
 
+       w3m-mode
+       eww-mode
        devdocs-mode
        dictionary-mode)
       ,@util/windows-right-select-preset-0
@@ -146,8 +154,8 @@
        "^\\*Org Links\\*$"
        "^\\*\\(.*-\\)?eshell\\*$"
        "^\\*Calculator\\*$"
-       "^ \\*EGLOT .* stderr\\*$"
-       "^\\*EGLOT .* events\\*$"
+       "^ \\*.* stderr\\*$"
+       "^\\*.* events\\*$"
        "^\\*ChatGPT.*\\*$"
        "^\\*Code Review Comment\\*$"
        "^COMMIT_EDITMSG$"
@@ -193,7 +201,8 @@
      ((prog-mode
        text-mode
        conf-mode
-       outline-mode)
+       outline-mode
+       fundamental-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback (:same t :select t)
       :conditions
@@ -247,8 +256,7 @@
                  leetcode--problems-mode
                  leetcode--problem-detail-mode
                  "^\\*leetcode-result-.*\\*$"
-                 "^\\*leetcode-testcase-.*\\*$"
-                 eww-mode))
+                 "^\\*leetcode-testcase-.*\\*$"))
         (apply orig-func args))))
 
   (advice-add #'shackle-display-buffer-condition :around #'+shackle-condition-ignore-check)

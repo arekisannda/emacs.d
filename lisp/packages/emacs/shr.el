@@ -8,3 +8,8 @@
   (shr-hr-line "—")
   (shr-indentation 2)
   (shr-max-width nil))
+
+(use-package eww
+  :hook
+  (eww-mode . visual-line-mode)
+  (eww-mode . word-wrap-whitespace-mode))

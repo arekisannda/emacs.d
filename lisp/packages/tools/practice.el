@@ -12,9 +12,6 @@
   (defvar leetcode--code-window nil)
 
   (aio-defun leetcode-start-coding-daily (problem-id)
-    (interactive (list (read-string "Show problem by problem id: "
-                                    (when (derived-mode-p 'leetcode--problems-mode)
-                                      (leetcode--get-current-problem-id)))))
     (let* ((problem (leetcode--get-problem-by-id problem-id))
            (title-slug (leetcode-problem-title-slug problem))
            (problem-with-title (aio-await (leetcode--ensure-question-title problem)))
@@ -31,7 +28,9 @@
   (aio-defun leetcode-daily ()
     "Open the daily challenge."
     (interactive)
-    (aio-await (leetcode--ensure-login))
+    (unless (get-buffer leetcode--buffer-name)
+      (aio-await (leetcode--ensure-login))
+      (aio-await (leetcode-refresh-fetch)))
     (let* ((url-request-method "POST")
            (url-request-extra-headers `(,@(aio-await (leetcode--common-extra-headers))
                                         ,(leetcode--referer leetcode--url-login)))

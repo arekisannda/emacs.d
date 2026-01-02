@@ -4,7 +4,11 @@
   "List of functions to skip `activities-save-all'."
   :type '(set (function :tag "functions")))
 
-(use-package activities
+(defcustom +activities-default-directory nil
+  "Default directory for `activities'."
+  :type 'directory)
+
+(use-package activities :after project
   :custom
   (activities-name-prefix "@")
   (activities-always-persist t)
@@ -50,13 +54,13 @@
 
   ;; Prevent `edebug' default bindings from interfering.
   (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-  :config
+
   (defun +activities-new-project ()
     "Create new activity with project."
     (interactive)
     (+create-new-tab)
     (condition-case err
-        (let ((default-directory "~/")
+        (let ((default-directory +activities-default-directory)
               (activity nil))
           (call-interactively #'project-switch-project)
           (setq activity (call-interactively #'activities-define))
@@ -65,6 +69,24 @@
           (activities-revert activity))
       ((error quit)
        (tab-bar-close-tab))))
+
+  (defun +activities-discard-override (activity)
+    "Discard ACTIVITY and its state.
+It will not be recoverable."
+    (interactive
+     (list (activities-completing-read :prompt "Discard activity")))
+    (when (yes-or-no-p (format "Discard activity %S permanently?" (activities-activity-name activity)))
+      (ignore-errors
+        (when (activities-activity-active-p activity)
+          (activities-close activity))
+        )
+      (setf activities-activities (map-delete activities-activities (activities-activity-name activity)))
+      (let* ((workspace-name (treemacs-scope->current-scope-name
+                              (treemacs-current-scope-type) (activities-name-for activity))))
+        (treemacs-do-remove-workspace workspace-name nil))
+      ))
+
+  (advice-add #'activities-discard :override #'+activities-discard-override)
   :hook
-  (after-init . activities-mode)
+  (after-init   . activities-mode)
   (activities-mode . activities-tabs-mode))

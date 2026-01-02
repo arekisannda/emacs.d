@@ -1,5 +1,7 @@
 ;;; emacs/window.el -*- lexical-binding: t; -*-
 
+(require 'util-windows)
+
 (use-package window
   :custom
   (switch-to-buffer-obey-display-actions t)
@@ -7,6 +9,7 @@
   (window-sides-slots '(3 0 3 2))
   (window-sides-vertical t)
   (even-window-sizes nil)
+  (util/windows-disable-shrink t)
   :init
   (setq-default window-persistent-parameters
                 '((window-slot             . writable)

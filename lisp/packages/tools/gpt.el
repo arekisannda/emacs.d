@@ -5,6 +5,4 @@
   :custom
   (gptel-default-mode 'org-mode)
   :config
-  (gptel-api-key-from-auth-source)
-  :hook
-  (gptel-mode . visual-fill-column-mode--disable))
+  (gptel-api-key-from-auth-source))

@@ -28,15 +28,16 @@ If it is not set, use ALTERNATIVE instead."
                                        :signatureHelpProvider))
   ;; (eglot-extend-to-xref nil)
   :config
-  (let ((nixd         '("nixd" :name "nixd"))
-        (tinymist     '("tinymist" :name "tinymist"))
-        (texlab       '("texlab" :name "texlab"))
-        (ltex-ls-plus '("ltex-ls-plus" :name "ltex-ls-plus"))
-        (ty           '("ty" "server" :name "ty"))
-        (pyrefly      '("pyrefly" "lsp" :name "pyrefly"))
-        (biome        '("biome" "lsp-proxy" :name "biome"))
-        (html         (+eglot-with-local '("vscode-html-language-server" "--stdio" :name "vscode-html")))
-        (scad         '("openscad-lsp" "--stdio"))
+  (let ((nixd          '("nixd" :name "nixd"))
+        (tinymist      '("tinymist" :name "tinymist"))
+        (texlab        '("texlab" :name "texlab"))
+        (ltex-ls-plus  '("ltex-ls-plus" :name "ltex-ls-plus"))
+        (ty            '("ty" "server" :name "ty"))
+        (pyrefly       '("pyrefly" "lsp" :name "pyrefly"))
+        (biome         '("biome" "lsp-proxy" :name "biome"))
+        (html          (+eglot-with-local '("vscode-html-language-server" "--stdio" :name "vscode-html")))
+        (scad          '("openscad-lsp" "--stdio"))
+        (rust-analyzer '("rust-analyzer" :initializationOptions (:check (:command "clippy"))))
         )
 
     (dolist (conf `(((scad-mode                  :language-id "scad")             . ,scad)
@@ -53,8 +54,10 @@ If it is not set, use ALTERNATIVE instead."
                     ((rst-mode                   :language-id "restructuredtext") . ,ltex-ls-plus)
                     (((python-ts-mode            :language-id "python")
                       (python-mode               :language-id "python"))          . ,pyrefly)
-                    ((html-mode                  :language-id "html")             . ,html))
-                  )
+                    ((html-mode                  :language-id "html")             . ,html)
+                    (((rust-mode                 :language-id "rust")
+                      (rust-ts-mode              :language-id "rust"))           . ,rust-analyzer)
+                    ))
       (setf (alist-get (car conf) eglot-server-programs nil nil #'equal)
             (cdr conf))))
 
@@ -69,11 +72,16 @@ If it is not set, use ALTERNATIVE instead."
         (eglot-shutdown server))))
 
   (setq eglot-stay-out-of '(flymake))
+
+  (defun +eglot-flymake-setup ()
+    (add-hook 'flymake-diagnostic-functions #'eglot-flymake-backend nil t)
+    (flymake-mode 1))
+
   :autoload eglot-managed-p
   :hook
   (prog-mode . util/lsp-ensure-modes)
   (text-mode . util/lsp-ensure-modes)
-  (eglot-managed-mode . flymake-mode)
+  (eglot-managed-mode . +eglot-flymake-setup)
   (eglot-managed-mode . eldoc-mode))
 
 (use-package consult-eglot :after eglot)
@@ -81,5 +89,5 @@ If it is not set, use ALTERNATIVE instead."
 (use-package eglot-booster :after eglot
   :custom
   (eglot-booster-io-only t)
-  :hook
-  (after-init . eglot-booster-mode))
+  :config
+  (eglot-boster-mode))

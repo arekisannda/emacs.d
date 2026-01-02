@@ -19,6 +19,12 @@
   "Bottom side window min width in lines."
   :type 'integer)
 
+(defcustom util/windows-disable-shrink nil
+  "If non-nil, disable shrinking of windows.")
+
+(advice-add 'shrink-window-if-larger-than-buffer
+            :before-while (lambda (&rest args) util/windows-disable-shrink))
+
 (setq util/windows-bottom-preset-size-0
       `( :custom util/windows-display-buffer-in-side-window
          :side bottom
@@ -113,7 +119,7 @@
       (set-window-buffer window buffer)
       (set-window-dedicated-p window (plist-get plist :dedicated))
       (set-window-parameter window 'no-other-window t)
-      (window-preserve-size window (not (eq fixed 'height)) t)
+      (when fixed (window-preserve-size window (not (eq fixed 'height)) t))
 
       (with-current-buffer buffer
         (setq-local window-size-fixed fixed))
@@ -212,11 +218,11 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
                         (window-popup          . bottom)
                         (no-other-window       . t)
                         (dedicated             . t)
-                        (window-preserved-size . t)
-                        ))
+                        (window-preserved-size . t)))
                parameters
                window)
           (with-current-buffer buffer
+            (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
             (if (get-buffer-window buffer)
                 (display-buffer-reuse-window buffer alist)
               (let* ((lines (count-lines (point-min) (point-max)))

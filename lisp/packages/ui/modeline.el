@@ -97,7 +97,7 @@
 
   (doom-modeline-def-modeline
     '+default-modeline
-    '(evil buffer-info-extra buffer-info dedicated buffer-position)
+    '(evil buffer-info-extra buffer-info dedicated remote-host buffer-position)
     '(misc-info minibuffer-depth selection-info lsp repl check major-mode purpose))
 
   (defun +doom-modeline-set ()

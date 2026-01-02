@@ -4,11 +4,44 @@
   :custom
   (scad-preview-colorscheme '("Tomorrow" . "Tomorrow Night"))
   (scad-preview-camera '(0 0 0 45 0 45 400))
+  (scad-extra-args '("--enable=manifold"))
+  (scad-preview-view '("edges"))
   :config
+  (defun +scad-preview-view-all ()
+    (interactive nil scad-preview-mode)
+    (setq-local scad-extra-args
+                (if (member "--viewall" scad-extra-args)
+                    (remove "--viewall" scad-extra-args)
+                  (add-to-list 'scad-extra-args "--viewall")))
+    (scad--preview-render))
+
+  (defmacro +scad-preview-view-toggle (element)
+    (let ((ele (or (and (symbolp element) (symbol-name element))
+                   (and (stringp element) element))))
+      `(progn
+         (setq-local scad-preview-view
+                     (if (member ,ele scad-preview-view)
+                         (remove ,ele scad-preview-view)
+                       (add-to-list 'scad-preview-view ,ele)))
+         (scad--preview-render))))
+
+  (defun +scad-preview-axes ()
+    "Toggle axes."
+    (interactive nil scad-preview-mode)
+    (+scad-preview-view-toggle axes))
+
+  (defun +scad-preview-edges ()
+    "Toggle edges."
+    (interactive nil scad-preview-mode)
+    (+scad-preview-view-toggle edges))
+
+  (defun +scad-preview-scales ()
+    "Toggle edges."
+    (interactive nil scad-preview-mode)
+    (+scad-preview-view-toggle scales))
+
   (defun +scad-preview-start ()
-    (interactive)
-    (unless (derived-mode-p 'scad-mode)
-      (user-error "scad-mode unsupported buffer"))
+    (interactive nil 'scad-mode)
     (setq-local +scad-preview-layout-state (window-state-get (frame-root-window) t))
     (delete-other-windows)
     (split-window-horizontally)
@@ -27,9 +60,7 @@
       ))
 
   (defun +scad-preview-quit ()
-    (interactive)
-    (unless (derived-mode-p '(scad-mode scad-preview-mode))
-      (user-error "scad-mode unsupported buffer"))
+    (interactive nil 'scad-mode 'scad-preview-mode)
     (let (scad-source-buffer
           scad-preview-buffer)
       (with-current-buffer (current-buffer)
@@ -47,14 +78,13 @@
     )
 
   (defun +scad-preview-toggle (&optional arg)
-    (interactive "p")
+    (interactive nil '(scad-mode scad-preview-mode))
     (pcase arg
       (4 (+scad-preview-quit))
-      (_ (if scad--preview-buffer
+      (_ (if (and scad--preview-buffer
+                  (window-live-p (get-buffer-window scad--preview-buffer)))
              (+scad-preview-quit)
            (+scad-preview-start)))
-      ))
-  )
-
+      )))
 
 (use-package scad-dbus :after scad-mode :defer t)

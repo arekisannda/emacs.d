@@ -1,7 +1,6 @@
 ;;; tools/writing.el -*- lexical-binding: t; -*-
 
-(use-package dictionary
-  :defer t
+(use-package dictionary :after w3m
   :custom
   (dictionary-use-single-buffer t)
   (dictionary-server "dict.org")
@@ -11,11 +10,10 @@
     "Search WORD etymology."
     (interactive
      (list (read-string "Word: " (current-word))))
-    (browse-url (format "https://etymonline.com/word/%s" word)))
-  )
+    (w3m-browse-url (format "https://etymonline.com/word/%s" word)))
+  :commands (+dictionary-word-etymology))
 
 (use-package google-translate
-  :defer t
   :custom
   (google-translate-default-source-language "en")
   :config
@@ -24,11 +22,4 @@
   (setq google-translate-translation-directions-alist
         '(("ja" . "en") ("en" . "ja") )))
 
-(use-package writeroom-mode
-  :custom
-  (visual-fill-column-width nil)
-  (writeroom-width nil)
-  (writeroom-fullscreen-effect 'maximized)
-  (writeroom-restore-window-config t)
-  (writeroom-header-line nil)
-  (writeroom-mode-line nil))
+(use-package writegood)

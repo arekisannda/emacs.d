@@ -1,4 +1,4 @@
-;;; tools/spell.el -*- lexical-binding: t; -*-
+;;; emacs/flyspell.el -*- lexical-binding: t; -*-
 
 (use-package ispell
   :defer t
@@ -59,5 +59,3 @@ Also position fit window to BUFFER and select it."
   :defer t
   :custom
   (flyspell-delay 0))
-
-(use-package writegood)

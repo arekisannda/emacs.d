@@ -304,47 +304,46 @@
   (interactive nil scad-preview-mode)
   (scad--preview-reset))
 
+(defmacro +scad-preview-pos (pos)
+  `(let ((orig-camera (copy-sequence (default-value 'scad-preview-camera))))
+     (setq-default scad-preview-camera ,pos)
+     (scad--preview-reset)
+     (setq-default scad-preview-camera orig-camera)))
+
 (defun +scad-preview-top ()
   (interactive nil scad-preview-mode)
-  (setq-local scad-preview-camera '(0 0 0 0 0 0 400)
-              scad-preview-projection (default-value 'scad-preview-projection))
-  (scad--preview-render))
+  (+scad-preview-pos '(0 0 0 0 0 0 400)))
 
 (defun +scad-preview-bottom ()
   (interactive nil scad-preview-mode)
-  (setq-local scad-preview-camera '(0 0 0 180 0 0 400)
-              scad-preview-projection (default-value 'scad-preview-projection))
-  (scad--preview-render))
+  (+scad-preview-pos '(0 0 0 180 0 0 400)))
 
 (defun +scad-preview-front ()
   (interactive nil scad-preview-mode)
-  (setq-local scad-preview-camera '(0 0 0 90 0 0 400)
-              scad-preview-projection (default-value 'scad-preview-projection))
-  (scad--preview-render))
+  (+scad-preview-pos '(0 0 0 90 0 0 400)))
 
 (defun +scad-preview-back ()
   (interactive nil scad-preview-mode)
-  (setq-local scad-preview-camera '(0 0 0 90 0 180 400)
-              scad-preview-projection (default-value 'scad-preview-projection))
-  (scad--preview-render))
+  (+scad-preview-pos '(0 0 0 90 0 180 400)))
 
 (defun +scad-preview-left ()
   (interactive nil scad-preview-mode)
-  (setq-local scad-preview-camera '(0 0 0 90 0 90 400)
-              scad-preview-projection (default-value 'scad-preview-projection))
-  (scad--preview-render))
+  (+scad-preview-pos '(0 0 0 90 0 90 400)))
 
 (defun +scad-preview-right ()
   (interactive nil scad-preview-mode)
-  (setq-local scad-preview-camera '(0 0 0 90 0 -90 400)
-              scad-preview-projection (default-value 'scad-preview-projection))
-  (scad--preview-render))
+  (+scad-preview-pos '(0 0 0 90 0 -90 400)))
 
 (general-define-key
  :states 'emacs
- :keymap 'scad-preview-mode-map
+ :keymaps 'scad-preview-mode-map
 
+ "C-S-v"     #'+scad-preview-view-all
  "C-r"       #'+scad-preview-reset
+ "C-1"       #'+scad-preview-edges
+ "C-2"       #'+scad-preview-axes
+ "C-3"       #'+scad-preview-scales
+
  "C-4"       #'+scad-preview-top
  "C-5"       #'+scad-preview-bottom
  "C-8"       #'+scad-preview-front
@@ -379,6 +378,15 @@
 
  "C-o"   '("previous" . eww-back-url)
  "C-i"   '("next"     . eww-forward-url))
+#+end_src
+*** W3M
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :states '(normal visual motion emacs insert)
+ :keymaps 'w3m-mode-map
+
+ "C-o"   '("previous" . w3m-view-previous-page)
+ "C-i"   '("next"     . w3m-view-next-page))
 #+end_src
 ** Coding
 *** DevDocs
@@ -558,7 +566,7 @@
  "M-<f8>"   (general-predicate-dispatch #'kill-compilation
               dape-active-mode          nil)
 
- "<f9>"    (general-predicate-dispatch #'+switch-to-minibuffer
+ "<f9>"    (general-predicate-dispatch nil
              dape-active-mode          #'+hydra-dape-motion/dape-continue)
 
  "<f10>"   '("menu"        . menu-bar-open)
@@ -580,14 +588,21 @@
 
  "C-\\" '("tools"           . +keybinds-tools-command)
  "b"    '("buffers"         . +keybinds-buffer-command)
+ "C-b"  '("buffers"         . +keybinds-buffer-command)
  "m"    '("modes"           . +keybinds-mode-interface-command)
+ "C-m"  '("modes"           . +keybinds-mode-interface-command)
  "w"    '("workspace"       . +keybinds-workspace-command)
+ "C-w"  '("workspace"       . +keybinds-workspace-command)
  "t"    '("tabs"            . +keybinds-tabs-command)
+ "C-t"  '("tabs"            . +keybinds-tabs-command)
  "a"    '("agenda"          . +keybinds-org-agenda-command)
  "C-a"  '("agenda"          . +keybinds-org-agenda-command)
  "f"    '("notes"           . +keybinds-org-roam-command)
+ "C-f"  '("notes"           . +keybinds-org-roam-command)
  "e"    '("flymake"         . +keybinds-flymake-command)
+ "C-e"  '("flymake"         . +keybinds-flymake-command)
  "d"    '("documentation"   . +keybinds-documentation-command)
+ "C-d"  '("documentation"   . +keybinds-documentation-command)
 
  "+"    '("text scale up"   . +hydra-text-scale/text-scale-increase)
  "-"    '("text scale down" . +hydra-text-scale/text-scale-decrease))
@@ -598,6 +613,7 @@
   :prefix-command '+keybinds-documentation-command)
 
 (+keybinds-documentation
+ "w" '("web"           . w3m-goto-url)
  "S" '("devdoc search" . devdocs-search)
  "d" '("devdoc lookup" . devdocs-lookup)
  "D" '("devdoc peruse" . devdocs-peruse)
@@ -693,6 +709,7 @@
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'override
+ "C-:"       '("minibuffer"     . switch-to-minibuffer)
  "C-<left>"  '("focus left"     . evil-window-left)
  "C-<right>" '("focus right"    . evil-window-right)
  "C-<up>"    '("focus up"       . evil-window-up)
@@ -925,6 +942,7 @@
   "C-S-s" '("org scratch"       . +org-scratch-buffer)
   "C-t"   '("latex scratch"     . +latex-scratch-buffer)
   "C-p"   '("prompt"            . gptel)
+  "p"     '("prompt"            . gptel-add)
   "C-e"   '("eshell"            . project-eshell)
   "C-v"   '("toggle term"       . +vterm-project))
 #+end_src
@@ -1088,7 +1106,7 @@
 ** Text Selection
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
- :keymaps 'override
+ :keymaps 'global
  "C-S-c" '("copy"  . kill-ring-save)
  "C-S-x" '("cut"   . kill-region)
  "C-S-v" '("paste" . yank))
@@ -1186,7 +1204,7 @@
  [remap move-beginning-of-line]      #'corfu-prompt-beginning
  [remap move-end-of-line]            #'corfu-prompt-end
  [remap keyboard-quit]               #'corfu-quit
- [remap evil-normal-state]           #'corfu-normal-state
+ [remap evil-normal-state]           #'+corfu-normal-state
  [remap completion-at-point]         #'corfu-insert-separator
  [remap indent-for-tab-command]      #'corfu-insert
 
@@ -1362,8 +1380,8 @@
  "M-j" '("open ace down"   . windex-windmove-display-aw-down)
  "M-k" '("open ace up"     . windex-windmove-display-aw-up)
  "M-l" '("open ace right"  . windex-windmove-display-aw-right)
- "."   '("open ace"        . windex-windmove-display-aw)
- "M-." '("open same"       . windmove-display-same-window)
+ "M-." '("open ace"        . windex-windmove-display-aw)
+ "."   '("open same"       . windmove-display-same-window)
 
  "C-<up>"    '("up"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
  "C-<left>"  `("left"      . ,(+aw-select-with-filter +aw-select-left-filter))

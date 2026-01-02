@@ -1,18 +1,11 @@
 ;;; emacs/eldoc.el -*- lexical-binding: t; -*-
 
+(require 'util-helpers)
+
 (use-package eldoc
   :defer t
   :init
-  (setq-default eldoc-display-functions '(eldoc-display-in-buffer))
-  (defvar-local +eldoc--old-display-functions nil)
-
-  (defun +eldoc--disable ()
-    (setq-local +eldoc--old-display-functions eldoc-display-functions
-                eldoc-display-functions nil))
-
-  (defun +eldoc--enable ()
-    (setq-local eldoc-display-functions +eldoc--old-display-functions
-                +eldoc--old-display-functions nil)))
+  (setq-default eldoc-display-functions '(eldoc-display-in-buffer)))
 
 (use-package eldoc-box :after (eldoc windex-scroll)
   :preface
@@ -90,12 +83,12 @@ If INTERACTIVE, display it.  Else, return said buffer."
           (with-current-buffer buf
             (let ((inhibit-read-only t))
               (erase-buffer)
-              (replace-buffer-contents  eldoc--doc-buffer)))
+              (replace-buffer-contents eldoc--doc-buffer)))
         (with-current-buffer eldoc--doc-buffer
           (setq buf (clone-buffer buf-name t))))
       (with-current-buffer buf
+        (face-remap-add-relative 'markdown-code-face `(nil :background ,(doom-color 'bg)))
         (setq-local truncate-lines t)
-        (visual-fill-column-mode -1)
         (visual-line-mode 1)
         (word-wrap-whitespace-mode)
         (rename-buffer buf-name)
@@ -104,9 +97,8 @@ If INTERACTIVE, display it.  Else, return said buffer."
   (defun eldoc-display-in-buffer (docs interactive)
     "Display DOCS in a dedicated buffer.
 If INTERACTIVE is t, also display the buffer."
-
     (eldoc--format-doc-buffer docs)
-    (when interactive (+eldoc-doc-buffer nil)))
+    (when interactive (+eldoc-doc-buffer t)))
 
   (defun +eldoc-close-buffer ()
     "Helper function to kill Eldoc doc buffer."
@@ -115,5 +107,11 @@ If INTERACTIVE is t, also display the buffer."
       (when (and (buffer-live-p eldoc--doc-buffer)
                  (setq window (get-buffer-window eldoc--doc-buffer)))
         (quit-window t window))))
+
+  (advice-add #'eldoc-box--eldoc-display-function
+              :before-while (lambda (&rest args)
+                              (not (or evil-insert-state-minor-mode
+                                       diff-hl-show-hunk-posframe--transient-mode))))
+
   :hook
   (eldoc-mode . eldoc-box-hover-at-point-mode))

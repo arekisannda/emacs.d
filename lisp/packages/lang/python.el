@@ -10,8 +10,8 @@
 
 (defun +lang-python-mode-setup ()
   (remove-hook 'flymake-diagnostic-functions #'python-flymake t)
-  (if (envrc--env-dir-p default-dire)
-      (add-hook '+envrc-update-hook #'+lang-python-flymake-setup nil t))
+  (when (+envrc-root)
+    (add-hook '+envrc-update-hook #'+lang-python-flymake-setup nil t))
   (+lang-python-flymake-setup))
 
 (use-package python

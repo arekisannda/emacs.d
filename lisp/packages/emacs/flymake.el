@@ -1,4 +1,4 @@
-;;; tools/syntax.el -*- lexical-binding: t; -*-
+;;; emacs/flymake.el -*- lexical-binding: t; -*-
 
 (use-package flymake
   :defer t

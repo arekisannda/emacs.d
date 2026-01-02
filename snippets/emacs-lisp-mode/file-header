@@ -1,9 +1,9 @@
 # -*- mode: snippet -*-
-# name: emacs filer header
+# name: emacs file header
 # key: file
 # --
 
 ;;; ${1:name}.el -*- lexical-binding: t; -*-
 
-$0
+`yas-selected-text`$0
  

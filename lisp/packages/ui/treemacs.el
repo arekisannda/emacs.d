@@ -69,8 +69,9 @@
     (treemacs-fringe-indicator-mode 'only-when-focused)
     (setq mode-line-format nil))
   :hook
-  (kill-emacs . +treemacs--clean-workspaces)
-  (treemacs-mode . +treemacs--setup))
+  (kill-emacs                . +treemacs--clean-workspaces)
+  (treemacs-switch-workspace . +treemacs--clean-workspaces)
+  (treemacs-mode             . +treemacs--setup))
 
 (use-package treemacs-peek-mode :after treemacs
   :config
