@@ -22,8 +22,7 @@
         (setq leetcode--frame
               (make-frame
                (append
-                `((delete-before  . ,parent-frame)
-                  (no-other-frame . t)
+                `((no-other-frame . t)
                   (left           . 0.5)
                   (top            . 0.5)
                   (minibuffer     . t)
