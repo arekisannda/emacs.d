@@ -95,6 +95,12 @@
          (format "[%s]" (symbol-name purpose))
          'face (doom-modeline-face 'success))))
 
+  (doom-modeline-def-segment workspace
+    (if-let* ((workspace (activities-workspaces-last (activities-current-workspace))))
+        (propertize
+         (format "[%s]" workspace)
+         'face (doom-modeline-face 'font-lock-escape-face))))
+
   (doom-modeline-def-modeline
     '+default-modeline
     '(evil buffer-info-extra buffer-info dedicated remote-host buffer-position)

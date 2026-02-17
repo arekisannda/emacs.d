@@ -49,7 +49,6 @@
       `( :custom util/windows-display-buffer-in-side-window
          :side left
          :slot 0
-         :size ,util/windows-min-left-width
          :fixed width))
 
 (setq util/windows-right-preset-0
@@ -110,19 +109,22 @@
                )))
        (t (user-error "Unable to create side window")))
 
-      (when (plist-get plist :disable-modeline)
-        (set-window-parameter window 'mode-line-format 'none))
-      (unless (window-parameter window 'quit-restore)
-        (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
-      (when (plist-get plist :no-other)
-        (set-window-parameter window 'no-other-window t))
-      (set-window-buffer window buffer)
-      (set-window-dedicated-p window (plist-get plist :dedicated))
-      (set-window-parameter window 'no-other-window t)
-      (when fixed (window-preserve-size window (not (eq fixed 'height)) t))
-
       (with-current-buffer buffer
-        (setq-local window-size-fixed fixed))
+        (when (plist-get plist :disable-modeline)
+          (set-window-parameter window 'mode-line-format 'none))
+        (unless (window-parameter window 'quit-restore)
+          (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
+        (when (plist-get plist :no-other)
+          (set-window-parameter window 'no-other-window t))
+        (set-window-buffer window buffer)
+        (set-window-dedicated-p window (plist-get plist :dedicated))
+        (set-window-parameter window 'no-other-window t)
+
+        (when fixed
+          (window-preserve-size window (not (eq fixed 'height)) t)
+          (setq-local window-size-fixed fixed)
+          )
+        )
 
       (if (plist-get plist :select) window init-window))))
 

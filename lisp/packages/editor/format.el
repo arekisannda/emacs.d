@@ -6,4 +6,4 @@
   (editorconfig-mode t)
   :diminish editorconfig-mode)
 
-(use-package prettier-js :defer t)
+(use-package prettier-js)

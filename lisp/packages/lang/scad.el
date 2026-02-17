@@ -5,7 +5,7 @@
   (scad-preview-colorscheme '("Tomorrow" . "Tomorrow Night"))
   (scad-preview-camera '(0 0 0 45 0 45 400))
   (scad-extra-args '("--enable=manifold"))
-  (scad-preview-view '("edges"))
+  (scad-preview-view '("wireframe" "edges" "scales"))
   :config
   (defun +scad-preview-view-all ()
     (interactive nil scad-preview-mode)
@@ -85,6 +85,7 @@
                   (window-live-p (get-buffer-window scad--preview-buffer)))
              (+scad-preview-quit)
            (+scad-preview-start)))
-      )))
+      ))
+  )
 
 (use-package scad-dbus :after scad-mode :defer t)

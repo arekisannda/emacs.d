@@ -3,6 +3,7 @@
 (use-package ace-window
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (aw-scope 'frame)
   (aw-dispatch-when-more-than 0)
   (aw-swap-invert nil)
   (aw-dispatch-always nil)

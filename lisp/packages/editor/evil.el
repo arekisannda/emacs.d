@@ -24,10 +24,10 @@
                 evil-want-minibuffer nil)
   :config
   (setq evil-insert-state-modes
-        '(comint-mode erc-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode
-                      inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode
-                      internal-ange-ftp-mode haskell-interactive-mode prolog-inferior-mode racket-repl-mode reb-mode shell-mode
-                      slime-repl-mode term-mode utop-mode wdired-mode))
+        '( comint-mode erc-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode
+           inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode
+           internal-ange-ftp-mode haskell-interactive-mode prolog-inferior-mode racket-repl-mode reb-mode shell-mode
+           slime-repl-mode term-mode utop-mode wdired-mode))
 
   (setq evil-emacs-state-modes
         (delete-dups
@@ -49,12 +49,14 @@
   (setq evil-normal-state-modes
         (delete-dups
          (append '(code-review-mode
+                   pr-review-mode
                    Custom-mode)
                  evil-normal-state-modes)))
 
   (setq evil-motion-state-modes
         '(apropos-mode
           eww-mode
+          detached-log-mode
           color-theme-mode
           tabulated-list
           command-history-mode
@@ -104,15 +106,6 @@
 (use-package evil-nerd-commenter :after evil)
 
 (use-package evil-args :after evil)
-
-(use-package evil-snipe :after evil
-  :diminish evil-snipe-mode
-  :custom
-  (evil-snipe-enable-highlight t)
-  :hook
-  (evil-mode . evil-snipe-mode))
-
-(use-package evil-easymotion :after evil)
 
 (use-package evil-matchit :after evil
   :hook

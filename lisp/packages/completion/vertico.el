@@ -32,6 +32,10 @@
                             '(vertico-sort-override-function . +vertico-sort-project))
      ,(+vertico-add-options #'project-forget-project
                             '(vertico-sort-override-function . +vertico-sort-project))
+     ,(+vertico-add-options #'+treemacs-add-project-to-workspace
+                            '(vertico-sort-override-function . +vertico-sort-project))
+     ,(+vertico-add-options #'+activities-new-project
+                            '(vertico-sort-override-function . +vertico-sort-project))
      ,(+vertico-add-options #'project-forget-project-under
                             '(vertico-sort-override-function . +vertico-sort-directories-first))
      ,(+vertico-add-options #'project-kill-buffers

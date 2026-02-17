@@ -25,10 +25,31 @@
            return plist
            finally return nil))
 
+(defcustom shackle-disable-list nil
+  "List of conditions to be disabled by `shackle'."
+  :type '(choice :tag "Condition"
+          (symbol :tag "Major mode")
+          (string :tag "Buffer name")
+          (repeat (choice
+                   (symbol :tag "Major mode")
+                   (string :tag "Buffer name")))
+          (list :tag "Custom function"
+                (const :tag "Custom" :custom) function)))
+
 (use-package shackle :after windex
   :custom
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
+  (util/windows-min-left-width 60)
+  (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
+  (shackle-disable-list
+   `("^ \\*which-key\\*$"
+     "^ \\*embrace-help\\*$"
+     "^\\*leetcode-result-.*\\*$"
+     "^\\*leetcode-testcase-.*\\*$"
+
+     leetcode--problems-mode
+     leetcode--problem-detail-mode))
   (shackle-rules
    `((("^\\*Capture\\*$"
        "^\\*Warnings\\*$"
@@ -37,12 +58,20 @@
        "^ \\*http.*\\*")
       :ignore t)
 
-     ((scad-preview-mode)
+     ((scad-preview-mode
+       code-review-mode
+       pr-review-mode)
       :same t)
 
      ((treemacs-mode)
       ,@util/windows-left-preset-size-0
+      :size +shackle-get-dimensions
       :select t)
+
+     ((magit-mode)
+      :custom
+      (lambda (buffer &optional alist plist)
+        (windex-frame-display-buffer buffer `(,@alist (title . "Magit")))))
 
      ((magit-mode)
       :custom
@@ -104,18 +133,6 @@
       :custom util/windows-display-buffer-in-pop-up-window
       :select t)
 
-     ((dashboard-mode
-       pdf-view-mode
-
-       "^\\*Org Src.*\\*$"
-       "^\\*Org Preview.*\\*$"
-       "^\\*Org Select\\*$")
-      :same t :select t)
-
-     (("^\\*Org .*\\*$")
-      :custom util/windows-display-buffer-in-pop-up-window
-      :select t)
-
      (("^CAPTURE-.*\\.org$"
        "^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
@@ -123,10 +140,11 @@
        "^\\*Customize.*\\*$"
        "^\\*Man.*\\*$"
        "^\\*WoMan.*\\*$"
-       "^\\*IBuffer\\*$"
        "^\\*eww\\*$"
        "^\\*w3m\\*$"
+       "^\\*Org Agenda\\*$"
 
+       org-agenda-mode
        w3m-mode
        eww-mode
        devdocs-mode
@@ -146,6 +164,18 @@
       ,@util/windows-right-preset-0
       :size +shackle-get-dimensions)
 
+     ((dashboard-mode
+       pdf-view-mode
+
+       "^\\*Org Src.*\\*$"
+       "^\\*Org Preview.*\\*$"
+       "^\\*Org Select\\*$")
+      :same t :select t)
+
+     (("^\\*Org .*\\*$")
+      :custom util/windows-display-buffer-in-pop-up-window
+      :select t)
+
      (("^\\*Error\\*$"
        "^\\*Dired log\\*$"
        "^\\*latex-scratch\\*$"
@@ -159,9 +189,16 @@
        "^\\*ChatGPT.*\\*$"
        "^\\*Code Review Comment\\*$"
        "^COMMIT_EDITMSG$"
+       "^\\*detached-session-info\\*$"
+       "^\\*detached-list\\*$"
+       "^\\*IBuffer\\*$"
 
+       git-rebase-mode
+       detached-list-mode
+       detached-log-mode
        ert-results-mode
        code-review-comment-mode
+       pr-review-input-mode
        forge-post-mode
        dired-mode
        calc-mode
@@ -250,13 +287,7 @@
                   ((and (stringp e) (string-match-p e buffer-name)) t)
                   ((stringp e) (string= buffer-name e))
                   ((symbolp e) (eq buffer-mode e))))
-               `(,which-key-buffer-name
-                 ,embrace--help-buffer-name
-                 ,code-review-buffer-name
-                 leetcode--problems-mode
-                 leetcode--problem-detail-mode
-                 "^\\*leetcode-result-.*\\*$"
-                 "^\\*leetcode-testcase-.*\\*$"))
+               shackle-disable-list)
         (apply orig-func args))))
 
   (advice-add #'shackle-display-buffer-condition :around #'+shackle-condition-ignore-check)

@@ -7,7 +7,7 @@
   (shr-bullet "• ")
   (shr-hr-line "—")
   (shr-indentation 2)
-  (shr-max-width nil))
+  (shr-max-width 90))
 
 (use-package eww
   :hook

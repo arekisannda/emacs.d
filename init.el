@@ -44,7 +44,16 @@
 ;; enable configurations
 (setq custom-file (expand-file-name "custom.el.gpg" user-emacs-directory))
 
-(load custom-file 'noerror)
+(condition-case err
+    (load custom-file 'noerror)
+  (error
+   (require 'notifications)
+   (notifications-notify
+    :title "Init Failed"
+    :body  "Unable to load custom file"
+    :urgency 'critical)
+   (kill-emacs)
+   ))
 (+load "lisp/packages/emacs")
 (+load "lisp/packages/ui")
 (+load "lisp/packages/editor")

@@ -2,7 +2,7 @@
 
 (use-package affe
   :custom
-  (affe-find-command "rg --color=never --no-ignore --files --hidden --glob=!.git/*")
+  (affe-find-command "rg --color=never --no-ignore --files --hidden --glob=!**/.git/*")
   (affe-regexp-compiler #'affe-orderless-regexp-compiler)
   :init
   (defun affe-orderless-regexp-compiler (input _type _ignorecase)

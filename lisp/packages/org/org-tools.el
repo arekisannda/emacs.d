@@ -45,14 +45,3 @@
   :custom
   (org-download-image-dir "./images")
   (org-download-screenshot-method "grim -g \"$(slurp)\" %s"))
-
-(use-package org-typst-preview)
-
-(defun +org-typst-preview-render (&optional arg)
-  "Render/clear `Typst` preview in buffer.
-
-With prefix ARG \\[universal-argument], clear preview in buffer."
-  (interactive "p")
-  (pcase arg
-    (4 (org-typst-preview-clear-buffer))
-    (_ (org-typst-preview-render-buffer))))

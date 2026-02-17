@@ -77,105 +77,13 @@
 
 (use-package forge :after magit)
 
-(use-package code-review :after (magit forge)
-  :custom-face
-  (code-review-outdated-comment-heading
-   ((nil :box nil)))
-  (code-review-recent-comment-heading
-   ((nil :box nil)))
+(use-package pr-review
   :custom
-  (code-review-new-buffer-window-strategy #'pop-to-buffer-same-window)
+  (pr-review-fringe-icons nil)
+  (pr-review-section-indent-width 4)
+  :custom-face
   :config
-  (set-keymap-parent code-review-mode-map magit-mode-map)
-
-  (defun code-review-comment-commit ()
-    "Commit comment."
+  (defun pr-review-at-point (&optional )
     (interactive)
-    (unwind-protect
-        (let* ((buffer (get-buffer code-review-comment-buffer-name))
-               (comment-text (string-trim
-                              (with-current-buffer buffer
-                                (save-excursion
-                                  (buffer-substring-no-properties (point-min) (point-max))))))
-               (pr (code-review-db-get-pullreq)))
-
-          (quit-window t (get-buffer-window(current-buffer)))
-          ;; (if (= 1 (length (window-list (window-frame (selected-window)))))
-          ;;     (delete-frame (window-frame (selected-window)))
-          ;;   (delete-window (selected-window)))
-
-          (cond
-
-           (code-review-comment-description?
-            (oset pr raw-infos (-> (oref pr raw-infos)
-                                   (a-assoc 'bodyText comment-text)
-                                   (a-assoc 'bodyHTML nil)))
-            (code-review-send-description
-             pr
-             (lambda ()
-               (code-review-db-update pr)
-               (code-review--build-buffer)
-               (code-review-comment-reset-global-vars))))
-
-           (code-review-comment-title?
-            (oset pr title comment-text)
-            (code-review-send-title
-             pr
-             (lambda ()
-               (code-review-db-update pr)
-               (code-review--build-buffer)
-               (code-review-comment-reset-global-vars))))
-
-           (code-review-comment-feedback?
-            (let ((msg
-                   (code-review-utils--comment-clean-msg
-                    comment-text
-                    code-review-comment-feedback-msg)))
-              (code-review-db--pullreq-feedback-update msg)
-              (code-review--build-buffer)
-              (code-review-comment-reset-global-vars)))
-
-           (code-review-promote-comment-to-issue?
-            (progn
-              (oset code-review-comment-uncommitted buffer-text comment-text)
-              (code-review-comment-handler-commit
-               code-review-comment-uncommitted
-               code-review-comment-buffer-msg)
-              (code-review-comment-reset-global-vars)))
-
-           (code-review-comment-send?
-            (progn
-              (oset code-review-comment-uncommitted msg comment-text)
-              (code-review-comment-handler-commit
-               code-review-comment-uncommitted
-               code-review-comment-single-comment-msg)
-              (code-review-comment-reset-global-vars)))
-
-           (code-review-comment-single-comment?
-            (let ((msg
-                   (code-review-utils--comment-clean-msg
-                    comment-text
-                    code-review-comment-single-comment-msg))
-                  (callback (lambda (&rest _)
-                              (let ((code-review-section-full-refresh? t))
-                                (code-review--build-buffer)
-                                (code-review-comment-reset-global-vars)))))
-              (code-review-new-issue-comment pr msg callback)))
-           (t
-            (progn
-              (oset code-review-comment-uncommitted msg comment-text)
-              (code-review-comment-handler-commit
-               code-review-comment-uncommitted
-               (if code-review-comment-suggestion?
-                   code-review-comment-suggestion-msg
-                 code-review-comment-buffer-msg))
-              (code-review-comment-reset-global-vars)))))))
-
-  (defun code-review-comment-quit ()
-    "Quit the comment window."
-    (interactive)
-    (quit-window t (get-buffer-window(current-buffer)))
-    (with-current-buffer (get-buffer code-review-buffer-name)
-      (goto-char code-review-comment-cursor-pos)
-      (code-review-comment-reset-global-vars)))
+    (pr-review (forge-get-url (forge-current-pullreq))))
   )

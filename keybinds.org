@@ -304,35 +304,36 @@
   (interactive nil scad-preview-mode)
   (scad--preview-reset))
 
-(defmacro +scad-preview-pos (pos)
+(defmacro +scad-preview-pos (pos desc)
   `(let ((orig-camera (copy-sequence (default-value 'scad-preview-camera))))
      (setq-default scad-preview-camera ,pos)
      (scad--preview-reset)
-     (setq-default scad-preview-camera orig-camera)))
+     (setq-default scad-preview-camera orig-camera)
+     (message "View %s" ,desc)))
 
 (defun +scad-preview-top ()
   (interactive nil scad-preview-mode)
-  (+scad-preview-pos '(0 0 0 0 0 0 400)))
+  (+scad-preview-pos '(0 0 0 0 0 0 400) "top"))
 
 (defun +scad-preview-bottom ()
   (interactive nil scad-preview-mode)
-  (+scad-preview-pos '(0 0 0 180 0 0 400)))
+  (+scad-preview-pos '(0 0 0 180 0 0 400) "bottom"))
 
 (defun +scad-preview-front ()
   (interactive nil scad-preview-mode)
-  (+scad-preview-pos '(0 0 0 90 0 0 400)))
+  (+scad-preview-pos '(0 0 0 90 0 0 400) "front"))
 
 (defun +scad-preview-back ()
   (interactive nil scad-preview-mode)
-  (+scad-preview-pos '(0 0 0 90 0 180 400)))
+  (+scad-preview-pos '(0 0 0 90 0 180 400) "back"))
 
 (defun +scad-preview-left ()
   (interactive nil scad-preview-mode)
-  (+scad-preview-pos '(0 0 0 90 0 90 400)))
+  (+scad-preview-pos '(0 0 0 90 0 90 400) "left"))
 
 (defun +scad-preview-right ()
   (interactive nil scad-preview-mode)
-  (+scad-preview-pos '(0 0 0 90 0 -90 400)))
+  (+scad-preview-pos '(0 0 0 90 0 -90 400) "right"))
 
 (general-define-key
  :states 'emacs
@@ -537,8 +538,11 @@
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :keymaps 'override
- "<f5>"    '("debugger"    . +keybinds-dape-debugger-command)
- "C-<f5>"  '("debugger"    . +keybinds-dape-debugger-command)
+ "<f5>"     (general-predicate-dispatch nil
+              (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
+
+ "C-<f5>"   (general-predicate-dispatch nil
+              (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
 
  "S-<f5>"   (general-predicate-dispatch #'dape-restart
               dape-active-mode          nil)
@@ -558,16 +562,19 @@
               dape-active-mode          nil)
 
  "S-<f8>"   (general-predicate-dispatch #'project-compile
-             dape-active-mode          nil)
-
- "C-S-<f8>" (general-predicate-dispatch #'compile
-             dape-active-mode          nil)
-
- "M-<f8>"   (general-predicate-dispatch #'kill-compilation
               dape-active-mode          nil)
 
- "<f9>"    (general-predicate-dispatch nil
-             dape-active-mode          #'+hydra-dape-motion/dape-continue)
+ "C-S-<f8>" (general-predicate-dispatch #'compile
+              dape-active-mode          nil)
+
+ "M-<f8>"   (general-predicate-dispatch #'detached-project-compile
+              dape-active-mode          nil)
+
+ "M-S-<f8>" (general-predicate-dispatch #'kill-compilation
+              dape-active-mode          nil)
+
+ "<f9>"     (general-predicate-dispatch nil
+              dape-active-mode          #'+hydra-dape-motion/dape-continue)
 
  "<f10>"   '("menu"        . menu-bar-open)
  "<f11>"   '("mru"         . evil-window-mru)
@@ -593,8 +600,6 @@
  "C-m"  '("modes"           . +keybinds-mode-interface-command)
  "w"    '("workspace"       . +keybinds-workspace-command)
  "C-w"  '("workspace"       . +keybinds-workspace-command)
- "t"    '("tabs"            . +keybinds-tabs-command)
- "C-t"  '("tabs"            . +keybinds-tabs-command)
  "a"    '("agenda"          . +keybinds-org-agenda-command)
  "C-a"  '("agenda"          . +keybinds-org-agenda-command)
  "f"    '("notes"           . +keybinds-org-roam-command)
@@ -635,19 +640,24 @@
 
 (+keybinds-workspace
   "p"   '("switch project"    . project-switch-project)
-  "d"   '("forget project"    . project-forget-project)
-  "D"   '("forget project in" . project-forget-projects-under)
-  "K"   '("clear project"     . +clear-project)
+  "P"   '("project activity"  . +activities-new-project)
+  "k"   '("forget project"    . project-forget-project)
+  "K"   '("forget project in" . project-forget-projects-under)
 
-  "+"   '("treemacs add"      . treemacs-add-project-to-workspace)
+  "+"   '("treemacs add"      . +treemacs-add-project-to-workspace)
   "-"   '("treemacs remove"   . treemacs-remove-project-from-workspace)
   "="   '("treemacs edit"     . treemacs-edit-workspaces)
 
+  "d"   '("temporary dir"     . treemacs-project-directory-override-next-command)
+
+  "C-n" '("define workspace"  . activities-define-activity-workspace)
+  "C-r" '("switch workspace"  . activities-switch-activity-workspace)
+  "C-q" '("quit workspace"    . activities-quit-activity-workspace)
+  "C-d" '("discard workspace" . activities-remove-activity-workspace)
+
   "n"   '("define activity"   . activities-define)
-  "N"   '("new activity"      . activities-new)
   "r"   '("switch activity"   . activities-resume)
   "q"   '("suspend activity"  . activities-suspend)
-  "Q"   '("revert activity"   . activities-revert)
   "x"   '("kill activity"     . activities-kill)
   "X"   '("discard activity"  . activities-discard)
   "w"   '("save activities"   . activities-save-all)
@@ -655,8 +665,6 @@
   "C-E" '("envrc deny"        . envrc-deny)
   "E"   '("envrc allow"       . envrc-allow)
   "e"   '("envrc load"        . envrc-reload)
-
-  "P"   '("project activity"  . +activities-new-project)
 
   "l"   '("apply layout"      . windex-layout-apply))
 #+end_src
@@ -818,6 +826,7 @@
 *** VTerm
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
+ :states 'emacs
  :keymaps 'vterm-mode-map
 
  "<escape>"    #'vterm--self-insert
@@ -933,11 +942,12 @@
   "!"     '("start checker"     . flymake-start)
   "."     '("embark act"        . embark-act)
   "?"     '("embark act all"    . embark-act-all)
-  "f"     '("dired buffer"      . dired)
+  "d"     '("dired buffer"      . dired)
   "m"     '("magit"             . magit)
   "M"     '("list repositories" . magit-list-repositories)
-  "l"     '("translate"         . google-translate-smooth-translate)
+  "t"     '("translate"         . google-translate-smooth-translate)
 
+  "C-l"   '("sessions"          . detached-list-sessions)
   "C-s"   '("scratch"           . scratch-buffer)
   "C-S-s" '("org scratch"       . +org-scratch-buffer)
   "C-t"   '("latex scratch"     . +latex-scratch-buffer)
@@ -989,19 +999,19 @@
  "C-r"   '("find reg"     . consult-register)
  "C-y"   '("find yank"    . consult-yank-replace)
  
- "g"   (general-predicate-dispatch   '("rg" . consult-ripgrep)
-         (derived-mode-p 'devdocs-mode) '("goto" . devdocs-goto-page))
+ "g"   (general-predicate-dispatch      '("rg"      . consult-ripgrep)
+         (derived-mode-p 'devdocs-mode) '("goto"    . devdocs-goto-page))
 
- "h"   (general-predicate-dispatch   '("heading"  . consult-outline)
-         (derived-mode-p 'rfc-mode)  '("heading" . rfc-mode-goto-section)
-         (derived-mode-p 'org-mode)  '("heading" . consult-org-heading)
-         (derived-mode-p 'Info-mode) '("heading" . Info-menu))
+ "h"   (general-predicate-dispatch      '("heading" . consult-outline)
+         (derived-mode-p 'rfc-mode)     '("heading" . rfc-mode-goto-section)
+         (derived-mode-p 'org-mode)     '("heading" . consult-org-heading)
+         (derived-mode-p 'Info-mode)    '("heading" . Info-menu))
 
- "H"   (general-predicate-dispatch   nil
-         (+imenup)                   '("headin"  . consult-imenu))
+ "H"   (general-predicate-dispatch      nil
+         (+imenup)                      '("headin"  . consult-imenu))
 
- "s"   (general-predicate-dispatch nil
-         (eglot-managed-p)           '("symbols"  . consult-eglot-symbols)))
+ "s"   (general-predicate-dispatch      nil
+         (eglot-managed-p)              '("symbols" . consult-eglot-symbols)))
 #+end_src
 * Editor
 #+begin_src emacs-lisp :tangle yes
@@ -1021,7 +1031,7 @@
  "m"   '("motion"          . +keybinds-editor-motion-command)
  "w"   '("writing"         . +keybinds-editor-writing-command)
 
- "C-n" (general-predicate-dispatch            '("view" . +keybinds-editor-view-command)
+ "C-v" (general-predicate-dispatch            '("view" . +keybinds-editor-view-command)
          (derived-mode-p 'org-mode)           '("view" . +keybinds-org-view-command))
 
  "f"   (general-predicate-dispatch            '("fold" . +keybinds-hs-fold-command)
@@ -1126,23 +1136,31 @@
 (general-create-definer +keybinds-editor-motion
   :prefix-command '+keybinds-editor-motion-command)
 
+(defhydra +hydra-avy-motion
+  (:foreign-key exit :exit nil :timeout nil :hint nil)
+  ("[" #'avy-prev "prev avy")
+  ("]" #'avy-next "next avy"))
+(hydra-set-property #'+hydra-avy-motion :verbosity 0)
+
 (+keybinds-editor-motion
-  "j" '("to char below"      . evilem-motion-find-char)
-  "J" '("til char below"     . evilem-motion-find-char-to)
-  "k" '("to char above"      . evilem-motion-find-char-backward)
-  "K" '("til char above"     . evilem-motion-find-char-to-backward)
+  "C-o" '("pop global mark"    . pop-global-mark)
+  "["   '("avy prev"           . +hydra-avy-motion/avy-prev)
+  "]"   '("avy next"           . +hydra-avy-motion/avy-next)
 
-  "s" '("snipe to next"      . evil-snipe-s)
-  "S" '("snipe to prev"      . evil-snipe-S)
-  "x" '("snipe til next"     . evil-snipe-x)
-  "X" '("snipe til prev"     . evil-snipe-X)
+  "J"   '("to symbol below"    . evil-avy-goto-symbol-1-below)
+  "j"   '("to char below"      . evil-avy-goto-char-2-below)
+  "k"   '("to char above"      . evil-avy-goto-char-2-above)
+  "K"   '("to symbol above"    . evil-avy-goto-symbol-1-above)
+  "l"   '("avy line"           . evil-avy-goto-char-in-line)
+  "h"   '("avy line"           . evil-avy-goto-char-in-line)
+  "/"   '("avy search"         . evil-avy-goto-char-timer)
 
-  "b" `("line to bottom-ish" . ,(windex-scroll-line-to 90))
-  "B" '("line to bottom"     . evil-scroll-line-to-bottom)
-  "m" `("line to center-ish" . ,(windex-scroll-line-to 40))
-  "M" '("line to center"     . evil-scroll-line-to-center)
-  "t" `("line to top-ish"    . ,(windex-scroll-line-to 10))
-  "T" '("line to top"        . evil-scroll-line-to-top))
+  "b"   `("line to bottom-ish" . ,(windex-scroll-line-to 90))
+  "B"   '("line to bottom"     . evil-scroll-line-to-bottom)
+  "m"   `("line to center-ish" . ,(windex-scroll-line-to 50))
+  "M"   '("line to center"     . evil-scroll-line-to-center)
+  "t"   `("line to top-ish"    . ,(windex-scroll-line-to 10))
+  "T"   '("line to top"        . evil-scroll-line-to-top))
 #+end_src
 ** Writing
 #+begin_src emacs-lisp :tangle yes
@@ -1380,7 +1398,7 @@
  "M-j" '("open ace down"   . windex-windmove-display-aw-down)
  "M-k" '("open ace up"     . windex-windmove-display-aw-up)
  "M-l" '("open ace right"  . windex-windmove-display-aw-right)
- "M-." '("open ace"        . windex-windmove-display-aw)
+ "C-/" '("open ace"        . windex-windmove-display-aw)
  "."   '("open same"       . windmove-display-same-window)
 
  "C-<up>"    '("up"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
@@ -1454,14 +1472,13 @@
     (with-current-buffer clone
       (+emacs-set-read-only))))
 
-
 (general-create-definer +keybinds-editor-view
   :prefix-command '+keybinds-editor-view-command)
 
 (+keybinds-editor-view
   "C-f" '("narrow function" . narrow-to-defun)
-  "C-n" '("narrow region"   . narrow-to-region)
-  "C-q" '("widen"           . widen)
+  "C-v" '("narrow region"   . narrow-to-region)
+  "C-w" '("widen"           . widen)
   "C-c" '("clone"           . +emacs-ro-clone-indirect-buffer))
 #+end_src
 ** Org-mode
@@ -1541,8 +1558,6 @@
   :prefix-command '+keybinds-org-exec-command)
 
 (+keybinds-org-exec
-  "t"   '("typst toggle"       . org-typst-preview)
-  "C-t" '("typst render"       . +org-typst-preview-render)
   "l"   '("latex toggle"       . org-latex-preview)
   "L"   '("latex clear"        . org-latex-preview-clear-cache)
   "C-l" '("latex live"         . org-latex-preview-auto-mode)

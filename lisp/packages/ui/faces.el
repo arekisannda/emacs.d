@@ -111,21 +111,15 @@
          :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg) 0.2)
          :weight bold)))
 
+  (diff-removed
+   ((nil :background unspecified
+         :foreground ,(doom-color 'red))))
+
   (diff-refine-removed
    ((nil  :inverse-video nil
           :foreground ,(doom-color 'red)
           :background ,(doom-blend (doom-color 'red) (doom-color 'bg) 0.2)
           )))
-
-  (diff-refine-added
-   ((nil :inverse-video nil
-         :foreground ,(doom-color 'green)
-         :background ,(doom-blend (doom-color 'green) (doom-color 'bg) 0.2)
-         )))
-
-  (diff-removed
-   ((nil :background unspecified
-         :foreground ,(doom-color 'red))))
 
   (diff-indicator-removed
    ((nil :inherit hl-line
@@ -135,6 +129,12 @@
   (diff-added
    ((nil :background unspecified
          :foreground ,(doom-color 'green))))
+
+  (diff-refine-added
+   ((nil :inverse-video nil
+         :foreground ,(doom-color 'green)
+         :background ,(doom-blend (doom-color 'green) (doom-color 'bg) 0.2)
+         )))
 
   (diff-indicator-added
    ((nil :inherit hl-line

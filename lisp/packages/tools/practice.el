@@ -3,13 +3,39 @@
 (require 'util-windows)
 
 (use-package leetcode
+  :load-path "/home/arekisannda/Code/leetcode.el"
   :custom
-  (leetcode-prefer-language "golang")
-  (leetcode-prefer-sql "mysql")
+  (leetcode-prefer-language "python")
+  (leetcode-prefer-sql "postgresql")
   (leetcode-save-solutions t)
   (leetcode-focus t)
+  (leetcode-cache-max-age-days 7)
+  :init
   :config
   (defvar leetcode--code-window nil)
+  (defvar leetcode--frame nil)
+
+  (defun leetcode-frame (fn &rest r)
+    (interactive)
+    (let ((parent-frame (selected-frame)))
+      (unless (windex-live-visible-frame-p leetcode--frame)
+        (setq leetcode--frame
+              (make-frame
+               (append
+                `((delete-before  . ,parent-frame)
+                  (no-other-frame . t)
+                  (left           . 0.5)
+                  (top            . 0.5)
+                  (minibuffer     . t)
+                  (title          . "Leetcode"))
+                ))
+              ))
+      (select-frame-set-input-focus leetcode--frame t)
+      (with-selected-frame leetcode--frame (apply fn r))
+      ))
+
+  (advice-add #'leetcode :around #'leetcode-frame)
+  (advice-add #'leetcode-daily :around #'leetcode-frame)
 
   (aio-defun leetcode-start-coding-daily (problem-id)
     (let* ((problem (leetcode--get-problem-by-id problem-id))

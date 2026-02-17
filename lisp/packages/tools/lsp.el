@@ -90,4 +90,4 @@ If it is not set, use ALTERNATIVE instead."
   :custom
   (eglot-booster-io-only t)
   :config
-  (eglot-boster-mode))
+  (eglot-booster-mode))

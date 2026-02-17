@@ -6,7 +6,6 @@
   (treemacs-is-never-other-window t)
   (treemacs-display-in-side-window t)
   (treemacs-position 'left)
-  (treemacs-width 40)
   (treemacs-RET-actions-config '((root-node-open . treemacs-toggle-node)
                                  (root-node-closed . treemacs-toggle-node)
                                  (dir-node-open . treemacs-toggle-node)
@@ -26,6 +25,10 @@
   (treemacs-peek-mode-indicator-face
    ((nil :background ,(doom-color 'green))))
   :config
+  (defun +treemacs-add-project-to-workspace (dir)
+    (interactive (list (funcall project-prompter)))
+    (treemacs-add-project-to-workspace dir))
+
   (defun +treemacs--clean-workspaces ()
     "Remove non default and `activities' tabs."
     (interactive)
@@ -101,3 +104,24 @@
 
 (use-package treemacs-tab-bar :after treemacs
   :config (treemacs-set-scope-type 'Tabs))
+
+(with-eval-after-load 'treemacs
+  (defun treemacs-project-directory-override-next-command (dir)
+    (interactive
+     (let* ((treemacs-projects (treemacs-workspace->projects (treemacs-current-workspace)))
+            (projects-table (make-hash-table :test #'equal))
+            (_ (mapc (lambda (cand) (puthash (treemacs-project->name cand)
+                                             `(:path ,(treemacs-project->path cand))
+                                             projects-table))
+                     treemacs-projects))
+            (selected (completing-read "Treemacs project: " projects-table (-const t) t)))
+       (list (plist-get (gethash selected projects-table) :path)))
+     )
+    (let ((default-directory (file-name-as-directory dir)))
+      (let* ((keys (read-key-sequence "[temporary-default-directory]-"))
+             (cmd (key-binding keys)))
+        (unless (commandp cmd)
+          (user-error "Not a command"))
+        (call-interactively cmd))
+      ))
+  )
