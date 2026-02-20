@@ -1,8 +1,8 @@
 ;;; ui/treemacs.el -*- lexical-binding: t; -*-
 
-(use-package treemacs
+(use-package treemacs :after doom-modeline
   :custom
-  (treemacs-user-mode-line-format nil)
+  (treemacs-user-mode-line-format '("%e" (:eval (doom-modeline-format--+treemacs-modeline))))
   (treemacs-is-never-other-window t)
   (treemacs-display-in-side-window t)
   (treemacs-position 'left)
@@ -22,8 +22,21 @@
    ((nil :background ,(doom-color 'bg-alt))))
   (treemacs-hl-line-face
    ((nil :background ,(doom-color 'bg))))
+  (treemacs-fringe-indicator-face
+   ((nil :foreground unspecified)))
   (treemacs-peek-mode-indicator-face
    ((nil :background ,(doom-color 'green))))
+  :init
+  (doom-modeline-def-segment sub-workspace-name
+    (when-let* ((ws (activities-current-workspace))
+                (sub-workspace (activities-workspaces-last ws)))
+      (propertize
+       (format "%s"  sub-workspace)
+       'face (let ((face 'font-lock-comment-face)) doom-modeline-face face face))))
+
+  (doom-modeline-def-modeline
+    '+treemacs-modeline
+    '(space sub-workspace-name))
   :config
   (defun +treemacs-add-project-to-workspace (dir)
     (interactive (list (funcall project-prompter)))
@@ -70,7 +83,10 @@
   (defun +treemacs--setup ()
     (treemacs-filewatch-mode 1)
     (treemacs-fringe-indicator-mode 'only-when-focused)
-    (setq mode-line-format nil))
+    (face-remap-add-relative 'mode-line-inactive
+                             `(nil :inherit mode-line-active
+                                   :foreground unspecified
+                                   :background unspecified)))
   :hook
   (kill-emacs                . +treemacs--clean-workspaces)
   (treemacs-switch-workspace . +treemacs--clean-workspaces)

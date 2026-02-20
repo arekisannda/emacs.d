@@ -75,7 +75,7 @@
       mode-line-remote))
 
   (doom-modeline-def-segment space
-    `(" "))
+    (propertize " " 'display `(space :width 1)))
 
   (doom-modeline-def-segment minibuffer-depth
     (let* ((depth (minibuffer-depth)))
@@ -94,12 +94,6 @@
         (propertize
          (format "[%s]" (symbol-name purpose))
          'face (doom-modeline-face 'success))))
-
-  (doom-modeline-def-segment workspace
-    (if-let* ((workspace (activities-workspaces-last (activities-current-workspace))))
-        (propertize
-         (format "[%s]" workspace)
-         'face (doom-modeline-face 'font-lock-escape-face))))
 
   (doom-modeline-def-modeline
     '+default-modeline

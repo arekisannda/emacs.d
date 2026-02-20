@@ -73,11 +73,11 @@
               scroll-step 1
               scroll-preserve-screen-position t
               scroll-conservatively most-positive-fixnum
-              scroll-margin 0
+              scroll-margin 20
+              maximum-scroll-margin 0.4
               scroll-error-top-bottom nil
               switch-to-buffer-preserve-window-point t
               auto-window-vscroll nil
-              redisplay-dont-pause t
 
               truncate-lines t
               truncate-partial-width-windows nil
@@ -122,4 +122,9 @@
       (server-start)
     (error nil)))
 
-(when init-file-debug (toggle-debug-on-error))
+(when init-file-debug
+  (toggle-debug-on-error)
+  (add-hook 'kill-emacs-hook
+            (lambda ()
+              (with-current-buffer "*Messages*"
+                (write-region (point-min) (point-max) "/tmp/emacs-messages.log")))))

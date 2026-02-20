@@ -1,4 +1,4 @@
-;;; avy.el -*- lexical-binding: t; -*-
+;;; editor/avy.el -*- lexical-binding: t; -*-
 
 (use-package avy
   :custom
@@ -7,27 +7,15 @@
   (avy-background nil)
   :custom-face
   (avy-lead-face
-   ((nil :inherit unspecified
-         :weight bold
-         :box nil
-         :foreground ,(doom-color 'bg)
-         :background ,(doom-color 'yellow))))
+   ((nil :weight bold
+         :underline (:color foreground-color :style line :position nil)
+         :foreground ,(doom-color 'red)
+         :background ,(doom-color 'bg-alt)
+         )))
   (avy-lead-face-0
-   ((nil :inherit unspecified
-         :weight bold
-         :box nil
-         :foreground ,(doom-color 'bg)
-         :background ,(doom-color 'yellow))))
+   ((nil :inherit avy-lead-face :foreground unspecified :background unspecified)))
   (avy-lead-face-1
-   ((nil :inherit unspecified
-         :weight bold
-         :box nil
-         :foreground ,(doom-color 'bg)
-         :background ,(doom-color 'yellow))))
+   ((nil :inherit avy-lead-face :foreground unspecified :background unspecified)))
   (avy-lead-face-2
-   ((nil :inherit unspecified
-         :weight bold
-         :box nil
-         :foreground ,(doom-color 'bg)
-         :background ,(doom-color 'yellow))))
+   ((nil :inherit avy-lead-face :foreground unspecified :background unspecified)))
   )

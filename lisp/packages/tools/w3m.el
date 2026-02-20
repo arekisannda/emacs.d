@@ -37,7 +37,7 @@
    ((nil :foreground ,(doom-color 'green))))
   (w3m-image-anchor
    ((nil :foreground ,(doom-color 'green)
-         :background ,(doom-blend (doom-color 'green) (doom-color 'bg-alt) 0.2))))
+         :background ,(doom-blend (doom-color 'green) (doom-color 'bg-alt) 0.1))))
   (w3m-unsafe-url-warning
    ((nil :foreground ,(doom-color 'bg-alt)
          :background ,(doom-color 'red))))

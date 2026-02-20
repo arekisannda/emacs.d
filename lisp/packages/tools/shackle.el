@@ -68,12 +68,8 @@
       :size +shackle-get-dimensions
       :select t)
 
-     ((magit-mode)
-      :custom
-      (lambda (buffer &optional alist plist)
-        (windex-frame-display-buffer buffer `(,@alist (title . "Magit")))))
-
-     ((magit-mode)
+     ((magit-mode
+       forge-repository-list-mode)
       :custom
       (lambda (buffer &optional alist plist)
         (windex-frame-display-buffer buffer `(,@alist (title . "Magit")))))
@@ -88,14 +84,16 @@
 
      (("^\\*Shell Command Output\\*$"
        "^\\*shell\\*$"
-       "^\\*Command Line\\*$"
 
        compilation-mode)
       :if (lambda (window) compilation-display-buffer)
       ,@util/windows-bottom-preset-size-0)
 
      (("^ \\*transient\\*$"
-       "^ \\*CDLaTeX Help\\*")
+       "^ \\*CDLaTeX Help\\*"
+       "^\\*Command Line\\*$"
+
+       evil-command-window-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback ( :action util/windows-display-buffer-in-pop-up-window
                   :select t)
@@ -192,6 +190,7 @@
        "^\\*detached-session-info\\*$"
        "^\\*detached-list\\*$"
        "^\\*IBuffer\\*$"
+       "^\\*envrc\\*$"
 
        git-rebase-mode
        detached-list-mode

@@ -270,6 +270,12 @@
  "3"   #'digit-argument
  "4"   #'digit-argument)
 #+end_src
+*** Forge
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :keymaps 'forge-common-map
+ "C-<return>" #'pr-review-at-point)
+#+end_src
 *** CDLaTex
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
@@ -929,7 +935,8 @@
 
 (defun +edit-keybinds ()
   (interactive)
-  (find-file (expand-file-name "keybinds.org" user-emacs-directory)))
+  (let* ((file (expand-file-name "keybinds.org" user-emacs-directory)))
+    (find-file file)))
 
 (defun +httpd-server-project (&optional project)
   (interactive)
@@ -944,9 +951,10 @@
   "?"     '("embark act all"    . embark-act-all)
   "d"     '("dired buffer"      . dired)
   "m"     '("magit"             . magit)
-  "M"     '("list repositories" . magit-list-repositories)
+  "C-m"   '("list pullreq"      . pr-review-list-pullreq)
   "t"     '("translate"         . google-translate-smooth-translate)
 
+  "C-k"   '("keybinds"          . +edit-keybinds)
   "C-l"   '("sessions"          . detached-list-sessions)
   "C-s"   '("scratch"           . scratch-buffer)
   "C-S-s" '("org scratch"       . +org-scratch-buffer)
