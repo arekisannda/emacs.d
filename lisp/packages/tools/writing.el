@@ -10,7 +10,7 @@
     "Search WORD etymology."
     (interactive
      (list (read-string "Word: " (current-word))))
-    (w3m-browse-url (format "https://etymonline.com/search?q=%s" word)))
+    (w3m-browse-url (format "https://etymonline.com/word/%s" word)))
   :commands (+dictionary-word-etymology))
 
 (use-package google-translate

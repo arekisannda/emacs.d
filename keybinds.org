@@ -144,21 +144,23 @@
   :prefix-command '+keybinds-org-agenda-command)
 
 (+keybinds-org-agenda
-  "."     '("org-agenda"        . org-agenda)
+  "."   '("org-agenda"        . org-agenda)
 
-  "a"     `("agenda"            . ,(+org-agenda-list-key "a"))
-  "n"     `("Next View"         . ,(+org-agenda-list-key "n"))
-  "t"     `("Todo View"         . ,(+org-agenda-list-key "t"))
+  "a"   `("Week View"         . ,(+org-agenda-list-key "a"))
+  "A"   `("Today View"        . ,(+org-agenda-list-key "A"))
+  "t"   `("Task View"         . ,(+org-agenda-list-key "t"))
+  "T"   `("All Todo View"     . ,(+org-agenda-list-key "T"))
+  "k"   `("Kanban View"       . ,(+org-agenda-list-key "k"))
 
-  "C-t"   `("capture todo"      . ,(+org-capture-key "t"))
-  "C-s"   `("capture schedule"  . ,(+org-capture-key "s"))
-  "C-d"   `("capture deadline"  . ,(+org-capture-key "d"))
-  "C-j"   `("capture journal"   . ,(+org-capture-key "j"))
+  "C-t" `("capture todo"      . ,(+org-capture-key "f"))
+  "C-s" `("capture schedule"  . ,(+org-capture-key "s"))
+  "C-d" `("capture deadline"  . ,(+org-capture-key "d"))
+  "C-j" `("capture journal"   . ,(+org-capture-key "j"))
 
   ;;; view capt
-  "C-S-t" `("view todo"         . ,(+org-capture-open "todo" "todo.org"))
-  "C-S-s" `("view schedule"     . ,(+org-capture-open "schedule" "schedule.org"))
-  "C-S-j" `("view journal"      . ,(+org-capture-open "journal" "journal.org"))
+  "M-t" `("view todo"         . ,(+org-capture-open "todo" "todo.org"))
+  "M-s" `("view schedule"     . ,(+org-capture-open "schedule" "schedule.org"))
+  "M-j" `("view journal"      . ,(+org-capture-open "journal" "journal.org"))
   )
 #+end_src
 *** Org Remark
@@ -624,13 +626,13 @@
   :prefix-command '+keybinds-documentation-command)
 
 (+keybinds-documentation
- "w" '("web"           . w3m-goto-url)
- "S" '("devdoc search" . devdocs-search)
- "d" '("devdoc lookup" . devdocs-lookup)
- "D" '("devdoc peruse" . devdocs-peruse)
- "i" '("info"          . consult-info)
- "m" '("manpages"      . man)
- "r" '("rfc"           . rfc-mode-browse))
+  "u" '("url"           . w3m-goto-url)
+  "S" '("devdoc search" . devdocs-search)
+  "d" '("devdoc lookup" . devdocs-lookup)
+  "D" '("devdoc peruse" . devdocs-peruse)
+  "i" '("info"          . consult-info)
+  "m" '("manpages"      . man)
+  "r" '("rfc"           . rfc-mode-browse))
 #+end_src
 ** Workspaces
 #+begin_src emacs-lisp :tangle yes
@@ -953,6 +955,8 @@
   "m"     '("magit"             . magit)
   "C-m"   '("list pullreq"      . pr-review-list-pullreq)
   "t"     '("translate"         . google-translate-smooth-translate)
+  "w"     '("word"              . dictionary-lookup-definition)
+  "W"     '("etymology"         . +dictionary-word-etymology)
 
   "C-k"   '("keybinds"          . +edit-keybinds)
   "C-l"   '("sessions"          . detached-list-sessions)
@@ -1038,6 +1042,7 @@
  "C-i" '("insert"          . +keybinds-editor-insert-command)
  "m"   '("motion"          . +keybinds-editor-motion-command)
  "w"   '("writing"         . +keybinds-editor-writing-command)
+ "C-w" '("writing"         . +keybinds-editor-writing-command)
 
  "C-v" (general-predicate-dispatch            '("view" . +keybinds-editor-view-command)
          (derived-mode-p 'org-mode)           '("view" . +keybinds-org-view-command))
@@ -1177,8 +1182,6 @@
 
 (+keybinds-editor-writing 
   "s" '("fix typo"        . flyspell-correct-word-before-point)
-  "d" '("dictionary"      . dictionary-lookup-definition)
-  "e" '("etymology"       . +dictionary-word-etymology)
 
   "p" '("fill paragraph"  . fill-paragraph)
   "m" '("remark"          . +keybinds-org-remark-command)

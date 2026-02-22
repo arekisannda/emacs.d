@@ -28,13 +28,13 @@
 (defcustom shackle-disable-list nil
   "List of conditions to be disabled by `shackle'."
   :type '(choice :tag "Condition"
-          (symbol :tag "Major mode")
-          (string :tag "Buffer name")
-          (repeat (choice
-                   (symbol :tag "Major mode")
-                   (string :tag "Buffer name")))
-          (list :tag "Custom function"
-                (const :tag "Custom" :custom) function)))
+                 (symbol :tag "Major mode")
+                 (string :tag "Buffer name")
+                 (repeat (choice
+                          (symbol :tag "Major mode")
+                          (string :tag "Buffer name")))
+                 (list :tag "Custom function"
+                       (const :tag "Custom" :custom) function)))
 
 (use-package shackle :after windex
   :custom
@@ -72,11 +72,14 @@
        forge-repository-list-mode)
       :custom
       (lambda (buffer &optional alist plist)
-        (windex-frame-display-buffer buffer `(,@alist (title . "Magit")))))
+        (windex-frame-display-buffer
+         buffer
+         `(,@alist
+           (name . ,(format "Git")))
+         )))
 
      (("^\\*Shell Command Output\\*$"
        "^\\*shell\\*$"
-       "^\\*Command Line\\*$"
 
        compilation-mode)
       :if (lambda (window) (not compilation-display-buffer))
@@ -92,6 +95,7 @@
      (("^ \\*transient\\*$"
        "^ \\*CDLaTeX Help\\*"
        "^\\*Command Line\\*$"
+       calendar-mode
 
        evil-command-window-mode)
       :custom util/windows-display-buffer-by-condition
@@ -99,20 +103,6 @@
                   :select t)
       :conditions
       (((".*")
-        :if (lambda (window)
-              (equal (window-parameter window 'window-side) 'bottom))
-        :action util/windows-display-buffer-in-side-window
-        ,@util/windows-bottom-select-preset-size-0)
-
-       ((".*")
-        :if (lambda (window)
-              (equal (window-parameter window 'window-side) 'right))
-        :action util/windows-display-buffer-in-side-window
-        ,@util/windows-right-select-preset-1
-        :size +shackle-get-dimensions
-        :dedicated t)
-
-       ((".*")
         :if (lambda (window) (window-parameter window 'window-popup))
         :same t :select t)
        ))
@@ -127,6 +117,7 @@
        "^ \\*embrace-help\\*$"
        "^\\*Ibuffer confirmation\\*"
        "^\\*Local Variables\\*$"
+       "^ \\*Agenda Commands\\*$"
        backtrace-mode)
       :custom util/windows-display-buffer-in-pop-up-window
       :select t)
@@ -140,6 +131,7 @@
        "^\\*WoMan.*\\*$"
        "^\\*eww\\*$"
        "^\\*w3m\\*$"
+       "^\\*Org Agenda .*\\*$"
        "^\\*Org Agenda\\*$"
 
        org-agenda-mode
@@ -155,7 +147,6 @@
        "^ \\*eglot doc\\*$"
        "^\\*yasnippet-capf-doc\\*$"
        "^\\*corfu doc.*\\*$"
-       "^ \\*Agenda Commands\\*$"
 
        org-roam-mode
        man-common)
@@ -214,7 +205,6 @@
        term-mode
        vterm-mode
        embark-collect-mode
-       calendar-mode
        tabulated-list-mode)
       ,@util/windows-bottom-select-preset-size-0)
 

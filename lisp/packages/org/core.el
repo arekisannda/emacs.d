@@ -88,7 +88,7 @@
   (org-fontify-quote-and-verse-blocks t)
 
   (org-todo-keywords
-   '((sequence "TODO" "ONGOING" "|" "DONE" "CANCELLED" )))
+   '((sequence "TODO" "ONGOING" "TESTING" "|" "DONE" "CANCELLED" )))
 
   (org-todo-keyword-faces
    `(("TODO"      . (
@@ -99,14 +99,19 @@
                      :inherit default
                      :weight bold
                      :foreground ,(doom-darken (doom-color 'orange) 0.2)))
-     ("CANCELLED" . (
+     ("TESTING"   . (
                      :inherit default
                      :weight bold
-                     :foreground ,(doom-darken (doom-color 'fg-alt) 0.3)))
+                     :foreground ,(doom-darken (doom-color 'yellow) 0.2)))
      ("DONE"      . (
                      :inherit default
                      :weight bold
-                     :foreground ,(doom-color 'fg-alt) 0.2))))
+                     :foreground ,(doom-darken (doom-color 'green) 0.2)))
+     ("CANCELLED" . (
+                     :inherit default
+                     :weight bold
+                     :foreground ,(doom-darken (doom-color 'fg-alt) 0.2)))
+     ))
 
   (org-src-block-faces nil)
   (org-confirm-babel-evaluate nil)

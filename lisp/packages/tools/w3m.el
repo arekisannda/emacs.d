@@ -41,6 +41,20 @@
   (w3m-unsafe-url-warning
    ((nil :foreground ,(doom-color 'bg-alt)
          :background ,(doom-color 'red))))
+  :config
+  (defun w3m-filter-readability (url)
+    (let* ((u (url-generic-parse-url url))
+           (proto (url-type u))
+           (host (url-host u))
+           (readable-cmd (format "readable --quiet --base '%s://%s' -" proto host)))
+      (shell-command-on-region (point-min) (point-max) readable-cmd nil t)
+      (goto-char (point-min))))
+
+  (dolist (url-regexp '(("www.etymonline.com" . "\\`https?://[a-z]+\\.etymonline\\.")))
+    (add-to-list
+     'w3m-filter-configuration
+     `(t ,(format "Readability for %s" (car url-regexp)) ,(cdr url-regexp) w3m-filter-readability)))
+
   :hook
   (w3m-mode . visual-line-mode)
   (w3m-mode . word-wrap-whitespace-mode))

@@ -122,17 +122,21 @@
   :config (treemacs-set-scope-type 'Tabs))
 
 (with-eval-after-load 'treemacs
+  (defun treemacs-project-directory-prompt ()
+    (let* ((treemacs-projects (treemacs-workspace->projects (treemacs-current-workspace)))
+           (projects-table (make-hash-table :test #'equal))
+           (_ (mapc (lambda (cand) (puthash (treemacs-project->name cand)
+                                            `(:path ,(treemacs-project->path cand))
+                                            projects-table))
+                    treemacs-projects))
+           (selected (completing-read "Treemacs project: " projects-table (-const t) t)))
+      (plist-get (gethash selected projects-table) :path)))
+
   (defun treemacs-project-directory-override-next-command (dir)
     (interactive
-     (let* ((treemacs-projects (treemacs-workspace->projects (treemacs-current-workspace)))
-            (projects-table (make-hash-table :test #'equal))
-            (_ (mapc (lambda (cand) (puthash (treemacs-project->name cand)
-                                             `(:path ,(treemacs-project->path cand))
-                                             projects-table))
-                     treemacs-projects))
-            (selected (completing-read "Treemacs project: " projects-table (-const t) t)))
-       (list (plist-get (gethash selected projects-table) :path)))
-     )
+     (list (if current-prefix-arg
+               (read-directory-name "Select directory: " default-directory nil t)
+             (treemacs-project-directory-prompt))))
     (let ((default-directory (file-name-as-directory dir)))
       (let* ((keys (read-key-sequence "[temporary-default-directory]-"))
              (cmd (key-binding keys)))

@@ -129,7 +129,6 @@
   (advice-add #'leetcode--display-code :override #'+leetcode--display-code-override))
 
 (use-package exercism :disabled
-  :defer t
   :custom
   (exercism-enable-log-to-message-buffer nil)
   (exercism-open-url-on-submit nil)
