@@ -36,6 +36,15 @@
   (advice-add #'leetcode :around #'leetcode-frame)
   (advice-add #'leetcode-daily :around #'leetcode-frame)
 
+  (defun +leetcode--maybe-focus ()
+    "Delete other windows, keep only *leetcode* buffer."
+    (when leetcode-focus
+      (delete-other-windows)
+      (tab-line-close-other-tabs)
+      ))
+
+  (advice-add #'leetcode--maybe-focus :override #'+leetcode--maybe-focus)
+
   (aio-defun leetcode-start-coding-daily (problem-id)
     (let* ((problem (leetcode--get-problem-by-id problem-id))
            (title-slug (leetcode-problem-title-slug problem))
@@ -106,20 +115,84 @@
              )))
       (windex-layout--run-recipe 'leetcode)))
 
+  (defun +leetcode--start-coding (problem)
+    "Create a buffer for coding PROBLEM.
+The buffer will be not associated with any file.  It will choose
+major mode by `leetcode-prefer-language'and `auto-mode-alist'."
+    (let* ((title (leetcode-problem-title problem))
+           (slug-title (leetcode-problem-title-slug problem))
+           (problem-id (leetcode-problem-id problem))
+           (snippets (leetcode-problem-snippets problem))
+           (testcases (leetcode-problem-testcases problem))
+           (testcase-buf-name (leetcode--testcase-buffer-name problem-id))
+           (result-buf-name (leetcode--result-buffer-name problem-id)))
+
+      ;; Record windows opened for later cleanup.
+      (unless (member title leetcode--problem-titles)
+        (push title leetcode--problem-titles))
+
+      (leetcode--solving-window-layout)
+
+      ;; Set current programming language.
+      (leetcode--set-lang snippets)
+
+      ;; Setup code buffer
+      (let* ((code-buf-name (leetcode--get-code-buffer-name title))
+             (code-buf (leetcode--get-code-buffer code-buf-name))
+             (suffix (assoc-default leetcode--lang leetcode--lang-suffixes)))
+        (with-current-buffer code-buf
+          (when (= (buffer-size code-buf) 0)
+            (let* ((snippet (seq-find (lambda (s)
+                                        (equal (leetcode-snippet-lang-slug s) leetcode--lang))
+                                      snippets))
+                   (template-code (leetcode-snippet-code snippet)))
+              (leetcode--insert-code-start-marker)
+              (insert template-code)
+              (leetcode--insert-code-end-marker)
+              (leetcode--replace-in-buffer "" "")))
+          (funcall (assoc-default suffix auto-mode-alist #'string-match-p))
+          (leetcode-solution-mode t))
+
+        (display-buffer code-buf
+                        '((display-buffer-reuse-window
+                           leetcode--display-code)
+                          (reusable-frames . visible))))
+
+      ;; Setup testcase buffer
+      (with-current-buffer (get-buffer-create testcase-buf-name)
+        (erase-buffer)
+        (insert (s-join "\n" testcases))
+        (leetcode--display-testcase (current-buffer)))
+      (with-current-buffer (get-buffer-create result-buf-name)
+        (erase-buffer)
+        (leetcode--display-result (current-buffer)))
+      ))
+
+  (advice-add #'leetcode--start-coding :override #'+leetcode--start-coding)
+
+  (defun +leetcode-window-setup ()
+    (tab-line-close-other-tabs)
+    (when (or global-tab-line-mode)
+        (tab-line-mode 1)))
+
   (defun +leetcode--display-result-override (buffer &optional alist)
     (set-window-buffer leetcode--result-window buffer)
+    (+leetcode-window-setup)
     leetcode--result-window)
 
   (defun +leetcode--display-testcase-override (buffer &optional alist)
     (set-window-buffer leetcode--testcase-window buffer)
+    (+leetcode-window-setup)
     leetcode--testcase-window)
 
   (defun +leetcode--display-detail-override (buffer &optional _alist)
     (set-window-buffer leetcode--description-window buffer)
+    (+leetcode-window-setup)
     leetcode--description-window)
 
   (defun +leetcode--display-code-override (buffer &optional _alist)
     (set-window-buffer leetcode--code-window buffer)
+    (+leetcode-window-setup)
     leetcode--code-window)
 
   (advice-add #'leetcode--solving-window-layout :override #'+leetcode--solving-window-layout-override)
