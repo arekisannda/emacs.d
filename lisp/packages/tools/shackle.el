@@ -44,7 +44,6 @@
   (shackle-default-rule nil)
   (shackle-disable-list
    `("^ \\*which-key\\*$"
-     "^ \\*embrace-help\\*$"
      "^\\*leetcode-result-.*\\*$"
      "^\\*leetcode-testcase-.*\\*$"
 
@@ -114,7 +113,6 @@
        "^\\*Deletions\\*$"
        "^ widget-choose$"
        "^ \\*which-key\\*$"
-       "^ \\*embrace-help\\*$"
        "^\\*Ibuffer confirmation\\*"
        "^\\*Local Variables\\*$"
        "^ \\*Agenda Commands\\*$"

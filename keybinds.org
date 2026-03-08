@@ -1441,9 +1441,9 @@
   "c" '("comment line"    . evilnc-comment-or-uncomment-lines)
   "C" '("comment block"   . evilnc-comment-or-uncomment-paragraphs)
 
-  "s" '("add surround"    . embrace-add)
-  "S" '("change surround" . embrace-change)
-  "d" '("delete surround" . embrace-delete)
+  "s" '("add surround"    . evil-surround-region)
+  "S" '("change surround" . evil-surround-change)
+  "d" '("delete surround" . evil-surround-delete)
 
   "k" '("align"           . align)
   "K" '("align regex"     . align-regexp)
@@ -1506,9 +1506,9 @@
   "<" '("promote"         . outline-promote)
   ">" '("demote"          . outline-demote)
 
-  "s" '("add surround"    . embrace-add)
-  "S" '("change surround" . embrace-change)
-  "d" '("delete surround" . embrace-delete)
+  "s" '("add surround"    . evil-surround-region)
+  "S" '("change surround" . evil-surround-change)
+  "d" '("delete surround" . evil-surround-delete)
 
   "e" '("emphasis"        . org-emphasize)
   "g" '("goto"            . +keybinds-org-goto-command)

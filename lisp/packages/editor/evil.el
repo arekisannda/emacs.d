@@ -2,6 +2,12 @@
 
 (use-package undo-fu)
 
+(use-package smartparens
+  :custom
+  (sp-autoinsert-pair nil)
+  :hook
+  (after-init . smartparens-global-mode))
+
 (defmacro evil-move-or-goto-line-around (dir)
   "Wrapper for evil move in DIR."
   `(lambda (fn &optional arg)
@@ -118,40 +124,22 @@
   :hook
   (evil-mode . global-evil-mc-mode))
 
-(use-package embrace
-  :custom-face
-  (embrace-help-separator-face
-   ((nil :inherit font-lock-comment-face)))
-  (embrace-help-key-face
-   ((nil :inherit font-lock-function-name-face)))
-  (embrace-help-mark-func-face
-   ((nil :inherit font-lock-constant-face)))
-  (embrace-help-pair-face
-   ((nil :inherit nil
-         :foreground  ,(doom-color 'blue)
-         :inverse-video nil)))
-  :init
-  (setq embrace-help-separator " : ")
-  (setq embrace--help-add-column-width 2)
-  (setq embrace-show-help-p t)
-  :config
-  (setq embrace--help-buffer-name " *embrace-help*")
-  (defun +embrace--show-help-buffer (help-string)
-    (let ((alist '((window-width  . #'util/windows-popup-fit-window-to-buffer)
-                   (window-height . #'util/windows-popup-fit-window-to-buffer)
-                   (window-popup  . bottom)
-                   (dedicated . t))))
-      (embrace--setup-help-buffer)
-      (with-current-buffer embrace--help-buffer
-        (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
-        (erase-buffer)
-        (insert help-string)
-        (goto-char (point-min)))
-      (if (get-buffer-window embrace--help-buffer)
-          (display-buffer-reuse-window embrace--help-buffer alist)
-        (let ((w (split-window (frame-root-window nil) nil nil)))
-          (window--display-buffer embrace--help-buffer w 'window alist)
-          (fit-window-to-buffer w))
-        )))
+(use-package evil-surround
+  :custom
+  (evil-surround-pairs-alist
+   '((?\( . ("(" . ")"))
+     (?\[ . ("[" . "]"))
+     (?\{ . ("{" . "}"))
 
-  (advice-add #'embrace--show-help-buffer :override #'+embrace--show-help-buffer))
+     (?\) . ("( " . " )"))
+     (?\] . ("[ " . " ]"))
+     (?\} . ("{ " . " }"))
+
+     (?# . ("#{" . "}"))
+     (?> . ("<" . ">"))
+     (?t . evil-surround-read-tag)
+     (?< . evil-surround-read-tag)
+     (?\C-f . evil-surround-prefix-function)
+     (?f . evil-surround-function)))
+  :hook
+  (evil-mode . global-evil-surround-mode))
