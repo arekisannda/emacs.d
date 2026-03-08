@@ -93,8 +93,6 @@
   (shackle-default-rule nil)
   (shackle-disable-list
    `("^ \\*which-key\\*$"
-     "^\\*leetcode-result-.*\\*$"
-     "^\\*leetcode-testcase-.*\\*$"
 
      leetcode--problems-mode
      leetcode--problem-detail-mode))
@@ -104,6 +102,8 @@
        "^\\*Warnings\\*$"
        "^\\*Flymake log\\*$"
        "^\\*Activities (error): .*\\*$"
+       "^\\*leetcode-result-.*\\*$"
+       "^\\*leetcode-testcase-.*\\*$"
        "^ \\*http.*\\*")
       :ignore t)
 
