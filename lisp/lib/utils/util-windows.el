@@ -22,53 +22,18 @@
 (defcustom util/windows-disable-shrink nil
   "If non-nil, disable shrinking of windows.")
 
+(defcustom util/windows-side-window-hook '()
+  "Called when creating side window.
+Function takes two arguments WINDOW and buffer and optional FLAGS."
+  :type 'hook)
+
+(defcustom util/windows-pop-up-window-hook '()
+  "Called when creating pop-up window.
+Function takes two arguments WINDOW and BUFFER."
+  :type 'hook)
+
 (advice-add 'shrink-window-if-larger-than-buffer
             :before-while (lambda (&rest args) util/windows-disable-shrink))
-
-(setq util/windows-bottom-preset-size-0
-      `( :custom util/windows-display-buffer-in-side-window
-         :side bottom
-         :slot 0
-         :size ,util/windows-min-bottom-height
-         :fixed height))
-
-(setq util/windows-bottom-select-preset-size-0
-      `(,@util/windows-bottom-preset-size-0 :select t))
-
-(setq util/windows-bottom-preset-size-1
-      `( :custom util/windows-display-buffer-in-side-window
-         :side bottom
-         :slot 1
-         :size ,util/windows-min-bottom-height
-         :fixed height))
-
-(setq util/windows-bottom-select-preset-size-1
-      `(,@util/windows-bottom-preset-size-1 :select t))
-
-(setq util/windows-left-preset-size-0
-      `( :custom util/windows-display-buffer-in-side-window
-         :side left
-         :slot 0
-         :fixed width))
-
-(setq util/windows-right-preset-0
-      `( :custom util/windows-display-buffer-in-side-window
-         :side right
-         :slot 0
-         :fixed width))
-
-(setq util/windows-right-select-preset-0
-      `(,@util/windows-right-preset-0 :select t))
-
-(setq util/windows-right-preset-1
-      `( :custom util/windows-display-buffer-in-side-window
-         :side right
-         :slot 1
-         :fixed width))
-
-(setq util/windows-right-select-preset-1
-      `(,@util/windows-right-preset-1 :select t))
-
 
 (defun util/windows-popup-fit-window-to-buffer (window &rest _)
   "Configured  `fit-to-window-buffer' for popup WINDOW."
@@ -126,7 +91,9 @@
           )
         )
 
-      (if (plist-get plist :select) window init-window))))
+      (run-hook-with-args 'util/windows-side-window-hook window buffer (plist-get plist :flags))
+      (if (plist-get plist :select) window init-window)
+      )))
 
 (defun util/windows-display-buffer-in-mru-main-window (buffer &optional alist plist)
   "Display BUFFER in most recently used window according to ALIST and PLIST."
@@ -216,24 +183,28 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
     (when frame
       (if (plist-get plist :ignore) 'fail
         (let* ((init-window (window-normalize-window nil))
-               (alist `(,@alist
-                        (window-popup          . bottom)
+               (alist `((window-popup          . bottom)
                         (no-other-window       . t)
                         (dedicated             . t)
-                        (window-preserved-size . t)))
+                        (window-preserved-size . t)
+                        ,@alist))
                parameters
                window)
+
           (with-current-buffer buffer
-            (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
-            (if (get-buffer-window buffer)
-                (display-buffer-reuse-window buffer alist)
-              (let* ((lines (count-lines (point-min) (point-max)))
-                     (window (split-window (frame-root-window frame) (min -20 (max -20 (- lines))))))
-                (window--display-buffer buffer window 'window alist)
-                (set-window-parameter window 'no-other-window t)
-                (window-preserve-size window nil t)
-                (if (plist-get plist :select) window init-window)))
-            ))
+            (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt))))
+
+          (if (get-buffer-window buffer)
+              (setq window (display-buffer-reuse-window buffer alist))
+            (let* ((lines (count-lines (point-min) (point-max))))
+              (setq window (split-window (frame-root-window frame) (min -20 (max -20 (- lines)))))
+              (window--display-buffer buffer window 'window alist)
+              (set-window-parameter window 'no-other-window t)
+              (window-preserve-size window nil t)
+              ))
+
+          (run-hook-with-args 'util/windows-pop-up-window-hook window buffer)
+          (if (plist-get plist :select) window init-window))
         ))
     ))
 

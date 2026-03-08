@@ -28,6 +28,10 @@
            ,@body)
        (util/frames-make-frame-with-params ,params ,@body))))
 
+(defun util/frames-live-visible-p (frame)
+  "Return t if frame is visible and live."
+  (and frame (frame-live-p frame) (frame-visible-p frame)))
+
 (provide 'util-frames)
 
 ;;; util-frames.el ends here

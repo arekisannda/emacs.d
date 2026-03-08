@@ -690,34 +690,27 @@
 #+end_src
 *** Scrolling
 #+begin_src emacs-lisp :tangle yes
-(defun frame-live-visible-p (frame)
-  (and frame (frame-live-p frame) (frame-visible-p frame)))
-
 (general-define-key
  :keymaps 'global
 
+ "<prior>"     '("scroll up"    . scroll-down-command)
+ "<next>"      '("scroll down"  . scroll-up-command)
  "C-<prior>"   '("scroll up"    . windex-scroll-up)
  "C-<next>"    '("scroll down"  . windex-scroll-down)
- "C-<home>"    '("scroll left"  . windex-scroll-left)
- "C-<end>"     '("scroll right" . windex-scroll-right)
- "C-S-<prior>" '("scroll up"    . scroll-down-command)
- "C-S-<next>"  '("scroll down"  . scroll-up-command)
+ "C-S-<next>"  '("scroll left"  . windex-scroll-left)
+ "C-S-<prior>" '("scroll right" . windex-scroll-right)
 
- "M-<prior>" (general-predicate-dispatch                       #'windex-scroll-selector-up
-               (frame-live-visible-p diff-hl-show-hunk--frame) #'diff-hl-scroll-up
-               (frame-live-visible-p eldoc-box--frame)         #'eldoc-box-scroll-up)
+ "M-<prior>" (general-predicate-dispatch #'windex-scroll-selector-up
+               (util/frames-live-visible-p diff-hl-show-hunk--frame)
+               #'diff-hl-scroll-up
+               (util/frames-live-visible-p eldoc-box--frame)
+               #'eldoc-box-scroll-up)
 
- "M-<next>"  (general-predicate-dispatch                       #'windex-scroll-selector-down
-               (frame-live-visible-p diff-hl-show-hunk--frame) #'diff-hl-scroll-down
-               (frame-live-visible-p eldoc-box--frame)         #'eldoc-box-scroll-down)
-
- "M-<home>"  (general-predicate-dispatch                       #'windex-scroll-selector-left
-               (frame-live-visible-p diff-hl-show-hunk--frame) #'diff-hl-scroll-left
-               (frame-live-visible-p eldoc-box--frame)         #'eldoc-box-scroll-left)
-
- "M-<end>"   (general-predicate-dispatch                       #'windex-scroll-selector-right
-               (frame-live-visible-p diff-hl-show-hunk--frame) #'diff-hl-scroll-right
-               (frame-live-visible-p eldoc-box--frame)         #'eldoc-box-scroll-right)
+ "M-<next>"  (general-predicate-dispatch #'windex-scroll-selector-down
+               (util/frames-live-visible-p diff-hl-show-hunk--frame)
+               #'diff-hl-scroll-down
+               (util/frames-live-visible-p eldoc-box--frame)
+               #'eldoc-box-scroll-down)
  )
 #+end_src
 ** Windows

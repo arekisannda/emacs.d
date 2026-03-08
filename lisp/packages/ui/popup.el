@@ -31,6 +31,7 @@
   (which-key-max-display-columns nil)
   (which-key-side-window-max-width 0)
   (which-key-min-column-description-width 30)
+  (which-key-preserve-window-configuration t)
   (which-key-custom-hide-popup-function
    (lambda ()
      (when (buffer-live-p which-key--buffer)
@@ -57,22 +58,26 @@
     (let* ((alist `((window-width  . #'util/windows-popup-fit-window-to-buffer)
                     (window-height . #'util/windows-popup-fit-window-to-buffer)
                     (window-popup  . bottom)
-                    (dedicated     . t))))
-
+                    (dedicated     . t)))
+           window)
       (with-current-buffer which-key--buffer
         (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt))))
       (cond
        ((eq which-key--multiple-locations t)
         (delete-windows-on which-key--buffer)
-        (let ((w (split-window (frame-root-window nil) nil nil)))
-          (window--display-buffer which-key--buffer w 'window alist)
-          (util/windows-popup-fit-window-to-buffer w)))
+        (setq window (split-window (frame-root-window nil) nil nil))
+        (window--display-buffer which-key--buffer window 'window alist)
+        (util/windows-popup-fit-window-to-buffer window)
+        )
        ((get-buffer-window which-key--buffer)
-        (display-buffer-reuse-window which-key--buffer alist))
+        (setq window (display-buffer-reuse-window which-key--buffer alist)))
        (t
-        (let ((w (split-window (frame-root-window nil) nil nil)))
-          (window--display-buffer which-key--buffer w 'window alist)
-          (util/windows-popup-fit-window-to-buffer w)))
-       )))
+        (setq window (split-window (frame-root-window nil) nil nil))
+        (window--display-buffer which-key--buffer window 'window alist)
+        (util/windows-popup-fit-window-to-buffer window)
+        ))
+
+      (run-hook-with-args 'util/windows-pop-up-window-hook window which-key--buffer)
+      ))
   :hook
   (after-init . which-key-mode))

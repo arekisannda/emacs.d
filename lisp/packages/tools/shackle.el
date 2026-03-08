@@ -4,6 +4,8 @@
 (require 'util-strings)
 (require 'util-windows)
 
+(defvar-local +shackle-frame-init-buffer nil)
+
 (defun +shackle-get-dimensions (side)
   (let ((min-width (or (and (eq side 'left) util/windows-min-left-width)
                        (and (eq side 'right) util/windows-min-right-width)))
@@ -11,10 +13,11 @@
                        (and (eq side 'right) util/windows-max-width)))
         (min-height util/windows-min-bottom-height)
         (avail-width (let ((edges (window-edges (frame-root-window))))
-                       (- (nth 2 edges) (nth 0 edges) 40))))
-    `((window-width . ,(min max-width
-                            (max min-width
-                                 (/ avail-width (/ (frame-width) util/windows-max-width)))))
+                       (- (nth 2 edges) (nth 0 edges) util/windows-min-left-width))))
+    `((window-width . ,(and (cl-find side '(left right))
+                            (when (min max-width
+                                       (max min-width
+                                            (/ avail-width (/ (frame-width) util/windows-max-width)))))))
       (window-height . ,(and (cl-find side '(bottom top)) min-height))
       )))
 
@@ -36,9 +39,55 @@
                  (list :tag "Custom function"
                        (const :tag "Custom" :custom) function)))
 
+(defun +shackle-bottom-preset-size-0 ()
+  `( :custom util/windows-display-buffer-in-side-window
+     :side bottom
+     :slot 0
+     :size ,util/windows-min-bottom-height
+     :fixed height))
+
+(defun +shackle-bottom-select-preset-size-0 ()
+  `(,@(+shackle-bottom-preset-size-0) :select t))
+
+(defun +shackle-bottom-preset-size-1 ()
+  `( :custom util/windows-display-buffer-in-side-window
+     :side bottom
+     :slot 1
+     :size ,util/windows-min-bottom-height
+     :fixed height))
+
+(defun +shackle-bottom-select-preset-size-1 ()
+  `(,@(+shackle-bottom-preset-size-1) :select t))
+
+(defun +shackle-left-preset-size-0 ()
+  `( :custom util/windows-display-buffer-in-side-window
+     :side left
+     :slot 0
+     :size ,util/windows-min-left-width
+     :fixed width))
+
+(defun +shackle-right-preset-0 ()
+  `( :custom util/windows-display-buffer-in-side-window
+     :side right
+     :slot 0
+     :fixed width))
+
+(defun +shackle-right-select-preset-0 ()
+  `(,@(+shackle-right-preset-0) :select t))
+
+(defun +shackle-right-preset-1 ()
+  `( :custom util/windows-display-buffer-in-side-window
+     :side right
+     :slot 1
+     :fixed width))
+
+(defun +shackle-right-select-preset-1 ()
+  `(,@(+shackle-right-preset-1) :select t))
+
 (use-package shackle :after windex
   :custom
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
+  (util/windows-min-bottom-height 25)
   (util/windows-min-left-width 60)
   (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
@@ -49,6 +98,7 @@
 
      leetcode--problems-mode
      leetcode--problem-detail-mode))
+
   (shackle-rules
    `((("^\\*Capture\\*$"
        "^\\*Warnings\\*$"
@@ -63,19 +113,25 @@
       :same t)
 
      ((treemacs-mode)
-      ,@util/windows-left-preset-size-0
-      :size +shackle-get-dimensions
+      ,@(+shackle-left-preset-size-0)
       :select t)
 
      ((magit-mode
        forge-repository-list-mode)
-      :custom
-      (lambda (buffer &optional alist plist)
-        (windex-frame-display-buffer
-         buffer
-         `(,@alist
-           (name . ,(format "Git")))
-         )))
+      :custom util/windows-display-buffer-by-condition
+      :fallback ( :action (lambda (buffer &optional alist plist)
+                            (with-current-buffer buffer
+                              (setq-local +shackle-frame-init-buffer t))
+
+                            (windex-frame-display-buffer
+                             buffer
+                             `(,@alist
+                               (name . ,(format "Emacs Tool")))
+                             )))
+      :conditions
+      (((magit-mode)
+        :same t :select t)
+       ))
 
      (("^\\*Shell Command Output\\*$"
        "^\\*shell\\*$"
@@ -89,13 +145,14 @@
 
        compilation-mode)
       :if (lambda (window) compilation-display-buffer)
-      ,@util/windows-bottom-preset-size-0)
+      ,@(+shackle-bottom-preset-size-0))
 
      (("^ \\*transient\\*$"
        "^ \\*CDLaTeX Help\\*"
        "^\\*Command Line\\*$"
-       calendar-mode
+       "^\\*trace-output\\*$"
 
+       calendar-mode
        evil-command-window-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback ( :action util/windows-display-buffer-in-pop-up-window
@@ -120,8 +177,7 @@
       :custom util/windows-display-buffer-in-pop-up-window
       :select t)
 
-     (("^CAPTURE-.*\\.org$"
-       "^\\*Dictionary\\*$"
+     (("^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
        "^\\*Shortdoc.*\\*$"
        "^\\*Customize.*\\*$"
@@ -131,37 +187,37 @@
        "^\\*w3m\\*$"
        "^\\*Org Agenda .*\\*$"
        "^\\*Org Agenda\\*$"
+       "^\\*ChatGPT.*\\*$"
+       "^\\*Claude.*\\*$"
 
        org-agenda-mode
        w3m-mode
        eww-mode
        devdocs-mode
        dictionary-mode)
-      ,@util/windows-right-select-preset-0
+      ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
 
-     (("^\\*org-roam\\*$"
-       "^\\*eldoc.*\\*"
+     (("^\\*eldoc.*\\*"
        "^ \\*eglot doc\\*$"
        "^\\*yasnippet-capf-doc\\*$"
        "^\\*corfu doc.*\\*$"
+       "^\\*org-roam\\*$"
 
-       org-roam-mode
-       man-common)
-      ,@util/windows-right-preset-0
+       org-roam-mode)
+      ,@(+shackle-right-preset-1)
+      :dedicated t
+      :flags (disable-tab-line)
       :size +shackle-get-dimensions)
 
-     ((dashboard-mode
-       pdf-view-mode
-
+     (("^\\*Org Preview.*\\*$"
+       "^\\*Org Select\\*$"
        "^\\*Org Src.*\\*$"
-       "^\\*Org Preview.*\\*$"
-       "^\\*Org Select\\*$")
-      :same t :select t)
+       "^CAPTURE-.*\\.org$"
 
-     (("^\\*Org .*\\*$")
-      :custom util/windows-display-buffer-in-pop-up-window
-      :select t)
+       dashboard-mode
+       pdf-view-mode)
+      :same t :select t)
 
      (("^\\*Error\\*$"
        "^\\*Dired log\\*$"
@@ -173,7 +229,6 @@
        "^\\*Calculator\\*$"
        "^ \\*.* stderr\\*$"
        "^\\*.* events\\*$"
-       "^\\*ChatGPT.*\\*$"
        "^\\*Code Review Comment\\*$"
        "^COMMIT_EDITMSG$"
        "^\\*detached-session-info\\*$"
@@ -204,22 +259,32 @@
        vterm-mode
        embark-collect-mode
        tabulated-list-mode)
-      ,@util/windows-bottom-select-preset-size-0)
+      ,@(+shackle-bottom-select-preset-size-0)
+      :flags (disable-mode-line))
 
      (("^\\*Edit Formulas\\*")
-      ,@util/windows-bottom-select-preset-size-1)
+      ,@(+shackle-bottom-select-preset-size-1))
 
      (("^\\*Calc Trail\\*$"
 
        calc-trail-mode)
-      ,@util/windows-bottom-preset-size-1)
+      ,@(+shackle-bottom-preset-size-1))
+
+     (("^\\*Org .*\\*$")
+      :custom util/windows-display-buffer-in-pop-up-window
+      :select t)
 
      ;;; base mode fallback
+     ((help-mode)
+      ,@(+shackle-right-select-preset-1)
+      :dedicated t
+      :flags (disable-tab-line)
+      :size +shackle-get-dimensions)
+
      ((Custom-mode
        special-mode
-       help-mode
        Info-mode)
-      ,@util/windows-right-select-preset-0
+      ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
 
      ((prog-mode
@@ -233,7 +298,8 @@
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
         :action util/windows-display-buffer-in-side-window
-        ,@util/windows-right-select-preset-1
+        ,@(+shackle-right-select-preset-1)
+        :flags (disable-tab-line)
         :size +shackle-get-dimensions)
 
        ((".*")
@@ -250,11 +316,6 @@
         :mru t :select t :reuse t)
 
        (org-roam-mode :mru t :select t)
-
-       ((help-mode
-         Custom-mode
-         dired-mode)
-        :mru t :select t :reuse t)
 
        ((prog-mode
          text-mode
@@ -301,6 +362,27 @@ When BUFFER-OR-NAME matches CONDITION, PLIST is returned."
           plist))))
 
   (advice-add #'shackle--match :override #'+shackle--match)
+
+  (defun +shackle--display-buffer-same (buffer alist)
+    "Display BUFFER in the currently selected window.
+ALIST is passed to `shackle--window-display-buffer' internally."
+    (unless (window-minibuffer-p)
+      (let ((window (display-buffer-same-window buffer alist)))
+        (prog1 window
+          (when shackle-inhibit-window-quit-on-same-windows
+            (shackle--inhibit-window-quit window))))))
+
+  (advice-add #'shackle--display-buffer-same :override #'+shackle--display-buffer-same)
+
+  (defun +shackle-quit-restore-window-around (fn &optional window bury-or-kill)
+    (let ((buffer (window-buffer window)))
+      (with-current-buffer buffer
+        (if +shackle-frame-init-buffer
+            (delete-frame)
+          (funcall fn window bury-or-kill)))
+      ))
+
+  (advice-add #'quit-restore-window :around #'+shackle-quit-restore-window-around)
 
   ;; add `shackle-mode` guard to prevent adding duplicates in
   ;; `display-buffer-alist`
