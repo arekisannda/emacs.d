@@ -138,7 +138,9 @@
   "Create Org-capture FILE shortcut functions for DESCRIPTION."
   `(defun ,(intern (concat "+org-capture-open-" description)) ()
      (interactive)
-     (org-open-file (concat org-directory "/" ,file))))
+     (let ((file ,file))
+       (org-open-file (if file (org-capture-expand-file ,file)
+                        (org-get-org-file))))))
 
 (general-create-definer +keybinds-org-agenda
   :prefix-command '+keybinds-org-agenda-command)
@@ -152,16 +154,17 @@
   "T"   `("All Todo View"     . ,(+org-agenda-list-key "T"))
   "k"   `("Kanban View"       . ,(+org-agenda-list-key "k"))
 
-  "C-t" `("capture todo"      . ,(+org-capture-key "f"))
+  "C-t" `("capture todo"      . ,(+org-capture-key "t"))
   "C-s" `("capture schedule"  . ,(+org-capture-key "s"))
   "C-d" `("capture deadline"  . ,(+org-capture-key "d"))
   "C-j" `("capture journal"   . ,(+org-capture-key "j"))
+  "C-a" `("capture journal"   . ,(+org-capture-key "a"))
 
   ;;; view capt
   "M-t" `("view todo"         . ,(+org-capture-open "todo" "todo.org"))
   "M-s" `("view schedule"     . ,(+org-capture-open "schedule" "schedule.org"))
   "M-j" `("view journal"      . ,(+org-capture-open "journal" "journal.org"))
-  )
+  "M-a" `("view journal"      . ,(+org-capture-open "agenda" nil)))
 #+end_src
 *** Org Remark
 #+begin_src emacs-lisp :tangle yes

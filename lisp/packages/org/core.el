@@ -73,11 +73,6 @@
   (org-read-date-popup-calendar nil)
   (org-read-date-display-live t)
 
-  (org-src-preserve-indentation nil)
-  (org-src-window-setup 'current-window)
-  (org-edit-src-persistent-message nil)
-  (org-edit-src-content-indentation 0)
-
   (org-hide-emphasis-markers t)
   (org-pretty-entities t)
   (org-ellipsis (concat " " (truncate-string-ellipsis) " ")) ;; folding symbol
@@ -86,6 +81,12 @@
   (org-fontify-whole-heading-line t)
   (org-fontify-done-headline t)
   (org-fontify-quote-and-verse-blocks t)
+
+  (org-src-block-faces nil)
+  (org-confirm-babel-evaluate nil)
+  (org-plantuml-exec-mode 'plantuml)
+
+  (org-expiry-inactive-timestamps t)
 
   (org-todo-keywords
    '((sequence "TODO" "ONGOING" "TESTING" "|" "DONE" "CANCELLED" )))
@@ -112,40 +113,6 @@
                      :weight bold
                      :foreground ,(doom-darken (doom-color 'fg-alt) 0.2)))
      ))
-
-  (org-src-block-faces nil)
-  (org-confirm-babel-evaluate nil)
-  (org-plantuml-exec-mode 'plantuml)
-
-  (org-default-notes-file "todo.org")
-  (org-expiry-inactive-timestamps t)
-  (org-capture-templates
-   '(("t" "Todo"
-      entry
-      (file+headline
-       "todo.org"
-       (lambda ()
-         (let* ((categories (+org-agenda-get-categories "todo.org"))
-                (choice (completing-read "Category: " categories)))
-           choice)))
-      "* TODO %?\n  %i\n"
-      :unnarrowed t)
-     ("s" "Schedule"
-      entry (file+olp+datetree "schedule.org")
-      "%T %?\n"
-      :time-prompt t
-      :tree-type month
-      :unnarrowed t)
-     ("d" "Schedule Deadline"
-      entry (file+olp+datetree "schedule.org")
-      "%T %?\nDEADLINE: %^{DEADLINE}T\n"
-      :time-prompt t
-      :tree-type month
-      :unnarrowed t)
-     ("j" "Journal"
-      entry (file+olp+datetree "journal.org")
-      "%T %?\n %i\n"
-      :unnarrowed t)))
   :hook
   (org-mode . +org-mode-setup)
   (org-mode . +org-fold-auto-hide-block-languages))
