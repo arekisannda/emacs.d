@@ -683,7 +683,7 @@
 
 (+keybinds-buffer
   "l" '("list buffers"        . +ibuffer-list)
-  "b" '("bury buffer"         . bury-buffer)
+  "b" '("bury buffer"         . tab-line-close-tab-kill-window)
   "k" '("kill buffer"         . kill-current-buffer)
   "K" '("kill buffer by name" . kill-buffer)
   "r" '("revert buffer"       . revert-buffer))
@@ -1379,15 +1379,17 @@
 
 (general-define-key
  :keymaps 'evil-window-map
- "="   '("balance windows" . balance-windows)
- "o"   '("clear windows"   . (lambda () (interactive) (windex-layout--run-recipe 'base)))
- "O"   '("clear windows"   . windex-delete-windows)
- "C-O" '("clear windows"   . delete-other-window)
+ "="     '("balance windows" . balance-windows)
+ "o"     '("clear windows"   . (lambda () (interactive) (windex-layout--run-recipe 'base)))
+ "O"     '("clear windows"   . windex-delete-windows)
+ "C-S-o" '("clear windows"   . delete-other-windows)
+ "M-o"   '("clear buffers"   . tab-line-close-other-tabs)
+ "n"     '("new window"      . evil-buffer-new)
 
  "u"   '("undo window"     . winner-undo)
  "U"   '("redo window"     . winner-redo)
 
- "Q"   '("quit all"        . evil-quit-all)
+ "q"   '("quit"            . evil-quit)
 
  "V"   `("vsplit"          . ,(+window-split split-window-right))
  "v"   `("vsplit focus"    . ,(+window-split-focus-other-window split-window-right))

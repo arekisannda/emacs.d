@@ -65,6 +65,7 @@
         (let ((default-directory +activities-default-directory)
               (activity nil))
           (call-interactively #'project-switch-project)
+          (tab-line-close-other-tabs)
           (setq activity (call-interactively #'activities-define))
           (treemacs--init)
           (setq activity (activities-define (activities-activity-name activity) :forcep t))

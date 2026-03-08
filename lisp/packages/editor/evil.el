@@ -61,6 +61,7 @@
 
   (setq evil-motion-state-modes
         '(apropos-mode
+          shell-command-mode
           eww-mode
           detached-log-mode
           color-theme-mode
@@ -86,6 +87,9 @@
   (advice-add #'evil-previous-line :around (evil-move-or-goto-line-around nil))
   (advice-add #'evil-next-visual-line :around (evil-move-or-goto-line-around t))
   (advice-add #'evil-previous-visual-line :around (evil-move-or-goto-line-around nil))
+
+  (advice-add #'evil-next-buffer :override (apply-partially #'tab-line-switch-to-next-tab nil))
+  (advice-add #'evil-prev-buffer :override (apply-partially #'tab-line-switch-to-prev-tab nil))
   :hook
   (after-init . evil-mode))
 
