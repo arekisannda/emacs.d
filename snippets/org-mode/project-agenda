@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: project-agenda
+# key: pad
+# --
+
+:SETTINGS:
+#+startup: content
+:END:
+
+* Backlog
+
+* Ongoing
+
+* Testing
+
+* Completed
