@@ -34,7 +34,7 @@
                  'multi-category `(file . ,file))
                 items)))))
 
-  (plist-put consult--source-recent-file
+  (plist-put consult-source-recent-file
              :items #'+consult--source-recentf-items)
   :hook
   (completion-list-mode . consult-preview-at-point-mode))

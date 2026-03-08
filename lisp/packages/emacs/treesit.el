@@ -2,4 +2,4 @@
 
 (use-package treesit
   :custom
-  (treesit-font-lock-level 4))
+  (treesit-font-lock-level 3))

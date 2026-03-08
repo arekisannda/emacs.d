@@ -3,6 +3,10 @@
 (use-package org-src :after org
   :custom
   (org-babel-default-header-args:go '((:wrap . "example")))
+  (org-src-preserve-indentation nil)
+  (org-src-window-setup 'other-frame)
+  (org-edit-src-persistent-message nil)
+  (org-edit-src-content-indentation 0)
   :init
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -39,6 +43,7 @@
      ("elisp"      . emacs-lisp)
      ("go"         . go)
      ("javascript" . javascript)
+     ("json"       . js-json)
      ("kotlin"     . kotlin)
      ("mermaid"    . mermaid)
      ("ocaml"      . tuareg)

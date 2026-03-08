@@ -73,9 +73,9 @@
               scroll-step 1
               scroll-preserve-screen-position t
               scroll-conservatively most-positive-fixnum
-              scroll-margin 20
+              scroll-margin 0
               maximum-scroll-margin 0.4
-              scroll-error-top-bottom nil
+              scroll-error-top-bottom t
               switch-to-buffer-preserve-window-point t
               auto-window-vscroll nil
 

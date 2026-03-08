@@ -12,6 +12,13 @@
 
 (use-package nil ; _faces_
   :custom-face
+  (header-line
+   ((nil :inherit unspecified
+         :overline unspecified
+         :underline (:color ,(doom-color 'vertical-bar) :style double-line :position t)
+         :box (:line-width (1 . 4) :style flat-button)
+         )))
+
   (match
    ((nil :inherit unspecified
          :box nil

@@ -2,6 +2,12 @@
 
 (use-package doom-modeline
   :custom-face
+  (mode-line
+   ((nil :background ,(doom-color 'bg))))
+  (mode-line-active
+   ((nil :background ,(doom-color 'bg))))
+  (mode-line-inactive
+   ((nil :background ,(doom-color 'bg))))
   (doom-modeline-bar
    ((nil :foreground ,(doom-color 'bg-alt)
          :background ,(doom-color 'bg-alt))))
@@ -97,13 +103,20 @@
 
   (doom-modeline-def-modeline
     '+default-modeline
-    '(evil buffer-info-extra buffer-info dedicated remote-host buffer-position)
-    '(misc-info minibuffer-depth selection-info lsp repl check major-mode purpose))
+    '(evil buffer-info-extra buffer-info dedicated remote-host purpose)
+    '(misc-info minibuffer-depth selection-info lsp repl check buffer-position))
 
   (defun +doom-modeline-set ()
     (doom-modeline-set-modeline '+default-modeline 'default))
 
   (setq doom-modeline-mode-alist nil)
+
+  (defun +mode-line-setup (window buffer &optional flags)
+    (when (member 'disable-mode-line flags)
+      (with-current-buffer buffer
+        (setq mode-line-format nil)
+        )))
+
   :hook
   (doom-modeline-mode . +doom-modeline-set)
   (doom-modeline-mode . column-number-mode)

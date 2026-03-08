@@ -23,6 +23,7 @@ If it is not set, use ALTERNATIVE instead."
   (eglot-connect-timeout nil)
   (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 3)
+  (eglot-code-action-indications '())
   (eglot-ignored-server-capabilities '(:documentHighlightProvider
                                        :inlayHintProvider
                                        :signatureHelpProvider))
@@ -35,7 +36,7 @@ If it is not set, use ALTERNATIVE instead."
         (ty            '("ty" "server" :name "ty"))
         (pyrefly       '("pyrefly" "lsp" :name "pyrefly"))
         (biome         '("biome" "lsp-proxy" :name "biome"))
-        (html          (+eglot-with-local '("vscode-html-language-server" "--stdio" :name "vscode-html")))
+        (html          '("vscode-html-language-server" "--stdio" :name "vscode-html"))
         (scad          '("openscad-lsp" "--stdio"))
         (rust-analyzer '("rust-analyzer" :initializationOptions (:check (:command "clippy"))))
         )
@@ -59,7 +60,7 @@ If it is not set, use ALTERNATIVE instead."
                       (rust-ts-mode              :language-id "rust"))           . ,rust-analyzer)
                     ))
       (setf (alist-get (car conf) eglot-server-programs nil nil #'equal)
-            (cdr conf))))
+            (+eglot-with-local (cdr conf)))))
 
   (fset #'jsonrpc--log-event #'ignore)
 

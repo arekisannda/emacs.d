@@ -133,7 +133,7 @@
       :width (buffer-local-value 'vertico-posframe-width buffer)
       :min-height 20
       :min-width 120
-      :max-height 30
+      :max-height 20
       :max-width 200
       :lines-truncate t
       )))
@@ -159,6 +159,34 @@
    ((nil :inherit default
          :background ,(doom-color 'vertical-bar))))
   :config
+
+  (defvar vertico-posframe-last-command nil)
+
+  (cl-defmethod vertico--display-candidates
+    :after (_candidates &context ((vertico-posframe-mode-workable-p) (eql t)))
+    "Display candidates in posframe.
+
+1. Let minibuffer-window's height = 1
+2. Hide the context of minibuffer-window by vscroll 100.
+3. Show minibuffer with the help of posframe-show."
+    (let ((buffer (current-buffer))
+          (point (point)))
+      ;; NOTE: buffer is minibuffer.
+      (setq vertico-posframe-last-command this-command)
+      (setq vertico-posframe--buffer buffer)
+      (vertico-posframe--handle-minibuffer-window)
+      (vertico-posframe--show buffer point)))
+
+  (defun vertico-posframe--multiform-function ()
+    "Function work with `'vertico-multiform-mode'.
+When `vertico-posframe-mode' is disabled, hide posframe and let
+the contents of minibuffer show again, this approach let
+vertico-posframe works with vertico multiform toggle."
+    (unless (eq vertico-posframe-last-command this-command)
+      (setq vertico-posframe-last-command this-command)
+      (set-window-vscroll (active-minibuffer-window) 0)
+      (posframe-hide vertico-posframe--buffer)))
+
   (defun +vertico-posframe-show-cursor (buffer window-point)
     (with-current-buffer buffer
       (setq-local cursor-type 'box)

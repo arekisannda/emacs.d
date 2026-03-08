@@ -30,7 +30,6 @@
 (defun +lang-conf-mode-setup ()
   "Conf-mode setup."
   (setq-local truncate-lines t)
-  (visual-line-mode -1)
   (yas-minor-mode 1))
 
 (use-package conf-mode

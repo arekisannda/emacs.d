@@ -18,6 +18,10 @@
   (treemacs-collapse-dirs 0)
   (treemacs-sorting 'alphabetic-numeric-asc)
   :custom-face
+  (treemacs-nerd-icons-root-face
+   ((nil :height 1.0)))
+  (treemacs-root-face
+   ((nil :height 1.1)))
   (treemacs-window-background-face
    ((nil :background ,(doom-color 'bg-alt))))
   (treemacs-hl-line-face
@@ -83,10 +87,14 @@
   (defun +treemacs--setup ()
     (treemacs-filewatch-mode 1)
     (treemacs-fringe-indicator-mode 'only-when-focused)
+    (face-remap-add-relative 'mode-line-active
+                             `(nil :inherit mode-line-active
+                                   :foreground unspecified
+                                   :background ,(doom-color 'bg-alt)))
     (face-remap-add-relative 'mode-line-inactive
                              `(nil :inherit mode-line-active
                                    :foreground unspecified
-                                   :background unspecified)))
+                                   :background ,(doom-color 'bg-alt))))
   :hook
   (kill-emacs                . +treemacs--clean-workspaces)
   (treemacs-switch-workspace . +treemacs--clean-workspaces)
@@ -134,9 +142,18 @@
 
   (defun treemacs-project-directory-override-next-command (dir)
     (interactive
-     (list (if current-prefix-arg
-               (read-directory-name "Select directory: " default-directory nil t)
-             (treemacs-project-directory-prompt))))
+     (list (treemacs-project-directory-prompt)))
+    (let ((default-directory (file-name-as-directory dir)))
+      (let* ((keys (read-key-sequence "[temporary-default-directory]-"))
+             (cmd (key-binding keys)))
+        (unless (commandp cmd)
+          (user-error "Not a command"))
+        (call-interactively cmd))
+      ))
+
+  (defun treemacs-directory-override-next-command (dir)
+    (interactive
+     (list (read-directory-name "Select directory: " default-directory nil t)))
     (let ((default-directory (file-name-as-directory dir)))
       (let* ((keys (read-key-sequence "[temporary-default-directory]-"))
              (cmd (key-binding keys)))

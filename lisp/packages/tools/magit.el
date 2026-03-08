@@ -78,6 +78,7 @@
 (use-package forge :after magit)
 
 (use-package pr-review :after forge
+  :demand t
   :custom
   (pr-review-fringe-icons nil)
   (pr-review-section-indent-width 2)
@@ -162,7 +163,7 @@
          :foreground ,(doom-color 'fg-alt)
          :background ,(doom-color 'bg-alt)
          )))
-  :init
+  :config
   (defvar-keymap pr-review-minor-mode-map
     :doc "Keymap for pr-review minor mode."
     "C-RET"      #'pr-review-at-point
@@ -187,6 +188,10 @@
           (magit-status)
           (forge-add-repository)))
       ))
+
+  (defun pr-review-review-pullreq (pull-request)
+    (interactive (list (forge-read-pullreq "View pull-request")))
+    (pr-review-at-point (forge-get-url (forge-get-pullreq pull-request))))
 
   (defun pr-review-at-point (url)
     (interactive
@@ -323,6 +328,39 @@
        )))
 
   (advice-add #'pr-review--format-timestamp :override #'pr-review--format-relative-timestamp-override)
+
+  (transient-define-group forge--review-group
+    ["Review"
+     ("r p" "pull requests" pr-review-review-pullreq)
+     ""])
+
+  (transient-append-suffix
+    'forge-dispatch
+    'forge--lists-group
+    'forge--review-group)
+
+  (defun magit-mode-quit-window-override (kill-buffer)
+    "Quit the selected window and bury its buffer.
+
+This behaves similar to `quit-window', but when the window
+was originally created to display a Magit buffer and the
+current buffer is the last remaining Magit buffer that was
+ever displayed in the selected window, then delete that
+window."
+    (if (or (one-window-p)
+            (seq-find (pcase-lambda (`(,buffer))
+                        (and (not (eq buffer (current-buffer)))
+                             (buffer-live-p buffer)
+                             (or (not (window-parameter nil 'magit-dedicated))
+                                 (with-current-buffer buffer
+                                   (derived-mode-p 'magit-mode
+                                                   'magit-process-mode)))))
+                      (window-prev-buffers)))
+        (quit-window kill-buffer)
+      (let ((window (selected-window)))
+        (quit-window kill-buffer)
+        (when (window-live-p window)
+          (delete-window window)))))
 
   :hook
   (forge-topics-mode  . pr-review-minor-mode)

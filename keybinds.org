@@ -657,6 +657,7 @@
   "="   '("treemacs edit"     . treemacs-edit-workspaces)
 
   "d"   '("temporary dir"     . treemacs-project-directory-override-next-command)
+  "D"   '("temporary dir"     . treemacs-directory-override-next-command)
 
   "C-n" '("define workspace"  . activities-define-activity-workspace)
   "C-r" '("switch workspace"  . activities-switch-activity-workspace)
@@ -827,6 +828,21 @@
 *** VTerm
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
+ :states '(normal insert motion)
+ :keymaps 'vterm-mode-map
+
+ "<prior>"     '("scroll up"           . scroll-down-command)
+ "<next>"      '("scroll down"         . scroll-up-command)
+ "C-<prior>"   '("scroll up"           . windex-scroll-up)
+ "C-<next>"    '("scroll down"         . windex-scroll-down)
+ "C-S-<next>"  '("scroll left"         . windex-scroll-left)
+ "C-S-<prior>" '("scroll right"        . windex-scroll-right)
+
+ "M-<prior>"   '("owindow scroll up"   . windex-scroll-minibuffer-scroll-other-up)
+ "M-<next>"    '("owindow scroll down" . windex-scroll-minibuffer-scroll-other-down)
+ "M-:"         '("eval"                . eval-expression))
+
+(general-define-key
  :states 'emacs
  :keymaps 'vterm-mode-map
 
@@ -840,13 +856,11 @@
  
  "C-<prior>"   '("scroll up"           . windex-scroll-up)
  "C-<next>"    '("scroll down"         . windex-scroll-down)
- "S-<next>"    '("scroll left"         . windex-scroll-left)
- "S-<prior>"   '("scroll right"        . windex-scroll-right)
- "C-S-<prior>" '("scroll up"           . scroll-down-command)
- "C-S-<next>"  '("scroll down"         . scroll-up-command)
+ "C-S-<next>"  '("scroll left"         . windex-scroll-left)
+ "C-S-<prior>" '("scroll right"        . windex-scroll-right)
 
- "M-<prior>"   '("owindow scroll up"   . windex-scroll-other-up)
- "M-<next>"    '("owindow scroll down" . windex-scroll-other-down)
+ "M-<prior>"   '("owindow scroll up"   . windex-scroll-minibuffer-scroll-other-up)
+ "M-<next>"    '("owindow scroll down" . windex-scroll-minibuffer-scroll-other-down)
  "M-:"         '("eval"                . eval-expression))
 #+end_src
 **** Disable Keybinds
@@ -872,7 +886,13 @@
   "@" '("fundamental-mode" . fundamental-mode)
   "I" '("image-mode"       . image-mode)
   "r" '("rainbow-mode"     . rainbow-mode)
-  "#" '("impatient-mode"   . impatient-mode))
+ 
+  "#" (general-predicate-dispatch nil
+        (derived-mode-p 'html-mode) #'impatient-mode)
+
+  "t" (general-predicate-dispatch nil
+        (derived-mode-p 'org-mode) #'org-latex-preview-mode)
+  )
 #+end_src
 *** Help
 #+begin_src emacs-lisp :tangle yes
@@ -945,19 +965,24 @@
   "."     '("embark act"        . embark-act)
   "?"     '("embark act all"    . embark-act-all)
   "d"     '("dired buffer"      . dired)
-  "m"     '("magit"             . magit)
-  "C-m"   '("list pullreq"      . pr-review-list-pullreq)
+
   "t"     '("translate"         . google-translate-smooth-translate)
   "w"     '("word"              . dictionary-lookup-definition)
   "W"     '("etymology"         . +dictionary-word-etymology)
+
+  "m"     '("magit status"      . magit)
+  "C-m"   '("magit dispatch"    . magit-dispatch)
+  "C-n"   '("forge dispatch"    . forge-dispatch)
+  
+  "C-p"   '("prompt"            . gptel-menu)
+  "M-p"   '("prompt"            . gptel-add)
+  "p"     '("prompt"            . gptel)
 
   "C-k"   '("keybinds"          . +edit-keybinds)
   "C-l"   '("sessions"          . detached-list-sessions)
   "C-s"   '("scratch"           . scratch-buffer)
   "C-S-s" '("org scratch"       . +org-scratch-buffer)
   "C-t"   '("latex scratch"     . +latex-scratch-buffer)
-  "C-p"   '("prompt"            . gptel)
-  "p"     '("prompt"            . gptel-add)
   "C-e"   '("eshell"            . project-eshell)
   "C-v"   '("toggle term"       . +vterm-project))
 #+end_src
@@ -978,31 +1003,38 @@
            imenu-extract-index-name-function)
 	  (and imenu-generic-expression)))
 
+(defun +emacs-display-current-buffer ()
+  (interactive)
+  (display-buffer (current-buffer)))
+
 (general-define-key
  :states        '(normal insert visual emacs motion)
  :prefix-map    '+keybinds-search--map
  :prefix        ";"
  :global-prefix "C-;"
 
- "b"     '("find buffer"  . consult-buffer)
- "f"     '("project file" . project-find-file)
- "F"     '("find file"    . find-file)
+ "b"     '("find buffer"    . consult-buffer)
+ "f"     '("project file"   . project-find-file)
+ "F"     '("find file"      . find-file)
 
- ";"     '("find file"    . affe-find)
- "C-;"   '("sudo file"    . +emacs-sudo-find-file)
- "C-M-;" '("remote file"  . +emacs-remote-find-file)
+ "."     '("current"        . +emacs-display-current-buffer)
+ ";"     '("find file"      . affe-find)
+ "C-;"   '("sudo file"      . +emacs-sudo-find-file)
+ "C-M-;" '("remote file"    . +emacs-remote-find-file)
 
- "d"     '("find dir"     . consult-dir)
- "l"     '("find line"    . consult-line)
- "r"     '("find recent"  . consult-recent-file)
+ "d"     '("find dir"       . consult-dir)
+ "l"     '("find line"      . consult-line)
+ "r"     '("find recent"    . consult-recent-file)
 
- "C-c"   '("find command" . consult-mode-command)
- "C-e"   '("find errors"  . consult-flymake)
- "C-h"   '("find history" . consult-history)
- "C-k"   '("find kmacro"  . consult-kmacro)
- "C-m"   '("find marks"   . consult-bookmark)
- "C-r"   '("find reg"     . consult-register)
- "C-y"   '("find yank"    . consult-yank-replace)
+ "C-c"   '("find command"   . consult-mode-command)
+ "C-e"   '("find errors"    . consult-flymake)
+ "C-h"   '("find history"   . consult-history)
+ "C-k"   '("find kmacro"    . consult-kmacro)
+ "C-m"   '("find bookmarks" . consult-bookmark)
+ "C-r"   '("find reg"       . consult-register)
+ "C-y"   '("find yank"      . consult-yank-replace)
+ "C-S-o" '("find mark"      . consult-global-mark)
+ "C-o"   '("find buf mark"  . consult-mark)
  
  "g"   (general-predicate-dispatch      '("rg"      . consult-ripgrep)
          (derived-mode-p 'devdocs-mode) '("goto"    . devdocs-goto-page))
@@ -1298,17 +1330,19 @@
 
 (general-define-key
  :keymaps 'motion
- "<escape>" '("quit"        . keyboard-quit)
+ "+"        '("expand"    . expreg-expand)
+ "-"        '("contract"  . expreg-contract)
 
- "<up>"     '("previous"    . previous-line)
- "<down>"   '("next"        . next-line)
+ "<escape>" '("quit"      . keyboard-quit)
 
- "L"        '("next arg"    . evil-forward-arg)
- "H"        '("prev arg"    . evil-backward-arg)
+ "<up>"     '("previous"  . previous-line)
+ "<down>"   '("next"      . next-line)
 
- "[ x"      '("prev xref"   . +hydra-xref-motion/xref-go-back)
- "] x"      '("prev xref"   . +hydra-xref-motion/xref-go-forward)
- )
+ "L"        '("next arg"  . evil-forward-arg)
+ "H"        '("prev arg"  . evil-backward-arg)
+
+ "[ x"      '("prev xref" . +hydra-xref-motion/xref-go-back)
+ "] x"      '("next xref" . +hydra-xref-motion/xref-go-forward))
 #+end_src
 *** Emacs
 #+begin_src emacs-lisp :tangle yes
@@ -1427,11 +1461,13 @@
 
 (+keybinds-editor-edit
   "+" '("sort lines"      . sort-lines)
-  "=" (general-predicate-dispatch      '("indent" . util/indent-buffer)
+  "=" (general-predicate-dispatch        '("indent" . util/indent-buffer)
+        (derived-mode-p '(json-ts-mode
+                          js-json-mode)) '("indent" . json-pretty-print-buffer)
         (derived-mode-p '(css-ts-mode
                           yaml-ts-mode
-                          html-mode))  '("indent" . prettier-js)
-        (eglot-managed-p)              '("indent" . eglot-format-buffer))
+                          html-mode))    '("indent" . prettier-js)
+        (eglot-managed-p)                '("indent" . eglot-format-buffer))
 
   "c" '("comment line"    . evilnc-comment-or-uncomment-lines)
   "C" '("comment block"   . evilnc-comment-or-uncomment-paragraphs)
@@ -1457,15 +1493,16 @@
 (+keybinds-editor-lsp
   "<escape>" #'+eldoc-close-buffer
   
-  "d" '("definition"       . xref-find-definitions)
-  "D" '("definition other" . xref-find-definitions-other-window)
-  "i" '("describe"         . eldoc)
-  "I" '("implementation"   . eglot-find-implementation)
-  "r" '("references"       . xref-find-references)
-  "R" '("rename"           . eglot-rename)
-  "t" '("type definition"  . eglot-find-typeDefinition)
-  "f" '("action fix"       . eglot-code-action-quickfix)
-  "a" '("action rewrite"   . eglot-code-action-rewrite)
+  "d"   '("definition"       . xref-find-definitions)
+  "D"   '("definition other" . xref-find-definitions-other-window)
+  "i"   '("describe"         . eldoc)
+  "I"   '("implementation"   . eglot-find-implementation)
+  "r"   '("references"       . xref-find-references)
+  "R"   '("rename"           . eglot-rename)
+  "t"   '("type definition"  . eglot-find-typeDefinition)
+  "C-f" '("action fix"       . eglot-code-action-quickfix)
+  "C-r" '("action rewrite"   . eglot-code-action-rewrite)
+  "f"   '("action"           . eglot-code-actions)
 
   "!" '("toggle hover mode" . eldoc-box-hover-at-point-mode)
   )
@@ -1564,10 +1601,9 @@
   :prefix-command '+keybinds-org-exec-command)
 
 (+keybinds-org-exec
-  "l"   '("latex toggle"       . org-latex-preview)
-  "L"   '("latex clear"        . org-latex-preview-clear-cache)
-  "C-l" '("latex live"         . org-latex-preview-auto-mode)
-  "r"   '("org link toggle"    . org-toggle-link-display)
+  "t"   '("latex toggle"       . org-latex-preview)
+  "C-t" '("latex clear"        . org-latex-preview-clear-cache)
+  "l"   '("org link toggle"    . org-toggle-link-display)
   "i"   '("org image toggle"   . org-toggle-inline-images)
   "e"   '("org edit source"    . org-edit-src-code)
 
@@ -1593,12 +1629,12 @@
 #+begin_src emacs-lisp :tangle yes
 (defhydra +hydra-git-motion
   (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("s"         #'diff-hl-show-hunk-stage-hunk "stage")
-  ("d"         #'diff-hl-show-hunk-revert-hunk "revert")
-  ("c"         #'diff-hl-show-hunk-copy-original-text "copy")
-  ("k"         #'diff-hl-show-hunk-previous "prev hunk")
-  ("j"         #'diff-hl-show-hunk-next "next hunk")
-  ("i"         #'diff-hl-show-hunk "show hunk")
+  ("s" #'diff-hl-show-hunk-stage-hunk "stage")
+  ("d" #'diff-hl-show-hunk-revert-hunk "revert")
+  ("c" #'diff-hl-show-hunk-copy-original-text "copy")
+  ("k" #'diff-hl-show-hunk-previous "prev hunk")
+  ("j" #'diff-hl-show-hunk-next "next hunk")
+  ("i" #'diff-hl-show-hunk "show hunk")
 
   ("M-<prior>" #'diff-hl-scroll-up)
   ("M-<next>"  #'diff-hl-scroll-down)

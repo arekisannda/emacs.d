@@ -2,10 +2,14 @@
 
 (use-package diff-hl :after magit
   :custom
+  (diff-hl-update-async nil)
   (diff-hl-flydiff-delay 0.1)
+  (diff-hl-show-staged-changes nil)
   :init
   (setq diff-hl-show-hunk-map (make-sparse-keymap)
         diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
+  (setq diff-hl-show-hunk-buffer-name "*diff-hl-show-hunk-buffer*")
+  (setq diff-hl-show-hunk-diff-buffer-name "*diff-hl-show-hunk-diff-buffer*")
   :config
   (defmacro create-diff-hl-scroll-defun (direction)
     (let ((dir (symbol-name direction)))
@@ -21,7 +25,6 @@
   (create-diff-hl-scroll-defun down)
   (create-diff-hl-scroll-defun right)
   (create-diff-hl-scroll-defun left)
-
   (diff-hl-flydiff-mode)
   :hook
   (diff-hl-mode . diff-hl-margin-local-mode)
@@ -65,9 +68,6 @@
      (tab-bar-lines . 0)
      (tab-bar-lines-keep-state . 1)))
   (diff-hl-show-hunk-posframe-internal-border-color (face-attribute 'popup-border :background nil t))
-  (diff-hl-show-staged-changes nil)
-  (diff-hl-show-hunk-buffer-name " *diff-hl-show-hunk-buffer*")
-  (diff-hl-show-hunk-diff-buffer-name " *diff-hl-show-hunk-diff-buffer*")
   :config
   (defun +diff-hl-show-hunk--posframe-hide ()
     "Hide the posframe and clean up buffer."
