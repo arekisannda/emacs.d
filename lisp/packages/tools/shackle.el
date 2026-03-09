@@ -15,9 +15,9 @@
         (avail-width (let ((edges (window-edges (frame-root-window))))
                        (- (nth 2 edges) (nth 0 edges) util/windows-min-left-width))))
     `((window-width . ,(and (cl-find side '(left right))
-                            (when (min max-width
-                                       (max min-width
-                                            (/ avail-width (/ (frame-width) util/windows-max-width)))))))
+                            (min max-width
+                                 (max min-width
+                                      (/ avail-width (/ (frame-width) util/windows-max-width))))))
       (window-height . ,(and (cl-find side '(bottom top)) min-height))
       )))
 
@@ -43,7 +43,9 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side bottom
      :slot 0
+     :dedicated t
      :size ,util/windows-min-bottom-height
+     :flags (enable-only-buffer-tab-line)
      :fixed height))
 
 (defun +shackle-bottom-select-preset-size-0 ()
@@ -54,6 +56,7 @@
      :side bottom
      :slot 1
      :size ,util/windows-min-bottom-height
+     :flags (enable-only-buffer-tab-line)
      :fixed height))
 
 (defun +shackle-bottom-select-preset-size-1 ()
@@ -70,6 +73,8 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 0
+     :flags (enable-only-buffer-tab-line)
+     :dedicated t
      :fixed width))
 
 (defun +shackle-right-select-preset-0 ()
@@ -79,6 +84,8 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 1
+     :flags (disable-tab-line)
+     :dedicated t
      :fixed width))
 
 (defun +shackle-right-select-preset-1 ()
@@ -87,13 +94,14 @@
 (use-package shackle :after windex
   :custom
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
+  (util/windows-max-width 100)
   (util/windows-min-bottom-height 25)
   (util/windows-min-left-width 60)
   (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
   (shackle-disable-list
    `("^ \\*which-key\\*$"
-
+     treemacs-mode
      leetcode--problems-mode
      leetcode--problem-detail-mode))
 
@@ -111,10 +119,6 @@
        code-review-mode
        pr-review-mode)
       :same t)
-
-     ((treemacs-mode)
-      ,@(+shackle-left-preset-size-0)
-      :select t)
 
      ((magit-mode
        forge-repository-list-mode)
@@ -172,13 +176,17 @@
        "^ \\*which-key\\*$"
        "^\\*Ibuffer confirmation\\*"
        "^\\*Local Variables\\*$"
+       "^\\*Completions\\*$"
        "^ \\*Agenda Commands\\*$"
+       "^\\*Backtrace\\*$"
+
        backtrace-mode)
       :custom util/windows-display-buffer-in-pop-up-window
       :select t)
 
      (("^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
+       "^\\*Customize .*\\*$"
        "^\\*Shortdoc.*\\*$"
        "^\\*Customize.*\\*$"
        "^\\*Man.*\\*$"
@@ -189,7 +197,10 @@
        "^\\*Org Agenda\\*$"
        "^\\*ChatGPT.*\\*$"
        "^\\*Claude.*\\*$"
+       "^\\*Org Select\\*$"
 
+       Custom-mode
+       calc-mode
        org-agenda-mode
        w3m-mode
        eww-mode
@@ -203,15 +214,15 @@
        "^\\*yasnippet-capf-doc\\*$"
        "^\\*corfu doc.*\\*$"
        "^\\*org-roam\\*$"
+       "\\*Gnuplot Commands\\*"
+       "\\*Gnuplot Trail\\*"
 
+       calc-trail-mode
        org-roam-mode)
       ,@(+shackle-right-preset-1)
-      :dedicated t
-      :flags (disable-tab-line)
       :size +shackle-get-dimensions)
 
      (("^\\*Org Preview.*\\*$"
-       "^\\*Org Select\\*$"
        "^\\*Org Src.*\\*$"
        "^CAPTURE-.*\\.org$"
 
@@ -226,7 +237,6 @@
        "^\\*remark-notes\\*$"
        "^\\*Org Links\\*$"
        "^\\*\\(.*-\\)?eshell\\*$"
-       "^\\*Calculator\\*$"
        "^ \\*.* stderr\\*$"
        "^\\*.* events\\*$"
        "^\\*Code Review Comment\\*$"
@@ -244,7 +254,6 @@
        pr-review-input-mode
        forge-post-mode
        dired-mode
-       calc-mode
        eshell-mode
        comint-mode
        grep-mode
@@ -259,16 +268,10 @@
        vterm-mode
        embark-collect-mode
        tabulated-list-mode)
-      ,@(+shackle-bottom-select-preset-size-0)
-      :flags (disable-mode-line))
+      ,@(+shackle-bottom-select-preset-size-0))
 
      (("^\\*Edit Formulas\\*")
       ,@(+shackle-bottom-select-preset-size-1))
-
-     (("^\\*Calc Trail\\*$"
-
-       calc-trail-mode)
-      ,@(+shackle-bottom-preset-size-1))
 
      (("^\\*Org .*\\*$")
       :custom util/windows-display-buffer-in-pop-up-window
@@ -277,12 +280,9 @@
      ;;; base mode fallback
      ((help-mode)
       ,@(+shackle-right-select-preset-1)
-      :dedicated t
-      :flags (disable-tab-line)
       :size +shackle-get-dimensions)
 
-     ((Custom-mode
-       special-mode
+     ((special-mode
        Info-mode)
       ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
