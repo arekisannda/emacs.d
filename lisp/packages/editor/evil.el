@@ -96,17 +96,19 @@
 (use-package evil-collection :after evil
   :custom
   (evil-collection-mode-list
-   '(info
-     w3m
+   '((custom cus-edit)
+     calc
      dired
-     ibuffer
-     (custom cus-edit)
-     magit
-     forge
      edebug
+     ediff
+     forge
+     ibuffer
+     info
+     magit
      org
      org-roam
-     ediff))
+     w3m
+     ))
   :diminish evil-collection-unimpaired-mode
   :init
   (setq forge-add-default-bindings nil)

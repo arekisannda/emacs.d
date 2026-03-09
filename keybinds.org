@@ -556,36 +556,38 @@
               (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
 
  "S-<f5>"   (general-predicate-dispatch #'dape-restart
-              dape-active-mode          nil)
+              (derived-mode-p 'dape-active-mode) nil)
+
  "C-S-<f5>" #'dape-quit
 
  "<f6>"     (general-predicate-dispatch #'+rmsbolt-toggle
               (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
-              dape-active-mode          #'+hydra-dape-motion/dape-step-in)
+              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-in)
 
  "<f7>"     (general-predicate-dispatch nil
-              dape-active-mode          #'+hydra-dape-motion/dape-step-out)
+              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-out)
 
  "<f8>"     (general-predicate-dispatch #'project-recompile
-              dape-active-mode          #'+hydra-dape-motion/dape-next)
+              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-next
+              (derived-mode-p 'calc-mode) #'calc-trail-display)
 
  "C-<f8>"   (general-predicate-dispatch #'recompile
-              dape-active-mode          nil)
+              (derived-mode-p 'dape-active-mode) nil)
 
  "S-<f8>"   (general-predicate-dispatch #'project-compile
-              dape-active-mode          nil)
+              (derived-mode-p 'dape-active-mode) nil)
 
  "C-S-<f8>" (general-predicate-dispatch #'compile
-              dape-active-mode          nil)
+              (derived-mode-p 'dape-active-mode) nil)
 
  "M-<f8>"   (general-predicate-dispatch #'detached-project-compile
-              dape-active-mode          nil)
+              (derived-mode-p 'dape-active-mode) nil)
 
  "M-S-<f8>" (general-predicate-dispatch #'kill-compilation
-              dape-active-mode          nil)
+              (derived-mode-p 'dape-active-mode) nil)
 
  "<f9>"     (general-predicate-dispatch nil
-              dape-active-mode          #'+hydra-dape-motion/dape-continue)
+              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-continue)
 
  "<f10>"   '("menu"        . menu-bar-open)
  "<f11>"   '("mru"         . evil-window-mru)
@@ -968,6 +970,8 @@
   "."     '("embark act"        . embark-act)
   "?"     '("embark act all"    . embark-act-all)
   "d"     '("dired buffer"      . dired)
+
+  "c"     '("calc"              . full-calc)
 
   "t"     '("translate"         . google-translate-smooth-translate)
   "w"     '("word"              . dictionary-lookup-definition)

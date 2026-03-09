@@ -97,7 +97,7 @@ It will not be recoverable."
 (with-eval-after-load 'activities
   (cl-defstruct activities-workspace-state
     "Workspace state."
-    (window-state :documentation "Window state `window-state-get'."))
+    (window-state nil :documentation "Window state `window-state-get'."))
 
   (cl-defstruct activities-workspaces
     "Workspace container for `activities-activities'."

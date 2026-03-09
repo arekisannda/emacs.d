@@ -61,6 +61,7 @@
   (org-link-descriptive t)
   (org-link-frame-setup '((file . find-file)))
   (org-startup-with-inline-images t)
+  (org-startup-with-link-previews t)
   (org-image-align 'center)
   (org-image-actual-width nil)
   (org-startup-indented t)

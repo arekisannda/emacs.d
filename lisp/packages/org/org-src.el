@@ -2,7 +2,6 @@
 
 (use-package org-src :after org
   :custom
-  (org-babel-default-header-args:go '((:wrap . "example")))
   (org-src-preserve-indentation nil)
   (org-src-window-setup 'other-frame)
   (org-edit-src-persistent-message nil)

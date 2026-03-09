@@ -15,7 +15,6 @@
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)
 
-(setq message-log-max nil)
 (setq warning-minimum-level :emergency)
 
 (when (getenv-internal "DEBUG")
@@ -118,6 +117,7 @@
                 (:eval (if tab-bar-mode (format ": %s" (cdr (assq 'name (tab-bar--current-tab))))))))
 
 (unless init-file-debug
+  (setq message-log-max nil)
   (condition-case err
       (server-start)
     (error nil)))

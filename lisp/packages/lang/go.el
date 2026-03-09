@@ -30,4 +30,6 @@
   :hook
   (go-ts-mode . +lang-go-mode-setup))
 
-(use-package ob-go :defer t)
+(use-package ob-go :defer t
+  :config
+  (setq org-babel-default-header-args:go '((:wrap . "example"))))
