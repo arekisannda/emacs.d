@@ -42,6 +42,8 @@
    ((nil :foreground ,(doom-color 'bg-alt)
          :background ,(doom-color 'red))))
   :config
+  (require 'mime-w3m)
+  (require 'w3m-filter)
   (defun w3m-filter-readability (url)
     (let* ((u (url-generic-parse-url url))
            (proto (url-type u))

@@ -114,10 +114,12 @@
   (defun +mode-line-setup (window buffer &optional flags)
     (when (member 'disable-mode-line flags)
       (with-current-buffer buffer
-        (setq mode-line-format nil)
+        (setq-local mode-line-format nil)
         )))
 
   :hook
+  (util/windows-side-window . +mode-line-setup)
+  (util/windows-pop-up-window . +mode-line-setup)
   (doom-modeline-mode . +doom-modeline-set)
   (doom-modeline-mode . column-number-mode)
   (after-init . doom-modeline-mode))

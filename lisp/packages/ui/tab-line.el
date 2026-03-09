@@ -1,5 +1,7 @@
 ;;; tab-line.el -*- lexical-binding: t; -*-
 
+(require 'util-strings)
+
 (use-package tab-line
   :custom
   (tab-line-new-button-show nil)
@@ -29,9 +31,9 @@
            (selected-p (if buffer-p
                            (eq tab (window-buffer))
                          (cdr (assq 'selected tab))))
-           (name (concat " " (if buffer-p
+           (name (util/strings-pad-or-truncate (concat " " (if buffer-p
                                  (funcall tab-line-tab-name-function tab tabs)
-                               (cdr (assq 'name tab)))))
+                               (cdr (assq 'name tab)))) 16))
            (face (if selected-p
                      (if (mode-line-window-selected-p)
                          'tab-line-tab-current
@@ -92,7 +94,13 @@
         (when (or global-tab-line-mode tab-line-mode)
           (tab-line-mode -1)))))
 
+  (defun tab-line-only-buffer-side-setup (window buffer &optional flags)
+    (when (member 'enable-only-buffer-tab-line flags)
+      (with-current-buffer buffer
+        (tab-line-close-other-tabs))))
+
   :hook
   (util/windows-side-window . tab-line-side-setup)
+  (util/windows-side-window . tab-line-only-buffer-side-setup)
   (util/windows-pop-up-window . tab-line-pop-up-setup)
   (window-setup . global-tab-line-mode))

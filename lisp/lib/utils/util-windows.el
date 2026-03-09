@@ -192,7 +192,9 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
                window)
 
           (with-current-buffer buffer
-            (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt))))
+            (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
+            (setq-local mode-line-format nil)
+            (run-hook-with-args 'util/windows-pop-up-window-hook window buffer))
 
           (if (get-buffer-window buffer)
               (setq window (display-buffer-reuse-window buffer alist))
@@ -203,7 +205,6 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
               (window-preserve-size window nil t)
               ))
 
-          (run-hook-with-args 'util/windows-pop-up-window-hook window buffer)
           (if (plist-get plist :select) window init-window))
         ))
     ))

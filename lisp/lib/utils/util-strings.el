@@ -9,9 +9,14 @@
     (insert-file-contents file)
     (buffer-string)))
 
-(defun util/strings-pad-string (str width &optional pad-char)
-  "Pad STR with PAD-CHAR to the specified WIDTH."
-  (format (format "%%-%ds" width) (or str "") (or pad-char ?\s)))
+(defun util/strings-pad-or-truncate (str len &optional pad-char)
+  "Pad or truncate STR to exactly LEN characters, using ellipsis if truncated."
+  (let ((modified-str (substring (util/strings-pad-string str len pad-char) 0 (- len 1))))
+    (concat modified-str (if (string-suffix-p " " modified-str) " " "…"))))
+
+(defun util/strings-pad-string (str len &optional pad-char)
+  "Pad STR with PAD-CHAR to the specified LEN."
+  (format (format "%%-%ds" len) (or str "") (or pad-char ?\s)))
 
 (defun util/strings-blank-or-nil-p (str)
   "Return true if STR is blank or nil."
