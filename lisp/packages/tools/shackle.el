@@ -45,7 +45,6 @@
      :slot 0
      :dedicated t
      :size ,util/windows-min-bottom-height
-     :flags (enable-only-buffer-tab-line)
      :fixed height))
 
 (defun +shackle-bottom-select-preset-size-0 ()

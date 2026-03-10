@@ -60,8 +60,7 @@
                     (window-popup  . bottom)
                     (dedicated     . t)))
            window)
-      (with-current-buffer which-key--buffer
-        (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt))))
+      (run-hook-with-args 'util/windows-pop-up-window-hook window which-key--buffer)
       (cond
        ((eq which-key--multiple-locations t)
         (delete-windows-on which-key--buffer)
@@ -76,8 +75,6 @@
         (window--display-buffer which-key--buffer window 'window alist)
         (util/windows-popup-fit-window-to-buffer window)
         ))
-
-      (run-hook-with-args 'util/windows-pop-up-window-hook window which-key--buffer)
       ))
   :hook
   (after-init . which-key-mode))

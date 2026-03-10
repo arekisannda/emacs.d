@@ -10,6 +10,23 @@
   "Face used for fold replacement face."
   :group 'basic-faces)
 
+(defun emacs-alt-face-setup (window buffer)
+  (with-current-buffer buffer
+    (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
+    (face-remap-add-relative 'mode-line-active
+                             `(nil :inherit mode-line-active
+                                   :foreground unspecified
+                                   :background ,(doom-color 'bg-alt)))
+    (face-remap-add-relative 'mode-line-inactive
+                             `(nil :inherit mode-line-active
+                                   :foreground unspecified
+                                   :background ,(doom-color 'bg-alt)))
+    ))
+
+(defun emacs-alt-face-side-setup (window buffer &optional flags)
+  (when (member 'enable-alt-face flags)
+    (emacs-alt-face-setup window buffer)))
+
 (use-package nil ; _faces_
   :custom-face
   (header-line
@@ -152,7 +169,9 @@
    ((nil :inherit unspecified
          :background unspecified
          :foreground ,(doom-color 'red))))
-  )
+  :hook
+  (util/windows-side-window . emacs-alt-face-side-setup)
+  (util/windows-pop-up-window . emacs-alt-face-setup))
 
 (use-package rainbow-delimiters)
 

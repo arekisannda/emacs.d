@@ -83,16 +83,14 @@
       (set-window-next-buffers window nil)
       (force-mode-line-update)))
 
-  (defun tab-line-pop-up-setup (window buffer)
+  (defun tab-line-setup (window buffer)
     (with-current-buffer buffer
       (when (or global-tab-line-mode tab-line-mode)
         (tab-line-mode -1))))
 
   (defun tab-line-side-setup (window buffer &optional flags)
     (when (member 'disable-tab-line flags)
-      (with-current-buffer buffer
-        (when (or global-tab-line-mode tab-line-mode)
-          (tab-line-mode -1)))))
+      (tab-line-setup window buffer)))
 
   (defun tab-line-only-buffer-side-setup (window buffer &optional flags)
     (when (member 'enable-only-buffer-tab-line flags)
@@ -102,5 +100,5 @@
   :hook
   (util/windows-side-window . tab-line-side-setup)
   (util/windows-side-window . tab-line-only-buffer-side-setup)
-  (util/windows-pop-up-window . tab-line-pop-up-setup)
+  (util/windows-pop-up-window . tab-line-setup)
   (window-setup . global-tab-line-mode))
