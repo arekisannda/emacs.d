@@ -1430,6 +1430,7 @@
  "u"   '("undo window"     . winner-undo)
  "U"   '("redo window"     . winner-redo)
 
+ "C-w" '("bury"            . tab-line-close-tab-kill-window)
  "q"   '("quit"            . evil-quit)
 
  "V"   `("vsplit"          . ,(+window-split split-window-right))

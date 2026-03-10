@@ -3,7 +3,7 @@
 (use-package org-src :after org
   :custom
   (org-src-preserve-indentation nil)
-  (org-src-window-setup 'other-frame)
+  (org-src-window-setup 'current-window)
   (org-edit-src-persistent-message nil)
   (org-edit-src-content-indentation 0)
   :init
