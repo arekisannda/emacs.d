@@ -11,6 +11,8 @@
   (transient-mode-line-format nil)
   (transient-force-fixed-pitch t))
 
+(use-package casual)
+
 (use-package posframe
   :custom
   (posframe-inhibit-double-buffering t)

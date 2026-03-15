@@ -126,8 +126,8 @@
 
   (popup-border
    ((nil :inherit unspecified
-         :foreground ,(doom-darken (doom-blend (doom-color 'red) (doom-color 'orange) 0.3) 0.3)
-         :background ,(doom-darken (doom-blend (doom-color 'red) (doom-color 'orange) 0.3) 0.3)
+         :foreground "#5a5a5a"
+         :background "#5a5a5a"
          )))
 
   (fold-replacement-face

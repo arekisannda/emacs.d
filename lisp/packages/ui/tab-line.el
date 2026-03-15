@@ -76,9 +76,9 @@
           (ignore-errors (balance-windows p))))
       (force-mode-line-update)))
 
-  (defun tab-line-close-other-tabs ()
+  (defun tab-line-close-other-tabs (&optional window)
     (interactive)
-    (let* ((window (selected-window)))
+    (let* ((window (window-normalize-window window t)))
       (set-window-prev-buffers window nil)
       (set-window-next-buffers window nil)
       (force-mode-line-update)))

@@ -11,7 +11,10 @@
    #'cape-file
    #'cape-tex
    #'cape-keyword)
-
+  (yas-minor-mode 1)
+  (cdlatex-mode)
+  (orgtbl-mode)
+  (lazytab-mode)
   (flyspell-mode))
 
 (use-package latex

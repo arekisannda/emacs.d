@@ -7,17 +7,17 @@
   :init
   (setq-default eldoc-display-functions '(eldoc-display-in-buffer)))
 
-(use-package eldoc-box :after (eldoc windex-scroll)
-  :preface
-  (defun +eldoc-box-max-width ()
-    (let ((max-width 800)
-          (set-width (ceiling (* (frame-pixel-width) 0.3))))
-      (if (> set-width max-width) max-width set-width)))
+(defun +eldoc-box-max-width ()
+  (let ((max-width 800)
+        (set-width (ceiling (* (frame-pixel-width) 0.3))))
+    (min max-width set-width)))
 
-  (defun +eldoc-box-max-height ()
-    (let ((max-height 600)
-          (set-height (ceiling (* (frame-pixel-height) 0.3))))
-      (if (> set-height max-height) max-height set-height)))
+(defun +eldoc-box-max-height ()
+  (let ((max-height 600)
+        (set-height (ceiling (* (frame-pixel-height) 0.3))))
+    (min max-height set-height)))
+
+(use-package eldoc-box :after (eldoc windex-scroll)
   :custom-face
   (eldoc-box-body
    ((nil :inherit default
@@ -110,8 +110,7 @@ If INTERACTIVE is t, also display the buffer."
 
   (advice-add #'eldoc-box--eldoc-display-function
               :before-while (lambda (&rest args)
-                              (not (or evil-insert-state-minor-mode
-                                       diff-hl-show-hunk-posframe--transient-mode))))
+                              (not (or diff-hl-show-hunk-posframe--transient-mode))))
 
   :hook
   (eldoc-mode . eldoc-box-hover-at-point-mode))

@@ -400,6 +400,13 @@
  "C-o"   '("previous" . w3m-view-previous-page)
  "C-i"   '("next"     . w3m-view-next-page))
 #+end_src
+*** Calc
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :states '(normal visual motion emacs insert)
+ :keymaps 'calc-mode-map
+ "?" '("help" . casual-calc-tmenu))
+#+end_src
 ** Coding
 *** DevDocs
 #+begin_src emacs-lisp :tangle yes
@@ -940,17 +947,21 @@
 (defun +latex-scratch-buffer ()
   "Open a new scratch buffer in LaTeX mode."
   (interactive)
-  (let ((buffer (get-buffer-create "*latex-scratch*")))
+  (let* ((bufname "*latex-scratch*")
+        (buffer (get-buffer-create bufname)))
     (with-current-buffer buffer
-      (LaTeX-mode))
+      (rename-buffer bufname)
+      (unless (eq major-mode 'LaTex-mode) (LaTeX-mode)))
     (display-buffer buffer)))
 
 (defun +org-scratch-buffer ()
   "Open a new scratch buffer in Org mode."
   (interactive)
-  (let ((buffer (get-buffer-create "*org-scratch*")))
+  (let* ((bufname "*org-scratch*")
+        (buffer (get-buffer-create bufname)))
     (with-current-buffer buffer
-      (org-mode))
+      (rename-buffer bufname)
+      (unless (eq major-mode 'org-mode) (org-mode)))
     (display-buffer buffer)))
 
 (defun +edit-keybinds ()
@@ -974,7 +985,7 @@
   "c"     '("calc"              . full-calc)
 
   "t"     '("translate"         . google-translate-smooth-translate)
-  "w"     '("word"              . dictionary-lookup-definition)
+  "w"     '("word"              . dictionary-search)
   "W"     '("etymology"         . +dictionary-word-etymology)
 
   "m"     '("magit status"      . magit)

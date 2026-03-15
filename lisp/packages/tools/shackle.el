@@ -43,7 +43,6 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side bottom
      :slot 0
-     :dedicated t
      :size ,util/windows-min-bottom-height
      :fixed height))
 
@@ -72,8 +71,6 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 0
-     :flags (enable-only-buffer-tab-line)
-     :dedicated t
      :fixed width))
 
 (defun +shackle-right-select-preset-0 ()
@@ -83,7 +80,6 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 1
-     :flags (disable-tab-line)
      :dedicated t
      :fixed width))
 
@@ -94,13 +90,12 @@
   :custom
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
   (util/windows-max-width 100)
-  (util/windows-min-bottom-height 25)
+  (util/windows-min-bottom-height 0.3)
   (util/windows-min-left-width 60)
   (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
   (shackle-disable-list
    `("^ \\*which-key\\*$"
-     treemacs-mode
      leetcode--problems-mode
      leetcode--problem-detail-mode))
 
@@ -119,18 +114,22 @@
        pr-review-mode)
       :same t)
 
+     ((treemacs-mode)
+      ,@(+shackle-left-preset-size-0))
+
      ((magit-mode
        forge-repository-list-mode)
       :custom util/windows-display-buffer-by-condition
-      :fallback ( :action (lambda (buffer &optional alist plist)
-                            (with-current-buffer buffer
-                              (setq-local +shackle-frame-init-buffer t))
-
-                            (windex-frame-display-buffer
-                             buffer
-                             `(,@alist
-                               (name . ,(format "Emacs Tool")))
-                             )))
+      :fallback
+      ( :action
+        (lambda (buffer &optional alist plist)
+          (with-current-buffer buffer
+            (setq-local +shackle-frame-init-buffer t))
+          (windex-frame-display-buffer
+           buffer
+           `(,@alist
+             (name . ,(format "Emacs Tool")))
+           )))
       :conditions
       (((magit-mode)
         :same t :select t)
@@ -140,48 +139,14 @@
        "^\\*shell\\*$"
 
        compilation-mode)
-      :if (lambda (window) (not compilation-display-buffer))
-      :ignore t)
 
-     (("^\\*Shell Command Output\\*$"
-       "^\\*shell\\*$"
-
-       compilation-mode)
-      :if (lambda (window) compilation-display-buffer)
-      ,@(+shackle-bottom-preset-size-0))
-
-     (("^ \\*transient\\*$"
-       "^ \\*CDLaTeX Help\\*"
-       "^\\*Command Line\\*$"
-       "^\\*trace-output\\*$"
-
-       calendar-mode
-       evil-command-window-mode)
       :custom util/windows-display-buffer-by-condition
-      :fallback ( :action util/windows-display-buffer-in-pop-up-window
-                  :select t)
+      :fallback (:ignore t)
       :conditions
       (((".*")
-        :if (lambda (window) (window-parameter window 'window-popup))
-        :same t :select t)
+        :if (lambda (window) compilation-display-buffer)
+        ,@(+shackle-bottom-preset-size-0))
        ))
-
-     (("^\\*diff-hl\\*"
-       "^\\*diff-hl-revert\\*"
-       "^\\*diff-hl-show-hunk-diff-buffer\\*"
-       "^\\*diff-hl-show-hunk-buffer\\*"
-       "^\\*Deletions\\*$"
-       "^ widget-choose$"
-       "^ \\*which-key\\*$"
-       "^\\*Ibuffer confirmation\\*"
-       "^\\*Local Variables\\*$"
-       "^\\*Completions\\*$"
-       "^ \\*Agenda Commands\\*$"
-       "^\\*Backtrace\\*$"
-
-       backtrace-mode)
-      :custom util/windows-display-buffer-in-pop-up-window
-      :select t)
 
      (("^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
@@ -194,9 +159,8 @@
        "^\\*w3m\\*$"
        "^\\*Org Agenda .*\\*$"
        "^\\*Org Agenda\\*$"
-       "^\\*ChatGPT.*\\*$"
-       "^\\*Claude.*\\*$"
        "^\\*Org Select\\*$"
+       "^ \\*Agenda Commands\\*$"
 
        Custom-mode
        calc-mode
@@ -208,16 +172,28 @@
       ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
 
+     (("^\\*Shell Command Output\\*$"
+       "^\\*shell\\*$"
+
+       compilation-mode)
+      :if (lambda (window) compilation-display-buffer)
+      ,@(+shackle-bottom-preset-size-0))
+
+     (("^\\*org-roam\\*$"
+       org-roam-mode)
+      ,@(+shackle-bottom-preset-size-0)
+      :size +shackle-get-dimensions)
+
      (("^\\*eldoc.*\\*"
        "^ \\*eglot doc\\*$"
        "^\\*yasnippet-capf-doc\\*$"
-       "^\\*corfu doc.*\\*$"
-       "^\\*org-roam\\*$"
-       "\\*Gnuplot Commands\\*"
-       "\\*Gnuplot Trail\\*"
+       "^\\*corfu doc.*\\*$")
+      ,@(+shackle-right-preset-0)
+      :size +shackle-get-dimensions)
 
-       calc-trail-mode
-       org-roam-mode)
+     (("\\*Gnuplot Commands\\*"
+       "\\*Gnuplot Trail\\*"
+       calc-trail-mode)
       ,@(+shackle-right-preset-1)
       :size +shackle-get-dimensions)
 
@@ -244,6 +220,8 @@
        "^\\*detached-list\\*$"
        "^\\*IBuffer\\*$"
        "^\\*envrc\\*$"
+       "^\\*ChatGPT.*\\*$"
+       "^\\*Claude.*\\*$"
 
        git-rebase-mode
        detached-list-mode
@@ -272,13 +250,50 @@
      (("^\\*Edit Formulas\\*")
       ,@(+shackle-bottom-select-preset-size-1))
 
-     (("^\\*Org .*\\*$")
+     (("^ \\*transient\\*$"
+       "^ \\*CDLaTeX Help\\*")
+      :custom util/windows-display-buffer-by-condition
+      :fallback ( :action util/windows-display-buffer-in-pop-up-window
+                  :select t)
+      :conditions
+      (((".*")
+        :if (lambda (window) (and (eq (window-parameter window 'window-side) 'right)
+                                  (eq (window-parameter window 'window-slot) 0)))
+        :action util/windows-display-buffer-in-side-window
+        ,@(+shackle-right-select-preset-1)
+        :flags (disable-tab-line enable-alt-face)
+        :size +shackle-get-dimensions)
+
+       ((".*")
+        :if (lambda (window) (window-parameter window 'window-popup))
+        :flags (disable-tab-line enable-alt-face)
+        :same t :select t)
+       ))
+
+     (("^\\*diff-hl\\*"
+       "^\\*diff-hl-revert\\*"
+       "^\\*diff-hl-show-hunk-diff-buffer\\*"
+       "^\\*diff-hl-show-hunk-buffer\\*"
+       "^\\*Deletions\\*$"
+       "^ widget-choose$"
+       "^ \\*which-key\\*$"
+       "^\\*Ibuffer confirmation\\*"
+       "^\\*Local Variables\\*$"
+       "^\\*Completions\\*$"
+       "^\\*Backtrace\\*$"
+       "^\\*Org .*\\*$"
+       "^\\*Command Line\\*$"
+       "^\\*trace-output\\*$"
+
+       calendar-mode
+       evil-command-window-mode
+       backtrace-mode)
       :custom util/windows-display-buffer-in-pop-up-window
       :select t)
 
      ;;; base mode fallback
      ((help-mode)
-      ,@(+shackle-right-select-preset-1)
+      ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
 
      ((special-mode

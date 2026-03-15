@@ -116,8 +116,9 @@
       (move-beginning-of-line 1)
 
       (let* ((hunk-overlay diff-hl-show-hunk--original-overlay)
-             (width (let ((edges (window-edges (selected-window))))
-                      (- (nth 2 edges) (nth 0 edges) 10))))
+             (width (- (window-body-width)
+                       (ceiling (car (window-fringes)) (frame-char-width))
+                       (* 2 (car (window-margins))))))
         (setq
          diff-hl-show-hunk--frame
          (posframe-show buffer

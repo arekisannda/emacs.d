@@ -1,6 +1,6 @@
 ;;; tools/writing.el -*- lexical-binding: t; -*-
 
-(use-package dictionary :after w3m
+(use-package dictionary
   :custom
   (dictionary-use-single-buffer t)
   (dictionary-server "dict.org")
@@ -10,8 +10,7 @@
     "Search WORD etymology."
     (interactive
      (list (read-string "Word: " (current-word))))
-    (w3m-browse-url (format "https://etymonline.com/word/%s" word)))
-  :commands (+dictionary-word-etymology))
+    (w3m-browse-url (format "https://etymonline.com/word/%s" word))))
 
 (use-package google-translate
   :custom

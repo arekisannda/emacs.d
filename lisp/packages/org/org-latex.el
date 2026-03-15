@@ -2,6 +2,18 @@
 
 (use-package nil :after org ;; org-latex
   :custom
+  (org-latex-compiler "lualatex")
+  (org-latex-packages-alist
+   '(("" "bbm" t)
+     ("" "amsmath" t)
+     ("" "amssymb" t)
+     ("" "graphicx" t)
+     ("" "hyperref" t)
+     ("" "multirow" t)
+     ("" "makecell" t)
+     ("" "tikz" t)
+     ("" "pgfplots" t)))
+
   (org-latex-logfiles-extensions (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc"
                                          "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf"
                                          "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf"
@@ -38,4 +50,4 @@
                 :image-converter
                 ("dvisvgm --page=1- --clipjoin --relative --no-fonts -v3 --bbox=preview --output=%B-%%9p.svg %f")))
   :hook
-  (org-mode . org-cdlatex-mode))
+  (org-mode . turn-on-org-cdlatex))

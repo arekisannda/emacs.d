@@ -43,7 +43,7 @@
 
 (use-package org-agenda :after org
   :custom
-  (org-agenda-window-setup 'reorganize-frame)
+  (org-agenda-window-setup 'current-window)
   (org-agenda-sticky nil)
   (org-agenda-compact-blocks nil)
   (org-agenda-skip-scheduled-if-done t)

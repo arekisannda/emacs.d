@@ -3,7 +3,7 @@
 (use-package calc
   :defer t
   :init
-  (setq calc-display-trail t
+  (setq calc-display-trail nil
         calc-show-banner nil)
   :config
   (defun calc-trail-display-override (flag &optional no-refresh interactive)
