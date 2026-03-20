@@ -205,6 +205,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
               (window-preserve-size window nil t)
               ))
 
+          (set-window-parameter window 'window-popup 'bottom)
           (if (plist-get plist :select) window init-window))
         ))
     ))

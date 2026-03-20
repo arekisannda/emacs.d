@@ -49,6 +49,15 @@
             (window-parameter win 'window-popup)))
       (window-list nil nil (windex-first-live-window (window-main-window))))))
 
+  (defun +windex-layout-apply (&optional reorderp)
+    (interactive (list current-prefix-arg))
+    (let ((apply-fn windex-layout-buffer-list-apply-function)
+          windex-layout-buffer-list-apply-function)
+      (when reorderp
+        (setq windex-layout-buffer-list-apply-function apply-fn))
+      (call-interactively #'windex-layout-apply)
+      ))
+
   :custom
   (windex-layout-buffer-list-apply-function #'+windex-layout-list-main-window-buffers)
   (windex-layout-buffer-list-restore-function #'+windex-layout-list-restore-buffers)

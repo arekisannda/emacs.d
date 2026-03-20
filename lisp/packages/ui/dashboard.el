@@ -98,11 +98,13 @@ The optional ARGS are keyword arguments."
 
 (use-package dashboard
   :custom
+  (initial-buffer-choice 'dashboard-open)
   (dashboard-buffer-name " *dashboard*")
   (dashboard-icon-type 'nerd-icons)
   (dashboard-startup-banner (expand-file-name "assets/logo.png" user-emacs-directory))
   (dashboard-banner-logo-title nil)
   (dashboard-projects-backend 'project-el)
+  (dashboard-vertically-center-content t)
   (dashboard-center-content t)
   (dashboard-show-shortcuts t)
   (dashboard-display-icons-p t)

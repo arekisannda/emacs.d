@@ -31,9 +31,10 @@
            (selected-p (if buffer-p
                            (eq tab (window-buffer))
                          (cdr (assq 'selected tab))))
-           (name (util/strings-pad-or-truncate (concat " " (if buffer-p
-                                 (funcall tab-line-tab-name-function tab tabs)
-                               (cdr (assq 'name tab)))) 16))
+           (name (util/strings-pad-or-truncate
+                  (concat " " (if buffer-p
+                                  (funcall tab-line-tab-name-function tab tabs)
+                                (cdr (assq 'name tab)))) 16))
            (face (if selected-p
                      (if (mode-line-window-selected-p)
                          'tab-line-tab-current
@@ -66,14 +67,28 @@
                ,@(if selected-p '(selected t))
                mouse-face tab-line-highlight))))
 
+  (defcustom tab-line-confirm-kill-window t
+    "Enable `tab-line' kill window confirmation."
+    :type 'boolean)
+
   (defun tab-line-close-tab-kill-window ()
     (interactive)
     (let* ((window (selected-window)))
       (if (> (length (tab-line-tabs-window-buffers)) 1)
           (bury-buffer)
-        (when (yes-or-no-p "Kill window?")
+        (when (or (not tab-line-confirm-kill-window) (yes-or-no-p "Kill window?"))
           (delete-window window)
-          (ignore-errors (balance-windows p))))
+          (ignore-errors (balance-windows))))
+      (force-mode-line-update)))
+
+  (defun tab-line-kill-tab-kill-window ()
+    (interactive)
+    (let* ((window (selected-window)))
+      (if (> (length (tab-line-tabs-window-buffers)) 1)
+          (kill-current-buffer)
+        (when (or (not tab-line-confirm-kill-window) (yes-or-no-p "Kill window?"))
+          (delete-window window)
+          (ignore-errors (balance-windows))))
       (force-mode-line-update)))
 
   (defun tab-line-close-other-tabs (&optional window)

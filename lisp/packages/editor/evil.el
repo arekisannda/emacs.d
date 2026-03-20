@@ -5,8 +5,10 @@
 (use-package smartparens
   :custom
   (sp-autoinsert-pair nil)
+  (sp-autoskip-closing-pair t)
+  (sp-autoskip-opening-pair t)
   :hook
-  (after-init . smartparens-global-mode))
+  (prog-mode . smartparens-global-mode))
 
 (defmacro evil-move-or-goto-line-around (dir)
   "Wrapper for evil move in DIR."

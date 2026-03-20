@@ -91,7 +91,7 @@
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
   (util/windows-max-width 100)
   (util/windows-min-bottom-height 0.3)
-  (util/windows-min-left-width 60)
+  (util/windows-min-left-width 54)
   (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
   (shackle-disable-list
@@ -161,6 +161,7 @@
        "^\\*Org Agenda\\*$"
        "^\\*Org Select\\*$"
        "^ \\*Agenda Commands\\*$"
+       "^CAPTURE-.*\\.org$"
 
        Custom-mode
        calc-mode
@@ -199,7 +200,6 @@
 
      (("^\\*Org Preview.*\\*$"
        "^\\*Org Src.*\\*$"
-       "^CAPTURE-.*\\.org$"
 
        dashboard-mode
        pdf-view-mode)

@@ -43,6 +43,11 @@
 
 (use-package org-agenda :after org
   :custom
+  (org-agenda-prefix-format
+   '((agenda . " %i %-24:c%?-12t% s")
+     (todo   . " %i %-24:c")
+     (tags   . " %i %-24:c")
+     (search . " %i %-24:c")))
   (org-agenda-window-setup 'current-window)
   (org-agenda-sticky nil)
   (org-agenda-compact-blocks nil)
