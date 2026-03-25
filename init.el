@@ -70,6 +70,7 @@
   (setq-default read-process-output-max (* 1024 1024))
   (setq message-log-max 2000)
   (with-current-buffer (messages-buffer) (messages-buffer-mode))
+  (setenv "EDITOR" "emacsclient -r")
 
   (pcase (getenv "XDG_CURRENT_DESKTOP")
     ("sway" (+load "lisp/scripts/swaywm")))

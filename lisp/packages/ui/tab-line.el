@@ -87,7 +87,7 @@
       (if (> (length (tab-line-tabs-window-buffers)) 1)
           (kill-current-buffer)
         (when (or (not tab-line-confirm-kill-window) (yes-or-no-p "Kill window?"))
-          (delete-window window)
+          (kill-buffer-and-window)
           (ignore-errors (balance-windows))))
       (force-mode-line-update)))
 

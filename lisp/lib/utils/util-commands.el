@@ -51,7 +51,10 @@
                         )))
               (selected (completing-read prompt commands))
               (preset (alist-get selected commands nil nil #'string=)))
-         (list (util/commands--quote-command (or preset selected)) current-prefix-arg))
+         (if (functionp preset)
+             (list preset current-prefix-arg)
+           (list (util/commands--quote-command (or preset selected)) current-prefix-arg)
+           ))
        )))
 
   (cond

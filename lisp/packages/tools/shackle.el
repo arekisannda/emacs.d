@@ -139,14 +139,7 @@
        "^\\*shell\\*$"
 
        compilation-mode)
-
-      :custom util/windows-display-buffer-by-condition
-      :fallback (:ignore t)
-      :conditions
-      (((".*")
-        :if (lambda (window) compilation-display-buffer)
-        ,@(+shackle-bottom-preset-size-0))
-       ))
+      ,@(+shackle-bottom-preset-size-0))
 
      (("^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
@@ -172,13 +165,6 @@
        dictionary-mode)
       ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
-
-     (("^\\*Shell Command Output\\*$"
-       "^\\*shell\\*$"
-
-       compilation-mode)
-      :if (lambda (window) compilation-display-buffer)
-      ,@(+shackle-bottom-preset-size-0))
 
      (("^\\*org-roam\\*$"
        org-roam-mode)
@@ -222,6 +208,7 @@
        "^\\*envrc\\*$"
        "^\\*ChatGPT.*\\*$"
        "^\\*Claude.*\\*$"
+       "^\\*Diff\\*$"
 
        git-rebase-mode
        detached-list-mode

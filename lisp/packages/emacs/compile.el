@@ -1,7 +1,5 @@
 ;;; emacs/compile.el -*- lexical-binding: t; -*-
 
-(defvar-local compilation-display-buffer t)
-
 (use-package compile
   :defer t
   :custom

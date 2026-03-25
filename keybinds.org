@@ -643,8 +643,8 @@
  "v"   (general-predicate-dispatch  '("view"     . +keybinds-text-view-command)
          (derived-mode-p 'org-mode) '("org view" . +keybinds-org-view-command))
 
- "c"   '("cursor"           . +keybinds-cursor-command)
- "C-c" '("cursor"           . +keybinds-cursor-command)
+ "c"    '("cursor"          . +keybinds-cursor-command)
+ "C-c"  '("cursor"          . +keybinds-cursor-command)
  "C-\\" '("tools"           . +keybinds-tools-command)
  "b"    '("buffers"         . +keybinds-buffer-command)
  "C-b"  '("buffers"         . +keybinds-buffer-command)
@@ -1053,10 +1053,10 @@
   "m"     '("magit status"    . magit)
   "C-m"   '("magit dispatch"  . magit-dispatch)
   "C-n"   '("forge dispatch"  . forge-dispatch)
-  
-  "C-p"   '("prompt"          . gptel-menu)
-  "M-p"   '("prompt"          . gptel-add)
-  "p"     '("prompt"          . gptel)
+
+  "P"     '("gptel session"   . gptel)
+  "M-p"   '("gptel rewrite"   . gptel-rewrite)
+  "C-p"   '("gptel menu"      . gptel-menu)
 
   "C-k"   '("keybinds"        . +edit-keybinds)
   "C-l"   '("sessions"        . detached-list-sessions)
