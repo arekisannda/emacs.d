@@ -43,6 +43,7 @@
                    dape-info-parent-mode
                    special-mode
                    eshell-mode
+                   agent-shell-mode
                    dashboard-mode
                    dap-ui-breakpoints-ui-list-mode
                    dape-repl-mode

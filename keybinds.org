@@ -290,6 +290,12 @@
 #+end_src
 *** GPTel
 #+begin_src emacs-lisp :tangle yes
+(defun gptel-run (&optional sendp)
+  (interactive (list current-prefix-arg))
+  (if sendp
+      (funcall #'gptel-send)
+    (call-interactively #'gptel-menu)))
+
 (general-define-key
  :states '(normal visual motion emacs insert)
  :keymaps 'gptel-mode-map
@@ -297,6 +303,14 @@
 
  "<return>"   nil
  "C-<return>" #'gptel-send)
+#+end_src
+*** Agent Shell
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :states '(normal visual motion emacs insert)
+ :keymaps 'agent-shell-mode-map
+
+ "C-S-l"          #'agent-shell-clear-buffer)
 #+end_src
 *** Code Review
 #+begin_src emacs-lisp :tangle yes
@@ -1054,9 +1068,8 @@
   "C-m"   '("magit dispatch"  . magit-dispatch)
   "C-n"   '("forge dispatch"  . forge-dispatch)
 
-  "P"     '("gptel session"   . gptel)
-  "M-p"   '("gptel rewrite"   . gptel-rewrite)
-  "C-p"   '("gptel menu"      . gptel-menu)
+  "p"     '("agent shell"     . agent-shell)
+  "C-p"   '("gptel"           . gptel-run)
 
   "C-k"   '("keybinds"        . +edit-keybinds)
   "C-l"   '("sessions"        . detached-list-sessions)
@@ -1270,13 +1283,19 @@
 (general-create-definer +keybinds-editor-writing
   :prefix-command '+keybinds-editor-writing-command)
 
+(defun query-replace-regexp-from-top ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (call-interactively #'query-replace-regexp)))
+
 (+keybinds-editor-writing 
   "s" '("fix typo"        . flyspell-correct-word-before-point)
 
   "p" '("fill paragraph"  . fill-paragraph)
   "m" '("remark"          . +keybinds-org-remark-command)
 
-  "r" '("replace"         . query-replace-regexp)
+  "r" '("replace"         . query-replace-regexp-from-top)
   "R" '("project replace" . project-query-replace-regexp))
 #+end_src
 ** Completion

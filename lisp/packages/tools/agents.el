@@ -1,4 +1,4 @@
-;;; tools/gpt.el -*- lexical-binding: t; -*-
+;;; tools/agents.el -*- lexical-binding: t; -*-
 
 (use-package gptel
   :defer t
@@ -10,10 +10,16 @@
   (gptel-default-mode #'gptel-mode-setup)
   (gptel-cache '(message system))
   (gptel-directives
-   '((default   . "You are a large language model and a careful programmer. Provide code and only code as output without any additional text, prompt or note.")
-     (assistant . "You are a large language model living in Emacs and a helpful assistant. Respond concisely.")
-     (writing   . "You are a large language model and a writing assistant. Respond concisely.")
-     (chat      . "You are a large language model and a conversation partner. Respond concisely.")))
+   '((default
+      . "You are a large language model and a careful programmer.
+Output ONLY raw code with no markdown fencing, no backticks, no preamble, no explanation.
+Start your response with the first line of code.")
+     (assistant
+      . "You are a large language model living in Emacs and a helpful assistant. Respond concisely.")
+     (writing
+      . "You are a large language model and a writing assistant. Respond concisely.")
+     (chat
+      . "You are a large language model and a conversation partner. Respond concisely.")))
   (gptel-prompt-prefix-alist
    '((markdown-mode . "# ")
      (org-mode . "* ")
@@ -55,3 +61,23 @@
   (setq gptel-model 'claude-haiku-4-5-20251001)
   (setq gptel-backend gptel--anthropic)
   )
+
+(use-package agent-shell
+  :custom
+  (agent-shell-mcp-servers nil)
+  (agent-shell-header-style 'text)
+  (agent-shell-show-welcome-message nil)
+  (agent-shell-anthropic-authentication
+   (agent-shell-anthropic-make-authentication
+    :oauth (lambda () (auth-source-pass-get 'secret "claude-code"))))
+  (agent-shell-clipboard-image-handlers
+   '(((:command . "wl-paste")
+      (:save
+       . (lambda (file-path)
+           (with-temp-buffer
+             (let* ((coding-system-for-read 'binary)
+                    (exit-code (call-process "wl-paste" nil (list t nil) nil "--type" "image/png")))
+               (if (zerop exit-code)
+                   (write-region nil nil file-path)
+                 (error "Command wl-paste failed with exit code %d" exit-code))))))))
+   ))

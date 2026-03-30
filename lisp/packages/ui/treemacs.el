@@ -84,6 +84,43 @@
 
   (advice-add #'treemacs-select-window :around #'+treemacs--select-window-guard)
 
+
+  (defun +treemacs-finish-edit ()
+    "Finish editing your workspaces and apply the change."
+    (interactive)
+    (treemacs-block
+     (treemacs-error-return-if (not (equal (buffer-name) treemacs--org-edit-buffer-name))
+       "This is not a valid treemacs workspace edit buffer")
+     (treemacs--org-edit-remove-validation-msg)
+     (widen)
+     (whitespace-cleanup)
+     (-let [lines (treemacs--read-persist-lines (buffer-string))]
+       (treemacs-error-return-if (null (buffer-string))
+         "The buffer is empty, there is nothing here to save.")
+       (pcase (treemacs--validate-persist-lines lines)
+         (`(error ,err-line ,err-msg)
+          (treemacs--org-edit-display-validation-msg err-msg err-line))
+         ('success
+          (treemacs--invalidate-buffer-project-cache)
+          (write-region
+           (apply #'concat (--map (concat it "\n") lines))
+           nil
+           treemacs-persist-file
+           nil :silent)
+          (treemacs--restore)
+          (-if-let (ws (treemacs--find-workspace-by-name
+                        (treemacs-workspace->name (treemacs-current-workspace))))
+              (setf (treemacs-current-workspace) ws)
+            (treemacs--find-workspace))
+          (treemacs--consolidate-projects)
+          (kill-buffer)
+          (run-hooks 'treemacs-workspace-edit-hook)
+          (when treemacs-hide-gitignored-files-mode
+            (treemacs--prefetch-gitignore-cache 'all))
+          (treemacs-log "Edit completed successfully."))))))
+
+  (advice-add #'treemacs-finish-edit :override #'+treemacs-finish-edit)
+
   (defun +treemacs--setup ()
     (treemacs-filewatch-mode 1)
     (treemacs-fringe-indicator-mode 'only-when-focused)
