@@ -13,6 +13,16 @@ If it is not set, use ALTERNATIVE instead."
         +eglot-local-contact
       alternative)))
 
+(defvar eglot-default-configurations nil)
+
+(defun eglot-server-configuration-for-lang (server)
+  (let (base)
+    (dolist (lang (eglot--language-ids server))
+      (let ((config (alist-get lang eglot-default-configurations nil nil #'equal)))
+        (setq base (plist-put base (car config) (cadr config)))
+        ))
+    base))
+
 (use-package eglot
   :custom
   (eldoc-echo-area-prefer-doc-buffer t)
@@ -27,6 +37,8 @@ If it is not set, use ALTERNATIVE instead."
   (eglot-ignored-server-capabilities '(:documentHighlightProvider
                                        :inlayHintProvider
                                        :signatureHelpProvider))
+
+  (eglot-workspace-configuration #'eglot-server-configuration-for-lang)
   ;; (eglot-extend-to-xref nil)
   :config
   (let ((nixd          '("nixd" :name "nixd"))

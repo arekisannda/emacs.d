@@ -53,3 +53,19 @@
      )))
 
 (use-package lazytab)
+
+(with-eval-after-load 'eglot
+  (add-to-list
+   'eglot-default-configurations
+   (cons
+    "latex"
+    '(:ltex
+      ( :enabled t
+         :language "en-US"
+         :checkFrequency "edit"
+         :additionalRules ( :motherTongue "en-US"
+                            :enablePickyRules t)
+         :diagnosticSeverity "information"
+         :ltex-ls (:logLevel "fine")))
+    ))
+  )
