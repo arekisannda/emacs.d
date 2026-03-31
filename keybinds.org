@@ -1068,7 +1068,8 @@
   "C-m"   '("magit dispatch"  . magit-dispatch)
   "C-n"   '("forge dispatch"  . forge-dispatch)
 
-  "p"     '("agent shell"     . agent-shell)
+  "p"     '("agent shell"     . agent-shell-no-context)
+  "M-p"   '("agent shell add" . agent-shell)
   "C-p"   '("gptel"           . gptel-run)
 
   "C-k"   '("keybinds"        . +edit-keybinds)
