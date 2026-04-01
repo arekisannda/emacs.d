@@ -18,3 +18,22 @@
          ))
     ))
   )
+
+(defun nix-flake-update-inputs ()
+  (interactive)
+  (if-let* ((default-directory (project-root (project-current nil default-directory)))
+            (inputs (string-lines
+                     (shell-command-to-string
+                      "nix flake metadata --no-warn-dirty --json | jq -r '.locks.nodes.root.inputs | keys[]'")))
+            (selected (completing-read-multiple "Update inputs: " inputs)))
+      (detached-compile (concat "nix flake update " (string-join selected " ")))
+    (user-error "Not a nix flake project.")))
+
+(defun util/commands-run--add-nix-flake-commands (buffer)
+  (with-current-buffer buffer
+    (when-let* ((default-directory (project-root (project-current nil default-directory))))
+      (when (file-exists-p "flake.nix")
+        '(("Nix Flake Update"  . nix-flake-update-inputs)))
+      )))
+
+(add-hook 'util/commands-run-list-additional-command-hook #'util/commands-run--add-nix-flake-commands)

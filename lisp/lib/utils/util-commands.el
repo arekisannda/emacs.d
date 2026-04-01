@@ -32,30 +32,42 @@
       )
     (s-trim str)))
 
+(defcustom util/commands-run-list-additional-command-hook '()
+  "Add additional commands.
+Function takes one argument for BUFFER and return list of command entries or nil."
+  :type 'hook)
+
 (defun util/commands-run-command (command &optional suppress-output)
   "Run preset command."
   (interactive
-   (with-temp-buffer
-     (let ((default-directory default-directory))
-       (unless buffer-file-name
-         (hack-dir-local-variables-non-file-buffer))
-       (setq commands (buffer-local-value 'util/commands-command-list (current-buffer)))
+   (let ((commands
+          (apply #'append
+                 (mapcar(lambda (fn) (funcall fn (current-buffer)))
+                        util/commands-run-list-additional-command-hook))))
+     (with-temp-buffer
+       (let ((default-directory default-directory))
+         (unless buffer-file-name
+           (hack-dir-local-variables-non-file-buffer))
 
-       (let* ((prompt
-               (format "Run command [%s]: "
-                       (shrink-path-dirs
-                        (or (car (dir-locals-find-file default-directory))
-                            (when-let ((proj (project-current)))
-                              (project-root proj))
-                            default-directory)
-                        )))
-              (selected (completing-read prompt commands))
-              (preset (alist-get selected commands nil nil #'string=)))
-         (if (functionp preset)
-             (list preset current-prefix-arg)
-           (list (util/commands--quote-command (or preset selected)) current-prefix-arg)
-           ))
-       )))
+         (setq commands
+               (append commands
+                       (buffer-local-value 'util/commands-command-list (current-buffer))))
+
+         (let* ((prompt
+                 (format "Run command [%s]: "
+                         (shrink-path-dirs
+                          (or (car (dir-locals-find-file default-directory))
+                              (when-let ((proj (project-current)))
+                                (project-root proj))
+                              default-directory)
+                          )))
+                (selected (completing-read prompt commands))
+                (preset (alist-get selected commands nil nil #'string=)))
+           (if (functionp preset)
+               (list preset current-prefix-arg)
+             (list (util/commands--quote-command (or preset selected)) current-prefix-arg)
+             ))
+         ))))
 
   (cond
    ((functionp command) (funcall command))

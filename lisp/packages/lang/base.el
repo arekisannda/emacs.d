@@ -48,3 +48,16 @@
 (use-package special-mode
   :hook
   (special-mode . +lang-special-mode-setup))
+
+(defun local-gh-action-test-command ()
+  (if-let* ((default-directory (project-root (project-current nil default-directory))))
+      (detached-compile "act")
+    ))
+
+(defun util/commands-run--add-ci-commands (buffer)
+  (with-current-buffer buffer
+    (when (executable-find "act")
+      '(("CI Test"  . local-gh-action-test-command)))
+    ))
+
+(add-hook 'util/commands-run-list-additional-command-hook #'util/commands-run--add-ci-commands)
