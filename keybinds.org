@@ -158,7 +158,7 @@
   "C-s" `("capture schedule"  . ,(+org-capture-key "s"))
   "C-d" `("capture deadline"  . ,(+org-capture-key "d"))
   "C-j" `("capture journal"   . ,(+org-capture-key "j"))
-  "C-a" `("capture journal"   . ,(+org-capture-key "a"))
+  "C-a" `("capture agenda"    . ,(+org-capture-key "a"))
 
   ;;; view capt
   "M-t" `("view todo"         . ,(+org-capture-open "todo" "todo.org"))
@@ -1286,9 +1286,11 @@
 
 (defun query-replace-regexp-from-top ()
   (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (call-interactively #'query-replace-regexp)))
+  (if (use-region-p)
+      (call-interactively #'query-replace-regexp)
+    (save-excursion
+      (goto-char (point-min))
+      (call-interactively #'query-replace-regexp))))
 
 (+keybinds-editor-writing 
   "s" '("fix typo"        . flyspell-correct-word-before-point)

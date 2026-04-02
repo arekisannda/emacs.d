@@ -1,6 +1,8 @@
 ;;; emacs/base.el -*- lexical-binding: t; -*-
 
-(use-package no-littering :demand t)
+(use-package no-littering :demand t
+  :config
+  (no-littering-theme-backups))
 
 (use-package aio :defer t)
 

@@ -112,9 +112,9 @@
 (set-fontset-font "fontset-default" 'kana (font-spec :family "Source Han Sans"))
 
 (setq-default frame-title-format
-              '((:eval (if init-file-debug (propertize "[DEBUG] " 'face '(:foreground "#ffffff" ))))
-                "%F"
-                (:eval (if tab-bar-mode (format ": %s" (cdr (assq 'name (tab-bar--current-tab))))))))
+              '((:eval (if init-file-debug "[DEBUG] "))
+                (:eval (or (frame-parameter (selected-frame) 'prefix) "%F: "))
+                (:eval (if tab-bar-mode (format "%s" (cdr (assq 'name (tab-bar--current-tab))))))))
 
 (unless init-file-debug
   (setq message-log-max nil)

@@ -128,7 +128,7 @@
           (windex-frame-display-buffer
            buffer
            `(,@alist
-             (name . ,(format "Emacs Tool")))
+             (prefix . ,(format "[Emacs Tool] ")))
            )))
       :conditions
       (((magit-mode)

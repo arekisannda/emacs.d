@@ -7,12 +7,12 @@
   (with-current-buffer (window-buffer (windex-get-mru-in-main))
     (display-buffer (current-buffer)) (beginning-of-line)))
 
-(defvar notes-frame-name "Notes Viewer")
+(defvar notes-frame-name "[Note Viewer] ")
 
 ;;;###autoload
 (defun swaywm/notes-open (title)
   (util/frames-select-frame-with-params `((+side-frame . t)
-                                          (name . ,notes-frame-name)
+                                          (prefix . ,notes-frame-name)
                                           (min-width . 120)
                                           (width . 120))
     (org-roam-node-visit (org-roam-node-from-title-or-alias title t))
@@ -21,7 +21,7 @@
 ;;;###autoload
 (defun swaywm/notes-create (key title)
   (util/frames-select-frame-with-params `((+side-frame . t)
-                                          (name . ,notes-frame-name)
+                                          (prefix . ,notes-frame-name)
                                           (min-width . 120)
                                           (width . 120))
     (let ((buffer (generate-new-buffer "*new*")))
