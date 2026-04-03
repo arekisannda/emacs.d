@@ -12,8 +12,8 @@
   (gptel-directives
    '((default
       . "You are a large language model and a careful programmer.
-Output ONLY raw code with no markdown fencing, no backticks, no preamble, no explanation.
-Start your response with the first line of code.")
+Do not use markdown. Do not use triple backticks. Do not wrap code in any fencing or formatting.
+Output only the raw code characters, nothing else — no preamble, no explanation, no backticks.")
      (assistant
       . "You are a large language model living in Emacs and a helpful assistant. Respond concisely.")
      (writing

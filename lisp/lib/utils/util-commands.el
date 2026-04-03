@@ -69,9 +69,16 @@ Function takes one argument for BUFFER and return list of command entries or nil
              ))
          ))))
 
-  (cond
-   ((functionp command) (funcall command))
-   ((stringp command) (funcall util/commands-string-command-function command suppress-output))
-   ))
+  (let ((display-buffer-alist display-buffer-alist))
+
+    (when suppress-output
+      (setq display-buffer-alist
+            '(("\\*Async Shell Command\\*"    display-buffer-no-window)
+              ("\\*Detached Shell Command\\*" display-buffer-no-window))
+            ))
+    (cond
+     ((functionp command) (funcall command))
+     ((stringp command) (funcall util/commands-string-command-function command))
+     )))
 
 (provide 'util-commands)
