@@ -67,7 +67,7 @@
 (+on window-setup
   (defvar packages/emacs-gc-cons-threshold (* 1024 1024 100))
   (setq-default gc-cons-threshold packages/emacs-gc-cons-threshold)
-  (setq-default read-process-output-max (* 1024 1024))
+  (setq-default read-process-output-max (* 4 1024 1024))
   (setq message-log-max 2000)
   (with-current-buffer (messages-buffer) (messages-buffer-mode))
   (setenv "EDITOR" "emacsclient -r")

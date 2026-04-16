@@ -25,8 +25,10 @@
   :custom
   (windmove-allow-all-windows t))
 
+(use-package tab-bar
+  :hook
+  (window-setup . tab-bar-history-mode))
+
 (use-package winner
   :custom
-  (winner-dont-bind-my-keys t)
-  :hook
-  (window-setup . winner-mode))
+  (winner-dont-bind-my-keys t))

@@ -77,7 +77,7 @@ If INTERACTIVE, display it.  Else, return said buffer."
       (user-error (format
                    "ElDoc buffer doesn't exist, maybe `%s' to produce one."
                    (substitute-command-keys "\\[eldoc]"))))
-    (let ((buf-name "*eldoc info*")
+    (let ((buf-name "*eldoc*")
           (buf))
       (if (setq buf (get-buffer buf-name))
           (with-current-buffer buf
@@ -87,8 +87,8 @@ If INTERACTIVE, display it.  Else, return said buffer."
         (with-current-buffer eldoc--doc-buffer
           (setq buf (clone-buffer buf-name t))))
       (with-current-buffer buf
-        (face-remap-add-relative 'markdown-code-face `(nil :background ,(doom-color 'bg)))
         (setq-local truncate-lines t)
+        (local-set-key (kbd "C-c C-o") #'markdown-follow-thing-at-point)
         (visual-line-mode 1)
         (word-wrap-whitespace-mode)
         (rename-buffer buf-name)
@@ -105,7 +105,7 @@ If INTERACTIVE is t, also display the buffer."
     (interactive)
     (let (window)
       (when (and (buffer-live-p eldoc--doc-buffer)
-                 (setq window (get-buffer-window eldoc--doc-buffer)))
+                 (setq window (get-buffer-window (get-buffer "*eldoc*"))))
         (quit-window t window))))
 
   (advice-add #'eldoc-box--eldoc-display-function

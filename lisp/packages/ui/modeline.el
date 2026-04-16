@@ -106,6 +106,17 @@
     '(evil buffer-info-extra buffer-info dedicated remote-host purpose)
     '(misc-info minibuffer-depth selection-info lsp repl check buffer-position))
 
+  (doom-modeline-def-segment sub-workspace-name
+    (when-let* ((ws (activities-current-workspace))
+                (sub-workspace (activities-workspaces-last ws)))
+      (propertize
+       (format "%s"  sub-workspace)
+       'face (let ((face 'font-lock-comment-face)) doom-modeline-face face face))))
+
+  (doom-modeline-def-modeline
+    '+treemacs-modeline
+    '(space sub-workspace-name))
+
   (defun +doom-modeline-set ()
     (doom-modeline-set-modeline '+default-modeline 'default))
 

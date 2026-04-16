@@ -1501,14 +1501,13 @@
 (general-define-key
  :keymaps 'evil-window-map
  "="     '("balance windows" . balance-windows)
- "o"     '("clear windows"   . (lambda () (interactive) (windex-layout--run-recipe 'base)))
+ "o"     '("clear windows"   . delete-other-windows)
  "O"     '("clear windows"   . windex-delete-windows)
- "C-S-o" '("clear windows"   . delete-other-windows)
  "M-o"   '("clear buffers"   . tab-line-close-other-tabs)
  "n"     '("new window"      . evil-buffer-new)
 
- "u"   '("undo window"     . winner-undo)
- "U"   '("redo window"     . winner-redo)
+ "u"   '("undo window"     . tab-bar-history-back)
+ "U"   '("redo window"     . tab-bar-history-forward)
 
  "C-w" '("bury"            . tab-line-close-tab-kill-window)
  "q"   '("quit"            . evil-quit)

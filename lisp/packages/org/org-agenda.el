@@ -48,7 +48,7 @@
      (todo   . " %i %-24:c")
      (tags   . " %i %-24:c")
      (search . " %i %-24:c")))
-  (org-agenda-window-setup 'current-window)
+  (org-agenda-window-setup 'other-frame)
   (org-agenda-sticky nil)
   (org-agenda-compact-blocks nil)
   (org-agenda-skip-scheduled-if-done t)

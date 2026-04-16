@@ -85,7 +85,16 @@
               visual-line-mode nil
               use-file-dialog nil
               use-dialog-box nil
-              show-help-function nil)
+              show-help-function nil
+
+              set-mark-command-repeat-pop t
+              bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right
+              bidi-inhibit-bpa t
+              redisplay-skip-fontification-on-input t
+              kill-do-not-save-duplicates t
+              save-interprogram-paste-before-kill t
+              reb-re-syntax 'string)
 
 (tool-bar-mode -1)
 (tooltip-mode -1)

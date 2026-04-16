@@ -1,6 +1,7 @@
 ;;; ui/treemacs.el -*- lexical-binding: t; -*-
 
-(use-package treemacs :after doom-modeline
+(use-package treemacs
+  :demand t
   :custom
   (treemacs-user-mode-line-format '("%e" (:eval (doom-modeline-format--+treemacs-modeline))))
   (treemacs-is-never-other-window t)
@@ -30,17 +31,6 @@
    ((nil :foreground unspecified)))
   (treemacs-peek-mode-indicator-face
    ((nil :background ,(doom-color 'green))))
-  :init
-  (doom-modeline-def-segment sub-workspace-name
-    (when-let* ((ws (activities-current-workspace))
-                (sub-workspace (activities-workspaces-last ws)))
-      (propertize
-       (format "%s"  sub-workspace)
-       'face (let ((face 'font-lock-comment-face)) doom-modeline-face face face))))
-
-  (doom-modeline-def-modeline
-    '+treemacs-modeline
-    '(space sub-workspace-name))
   :config
   (defun +treemacs-add-project-to-workspace (dir)
     (interactive (list (funcall project-prompter)))
@@ -84,43 +74,6 @@
 
   (advice-add #'treemacs-select-window :around #'+treemacs--select-window-guard)
 
-
-  (defun +treemacs-finish-edit ()
-    "Finish editing your workspaces and apply the change."
-    (interactive)
-    (treemacs-block
-     (treemacs-error-return-if (not (equal (buffer-name) treemacs--org-edit-buffer-name))
-       "This is not a valid treemacs workspace edit buffer")
-     (treemacs--org-edit-remove-validation-msg)
-     (widen)
-     (whitespace-cleanup)
-     (-let [lines (treemacs--read-persist-lines (buffer-string))]
-       (treemacs-error-return-if (null (buffer-string))
-         "The buffer is empty, there is nothing here to save.")
-       (pcase (treemacs--validate-persist-lines lines)
-         (`(error ,err-line ,err-msg)
-          (treemacs--org-edit-display-validation-msg err-msg err-line))
-         ('success
-          (treemacs--invalidate-buffer-project-cache)
-          (write-region
-           (apply #'concat (--map (concat it "\n") lines))
-           nil
-           treemacs-persist-file
-           nil :silent)
-          (treemacs--restore)
-          (-if-let (ws (treemacs--find-workspace-by-name
-                        (treemacs-workspace->name (treemacs-current-workspace))))
-              (setf (treemacs-current-workspace) ws)
-            (treemacs--find-workspace))
-          (treemacs--consolidate-projects)
-          (kill-buffer)
-          (run-hooks 'treemacs-workspace-edit-hook)
-          (when treemacs-hide-gitignored-files-mode
-            (treemacs--prefetch-gitignore-cache 'all))
-          (treemacs-log "Edit completed successfully."))))))
-
-  (advice-add #'treemacs-finish-edit :override #'+treemacs-finish-edit)
-
   (defun +treemacs--setup ()
     (treemacs-filewatch-mode 1)
     (treemacs-fringe-indicator-mode 'only-when-focused)
@@ -136,6 +89,9 @@
   (kill-emacs                . +treemacs--clean-workspaces)
   (treemacs-switch-workspace . +treemacs--clean-workspaces)
   (treemacs-mode             . +treemacs--setup))
+
+(use-package treemacs-workspaces :after treemacs
+  :demand t)
 
 (use-package treemacs-peek-mode :after treemacs
   :config
@@ -166,7 +122,7 @@
 (use-package treemacs-tab-bar :after treemacs
   :config (treemacs-set-scope-type 'Tabs))
 
-(with-eval-after-load 'treemacs
+(with-eval-after-load 'treemacs-workspaces
   (defun treemacs-project-directory-prompt ()
     (let* ((treemacs-projects (treemacs-workspace->projects (treemacs-current-workspace)))
            (projects-table (make-hash-table :test #'equal))
@@ -198,4 +154,38 @@
           (user-error "Not a command"))
         (call-interactively cmd))
       ))
+
+  (defun treemacs-finish-edit ()
+    "Finish editing your workspaces and apply the change."
+    (interactive)
+    (treemacs-block
+     (treemacs-error-return-if (not (equal (buffer-name) treemacs--org-edit-buffer-name))
+       "This is not a valid treemacs workspace edit buffer")
+     (treemacs--org-edit-remove-validation-msg)
+     (widen)
+     (whitespace-cleanup)
+     (-let [lines (treemacs--read-persist-lines (buffer-string))]
+       (treemacs-error-return-if (null (buffer-string))
+         "The buffer is empty, there is nothing here to save.")
+       (pcase (treemacs--validate-persist-lines lines)
+         (`(error ,err-line ,err-msg)
+          (treemacs--org-edit-display-validation-msg err-msg err-line))
+         ('success
+          (treemacs--invalidate-buffer-project-cache)
+          (write-region
+           (apply #'concat (--map (concat it "\n") lines))
+           nil
+           treemacs-persist-file
+           nil :silent)
+          (treemacs--restore)
+          (-if-let (ws (treemacs--find-workspace-by-name
+                        (treemacs-workspace->name (treemacs-current-workspace))))
+              (setf (treemacs-current-workspace) ws)
+            (treemacs--find-workspace))
+          (treemacs--consolidate-projects)
+          (quit-window)
+          (run-hooks 'treemacs-workspace-edit-hook)
+          (when treemacs-hide-gitignored-files-mode
+            (treemacs--prefetch-gitignore-cache 'all))
+          (treemacs-log "Edit completed successfully."))))))
   )

@@ -9,21 +9,21 @@
 
 (defvar notes-frame-name "[Note Viewer] ")
 
+(defconst notes-frame-parameters `((+side-frame . t)
+                                   (prefix . ,notes-frame-name)
+                                   (min-width . 120)
+                                   (width . 120)
+                                   (pop-up . t)))
+
 ;;;###autoload
 (defun swaywm/notes-open (title)
-  (util/frames-select-frame-with-params `((+side-frame . t)
-                                          (prefix . ,notes-frame-name)
-                                          (min-width . 120)
-                                          (width . 120))
+  (util/frames-select-frame-with-params notes-frame-parameters
     (org-roam-node-visit (org-roam-node-from-title-or-alias title t))
     (tab-line-close-other-tabs)))
 
 ;;;###autoload
 (defun swaywm/notes-create (key title)
-  (util/frames-select-frame-with-params `((+side-frame . t)
-                                          (prefix . ,notes-frame-name)
-                                          (min-width . 120)
-                                          (width . 120))
+  (util/frames-select-frame-with-params notes-frame-parameters
     (let ((buffer (generate-new-buffer "*new*")))
       (set-buffer-major-mode buffer)
       (set-window-buffer nil buffer))

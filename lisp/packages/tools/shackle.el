@@ -4,8 +4,6 @@
 (require 'util-strings)
 (require 'util-windows)
 
-(defvar-local +shackle-frame-init-buffer nil)
-
 (defun +shackle-get-dimensions (side)
   (let ((min-width (or (and (eq side 'left) util/windows-min-left-width)
                        (and (eq side 'right) util/windows-min-right-width)))
@@ -71,6 +69,7 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 0
+     :flags (enable-alt-face)
      :fixed width))
 
 (defun +shackle-right-select-preset-0 ()
@@ -81,6 +80,7 @@
      :side right
      :slot 1
      :dedicated t
+     :flags (enable-alt-face)
      :fixed width))
 
 (defun +shackle-right-select-preset-1 ()
@@ -118,17 +118,24 @@
       ,@(+shackle-left-preset-size-0))
 
      ((magit-mode
+       "^\\*Org Agenda .*\\*$"
+       "^\\*Org Agenda\\*$"
+       "^\\*Org Select\\*$"
+       "^CAPTURE-.*\\.org$"
+       "^\\*Edit Treemacs Workspaces\\*$"
+
+       org-agenda-mode
        forge-repository-list-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback
       ( :action
         (lambda (buffer &optional alist plist)
-          (with-current-buffer buffer
-            (setq-local +shackle-frame-init-buffer t))
           (windex-frame-display-buffer
            buffer
            `(,@alist
-             (prefix . ,(format "[Emacs Tool] ")))
+             (prefix . ,(format "[Emacs Tool] "))
+             (init-buffer . ,buffer)
+             (pop-up . t))
            )))
       :conditions
       (((magit-mode)
@@ -150,15 +157,9 @@
        "^\\*WoMan.*\\*$"
        "^\\*eww\\*$"
        "^\\*w3m\\*$"
-       "^\\*Org Agenda .*\\*$"
-       "^\\*Org Agenda\\*$"
-       "^\\*Org Select\\*$"
-       "^ \\*Agenda Commands\\*$"
-       "^CAPTURE-.*\\.org$"
 
        Custom-mode
        calc-mode
-       org-agenda-mode
        w3m-mode
        eww-mode
        devdocs-mode
@@ -238,6 +239,7 @@
       ,@(+shackle-bottom-select-preset-size-1))
 
      (("^ \\*transient\\*$"
+       "^ \\*Agenda Commands\\*$"
        "^ \\*CDLaTeX Help\\*")
       :custom util/windows-display-buffer-by-condition
       :fallback ( :action util/windows-display-buffer-in-pop-up-window
@@ -248,12 +250,12 @@
                                   (eq (window-parameter window 'window-slot) 0)))
         :action util/windows-display-buffer-in-side-window
         ,@(+shackle-right-select-preset-1)
-        :flags (disable-tab-line enable-alt-face)
+        :flags (enable-alt-face)
         :size +shackle-get-dimensions)
 
        ((".*")
         :if (lambda (window) (window-parameter window 'window-popup))
-        :flags (disable-tab-line enable-alt-face)
+        :flags (enable-alt-face)
         :same t :select t)
        ))
 
@@ -299,9 +301,8 @@
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
         :action util/windows-display-buffer-in-side-window
-        ,@(+shackle-right-select-preset-1)
-        :flags (disable-tab-line)
-        :size +shackle-get-dimensions)
+        ,@(+shackle-bottom-select-preset-size-0)
+        :flags (disable-tab-line))
 
        ((".*")
         :if (lambda (window)
@@ -378,7 +379,7 @@ ALIST is passed to `shackle--window-display-buffer' internally."
   (defun +shackle-quit-restore-window-around (fn &optional window bury-or-kill)
     (let ((buffer (window-buffer window)))
       (with-current-buffer buffer
-        (if +shackle-frame-init-buffer
+        (if (eq (frame-parameter (selected-frame) 'init-buffer) buffer)
             (delete-frame)
           (funcall fn window bury-or-kill)))
       ))

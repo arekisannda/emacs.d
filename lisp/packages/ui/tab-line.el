@@ -112,8 +112,19 @@
       (with-current-buffer buffer
         (tab-line-close-other-tabs))))
 
-  :hook
-  (util/windows-side-window . tab-line-side-setup)
-  (util/windows-side-window . tab-line-only-buffer-side-setup)
-  (util/windows-pop-up-window . tab-line-setup)
-  (window-setup . global-tab-line-mode))
+  (defun tab-line-main-window-setup (&optional frame)
+    (unless (frame-parameter frame 'pop-up)
+      (unless (or (frame-parent frame)
+                  (one-window-p 'nomini frame))
+        (walk-window-subtree
+         (lambda (w)
+           (with-selected-window w
+             (when (not (or (window-parameter w 'side)
+                            (window-parameter w 'window-popup)))
+               (tab-line-mode 1))))
+         (window-main-window))
+        )))
+
+  (add-hook 'window-configuration-change-hook #'tab-line-main-window-setup)
+  (add-hook 'window-buffer-change-functions #'tab-line-main-window-setup)
+  )

@@ -64,6 +64,15 @@ Output only the raw code characters, nothing else — no preamble, no explanatio
 
 (use-package agent-shell
   :custom
+  (agent-shell-dot-subdir-function
+   (lambda (subdir)
+     (let ((activity (activities-current)))
+       (expand-file-name
+        (file-name-concat "agent-shell"
+                          (and activity (activities-name-for activity))
+                          subdir)
+        no-littering-var-directory))
+     ))
   (agent-shell-mcp-servers nil)
   (agent-shell-header-style 'text)
   (agent-shell-show-welcome-message nil)

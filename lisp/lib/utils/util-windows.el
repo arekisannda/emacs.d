@@ -84,6 +84,7 @@ Function takes two arguments WINDOW and BUFFER."
         (set-window-buffer window buffer)
         (set-window-dedicated-p window (plist-get plist :dedicated))
         (set-window-parameter window 'no-other-window t)
+        (set-window-parameter window 'no-delete-other-windows t)
 
         (when fixed
           (window-preserve-size window (not (eq fixed 'height)) t)

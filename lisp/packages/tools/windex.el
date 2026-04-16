@@ -96,7 +96,8 @@
   (windex-scroll-window-selector
    (lambda ()
      (or (windex-window-with-parameters '((window-side . right)) nil t)
-         (windex-window-with-parameters '((window-popup . below)) nil t))))
+         (windex-window-with-parameters '((window-side . bottom)) nil t)
+         (windex-window-with-parameters '((window-popup . bottom)) nil t))))
 
   (windex-scroll-left-function #'evil-scroll-column-left)
   (windex-scroll-right-function #'evil-scroll-column-right)
