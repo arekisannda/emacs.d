@@ -119,9 +119,13 @@
         (walk-window-subtree
          (lambda (w)
            (with-selected-window w
-             (when (not (or (window-parameter w 'side)
-                            (window-parameter w 'window-popup)))
-               (tab-line-mode 1))))
+             (let ((wframe (window-frame)))
+               (tab-line-mode
+                (if (or (window-parameter w 'side)
+                        (window-parameter w 'window-popup)
+                        (frame-parameter wframe 'pop-up))
+                    -1 1))
+               )))
          (window-main-window))
         )))
 

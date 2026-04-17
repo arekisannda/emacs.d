@@ -1,5 +1,7 @@
 ;;; ui/treemacs.el -*- lexical-binding: t; -*-
 
+(require 'util-windows)
+
 (use-package treemacs
   :demand t
   :custom
@@ -22,7 +24,7 @@
   (treemacs-nerd-icons-root-face
    ((nil :height 1.0)))
   (treemacs-root-face
-   ((nil :height 1.1)))
+   ((nil :height 1.1 :weight normal :foreground ,(doom-color 'violet))))
   (treemacs-window-background-face
    ((nil :background ,(doom-color 'bg-alt))))
   (treemacs-hl-line-face
@@ -49,19 +51,13 @@
   (defun +treemacs--popup-window-override ()
     "Pop up a side window and buffer for treemacs."
     (let ((buf (treemacs-get-local-buffer-create)))
-      (display-buffer buf
-                      `(,(if treemacs-display-in-side-window
-                             'display-buffer-in-side-window
-                           'display-buffer-in-direction)
-                        . (;; for buffer in direction
-                           (direction . ,treemacs-position)
-                           (window . root)
-                           ;; for side windows
-                           (slot . 0)
-                           (side . ,treemacs-position)
-                           ;; general-purpose settings
-                           (window-width . ,treemacs-width)
-                           (dedicated . t))))
+      (util/windows-display-buffer-in-side-window
+       buf nil
+       `( :side left
+          :slot 0
+          :dedicated t
+          :size ,util/windows-min-left-width
+          :fixed width))
       (select-window (get-buffer-window buf))))
 
   (advice-add #'treemacs--popup-window :override #'+treemacs--popup-window-override)
@@ -90,8 +86,7 @@
   (treemacs-switch-workspace . +treemacs--clean-workspaces)
   (treemacs-mode             . +treemacs--setup))
 
-(use-package treemacs-workspaces :after treemacs
-  :demand t)
+(use-package treemacs-workspaces :after treemacs)
 
 (use-package treemacs-peek-mode :after treemacs
   :config

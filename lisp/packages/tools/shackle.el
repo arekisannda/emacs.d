@@ -238,27 +238,6 @@
      (("^\\*Edit Formulas\\*")
       ,@(+shackle-bottom-select-preset-size-1))
 
-     (("^ \\*transient\\*$"
-       "^ \\*Agenda Commands\\*$"
-       "^ \\*CDLaTeX Help\\*")
-      :custom util/windows-display-buffer-by-condition
-      :fallback ( :action util/windows-display-buffer-in-pop-up-window
-                  :select t)
-      :conditions
-      (((".*")
-        :if (lambda (window) (and (eq (window-parameter window 'window-side) 'right)
-                                  (eq (window-parameter window 'window-slot) 0)))
-        :action util/windows-display-buffer-in-side-window
-        ,@(+shackle-right-select-preset-1)
-        :flags (enable-alt-face)
-        :size +shackle-get-dimensions)
-
-       ((".*")
-        :if (lambda (window) (window-parameter window 'window-popup))
-        :flags (enable-alt-face)
-        :same t :select t)
-       ))
-
      (("^\\*diff-hl\\*"
        "^\\*diff-hl-revert\\*"
        "^\\*diff-hl-show-hunk-diff-buffer\\*"
@@ -273,6 +252,9 @@
        "^\\*Org .*\\*$"
        "^\\*Command Line\\*$"
        "^\\*trace-output\\*$"
+       "^ \\*transient\\*$"
+       "^ \\*Agenda Commands\\*$"
+       "^ \\*CDLaTeX Help\\*"
 
        calendar-mode
        evil-command-window-mode
