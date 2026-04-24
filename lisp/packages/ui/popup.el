@@ -77,6 +77,7 @@
         (window--display-buffer which-key--buffer window 'window alist)
         (util/windows-popup-fit-window-to-buffer window)
         ))
+      (set-window-parameter window 'window-popup 'bottom)
       ))
   :hook
   (after-init . which-key-mode))

@@ -4,7 +4,7 @@
   :custom
   (windex-window-filter-functions
    '((lambda (window)
-       (or (window-parameter window 'window-side)
+       (or (member (window-parameter window 'window-side) '(right bottom))
            (window-parameter window 'window-popup)
            (window-minibuffer-p window)))))
   (windex-window-aw-filter-functions windex-window-filter-functions)
@@ -30,37 +30,12 @@
      (view-log       :activate nil :deactivate nil))))
 
 (use-package windex-layout
-  :init
-  (defun +windex-layout-list-main-window-buffers ()
-    (mapcar
-     #'window-buffer
-     (seq-filter
-      (lambda (win)
-        (not (or (window-parameter win 'window-side)
-                 (window-parameter win 'window-popup))))
-      (window-list nil nil (selected-window)))))
-
-  (defun +windex-layout-list-restore-buffers ()
-    (mapcar
-     #'window-buffer
-     (seq-filter
-      (lambda (win)
-        (or (window-parameter win 'window-side)
-            (window-parameter win 'window-popup)))
-      (window-list nil nil (windex-first-live-window (window-main-window))))))
-
-  (defun +windex-layout-apply (&optional reorderp)
-    (interactive (list current-prefix-arg))
-    (let ((apply-fn windex-layout-buffer-list-apply-function)
-          windex-layout-buffer-list-apply-function)
-      (when reorderp
-        (setq windex-layout-buffer-list-apply-function apply-fn))
-      (call-interactively #'windex-layout-apply)
-      ))
-
   :custom
-  (windex-layout-buffer-list-apply-function #'+windex-layout-list-main-window-buffers)
-  (windex-layout-buffer-list-restore-function #'+windex-layout-list-restore-buffers)
+  (windex-layout-restore-window-state-filter-function
+   (lambda (window)
+     (not (or (window-parameter window 'window-side)
+              (window-parameter window 'window-popup)))
+     ))
   (windex-layout-alist
    '((base :description "1x1 layout."
            :tree (:type buf))

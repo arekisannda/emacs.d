@@ -171,9 +171,7 @@ major mode by `leetcode-prefer-language'and `auto-mode-alist'."
   (advice-add #'leetcode--start-coding :override #'+leetcode--start-coding)
 
   (defun +leetcode-window-setup ()
-    (tab-line-close-other-tabs)
-    (when (or global-tab-line-mode)
-        (tab-line-mode 1)))
+    (tab-line-close-other-tabs))
 
   (defun +leetcode--display-result-override (buffer &optional alist)
     (set-window-buffer leetcode--result-window buffer)

@@ -79,7 +79,6 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 1
-     :dedicated t
      :flags (enable-alt-face)
      :fixed width))
 
@@ -109,13 +108,17 @@
        "^ \\*http.*\\*")
       :ignore t)
 
-     ((scad-preview-mode
-       code-review-mode
-       pr-review-mode)
+     ((scad-preview-mode)
       :same t)
 
      ((treemacs-mode)
       ,@(+shackle-left-preset-size-0))
+
+     (("^CAPTURE-.*\\.org$")
+      :if (lambda (window)
+            (with-selected-frame (window-frame window)
+              (frame-parameter (selected-frame) 'pop-up)))
+      :same t :select t)
 
      ((magit-mode
        "^\\*Org Agenda .*\\*$"
@@ -124,6 +127,8 @@
        "^CAPTURE-.*\\.org$"
        "^\\*Edit Treemacs Workspaces\\*$"
 
+       code-review-mode
+       pr-review-mode
        org-agenda-mode
        forge-repository-list-mode)
       :custom util/windows-display-buffer-by-condition

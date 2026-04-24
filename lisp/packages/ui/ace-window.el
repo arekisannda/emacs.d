@@ -14,5 +14,12 @@
          :box (:line-width 5 :style flat-button)
          :foreground ,(doom-color 'red)
          :background unspecified)))
+  :config
+  (defun +ace-swap-window ()
+    "Ace swap window."
+    (interactive)
+    (aw-select " Ace - Swap Window"
+               (apply-partially #'window-swap-states (selected-window))))
+  (advice-add #'ace-swap-window :override #'+ace-swap-window)
   :hook
   (after-init . ace-window-posframe-mode))

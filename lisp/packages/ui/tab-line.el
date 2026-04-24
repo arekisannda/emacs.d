@@ -98,35 +98,22 @@
       (set-window-next-buffers window nil)
       (force-mode-line-update)))
 
-  (defun tab-line-setup (window buffer)
-    (with-current-buffer buffer
-      (when (or global-tab-line-mode tab-line-mode)
-        (tab-line-mode -1))))
-
-  (defun tab-line-side-setup (window buffer &optional flags)
-    (when (member 'disable-tab-line flags)
-      (tab-line-setup window buffer)))
-
-  (defun tab-line-only-buffer-side-setup (window buffer &optional flags)
-    (when (member 'enable-only-buffer-tab-line flags)
-      (with-current-buffer buffer
-        (tab-line-close-other-tabs))))
-
   (defun tab-line-main-window-setup (&optional frame)
     (unless (frame-parameter frame 'pop-up)
-      (unless (or (frame-parent frame)
+      (unless (or (minibufferp)
+                  (frame-parent frame)
                   (one-window-p 'nomini frame))
-        (walk-window-subtree
+        (walk-windows
          (lambda (w)
            (with-selected-window w
              (let ((wframe (window-frame)))
                (tab-line-mode
-                (if (or (window-parameter w 'side)
+                (if (or (window-parameter w 'window-side)
                         (window-parameter w 'window-popup)
                         (frame-parameter wframe 'pop-up))
                     -1 1))
                )))
-         (window-main-window))
+         'nomini)
         )))
 
   (add-hook 'window-configuration-change-hook #'tab-line-main-window-setup)

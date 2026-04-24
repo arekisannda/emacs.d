@@ -30,6 +30,13 @@
   (detached-notification-function #'+detach-notifications-message)
   (util/commands-string-command-function #'detached-shell-command)
   :init
+  (setq detached-init-package-integration '((compile . detached-init--compile)
+                                            (dired . detached-init--dired)
+                                            (dired-rsync . detached-init--dired-rsync)
+                                            (embark . detached-init--embark)
+                                            (eshell . detached-init--eshell)
+                                            (org . detached-init--org)
+                                            (shell . detached-init--shell)))
   (detached-init)
   :config
   (setq detached-session-mode nil)
