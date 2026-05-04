@@ -30,13 +30,13 @@
 (defun +lang-conf-mode-setup ()
   "Conf-mode setup."
   (setq-local truncate-lines t)
+  (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
+  (rainbow-delimiters-mode 1)
   (yas-minor-mode 1))
 
 (use-package conf-mode
   :hook
-  (conf-mode . diff-hl-mode)
-  (conf-mode . display-line-numbers-mode)
-  (conf-mode . rainbow-delimiters-mode)
   (conf-mode . +lang-conf-mode-setup))
 
 (defun +lang-special-mode-setup ()

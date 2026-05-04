@@ -163,6 +163,7 @@
        "^\\*eww\\*$"
        "^\\*w3m\\*$"
 
+       rfc-mode
        Custom-mode
        calc-mode
        w3m-mode

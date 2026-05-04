@@ -432,7 +432,7 @@
   ("n" #'evil-mc-make-and-goto-next-match "match next")
   ("N" #'evil-mc-make-and-goto-prev-match "match previous")
   ("s" #'evil-mc-skip-and-goto-next-match "skip next")
-  ("s" #'evil-mc-skip-and-goto-prev-match "skip previous"))
+  ("S" #'evil-mc-skip-and-goto-prev-match "skip previous"))
 (hydra-set-property #'+hydra-cursor :verbosity 1)
 
 (+keybinds-cursor
@@ -1555,11 +1555,11 @@
 
 (general-define-key
  :keymaps 'evil-window-map
- "="     '("balance windows" . balance-windows)
- "o"     '("clear windows"   . delete-other-windows)
- "O"     '("clear windows"   . windex-delete-windows)
- "M-o"   '("clear buffers"   . tab-line-close-other-tabs)
- "n"     '("new window"      . evil-buffer-new)
+ "="   '("balance windows" . balance-windows)
+ "o"   '("clear windows"   . delete-other-windows)
+ "O"   '("toggle sides"    . windex-delete-windows)
+ "M-o" '("clear buffers"   . tab-line-close-other-tabs)
+ "n"   '("new window"      . evil-buffer-new)
 
  "u"   '("undo window"     . tab-bar-history-back)
  "U"   '("redo window"     . tab-bar-history-forward)

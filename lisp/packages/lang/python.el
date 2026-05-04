@@ -17,6 +17,7 @@
 (use-package python
   :custom
   (python-indent-offset 4)
+  (python-indent-guess-indent-offset-verbose nil)
   :config
   (util/update-alist
    'major-mode-remap-alist

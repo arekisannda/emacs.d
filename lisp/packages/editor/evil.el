@@ -25,6 +25,11 @@
   (evil-undo-system 'undo-fu)
   (evil-split-window-below nil)
   (evil-vsplit-window-right nil)
+  (evil-goto-definition-functions
+   '(evil-goto-definition-semantic
+     evil-goto-definition-xref
+     evil-goto-definition-search
+     ))
   :init
 
   (setq-default evil-respect-visual-line-mode t

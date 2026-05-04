@@ -96,26 +96,53 @@
     (let* ((window (window-normalize-window window t)))
       (set-window-prev-buffers window nil)
       (set-window-next-buffers window nil)
-      (force-mode-line-update)))
+      (force-mode-line-update)
+      (if (called-interactively-p)
+          (message "Cleared other tabs."))))
+
+  (defmacro tab-line-main-window-for-each (frame &rest body)
+    (declare (indent 1) (debug (form body)))
+    `(let ((frame ,frame))
+       (unless (frame-parameter frame 'pop-up)
+         (unless (or (minibufferp)
+                     (frame-parent frame)
+                     (one-window-p 'nomini frame))
+           (walk-windows
+            (lambda (window) (with-selected-window window ,@body))
+            'nomini)
+           ))))
 
   (defun tab-line-main-window-setup (&optional frame)
-    (unless (frame-parameter frame 'pop-up)
-      (unless (or (minibufferp)
-                  (frame-parent frame)
-                  (one-window-p 'nomini frame))
-        (walk-windows
-         (lambda (w)
-           (with-selected-window w
-             (let ((wframe (window-frame)))
-               (tab-line-mode
-                (if (or (window-parameter w 'window-side)
-                        (window-parameter w 'window-popup)
-                        (frame-parameter wframe 'pop-up))
-                    -1 1))
-               )))
-         'nomini)
+    (tab-line-main-window-for-each frame
+      (let ((wframe (window-frame)))
+        (if (or (window-parameter window 'window-side)
+                (window-parameter window 'window-popup)
+                (frame-parameter wframe 'pop-up))
+            (tab-line-mode -1)
+          (tab-line-mode 1))
         )))
 
-  (add-hook 'window-configuration-change-hook #'tab-line-main-window-setup)
-  (add-hook 'window-buffer-change-functions #'tab-line-main-window-setup)
+  (defun tab-line-main-window-teardown (&optional frame)
+    (tab-line-main-window-for-each frame
+      (let ((wframe (window-frame)))
+        (unless (or (window-parameter window 'window-side)
+                    (window-parameter window 'window-popup)
+                    (frame-parameter wframe 'pop-up))
+          (tab-line-mode -1))
+        )))
+
+  (define-minor-mode tab-line-main-window-mode
+    "Toggle display of tab line in main window only."
+    :global t
+    :lighter nil
+    (if tab-line-main-window-mode
+        (progn
+          (add-hook 'window-configuration-change-hook #'tab-line-main-window-setup)
+          (add-hook 'window-buffer-change-functions #'tab-line-main-window-setup)
+          (tab-line-main-window-setup)
+          (force-mode-line-update t))
+      (remove-hook 'window-configuration-change-hook #'tab-line-main-window-setup)
+      (remove-hook 'window-buffer-change-functions #'tab-line-main-window-setup)
+      (tab-line-main-window-teardown)
+      (force-mode-line-update t)))
   )

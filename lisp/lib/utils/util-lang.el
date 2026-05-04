@@ -38,7 +38,6 @@
 (defun util/lsp-ensure-modes ()
   "Helper wrapper function to enable LSP."
   (unless (derived-mode-p util/lsp-default-disabled-modes)
-    (util/lsp-ensure)
     (add-hook 'hack-local-variables-hook #'util/lsp-ensure t t)
     t))
 

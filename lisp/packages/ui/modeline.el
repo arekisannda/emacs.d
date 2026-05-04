@@ -45,7 +45,7 @@
   (doom-modeline-evil-user-state
    ((nil :weight bold
          :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'dark-blue))))
+         :background ,(doom-color 'vertical-bar))))
   :custom
   (doom-modeline-bar-width 2)
   (doom-modeline-height 15)
@@ -70,7 +70,7 @@
                    (t 'doom-modeline-evil-user-state))))
         (propertize
          (propertize " " 'display `(space :width 1))
-         'face (doom-modeline-face face)
+         'face (doom-modeline-face face 'doom-modeline-evil-user-state)
          'help-echo (evil-state-property evil-state :name t)))))
 
   (doom-modeline-def-segment buffer-info-extra
@@ -101,9 +101,45 @@
          (format "[%s]" (symbol-name purpose))
          'face (doom-modeline-face 'success))))
 
+  (defvar emacs-debug-show-window-id nil)
+
+  (defun toggle-emacs-debug-window-id ()
+    (interactive)
+    (setq emacs-debug-show-window-id (not emacs-debug-show-window-id)))
+
+  (doom-modeline-def-segment window-id
+    (when emacs-debug-show-window-id
+      (propertize
+       (format " [#%s]" (replace-regexp-in-string
+                         "^#<window \\([0-9]+\\).*\n" "\\1"
+                         (pp-to-string (selected-window))))
+       'face (doom-modeline-face 'error))))
+
+  (doom-modeline-def-segment ace-window-number
+    (when (bound-and-true-p ace-window-display-mode)
+      (aw-update)
+      (let ((num (window-parameter (selected-window) 'ace-window-path)))
+        (when (and (length> num 0)
+                   (length> (cl-mapcan
+                             (lambda (frame)
+                               ;; Exclude minibuffer, tooltip and child frames
+                               (unless (or (and (fboundp 'frame-parent) (frame-parent frame))
+                                           (string= (frame-parameter frame 'name)
+                                                    (alist-get 'name (bound-and-true-p tooltip-frame-parameters))))
+                                 (window-list frame 'never)))
+                             (visible-frame-list))
+                            1))
+          (if aw-overlays-back
+              (propertize (format " %s " num)
+                          'face (doom-modeline-face
+                                 'aw-leading-char-face
+                                 'aw-leading-char-face))
+            "   "))
+        )))
+
   (doom-modeline-def-modeline
     '+default-modeline
-    '(evil buffer-info-extra buffer-info dedicated remote-host purpose)
+    '(evil ace-window-number buffer-info-extra buffer-info window-id dedicated remote-host purpose)
     '(misc-info minibuffer-depth selection-info lsp repl check buffer-position))
 
   (doom-modeline-def-segment sub-workspace-name
@@ -115,7 +151,7 @@
 
   (doom-modeline-def-modeline
     '+treemacs-modeline
-    '(space sub-workspace-name))
+    '(space sub-workspace-name window-id))
 
   (defun +doom-modeline-set ()
     (doom-modeline-set-modeline '+default-modeline 'default))

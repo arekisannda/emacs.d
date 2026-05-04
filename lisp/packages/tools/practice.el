@@ -5,12 +5,14 @@
 (use-package leetcode
   :load-path "/home/arekisannda/Code/leetcode.el"
   :custom
-  (leetcode-prefer-language "python")
+  (leetcode-prefer-language "python3")
   (leetcode-prefer-sql "postgresql")
   (leetcode-save-solutions t)
   (leetcode-focus t)
   (leetcode-cache-max-age-days 7)
   :init
+  (when init-file-debug
+    (leetcode-toggle-debug))
   :config
   (defvar leetcode--code-window nil)
   (defvar leetcode--frame nil)
@@ -58,6 +60,16 @@
           (when btn
             (button-activate btn))))
       ))
+
+  (aio-defun leetcode (&optional force)
+    "Start Leetcode."
+    (when (leetcode--check-deps)
+      (if (get-buffer leetcode--buffer-name)
+          (switch-to-buffer leetcode--buffer-name)
+        (aio-await (leetcode--ensure-login))
+        (aio-await (leetcode-refresh-fetch force))
+        (switch-to-buffer leetcode--buffer-name))
+      (leetcode--maybe-focus)))
 
   (aio-defun leetcode-daily ()
     "Open the daily challenge."
@@ -113,7 +125,7 @@
                  )
                 ))
              )))
-      (windex-layout--run-recipe 'leetcode)))
+      (windex-layout--run-recipe 'leetcode (windex-layout--retrieve-main-window-states))))
 
   (defun +leetcode--start-coding (problem)
     "Create a buffer for coding PROBLEM.

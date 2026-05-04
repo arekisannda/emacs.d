@@ -81,7 +81,8 @@
   (line-number-current-line
    ((nil :inherit default
          :weight bold
-         :foreground ,(doom-color 'orange))))
+         :foreground ,(doom-color 'orange)
+         :background unspecified)))
 
   (show-paren-match
    ((nil :inherit region
