@@ -6,7 +6,8 @@
         (projects   . project-switch-project)
         (files      . find-file)
         (workspaces . activities-resume)
-        (git        . magit)
+        (magit      . magit)
+        (gh         . forge-list-notifications)
         (agenda     . (lambda () (interactive) (org-agenda nil "a")))
         (configs    . (lambda () (interactive) (find-file (expand-file-name "init.el" user-emacs-directory))))))
 
@@ -89,12 +90,19 @@ The optional ARGS are keyword arguments."
                                :icon "nf-oct-gear"
                                :shortcut "c"))
 
-(defun +dashboard-insert-git-dash-shortmenu (&rest _)
+(defun +dashboard-insert-magit-shortmenu (&rest _)
   "Add Git dashboard widget."
-  (+dashboard-insert-shortmenu 'git
-                               :title "Git Dashboard"
+  (+dashboard-insert-shortmenu 'magit
+                               :title "Magit"
                                :icon "nf-oct-git_branch"
-                               :shortcut "g"))
+                               :shortcut "m"))
+
+(defun +dashboard-insert-gh-notification-shortmenu (&rest _)
+  "Add Git dashboard widget."
+  (+dashboard-insert-shortmenu 'gh
+                               :title "GitHub Notifications"
+                               :icon "nf-oct-mark_github"
+                               :shortcut "n"))
 
 (use-package dashboard
   :custom
@@ -120,23 +128,25 @@ The optional ARGS are keyword arguments."
 
   (dashboard-items
    '((agenda . 15)
-     bookmarks
+     gh
+     magit
+     recents
      workspaces
      projects
      files
-     recents
-     git
+     bookmarks
      configs))
 
   (dashboard-item-generators
-   '((configs . +dashboard-insert-user-configs-shortmenu)
-     (recents . +dashboard-insert-recents-shortmenu)
+   '((configs    . +dashboard-insert-user-configs-shortmenu)
+     (recents    . +dashboard-insert-recents-shortmenu)
      (workspaces . +dashboard-insert-workspace-shortmenu)
-     (git . +dashboard-insert-git-dash-shortmenu)
-     (bookmarks . +dashboard-insert-bookmark-shortmenu)
-     (projects . +dashboard-insert-project-shortmenu)
-     (files . +dashboard-insert-file-shortmenu)
-     (agenda . dashboard-insert-agenda)))
+     (magit      . +dashboard-insert-magit-shortmenu)
+     (gh         . +dashboard-insert-gh-notification-shortmenu)
+     (bookmarks  . +dashboard-insert-bookmark-shortmenu)
+     (projects   . +dashboard-insert-project-shortmenu)
+     (files      . +dashboard-insert-file-shortmenu)
+     (agenda     . dashboard-insert-agenda)))
   :hook
   (after-init . dashboard-insert-startupify-lists)
   (after-init . dashboard-setup-startup-hook))

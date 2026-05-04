@@ -83,7 +83,8 @@
  :keymaps 'dashboard-mode-map
  "a"      `("agendas"       . ,(+dashboard-get-action 'agenda))
  "w"      `("workspaces"    . ,(+dashboard-get-action 'workspaces))
- "g"      `("git dashboard" . ,(+dashboard-get-action 'git))
+ "m"      `("magit"         . ,(+dashboard-get-action 'magit))
+ "n"      `("notification"  . ,(+dashboard-get-action 'gh))
  "f"      `("open files"    . ,(+dashboard-get-action 'files))
  "c"      `("open configs"  . ,(+dashboard-get-action 'configs))
  "r"      `("recents files" . ,(+dashboard-get-action 'recents))
@@ -1101,6 +1102,10 @@
   (interactive)
   (httpd-serve-directory (or project (project-root (project-current)))))
 
+(defun +forge-list-notifications ()
+  (interactive)
+  (forge-notifications-setup-buffer))
+
 (general-create-definer +keybinds-tools
   :prefix-command '+keybinds-tools-command)
 
@@ -1121,7 +1126,7 @@
 
   "m"     '("magit status"    . magit)
   "C-m"   '("magit dispatch"  . magit-dispatch)
-  "C-n"   '("forge dispatch"  . forge-dispatch)
+  "C-n"   '("gh notification" . +forge-list-notifications)
 
   "p"     '("agent shell"     . agent-shell-no-context)
   "M-p"   '("agent shell add" . agent-shell)
