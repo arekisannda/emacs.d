@@ -311,7 +311,7 @@
  :states '(normal visual motion emacs insert)
  :keymaps 'agent-shell-mode-map
 
- "C-S-l"          #'agent-shell-clear-buffer)
+ "C-S-l" #'agent-shell-clear-buffer)
 #+end_src
 *** Code Review
 #+begin_src emacs-lisp :tangle yes
@@ -1077,7 +1077,7 @@
   "Open a new scratch buffer in LaTeX mode."
   (interactive)
   (let* ((bufname "*latex-scratch*")
-        (buffer (get-buffer-create bufname)))
+         (buffer (get-buffer-create bufname)))
     (with-current-buffer buffer
       (rename-buffer bufname)
       (unless (eq major-mode 'LaTex-mode) (LaTeX-mode)))
@@ -1087,7 +1087,7 @@
   "Open a new scratch buffer in Org mode."
   (interactive)
   (let* ((bufname "*org-scratch*")
-        (buffer (get-buffer-create bufname)))
+         (buffer (get-buffer-create bufname)))
     (with-current-buffer buffer
       (rename-buffer bufname)
       (unless (eq major-mode 'org-mode) (org-mode)))
@@ -1126,11 +1126,12 @@
 
   "m"     '("magit status"    . magit)
   "C-m"   '("magit dispatch"  . magit-dispatch)
-  "C-n"   '("gh notification" . +forge-list-notifications)
+  "C-n"   '("gh notification" . forge-list-notifications)
 
   "p"     '("agent shell"     . agent-shell-no-context)
   "M-p"   '("agent shell add" . agent-shell)
-  "C-p"   '("gptel"           . gptel-run)
+  "C-p"   (general-predicate-dispatch #'gptel-run
+            (derived-mode-p 'agent-shell-mode) #'agent-shell-help-menu)
 
   "C-k"   '("keybinds"        . +edit-keybinds)
   "C-l"   '("sessions"        . detached-list-sessions)

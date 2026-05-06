@@ -85,6 +85,15 @@
 (defun +shackle-right-select-preset-1 ()
   `(,@(+shackle-right-preset-1) :select t))
 
+(defun +shackle-display-in-popup-frame (buffer &optional alist plist)
+  (windex-frame-display-buffer
+   buffer
+   `(,@alist
+     (prefix . ,(format "[Emacs Tool] "))
+     (init-buffer . ,buffer)
+     (pop-up . t))
+   ))
+
 (use-package shackle :after windex
   :custom
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
@@ -115,7 +124,7 @@
       ,@(+shackle-left-preset-size-0))
 
      (("^CAPTURE-.*\\.org$")
-      :if (lambda (window)
+      :if (lambda (window &rest _)
             (with-selected-frame (window-frame window)
               (frame-parameter (selected-frame) 'pop-up)))
       :same t :select t)
@@ -133,15 +142,7 @@
        forge-repository-list-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback
-      ( :action
-        (lambda (buffer &optional alist plist)
-          (windex-frame-display-buffer
-           buffer
-           `(,@alist
-             (prefix . ,(format "[Emacs Tool] "))
-             (init-buffer . ,buffer)
-             (pop-up . t))
-           )))
+      (:action +shackle-display-in-popup-frame)
       :conditions
       (((magit-mode)
         :same t :select t)
@@ -244,6 +245,10 @@
      (("^\\*Edit Formulas\\*")
       ,@(+shackle-bottom-select-preset-size-1))
 
+     (("^ \\*transient\\*$"
+       "^ \\*CDLaTeX Help\\*")
+      :custom util/windows-display-buffer-in-pop-up-window)
+
      (("^\\*diff-hl\\*"
        "^\\*diff-hl-revert\\*"
        "^\\*diff-hl-show-hunk-diff-buffer\\*"
@@ -258,9 +263,7 @@
        "^\\*Org .*\\*$"
        "^\\*Command Line\\*$"
        "^\\*trace-output\\*$"
-       "^ \\*transient\\*$"
        "^ \\*Agenda Commands\\*$"
-       "^ \\*CDLaTeX Help\\*"
 
        calendar-mode
        evil-command-window-mode
@@ -278,6 +281,23 @@
       ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
 
+     ((org-mode)
+      :if (lambda (_ buffer) (org-agenda-file-p (buffer-file-name buffer)))
+      :custom util/windows-display-buffer-by-condition
+      :fallback (:same t :select t)
+      :conditions
+      (((org-agenda-mode)
+        :if (lambda (&rest _) org-agenda-follow-mode)
+        :action util/windows-display-buffer-in-side-window
+        ,@(+shackle-bottom-select-preset-size-0)
+        :flags (disable-tab-line))
+
+       ((".*")
+        :if (lambda (window &rest _)
+              (not (frame-parameter (selected-frame) 'pop-up)))
+        :action +shackle-display-in-popup-frame)
+       ))
+
      ((prog-mode
        text-mode
        conf-mode
@@ -293,13 +313,13 @@
         :flags (disable-tab-line))
 
        ((".*")
-        :if (lambda (window)
+        :if (lambda (window &rest _)
               (or (window-parameter window 'window-side)
                   (window-parameter window 'window-popup)))
         :mru t :select t :reuse t)
 
        ((".*")
-        :if (lambda (window)
+        :if (lambda (window &rest _)
               (and (not (and (window-parameter window 'window-side)
                              (window-parameter window 'window-popup)))
                    (window-dedicated-p window)))
@@ -338,7 +358,7 @@ When BUFFER-OR-NAME matches CONDITION, PLIST is returned."
            (buffer-name (buffer-name buffer))
            (condition-if (plist-get plist :if)))
       (when (or (not condition-if)
-                (and condition-if (funcall condition-if (selected-window))))
+                (and condition-if (funcall condition-if (selected-window) buffer)))
         (when (or (and (symbolp condition)
                        (provided-mode-derived-p buffer-major-mode condition))
                   (and (stringp condition)
