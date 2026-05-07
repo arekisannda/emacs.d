@@ -90,30 +90,49 @@
   (org-expiry-inactive-timestamps t)
 
   (org-todo-keywords
-   '((sequence "TODO" "ONGOING" "TESTING" "|" "DONE" "CANCELLED" )))
+   '((sequence "TODO" "ONGOING" "TESTING" "PENDING" "|" "DONE" "VOID" )))
 
   (org-todo-keyword-faces
-   `(("TODO"      . (
-                     :inherit default
-                     :weight bold
-                     :foreground ,(doom-darken (doom-color 'red) 0.2)))
-     ("ONGOING"   . (
-                     :inherit default
-                     :weight bold
-                     :foreground ,(doom-darken (doom-color 'orange) 0.2)))
-     ("TESTING"   . (
-                     :inherit default
-                     :weight bold
-                     :foreground ,(doom-darken (doom-color 'yellow) 0.2)))
-     ("DONE"      . (
-                     :inherit default
-                     :weight bold
-                     :foreground ,(doom-darken (doom-color 'green) 0.2)))
-     ("CANCELLED" . (
-                     :inherit default
-                     :weight bold
-                     :foreground ,(doom-darken (doom-color 'fg-alt) 0.2)))
+   `(("TODO"    . (
+                   :inherit default
+                   :weight bold
+                   :foreground ,(doom-darken (doom-color 'red) 0.2)))
+     ("ONGOING" . (
+                   :inherit default
+                   :weight bold
+                   :foreground ,(doom-darken (doom-color 'orange) 0.2)))
+     ("TESTING" . (
+                   :inherit default
+                   :weight bold
+                   :foreground ,(doom-darken (doom-color 'yellow) 0.2)))
+     ("PENDING" . (
+                   :inherit default
+                   :weight bold
+                   :foreground ,(doom-darken (doom-color 'yellow) 0.2)))
+     ("DONE"    . (
+                   :inherit default
+                   :weight bold
+                   :foreground ,(doom-darken (doom-color 'green) 0.2)))
+     ("VOID"    . (
+                   :inherit default
+                   :weight bold
+                   :foreground ,(doom-darken (doom-color 'fg-alt) 0.2)))
      ))
+
+  (org-agenda-deadline-faces
+   '((1.00001 . org-warning)
+     (1.00000 . org-imminent-deadline)
+     (0.50000 . org-upcoming-deadline)
+     (0.00000 . org-upcoming-distant-deadline)))
+
+  :custom-face
+  (org-imminent-deadline
+   ((nil :inherit unspecifed :foreground ,(doom-color 'fg))))
+  (org-upcoming-deadline
+   ((nil :inherit unspecifed :foreground ,(doom-color 'fg-alt))))
+  (org-upcoming-distant-deadline
+   ((nil :inherit unspecifed :foreground ,(doom-color 'grey))))
+
   :hook
   (org-mode . +org-mode-setup)
   (org-mode . +org-fold-auto-hide-block-languages))

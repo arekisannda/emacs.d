@@ -62,6 +62,7 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side left
      :slot 0
+     :dedicated t
      :size ,util/windows-min-left-width
      :fixed width))
 
@@ -129,16 +130,18 @@
               (frame-parameter (selected-frame) 'pop-up)))
       :same t :select t)
 
-     ((magit-mode
-       "^\\*Org Agenda .*\\*$"
+     (("^\\*Org Agenda .*\\*$"
        "^\\*Org Agenda\\*$"
        "^\\*Org Select\\*$"
        "^CAPTURE-.*\\.org$"
        "^\\*Edit Treemacs Workspaces\\*$"
 
+       org-agenda-mode)
+      :custom +shackle-display-in-popup-frame)
+
+     ((magit-mode
        code-review-mode
        pr-review-mode
-       org-agenda-mode
        forge-repository-list-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback

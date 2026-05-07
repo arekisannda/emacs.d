@@ -149,8 +149,8 @@
 (+keybinds-org-agenda
   "."   '("org-agenda"        . org-agenda)
 
-  "a"   `("Week View"         . ,(+org-agenda-list-key "a"))
-  "A"   `("Today View"        . ,(+org-agenda-list-key "A"))
+  "a"   `("Today View"        . ,(+org-agenda-list-key "a"))
+  "w"   `("Week View"         . ,(+org-agenda-list-key "w"))
   "t"   `("Task View"         . ,(+org-agenda-list-key "t"))
   "T"   `("All Todo View"     . ,(+org-agenda-list-key "T"))
   "k"   `("Kanban View"       . ,(+org-agenda-list-key "k"))

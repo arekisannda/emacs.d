@@ -56,6 +56,8 @@
   (org-agenda-include-deadlines t)
   (org-agenda-include-diary nil)
   (org-agenda-block-separator t)
+  (org-agenda-compact-blocks t)
+  (org-agenda-start-with-log-mode t)
 
   (org-agenda-tags-column 0)
   (org-agenda-block-separator ?─)
@@ -131,7 +133,7 @@
                                 (directory-name (->> file-path file-name-directory directory-file-name)))
                      (concat (capitalize (file-name-nondirectory directory-name)) ": " (file-name-nondirectory file-path)))))
                ( :ancestor-with-todo t)
-               ( :discard (:todo "CANCELLED"))
+               ( :discard (:todo "VOID"))
                ))
             ))
 
@@ -147,24 +149,25 @@
                        (list :name (capitalize category) :category category))
                      (apply #'+org-agenda-get-categories (org-agenda-files)))
                   ))
-               ( :discard (:todo "CANCELLED"))
+               ( :discard (:todo "VOID"))
                ))
             ))
 
           ("k" "Kanban View"
-           todo "CANCELLED|DONE|TESTING|ONGOING|TODO"
+           todo "VOID|DONE|PENDING|TESTING|ONGOING|TODO"
            ((org-agenda-buffer-tmp-name "*Org Agenda Kanban*")
             (org-agenda-overriding-header "Kanban Board")
             (org-super-agenda-groups
-             '(( :name "To Do"     :todo "TODO")
-               ( :name "Ongoing"   :todo "ONGOING")
-               ( :name "Testing"   :todo "TESTING")
-               ( :name "Done"      :todo "DONE")
-               ( :name "Cancelled" :todo "CANCELLED")
+             '(( :name "To Do"            :todo "TODO")
+               ( :name "In Progress"      :todo "ONGOING")
+               ( :name "Testing"          :todo "TESTING")
+               ( :name "Pending Approval" :todo "PENDING")
+               ( :name "Completed"        :todo "DONE")
+               ( :name "Canceled"         :todo "VOID")
                ))
             ))
 
-          ("A" "Today View"
+          ("a" "Today View"
            agenda ""
            ((org-agenda-buffer-tmp-name "*Org Agenda Today*")
             (org-agenda-span 'day)
@@ -174,35 +177,37 @@
                  :scheduled today
                  :order 0)
                ( :habit t)
+               ( :name "Overdue"
+                 :deadline past
+                 :order 1)
                ( :name "Due Today"
                  :deadline today
                  :order 2)
                ( :name "Due Soon"
                  :deadline future
-                 :order 8)
-               ( :name "Overdue"
-                 :deadline past
-                 :order 7)
+                 :order 3)
                (:auto-category t)
                ))
             ))
 
-          ("a" "Week View"
+          ("w" "Week View"
            agenda ""
            ((org-agenda-buffer-tmp-name "*Org Agenda*")
-            (org-agenda-span 'fortnight)
+            (org-agenda-span 'week)
             (org-agenda-start-on-weekday 0)
             (org-super-agenda-groups
              '(( :name "Today"
                  :time-grid t)
-               ( :name "Due Today"
-                 :deadline today)
                ( :name "Overdue"
-                 :deadline past)
-               ( :name "Due This Week"
+                 :deadline past
+                 :order 1)
+               ( :name "Due Today"
+                 :deadline today
+                 :order 2)
+               ( :name "Due Soon"
                  :deadline future)
                ( :name "Scheduled"
-                 :scheduled future)
+                 :scheduled t)
                ( :auto-category t)))))
           ))
   :hook
