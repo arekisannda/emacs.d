@@ -37,27 +37,37 @@
                 evil-want-minibuffer nil)
   :config
   (setq evil-insert-state-modes
-        '( comint-mode erc-mode geiser-repl-mode gud-mode inferior-apl-mode inferior-caml-mode
-           inferior-emacs-lisp-mode inferior-j-mode inferior-python-mode inferior-scheme-mode inferior-sml-mode
-           internal-ange-ftp-mode haskell-interactive-mode prolog-inferior-mode racket-repl-mode reb-mode shell-mode
-           slime-repl-mode term-mode utop-mode wdired-mode))
+        '( erc-mode geiser-repl-mode gud-mode
+           internal-ange-ftp-mode haskell-interactive-mode reb-mode
+           slime-repl-mode  utop-mode wdired-mode))
 
   (setq evil-emacs-state-modes
         (delete-dups
-         (append '(vterm-mode
-                   dape-info-parent-mode
-                   special-mode
-                   eshell-mode
-                   agent-shell-mode
-                   dashboard-mode
-                   dap-ui-breakpoints-ui-list-mode
-                   dape-repl-mode
+         (append '(agent-shell-mode
                    calc-mode
-                   comint-mode
                    calculator-mode
                    calendar-mode
+                   comint-mode
+                   dap-ui-breakpoints-ui-list-mode
+                   dape-info-parent-mode
+                   dape-repl-mode
+                   dashboard-mode
                    eglot-list-connections-mode
-                   inferior-python-mode)
+                   eshell-mode
+                   inferior-apl-mode
+                   inferior-caml-mode
+                   inferior-emacs-lisp-mode
+                   inferior-j-mode
+                   inferior-python-mode
+                   inferior-python-mode
+                   inferior-scheme-mode
+                   inferior-sml-mode
+                   prolog-inferior-mode
+                   racket-repl-mode
+                   shell-mode
+                   special-mode
+                   term-mode
+                   vterm-mode)
                  evil-emacs-state-modes)))
 
   (setq evil-normal-state-modes

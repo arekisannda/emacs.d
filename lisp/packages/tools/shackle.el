@@ -258,7 +258,6 @@
        "^\\*diff-hl-show-hunk-buffer\\*"
        "^\\*Deletions\\*$"
        "^ widget-choose$"
-       "^ \\*which-key\\*$"
        "^\\*Ibuffer confirmation\\*"
        "^\\*Local Variables\\*$"
        "^\\*Completions\\*$"

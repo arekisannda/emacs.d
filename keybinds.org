@@ -1345,13 +1345,18 @@
 (general-create-definer +keybinds-editor-writing
   :prefix-command '+keybinds-editor-writing-command)
 
-(defun query-replace-regexp-from-top ()
-  (interactive)
-  (if (use-region-p)
-      (call-interactively #'query-replace-regexp)
+(defun query-replace-regexp-from-top (regexp to-string &optional delimited)
+  (interactive
+   (let ((common (query-replace-read-args
+                  (concat "Query replace regexp"
+                          (if (use-region-p) " in region" " from top"))
+                  t)))
+     (list (nth 0 common) (nth 1 common) (nth 2 common))))
+  (let ((start (if (use-region-p) (region-beginning) (point-min)))
+        (end   (if (use-region-p) (region-end)       (point-max))))
     (save-excursion
-      (goto-char (point-min))
-      (call-interactively #'query-replace-regexp))))
+      (goto-char start)
+      (query-replace-regexp regexp to-string delimited start end))))
 
 (+keybinds-editor-writing 
   "s" '("fix typo"        . flyspell-correct-word-before-point)
