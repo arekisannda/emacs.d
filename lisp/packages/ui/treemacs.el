@@ -71,6 +71,7 @@
   (advice-add #'treemacs-select-window :around #'+treemacs--select-window-guard)
 
   (defun +treemacs--setup ()
+    (treemacs-autohide-mode 1)
     (treemacs-filewatch-mode 1)
     (treemacs-fringe-indicator-mode 'only-when-focused)
     (face-remap-add-relative 'mode-line-active
@@ -116,6 +117,54 @@
 
 (use-package treemacs-tab-bar :after treemacs
   :config (treemacs-set-scope-type 'Tabs))
+
+(with-eval-after-load 'treemacs
+  (defvar treemacs-autohide-previous-size nil)
+  (defcustom treemacs-autohide-threshold 460
+    "Auto hide `treemacs` when `frame-width` is below threshold."
+    :group 'treemacs
+    :type 'integer)
+
+  (defun treemacs-autohide-frame-size-changed-p ()
+    (let ((new-size (cons (frame-width) (frame-height))))
+      (cond ((null treemacs-autohide-previous-size)
+             (setq treemacs-autohide-previous-size new-size)
+             nil)
+            ((not (equal treemacs-autohide-previous-size new-size))
+             (setq treemacs-autohide-previous-size new-size)))))
+
+  (defun treemacs-autohide-on-size-change (&optional frame)
+    (with-selected-frame frame
+      (when (treemacs-autohide-frame-size-changed-p)
+        (if-let ((visibility (treemacs-current-visibility))
+                 (_ (< (frame-width) treemacs-autohide-threshold)))
+            (when (eq visibility 'visible)
+              (delete-window (treemacs-get-local-window)))
+          (pcase visibility
+            ('visible nil)
+            ('exists (display-buffer (treemacs-get-local-buffer-create)))))
+        )))
+
+  (defun treemacs-autohide-defocus (frame)
+    (with-selected-frame
+        (when (< (frame-width) treemacs-autohide-threshold)
+          (when (and (not (eq (frame-selected-window frame) (treemacs-get-local-window)))
+                     (eq 'visible (treemacs-current-visibility)))
+            (delete-window (treemacs-get-local-window)))
+          )))
+
+  (define-minor-mode treemacs-autohide-mode
+    "Toggle `treemacs` autohide."
+    :global t
+    :lighter nil
+    (if treemacs-autohide-mode
+        (progn
+          (add-hook 'window-selection-change-functions #'treemacs-autohide-defocus)
+          (add-hook 'window-size-change-functions #'treemacs-autohide-on-size-change))
+      (remove-hook 'window-selection-change-functions #'treemacs-autohide-defocus)
+      (remove-hook 'window-size-change-functions #'treemacs-autohide-on-size-change)
+      ))
+  )
 
 (with-eval-after-load 'treemacs-workspaces
   (defun treemacs-project-directory-prompt ()
