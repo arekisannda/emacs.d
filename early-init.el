@@ -121,9 +121,12 @@
 (set-fontset-font "fontset-default" 'kana (font-spec :family "Source Han Sans"))
 
 (setq-default frame-title-format
-              '((:eval (if init-file-debug "[DEBUG] "))
+              '((:eval (when init-file-debug "[DEBUG] "))
                 (:eval (or (frame-parameter (selected-frame) 'prefix) "%F: "))
-                (:eval (if tab-bar-mode (format "%s" (cdr (assq 'name (tab-bar--current-tab))))))))
+                (:eval (when tab-bar-mode (format "%s" (cdr (assq 'name (tab-bar--current-tab))))))
+                (:eval (when (and (activities-current) (not (eq (treemacs-current-visibility) 'visible)))
+                           (format "<%s>" (activities-workspaces-last (activities-current-workspace)))))
+                ))
 
 (unless init-file-debug
   (setq message-log-max nil)
