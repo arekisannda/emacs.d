@@ -12,7 +12,6 @@
 
 (defun emacs-set-alt-face ()
   (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
-  (face-remap-add-relative 'header-line `(nil :background ,(doom-color 'bg-alt)))
   (face-remap-add-relative 'markdown-code-face `(nil :background ,(doom-color 'bg-alt)))
   (face-remap-add-relative 'mode-line-active
                            `(nil :inherit mode-line-active
@@ -34,7 +33,8 @@
   :custom-face
   (header-line
    ((nil :inherit unspecified
-         :overline unspecified
+         :foreground ,(doom-color 'fg-alt)
+         :background ,(doom-color 'bg-alt)
          :underline (:color ,(doom-color 'vertical-bar) :style double-line :position t)
          :box (:line-width (1 . 4) :style flat-button)
          )))

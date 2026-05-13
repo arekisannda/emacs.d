@@ -122,10 +122,12 @@
 
 (setq-default frame-title-format
               '((:eval (when init-file-debug "[DEBUG] "))
-                (:eval (or (frame-parameter (selected-frame) 'prefix) "%F: "))
-                (:eval (when tab-bar-mode (format "%s" (cdr (assq 'name (tab-bar--current-tab))))))
-                (:eval (when (and (activities-current) (not (eq (treemacs-current-visibility) 'visible)))
-                           (format "<%s>" (activities-workspaces-last (activities-current-workspace)))))
+                (:eval (or (frame-parameter (selected-frame) 'prefix) "%F"))
+                (:eval (when (and tab-bar-mode (activities-current))
+                         (format " > %s" (cdr (assq 'name (tab-bar--current-tab))))))
+                (:eval (when (and tab-bar-mode (activities-current))
+                         (when-let ((ws (activities-workspaces-last (activities-current-workspace))))
+                           (format " > %s" ws))))
                 ))
 
 (unless init-file-debug

@@ -262,10 +262,21 @@
  :keymaps 'magit-repolist-mode-map
  "<return>" '("status" . magit-repolist-status))
 
+(defun magit-reset-view ()
+  (interactive)
+  (magit-section-show-level-2-all)
+  (magit-section-cycle-diffs)
+  (magit-section-cycle-diffs)
+  (magit-section-cycle-diffs)
+  (magit-section-show (magit-section-at)))
+
 (general-define-key
  :states '(normal motion emacs)
  :keymaps '(magit-status-mode-map
             magit-diff-mode-map)
+
+ "C-r" #'magit-reset-view
+
  "C-1" #'magit-section-show-level-1
  "C-2" #'magit-section-show-level-2
  "C-3" #'magit-section-show-level-3
@@ -681,6 +692,7 @@
 
  "<f10>"   '("menu"        . menu-bar-open)
  "<f11>"   '("mru"         . evil-window-mru)
+ "S-<f12>" '("tree toggle" . treemacs-autohide-mode)
  "<f12>"   (general-predicate-dispatch nil
              (activities-current) #'treemacs-select-window))
 

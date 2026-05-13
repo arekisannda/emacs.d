@@ -12,9 +12,10 @@
    ((nil :background unspecified)))
   (magit-header-line
    ((nil :weight bold
+         :box unspecified
+         :inherit header-line
          :foreground ,(doom-color 'fg)
-         :background ,(doom-color 'bg-alt)
-         :box (:line-width (1 . 1) :color ,(doom-color 'bg-alt) :style nil))))
+         :background ,(doom-color 'bg-alt))))
   (magit-diff-file-heading-selection
    ((nil :foreground ,(doom-color 'red)
          :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg) 0.1))))

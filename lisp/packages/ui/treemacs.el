@@ -5,6 +5,10 @@
 (use-package treemacs
   :demand t
   :custom
+  (treemacs-user-header-line-format '("%e" (:eval (when (and tab-bar-mode (activities-current))
+                                                    (concat
+                                                     (propertize (propertize " " 'display `(space :width 1)))
+                                                     (format "%s" (cdr (assq 'name (tab-bar--current-tab)))))))))
   (treemacs-user-mode-line-format '("%e" (:eval (doom-modeline-format--+treemacs-modeline))))
   (treemacs-is-never-other-window t)
   (treemacs-display-in-side-window t)
@@ -74,6 +78,8 @@
     (treemacs-autohide-mode 1)
     (treemacs-filewatch-mode 1)
     (treemacs-fringe-indicator-mode 'only-when-focused)
+    (face-remap-add-relative 'header-line
+                             `(nil :height 1.1 :foreground ,(doom-color 'fg-alt)))
     (face-remap-add-relative 'mode-line-active
                              `(nil :inherit mode-line-active
                                    :foreground unspecified
@@ -134,9 +140,9 @@
              (set-frame-parameter frame 'treemacs-frame-size new-size)
              t))))
 
-  (defun treemacs-autohide-on-size-change (&optional frame)
+  (defun treemacs-autohide-on-size-change (&optional frame forcep)
     (with-selected-frame frame
-      (when (treemacs-autohide-frame-size-changed-p frame)
+      (when (or (treemacs-autohide-frame-size-changed-p frame) forcep)
         (if-let ((visibility (treemacs-current-visibility))
                  (resize (< (frame-width) treemacs-autohide-threshold)))
             (when (eq visibility 'visible)
@@ -159,11 +165,14 @@
 
   (defun treemacs-autohide-enable ()
     (add-hook 'window-size-change-functions #'treemacs-autohide-on-size-change)
-    (add-hook 'window-selection-change-functions #'treemacs-autohide-defocus))
+    (add-hook 'window-selection-change-functions #'treemacs-autohide-defocus)
+    (treemacs-autohide-on-size-change (selected-frame) 'force))
 
   (defun treemacs-autohide-disable ()
     (remove-hook 'window-size-change-functions #'treemacs-autohide-on-size-change)
-    (remove-hook 'window-selection-change-functions #'treemacs-autohide-defocus))
+    (remove-hook 'window-selection-change-functions #'treemacs-autohide-defocus)
+    (with-selected-frame (selected-frame)
+      (display-buffer (treemacs-get-local-buffer-create))))
 
   (define-minor-mode treemacs-autohide-mode
     "Toggle `treemacs` autohide."

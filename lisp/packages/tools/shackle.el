@@ -124,16 +124,8 @@
      ((treemacs-mode)
       ,@(+shackle-left-preset-size-0))
 
-     (("^CAPTURE-.*\\.org$")
-      :if (lambda (window &rest _)
-            (with-selected-frame (window-frame window)
-              (frame-parameter (selected-frame) 'pop-up)))
-      :same t :select t)
-
      (("^\\*Org Agenda .*\\*$"
        "^\\*Org Agenda\\*$"
-       "^\\*Org Select\\*$"
-       "^CAPTURE-.*\\.org$"
        "^\\*Edit Treemacs Workspaces\\*$"
 
        org-agenda-mode)
@@ -249,7 +241,8 @@
       ,@(+shackle-bottom-select-preset-size-1))
 
      (("^ \\*transient\\*$"
-       "^ \\*CDLaTeX Help\\*")
+       "^ \\*CDLaTeX Help\\*"
+       "^\\*Org Select\\*$")
       :custom util/windows-display-buffer-in-pop-up-window)
 
      (("^\\*diff-hl\\*"
@@ -284,7 +277,10 @@
       :size +shackle-get-dimensions)
 
      ((org-mode)
-      :if (lambda (_ buffer) (org-agenda-file-p (buffer-file-name buffer)))
+      :if (lambda (_ buffer)
+            (or (org-agenda-file-p (buffer-file-name buffer))
+                (org-agenda-file-p (buffer-file-name (buffer-base-buffer buffer)))
+                ))
       :custom util/windows-display-buffer-by-condition
       :fallback (:same t :select t)
       :conditions
