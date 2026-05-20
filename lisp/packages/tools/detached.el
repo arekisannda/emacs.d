@@ -44,9 +44,13 @@
   (defun +detach-notifications-message (session)
     "Issue a notification when SESSION transitions from active to inactive.
 This function uses the `notifications' library."
-    (let ((status (detached-session-status session))
-          (host (detached-session-host-name session)))
+    (let* ((status (detached-session-status session))
+           (host (detached-session-host-name session)))
       (notifications-notify
+       :hints (pcase status
+                ('success
+                 `(("synchronous" :string "detached")))
+                ('failure nil))
        :title (pcase status
                 ('success (format "Detached finished [%s]" host))
                 ('failure (format "Detached failed [%s]" host)))
