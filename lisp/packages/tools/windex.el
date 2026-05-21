@@ -1,5 +1,7 @@
 ;;; tools/windex.el -*- lexical-binding: t; -*-
 
+(require 'util-windows)
+
 (use-package windex :after ace-window
   :custom
   (windex-window-filter-functions
@@ -33,8 +35,9 @@
   :custom
   (windex-layout-restore-window-state-filter-function
    (lambda (window)
-     (not (or (window-parameter window 'window-side)
-              (window-parameter window 'window-popup)))
+     (not (or (util/windows-side-window-p window)
+              (util/windows-popup-window-p window)
+              (util/windows-aux-window-p window)))
      ))
   (windex-layout-alist
    '((base :description "1x1 layout."
@@ -68,11 +71,7 @@
 (use-package windex-scroll :after (evil)
   :custom
   (windex-scroll-frame-selector nil)
-  (windex-scroll-window-selector
-   (lambda ()
-     (or (windex-window-with-parameters '((window-side . right)) nil t)
-         (windex-window-with-parameters '((window-side . bottom)) nil t)
-         (windex-window-with-parameters '((window-popup . bottom)) nil t))))
+  (windex-scroll-window-selector #'ignore)
 
   (windex-scroll-left-function #'evil-scroll-column-left)
   (windex-scroll-right-function #'evil-scroll-column-right)

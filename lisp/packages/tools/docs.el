@@ -16,4 +16,5 @@
 (use-package man
   :defer t
   :custom
-  (Man-width-max nil))
+  (Man-width-max 100)
+  (Man-notify-method 'thrifty))

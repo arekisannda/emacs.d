@@ -33,7 +33,7 @@
   (with-current-buffer buffer
     (when-let* ((default-directory (project-root (project-current nil default-directory))))
       (when (file-exists-p "flake.nix")
-        '(("Nix Flake Update"  . nix-flake-update-inputs)))
+        '(("Update Nix Flake Inputs"  . nix-flake-update-inputs)))
       )))
 
 (add-hook 'util/commands-run-list-additional-command-hook #'util/commands-run--add-nix-flake-commands)
