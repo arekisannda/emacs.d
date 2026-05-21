@@ -460,9 +460,16 @@
 #+end_src
 *** Detached
 #+begin_src emacs-lisp :tangle yes
+(defun detached-list-delete-sessions (&optional closep)
+  (interactive
+   (list current-prefix-arg))
+  (detached-delete-sessions)
+  (when (derived-mode-p 'detached-list-mode)
+    (when closep (quit-window))))
+
 (general-define-key
  :keymaps 'detached-list-mode-map
- "K" '("delete all" . detached-delete-sessions))
+ "K" '("delete all" . detached-list-delete-sessions))
 #+end_src
 *** Diff-hl
 #+begin_src emacs-lisp :tangle yes
@@ -475,20 +482,20 @@
   ("j" #'diff-hl-show-hunk-next "next hunk")
   ("i" #'diff-hl-show-hunk "show hunk")
 
-  ("M-<prior>" #'diff-hl-scroll-up)
-  ("M-<next>"  #'diff-hl-scroll-down)
-  ("M-<home>"  #'diff-hl-scroll-left)
-  ("M-<end>"   #'diff-hl-scroll-right))
+  ("M-<prior>"   #'diff-hl-scroll-up)
+  ("M-<next>"    #'diff-hl-scroll-down)
+  ("S-M-<next>"  #'diff-hl-scroll-left)
+  ("S-M-<prior>" #'diff-hl-scroll-right))
 (hydra-set-property #'+hydra-git-motion :verbosity 0)
 
 (general-define-key
  :keymaps 'diff-hl-show-hunk-posframe--transient-mode-map
- "M-<prior>" '("scroll up"    . +hydra-git-motion/diff-hl-scroll-up)
- "M-<next>"  '("scroll down"  . +hydra-git-motion/diff-hl-scroll-down)
- "M-<home>"  '("scroll left"  . +hydra-git-motion/diff-hl-scroll-left)
- "M-<end>"   '("scroll right" . +hydra-git-motion/diff-hl-scroll-right)
- "k"         '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
- "j"         '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
+ "M-<prior>"   '("scroll up"    . +hydra-git-motion/diff-hl-scroll-up)
+ "M-<next>"    '("scroll down"  . +hydra-git-motion/diff-hl-scroll-down)
+ "S-M-<next>"  '("scroll left"  . +hydra-git-motion/diff-hl-scroll-left)
+ "S-M-<prior>" '("scroll right" . +hydra-git-motion/diff-hl-scroll-right)
+ "k"           '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
+ "j"           '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
 
 (general-create-definer +keybinds-editor-git
   :prefix-command '+keybinds-editor-git-command)
@@ -656,33 +663,41 @@
  "C-<f5>"   (general-predicate-dispatch nil
               (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
 
- "S-<f5>"   (general-predicate-dispatch #'dape-restart
-              (derived-mode-p 'dape-active-mode) nil)
+ "S-<f5>"   (general-predicate-dispatch  nil
+              (derived-mode-p 'dape-active-mode) nil
+              (derived-mode-p 'prog-mode) #'dape-restart)
 
- "C-S-<f5>" #'dape-quit
+ "C-S-<f5>" (general-predicate-dispatch  nil
+              (derived-mode-p 'dape-active-mode) #'dape-quit)
 
- "<f6>"     (general-predicate-dispatch #'+rmsbolt-toggle
+ "<f6>"     (general-predicate-dispatch nil 
               (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
-              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-in)
+              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-in
+              (derived-mode-p 'prog-mode) #'+rmsbolt-toggle)
 
  "<f7>"     (general-predicate-dispatch nil
               (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-out)
 
- "<f8>"     (general-predicate-dispatch #'project-recompile
+ "<f8>"     (general-predicate-dispatch nil 
               (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-next
-              (derived-mode-p 'calc-mode) #'calc-trail-display)
+              (derived-mode-p 'calc-mode) #'calc-trail-display
+              (derived-mode-p 'prog-mode) #'project-recompile)
 
- "C-<f8>"   (general-predicate-dispatch #'recompile
-              (derived-mode-p 'dape-active-mode) nil)
+ "C-<f8>"   (general-predicate-dispatch nil 
+              (derived-mode-p 'dape-active-mode) nil
+              (derived-mode-p 'prog-mode) #'recompile)
 
- "S-<f8>"   (general-predicate-dispatch #'project-compile
-              (derived-mode-p 'dape-active-mode) nil)
+ "S-<f8>"   (general-predicate-dispatch nil 
+              (derived-mode-p 'dape-active-mode) nil
+              (derived-mode-p 'prog-mode) #'project-compile)
 
- "C-S-<f8>" (general-predicate-dispatch #'compile
-              (derived-mode-p 'dape-active-mode) nil)
+ "C-S-<f8>" (general-predicate-dispatch nil
+              (derived-mode-p 'dape-active-mode) nil
+              (derived-mode-p 'prog-mode) #'compile)
 
- "M-<f8>"   (general-predicate-dispatch #'detached-project-compile
-              (derived-mode-p 'dape-active-mode) nil)
+ "M-<f8>"   (general-predicate-dispatch nil
+              (derived-mode-p 'dape-active-mode) nil
+              (derived-mode-p 'prog-mode) #'detached-project-compile)
 
  "M-S-<f8>" (general-predicate-dispatch #'kill-compilation
               (derived-mode-p 'dape-active-mode) nil)
@@ -835,36 +850,38 @@
 (general-define-key
  :keymaps 'global
 
- "<prior>"   '("scroll up"    . scroll-down-command)
- "<next>"    '("scroll down"  . scroll-up-command)
- "C-<prior>" '("scroll up"    . windex-scroll-up)
- "C-<next>"  '("scroll down"  . windex-scroll-down)
- "C-<home>"  '("scroll left"  . windex-scroll-left)
- "C-<end>"   '("scroll right" . windex-scroll-right)
+ "C-<home>"    '("beginning"    . beginning-of-buffer)
+ "C-<end>"     '("end"          . end-of-buffer)
+ "<prior>"     '("scroll up"    . scroll-down-command)
+ "<next>"      '("scroll down"  . scroll-up-command)
+ "C-<prior>"   '("scroll up"    . windex-scroll-up)
+ "C-<next>"    '("scroll down"  . windex-scroll-down)
+ "S-C-<next>"  '("scroll left"  . windex-scroll-left)
+ "S-C-<prior>" '("scroll right" . windex-scroll-right)
 
- "M-<prior>" (general-predicate-dispatch #'windex-scroll-selector-up
-               (util/frames-live-visible-p diff-hl-show-hunk--frame)
-               #'diff-hl-scroll-up
-               (util/frames-live-visible-p eldoc-box--frame)
-               #'eldoc-box-scroll-up)
+ "M-<prior>"   (general-predicate-dispatch #'windex-scroll-selector-up
+                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
+                 #'diff-hl-scroll-up
+                 (util/frames-live-visible-p eldoc-box--frame)
+                 #'eldoc-box-scroll-up)
 
- "M-<next>"  (general-predicate-dispatch #'windex-scroll-selector-down
-               (util/frames-live-visible-p diff-hl-show-hunk--frame)
-               #'diff-hl-scroll-down
-               (util/frames-live-visible-p eldoc-box--frame)
-               #'eldoc-box-scroll-down)
+ "M-<next>"    (general-predicate-dispatch #'windex-scroll-selector-down
+                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
+                 #'diff-hl-scroll-down
+                 (util/frames-live-visible-p eldoc-box--frame)
+                 #'eldoc-box-scroll-down)
 
- "M-<home>"  (general-predicate-dispatch #'windex-scroll-selector-left
-               (util/frames-live-visible-p diff-hl-show-hunk--frame)
-               #'diff-hl-scroll-left
-               (util/frames-live-visible-p eldoc-box--frame)
-               #'eldoc-box-scroll-left)
+ "S-M-<next>"  (general-predicate-dispatch #'windex-scroll-selector-left
+                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
+                 #'diff-hl-scroll-left
+                 (util/frames-live-visible-p eldoc-box--frame)
+                 #'eldoc-box-scroll-left)
 
- "M-<end>"   (general-predicate-dispatch #'windex-scroll-selector-right
-               (util/frames-live-visible-p diff-hl-show-hunk--frame)
-               #'diff-hl-scroll-right
-               (util/frames-live-visible-p eldoc-box--frame)
-               #'eldoc-box-scroll-right)
+ "S-M-<prior>" (general-predicate-dispatch #'windex-scroll-selector-right
+                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
+                 #'diff-hl-scroll-right
+                 (util/frames-live-visible-p eldoc-box--frame)
+                 #'eldoc-box-scroll-right)
  )
 #+end_src
 ** Windows
@@ -1138,7 +1155,8 @@
 
   "m"     '("magit status"    . magit)
   "C-m"   '("magit dispatch"  . magit-dispatch)
-  "C-n"   '("gh notification" . forge-list-notifications)
+  "C-n"   '("forge dispatch"  . forge-dispatch)
+  "C-S-n" '("gh notification" . forge-list-notifications)
 
   "p"     '("agent shell"     . agent-shell-no-context)
   "M-p"   '("agent shell add" . agent-shell)
@@ -1624,15 +1642,27 @@
 (general-create-definer +keybinds-editor-edit
   :prefix-command '+keybinds-editor-edit-command)
 
+(defun +eglot-formatting-p ()
+  (with-current-buffer (current-buffer)
+    (plist-get (eglot--capabilities (eglot-current-server)) :documentFormattingProvider)))
+
+(defun +editorconfig-formatting-p ()
+  (locate-dominating-file default-directory ".editorconfig"))
+
 (+keybinds-editor-edit
   "+" '("sort lines"      . sort-lines)
-  "=" (general-predicate-dispatch        '("indent" . util/indent-buffer)
+  "=" (general-predicate-dispatch '("indent" . util/indent-buffer)
         (derived-mode-p '(json-ts-mode
-                          js-json-mode)) '("indent" . json-pretty-print-buffer)
+                          js-json-mode))
+        '("indent" . json-pretty-print-buffer)
         (derived-mode-p '(css-ts-mode
                           yaml-ts-mode
-                          html-mode))    '("indent" . prettier-js)
-        (eglot-managed-p)                '("indent" . eglot-format-buffer))
+                          html-mode))
+        '("indent" . prettier-js)
+        (and (eglot-managed-p) (+eglot-formatting-p))
+        '("indent" . eglot-format-buffer)
+        (+editorconfig-formatting-p)
+        '("indent" . editorconfig-format-buffer))
 
   "c" '("comment line"    . evilnc-comment-or-uncomment-lines)
   "C" '("comment block"   . evilnc-comment-or-uncomment-paragraphs)
