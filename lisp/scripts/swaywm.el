@@ -13,7 +13,7 @@
                                    (prefix . ,notes-frame-name)
                                    (min-width . 120)
                                    (width . 120)
-                                   (pop-up . t)))
+                                   (popup . t)))
 
 ;;;###autoload
 (defun swaywm/notes-open (title)

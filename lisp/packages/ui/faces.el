@@ -175,7 +175,6 @@
          :foreground ,(doom-color 'red))))
   :hook
   (util/windows-side-window . emacs-alt-face-side-setup)
-  (util/windows-pop-up-window . emacs-alt-face-setup)
   (Custom-mode . emacs-set-alt-face))
 
 (use-package rainbow-delimiters)

@@ -6,8 +6,10 @@
   :custom
   (transient-show-popup t)
   (transient-display-buffer-action
-   '(util/windows-display-buffer-in-pop-up-window
-     (dedicated . t)))
+   '(display-buffer-in-side-window
+     (side . bottom)
+     (dedicated . t)
+     (inhibit-same-window . t)))
   (transient-mode-line-format nil)
   (transient-force-fixed-pitch t))
 
@@ -25,7 +27,7 @@
 (use-package which-key
   :custom
   (which-key-dont-use-unicode t)
-  (which-key-popup-type 'custom)
+  (which-key-popup-type 'side-window)
   (which-key-sort-order 'which-key-description-order)
   (which-key-show-prefix 'echo)
   (which-key-side-window-slot 0)
@@ -34,25 +36,62 @@
   (which-key-side-window-max-width 0)
   (which-key-min-column-description-width 30)
   (which-key-preserve-window-configuration t)
-  (which-key-custom-hide-popup-function
-   (lambda ()
-     (when (buffer-live-p which-key--buffer)
-       ;; in case which-key buffer was shown in an existing window, `quit-window'
-       ;; will re-show the previous buffer, instead of closing the window
-       (quit-windows-on which-key--buffer)
-       (when (and which-key-preserve-window-configuration
-                  which-key--saved-window-configuration)
-         (set-window-configuration which-key--saved-window-configuration)
-         (setq which-key--saved-window-configuration nil)))))
+  ;; (which-key-custom-hide-popup-function
+  ;;  (lambda ()
+  ;;    (when (buffer-live-p which-key--buffer)
+  ;;      ;; in case which-key buffer was shown in an existing window, `quit-window'
+  ;;      ;; will re-show the previous buffer, instead of closing the window
+  ;;      (quit-windows-on which-key--buffer)
+  ;;      (when (and which-key-preserve-window-configuration
+  ;;                 which-key--saved-window-configuration)
+  ;;        (set-window-configuration which-key--saved-window-configuration)
+  ;;        (setq which-key--saved-window-configuration nil)))))
 
-  (which-key-custom-show-popup-function #'+which-key--show-buffer-root-window)
+  ;; (which-key-custom-show-popup-function #'+which-key--show-buffer-root-window)
 
-  (which-key-custom-popup-max-dimensions-function
-   (lambda (&optional _)
-     (cons 30 (let ((edges (window-edges (frame-root-window))))
-                (- (nth 2 edges) (nth 0 edges)))
-           )))
+  ;; (which-key-custom-popup-max-dimensions-function
+  ;;  (lambda (&optional _)
+  ;;    (cons 30 (let ((edges (window-edges (frame-root-window))))
+  ;;               (- (nth 2 edges) (nth 0 edges)))
+  ;;          )))
   :config
+  (defun which-key--show-buffer-side-window-override (act-popup-dim)
+    "Show which-key buffer when popup type is side-window."
+    (when (and which-key-preserve-window-configuration
+               (not which-key--saved-window-configuration))
+      (setq which-key--saved-window-configuration (current-window-configuration)))
+    (let* ((height (car act-popup-dim))
+           (width (cdr act-popup-dim))
+           (alist `((window-width  . util/windows-popup-fit-window-to-buffer)
+                    (window-height . util/windows-popup-fit-window-to-buffer)
+                    (side          . ,which-key-side-window-location)
+                    (slot          . ,which-key-side-window-slot)))
+           window)
+      (which-key--debug-message "Allow imprecise fit: %s
+Display window alist: %s"
+                                which-key-allow-imprecise-window-fit
+                                alist)
+      ;; Previously used `display-buffer-in-major-side-window' here, but
+      ;; apparently that is meant to be an internal function. See emacs bug #24828
+      ;; and advice given there.
+      (setq window
+            (cond
+             ((eq which-key--multiple-locations t)
+              ;; possibly want to switch sides in this case so we can't reuse the window
+              (delete-windows-on which-key--buffer)
+              (display-buffer-in-side-window which-key--buffer alist))
+             ((get-buffer-window which-key--buffer)
+              (display-buffer-reuse-window which-key--buffer alist))
+             (t
+              (display-buffer-in-side-window which-key--buffer alist))
+             ))
+
+      (window-preserve-size window nil t)
+      (emacs-alt-face-setup window which-key--buffer)
+      ))
+
+  (advice-add #'which-key--show-buffer-side-window :override #'which-key--show-buffer-side-window-override)
+
   (defun +which-key--show-buffer-root-window (&optional _)
     (when (and which-key-preserve-window-configuration
                (not which-key--saved-window-configuration))
@@ -62,7 +101,10 @@
                     (window-popup  . bottom)
                     (dedicated     . t)))
            window)
-      (run-hook-with-args 'util/windows-pop-up-window-hook window which-key--buffer)
+
+      (emacs-alt-face-setup window which-key--buffer)
+      (+mode-line-setup window which-key--buffer)
+
       (cond
        ((eq which-key--multiple-locations t)
         (delete-windows-on which-key--buffer)

@@ -27,104 +27,38 @@
 Function takes two arguments WINDOW and buffer and optional FLAGS."
   :type 'hook)
 
-(defcustom util/windows-pop-up-window-hook '()
-  "Called when creating pop-up window.
+(defcustom util/windows-popup-window-hook '()
+  "Called when creating popup window.
 Function takes two arguments WINDOW and BUFFER."
+  :type 'hook)
+
+(defcustom util/windows-aux-window-hook '()
+  "Called when creating window.
+Function takes two arguments WINDOW and buffer and optional FLAGS."
   :type 'hook)
 
 (advice-add 'shrink-window-if-larger-than-buffer
             :before-while (lambda (&rest args) util/windows-disable-shrink))
 
+(defun util/windows-get-mru-in-main (&optional all-frames dedicated not-selected no-other)
+  "Get most recently used main window."
+  (let (best-window best-time time)
+    (dolist (window (window-list-1 nil 'nomini all-frames))
+      (setq time (window-use-time window))
+      (when (and (or dedicated (not (window-dedicated-p window)))
+                 (or (not not-selected) (not (eq window (selected-window))))
+                 (or (not no-other) (not (window-parameter window 'no-other-window)))
+                 (or (not best-time) (> time best-time))
+                 (not (util/windows-side-window-p window))
+                 (not (util/windows-popup-window-p window))
+                 (not (util/windows-aux-window-p window)))
+        (setq best-time time)
+        (setq best-window window)))
+    best-window))
+
 (defun util/windows-popup-fit-window-to-buffer (window &rest _)
   "Configured  `fit-to-window-buffer' for popup WINDOW."
   (fit-window-to-buffer window 20 1))
-
-(defun util/windows-display-buffer-in-side-window (buffer &optional alist plist)
-  "Display BUFFER in side window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
-    (let* ((side (plist-get plist :side))
-           (slot (plist-get plist :slot))
-           (size (plist-get plist :size))
-           (fixed (plist-get plist :fixed))
-           (init-window (window-normalize-window nil))
-           parameters
-           window)
-
-      (if (and side slot)
-          (setq parameters `((window-side . ,side) (window-slot . ,slot)))
-        (user-error "Missing side window parameters"))
-
-      (cond
-       ;; if reuse flag is set and if buffer is visible, reuse the window
-       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
-        (select-window window))
-       ((setq window
-              (display-buffer-in-side-window
-               buffer
-               `(,@alist
-                 (direction             . ,(plist-get plist :direction))
-                 (side                  . ,side)
-                 (slot                  . ,slot)
-                 (inhibit-same-window   . t)
-                 ,@(if (and size (functionp size))
-                       (funcall size side)
-                     (list (cons 'window-height (and (cl-find side '(bottom top)) size))
-                           (cons 'window-width  (and (cl-find side '(right left)) size))))
-                 )
-               )))
-       (t (user-error "Unable to create side window")))
-
-      (with-current-buffer buffer
-        (when (plist-get plist :disable-modeline)
-          (set-window-parameter window 'mode-line-format 'none))
-        (unless (window-parameter window 'quit-restore)
-          (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
-        (when (plist-get plist :no-other)
-          (set-window-parameter window 'no-other-window t))
-        (set-window-buffer window buffer)
-        (set-window-dedicated-p window (plist-get plist :dedicated))
-        (set-window-parameter window 'no-other-window t)
-        (set-window-parameter window 'no-delete-other-windows t)
-
-        (when fixed
-          (window-preserve-size window (not (eq fixed 'height)) t)
-          (setq-local window-size-fixed fixed)
-          )
-        )
-
-      (run-hook-with-args 'util/windows-side-window-hook window buffer (plist-get plist :flags))
-      (if (plist-get plist :select) window init-window)
-      )))
-
-(defun util/windows-display-buffer-in-mru-main-window (buffer &optional alist plist)
-  "Display BUFFER in most recently used window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
-    (let* ((init-window (window-normalize-window nil))
-           window)
-      (cond
-       ;; if reuse flag is set and if buffer is visible, reuse the window
-       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
-        (select-window window))
-       ((setq window (windex-get-mru-in-main))
-        (set-window-buffer window buffer))
-       (t (user-error "Unable to get main window")))
-
-      (if (plist-get plist :select) window init-window))))
-
-(defun util/windows-display-buffer-in-lru-main-window (buffer &optional alist plist)
-  "Display BUFFER in least recently used window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
-    (let* ((init-window (window-normalize-window nil))
-           window)
-      (cond
-       ;; if reuse flag is set and if buffer is visible, reuse the window
-       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
-        (select-window window))
-       ((setq window (util/window-get-lru-in-main))
-        (set-window-buffer window buffer))
-       (t (user-error "Unable to get main window")))
-
-      (if (plist-get plist :select) window init-window))))
 
 (defcustom util/windows-display-buffer-by-condition-switch-function #'ignore
   "Switch function for `util/windows-display-buffer-by-condition'."
@@ -179,37 +113,327 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
        (t 'fail))
       window)))
 
-(defun util/windows-display-buffer-in-pop-up-window (buffer &optional alist plist)
+(defun util/windows-display-buffer-in-mru-main-window (buffer &optional alist plist)
+  "Display BUFFER in most recently used window according to ALIST and PLIST."
+  (if (plist-get plist :ignore) 'fail
+    (let* ((init-window (window-normalize-window nil))
+           window)
+      (cond
+       ;; if reuse flag is set and if buffer is visible, reuse the window
+       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+        (select-window window))
+       ((setq window (util/windows-get-mru-in-main))
+        (set-window-buffer window buffer))
+       (t (user-error "Unable to get main window")))
+
+      (if (plist-get plist :select) window init-window))))
+
+(defun util/windows-display-buffer-in-lru-main-window (buffer &optional alist plist)
+  "Display BUFFER in least recently used window according to ALIST and PLIST."
+  (if (plist-get plist :ignore) 'fail
+    (let* ((init-window (window-normalize-window nil))
+           window)
+      (cond
+       ;; if reuse flag is set and if buffer is visible, reuse the window
+       ((and (setq window (get-buffer-window buffer)) (plist-get plist :reuse))
+        (select-window window))
+       ((setq window (util/window-get-lru-in-main))
+        (set-window-buffer window buffer))
+       (t (user-error "Unable to get main window")))
+
+      (if (plist-get plist :select) window init-window))))
+
+(defun util/windows-display-buffer-in-side-window (buffer &optional alist plist)
+  "Display BUFFER in side window according to ALIST and PLIST."
+  (if (plist-get plist :ignore) 'fail
+    (let* ((side (plist-get plist :side))
+           (slot (plist-get plist :slot))
+           (size (plist-get plist :size))
+           (fixed (plist-get plist :fixed))
+           (window-combination-limit t)
+           (init-window (window-normalize-window nil))
+           parameters
+           window)
+
+      (if (and side slot)
+          (setq parameters `((window-side . ,side) (window-slot . ,slot)))
+        (user-error "Missing side window parameters"))
+
+      (cond
+       ((setq window
+              (display-buffer-in-side-window
+               buffer
+               `(,@alist
+                 (side . ,side)
+                 (slot . ,slot)
+                 (inhibit-same-window . t)
+                 ,@(if (and size (functionp size)) (funcall size side)
+                     (list (cons 'window-height (and (cl-find side '(bottom top)) size))
+                           (cons 'window-width  (and (cl-find side '(right left)) size))))
+                 )
+               )))
+       (t (user-error "Unable to create side window")))
+
+      (with-current-buffer buffer
+        (when (plist-get plist :disable-modeline)
+          (set-window-parameter window 'mode-line-format 'none))
+        (unless (window-parameter window 'quit-restore)
+          (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer)))
+        (when (plist-get plist :no-other)
+          (set-window-parameter window 'no-other-window t))
+        (set-window-buffer window buffer)
+        (set-window-dedicated-p window (plist-get plist :dedicated))
+        (set-window-parameter window 'no-other-window t)
+        (set-window-parameter window 'no-delete-other-windows t)
+
+        (when fixed
+          (window-preserve-size window (not (eq fixed 'height)) t)
+          (setq-local window-size-fixed fixed)
+          )
+        )
+
+      (run-hook-with-args 'util/windows-side-window-hook window buffer (plist-get plist :flags))
+      (if (plist-get plist :select) window init-window)
+      )))
+
+(defun util/windows-split-main-window-below (size frame)
+  (with-selected-frame frame
+    (let ((size (max util/windows-min-bottom-height
+                     (if (integerp size) size (floor (* size (frame-height frame))))
+                     ))
+          (sentinel (get-buffer-create " *split-sentinel*"))
+          (toggle (and (window-with-parameter 'window-side nil frame)))
+          root-window
+          window)
+      (and toggle (window-toggle-side-windows))
+      (setq root-window (frame-root-window frame))
+      (setq window (split-window-below (- size) root-window))
+      (set-window-buffer window sentinel)
+      (and toggle (window-toggle-side-windows))
+      (get-buffer-window sentinel frame))))
+
+(defun util/windows-display-buffer-in-popup-window (buffer &optional alist plist)
   (let ((frame (shackle--splittable-frame)))
     (when frame
       (if (plist-get plist :ignore) 'fail
         (let* ((init-window (window-normalize-window nil))
-               (alist `((window-popup          . bottom)
-                        (no-other-window       . t)
-                        (dedicated             . t)
-                        (window-preserved-size . t)
-                        ,@alist))
+               (popup-window (window-with-parameter 'window-popup 'bottom frame))
+               (size (plist-get plist :size))
+               (fixed (plist-get plist :fixed))
+               (alist `(,@alist
+                        (window-popup        . bottom)
+                        (no-other-window     . t)
+                        (inhibit-same-window . t)
+                        ))
                parameters
                window)
 
+          (cond
+           ((window-live-p popup-window) (setq window popup-window))
+           (t (setq window (util/windows-split-main-window-below size frame))))
+
+          (window--display-buffer buffer window 'window alist)
           (with-current-buffer buffer
-            (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
-            (setq-local mode-line-format nil)
-            (run-hook-with-args 'util/windows-pop-up-window-hook window buffer))
+            (unless (bound-and-true-p util/windows--popup-configured)
+              (setq-local util/windows--popup-configured t))
 
-          (if (get-buffer-window buffer)
-              (setq window (display-buffer-reuse-window buffer alist))
-            (let* ((lines (count-lines (point-min) (point-max))))
-              (setq window (split-window (frame-root-window frame) (min -20 (max -20 (- lines)))))
-              (window--display-buffer buffer window 'window alist)
-              (set-window-parameter window 'no-other-window t)
-              (window-preserve-size window nil t)
-              ))
+            (when (plist-get plist :disable-modeline)
+              (set-window-parameter window 'mode-line-format 'none))
 
-          (set-window-parameter window 'window-popup 'bottom)
-          (when (plist-get plist :select) window))
-        ))
+            (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer))
+            (set-window-dedicated-p window (plist-get plist :dedicated))
+            (set-window-parameter window 'no-other-window t)
+            (set-window-parameter window 'no-delete-other-windows t)
+            (set-window-parameter window 'split-window (lambda (&rest _) (error "Cannot split popup window")))
+            (set-window-parameter window 'window-popup 'bottom)
+
+            (window-preserve-size window nil t)
+            (setq-local window-size-fixed fixed))
+
+          (run-hook-with-args 'util/windows-popup-window-hook window buffer (plist-get plist :flags))
+          (if (plist-get plist :select) window init-window)
+          ))
+      )))
+
+(defun util/windows-popup-window-p (window)
+  (and (window-parameter window 'window-popup)))
+
+(defun util/windows-side-window-p (window)
+  (and (window-parameter window 'window-side)
+       (window-parameter window 'window-slot)))
+
+(defun util/windows-aux-window-p (window)
+  (and (window-parameter window 'window-aux-other)
+       (window-parameter window 'window-aux-id)
+       (eq (window-parameter window 'window-aux) 'aux)))
+
+(defun util/windows-aux-source-window-p (window)
+  (and (window-parameter window 'window-aux-other)
+       (window-parameter window 'window-aux-id)
+       (eq (window-parameter window 'window-aux) 'source)))
+
+(defun util/windows-get-aux-window (&optional window)
+  (let ((window (window-normalize-window window)))
+    (with-selected-window window
+      (cond
+       ((util/windows-aux-window-p window) window)
+       ((util/windows-aux-source-window-p window)
+        (window-with-parameter 'window-aux-id (window-parameter window 'window-aux-other)))
+       ))
     ))
+
+(defun util/windows-display-buffer-in-aux-source-window (buffer &optional alist plist)
+  (let ((init-window (window-normalize-window nil))
+        parameters
+        window)
+    (if (not (util/windows-aux-window-p init-window)) 'fail
+      (setq window (window-with-parameter 'window-aux-id (window-parameter window 'window-aux-other)))
+      (window--display-buffer buffer window 'window alist))))
+
+
+(defun util/windows--aux-uuid ()
+  (let ((rnd (md5 (format "%s%s%s%s%s%s%s"
+                          (random)
+                          (org-time-convert-to-list nil)
+                          (user-uid)
+                          (emacs-pid)
+                          (user-full-name)
+                          user-mail-address
+                          (recent-keys)))))
+    (format "%s-%s-4%s-%s%s-%s"
+            (substring rnd 0 8)
+            (substring rnd 8 12)
+            (substring rnd 13 16)
+            (format "%x"
+                    (logior
+                     #b10000000
+                     (logand
+                      #b10111111
+                      (string-to-number
+                       (substring rnd 16 18) 16))))
+            (substring rnd 18 20)
+            (substring rnd 20 32))))
+
+(defun util/windows-display-buffer-in-aux-window (buffer &optional alist plist)
+  ;; pseudo
+  ;; check if selected window has a sub window
+  ;; if there is one, display buffer in sub window; else create and display buffer
+  ;; in sub window
+  ;; add parameter for sub window to detect if main window buffer has changed;
+  ;; if changed, remove sub window
+  ;; use `window-buffer-change-functions` as buffer-local function
+  ;; thing to track:
+  ;; main window: sub window id
+  ;; sub window: main window id (for selecting window when closed)
+  ;; sub window buffer: calling main window buffer
+  (if-let* ((init-window (window-normalize-window nil))
+            (ignorep (plist-get plist :ignore))
+            (aux-splittable-p (not (and (util/windows-side-window-p init-window)
+                                        (util/windows-popup-window-p init-window)))))
+      'fail
+    (let ((size (plist-get plist :size))
+          (fixed (plist-get plist :fixed))
+          (alist `(,@alist
+                   (no-other-window     . t)
+                   (inhibit-same-window . t)
+                   ))
+          parameters
+          window)
+
+      (cond
+       ((util/windows-aux-window-p init-window)
+        ;; assumed live if init-window is aux window
+        (setq window init-window)
+        (window--display-buffer buffer window 'window alist))
+
+       ((and (util/windows-aux-source-window-p init-window)
+             (setq window (util/windows-get-aux-window init-window))
+             (window-live-p window))
+        ;; aux window is live
+        (window--display-buffer buffer window 'window alist))
+
+       (t
+        ;; aux window is not live
+        (setq size (max util/windows-min-bottom-height
+                        (cond
+                         ((functionp size) (funcall size 'bottom))
+                         ((floatp size) (floor (* size (window-height init-window t))))
+                         ((integerp size) size)
+                         )))
+        (setq window
+              (display-buffer-below-selected
+               buffer
+               `(,@alist
+                 (window-min-height . ,size)
+                 (window-height     . ,size)
+                 )))
+
+        (let ((aux-source-id (util/windows--aux-uuid))
+              (aux-id (util/windows--aux-uuid)))
+          (set-window-prev-buffers window nil)
+          (set-window-parameter init-window 'window-aux 'source)
+          (set-window-parameter init-window 'window-aux-id aux-source-id)
+          (set-window-parameter init-window 'window-aux-other aux-id)
+          (set-window-parameter window 'window-aux 'aux)
+          (set-window-parameter window 'window-aux-id aux-id)
+          (set-window-parameter window 'window-aux-other aux-source-id)
+          )))
+
+      (with-current-buffer buffer
+        (unless (bound-and-true-p util/windows--aux-configured)
+          (setq-local util/windows--aux-configured t))
+
+        (setq-local window-size-fixed fixed)
+        (window-preserve-size window nil t)
+        (set-window-parameter window 'no-other-window t)
+        (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer))
+        (set-window-parameter window 'split-window (lambda (&rest _) (error "Cannot split aux window")))
+        )
+
+      (if (plist-get plist :select) window init-window))
+    ))
+
+(defun util/windows--aux-window-cleanup (&optional frame)
+  (let (delete-occured)
+    (with-selected-frame (window-normalize-frame frame)
+      (walk-windows
+       (lambda
+         (window)
+         (with-selected-window window
+           (when (util/windows-aux-window-p window)
+             (let* ((aux-id (window-parameter window 'window-aux-other))
+                    (source-window (window-with-parameter 'window-aux-id aux-id)))
+               (unless (window-live-p source-window)
+                 (delete-window window)
+                 (setq delete-occured t))
+               ))
+           ))
+       'nomini)
+      (when delete-occured (balance-windows (frame-root-window frame)))
+      )))
+
+(add-hook 'window-configuration-change-hook #'util/windows--aux-window-cleanup)
+
+
+(defun util/windows-print-window-tree ()
+  "Print the window tree of the current frame, including internal windows."
+  (interactive)
+  (util/windows--print-window-tree-walk (frame-root-window) 0))
+
+(defun util/windows--print-window-tree-walk (win depth)
+  "Recursively print WIN at DEPTH, descending into internal windows."
+  (let ((indent (make-string (* depth 2) ?\s)))
+    (princ (format "%s%s%s\n"
+                   indent
+                   win
+                   (if (window-live-p win)
+                       (format " [%s]" (buffer-name (window-buffer win)))
+                     "")))
+    ;; Descend into children (only internal windows have them).
+    (let ((child (window-child win)))
+      (while child
+        (util/windows--print-window-tree-walk child (1+ depth))
+        (setq child (window-next-sibling child))))))
 
 (provide 'util-windows)
 

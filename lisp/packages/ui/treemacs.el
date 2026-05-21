@@ -140,17 +140,34 @@
              (set-frame-parameter frame 'treemacs-frame-size new-size)
              t))))
 
+  (defun treemacs-autohide-set-threshold (threshold)
+    "Set `treemacs-autohide-threshold' to THRESHOLD."
+    (interactive
+     (list (read-number "Set `treemacs-autohide-threshold': " treemacs-autohide-threshold)))
+    (setq treemacs-autohide-threshold threshold)
+    (treemacs-autohide-on-size-change (selected-frame) 'force))
+
+  (defun treemacs-autohide--show ()
+    (let ((visibility (treemacs-current-visibility)))
+      (pcase visibility
+        ('visible nil)
+        ('exists (display-buffer (treemacs-get-local-buffer-create)))
+        )))
+
+  (defun treemacs-autohide--hide ()
+    (let ((visibility (treemacs-current-visibility)))
+      (when (eq visibility 'visible)
+        (delete-window (treemacs-get-local-window)))
+      ))
+
   (defun treemacs-autohide-on-size-change (&optional frame forcep)
     (with-selected-frame frame
       (when (or (treemacs-autohide-frame-size-changed-p frame) forcep)
-        (if-let ((visibility (treemacs-current-visibility))
-                 (resize (< (frame-width) treemacs-autohide-threshold)))
-            (when (eq visibility 'visible)
-              (delete-window (treemacs-get-local-window)))
-          (pcase visibility
-            ('visible nil)
-            ('exists (display-buffer (treemacs-get-local-buffer-create)))))
-        )))
+        (if (< (frame-width) treemacs-autohide-threshold)
+            (treemacs-autohide--hide)
+          (treemacs-autohide--show)
+          ))
+      ))
 
   (defun treemacs-autohide-defocus (frame)
     (with-selected-frame frame
@@ -172,7 +189,7 @@
     (remove-hook 'window-size-change-functions #'treemacs-autohide-on-size-change)
     (remove-hook 'window-selection-change-functions #'treemacs-autohide-defocus)
     (with-selected-frame (selected-frame)
-      (display-buffer (treemacs-get-local-buffer-create))))
+      (treemacs-autohide--show)))
 
   (define-minor-mode treemacs-autohide-mode
     "Toggle `treemacs` autohide."

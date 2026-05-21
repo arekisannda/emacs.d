@@ -5,9 +5,10 @@
 (use-package window
   :custom
   (switch-to-buffer-obey-display-actions t)
-  (window-combination-limit nil)
+  (window-combination-limit 'window-size)
+  (window-combination-resize nil)
   (window-sides-slots '(3 0 3 2))
-  (window-sides-vertical t)
+  (window-sides-vertical nil)
   (even-window-sizes nil)
   (util/windows-disable-shrink t)
   :init
@@ -16,6 +17,11 @@
                   (window-side             . writable)
                   (window-purpose          . writable)
                   (window-popup            . writable)
+                  (window-aux              . writable)
+                  (window-aux-id           . writable)
+                  (window-aux-other        . writable)
+                  (quit-restore            . t)
+                  (split-window            . t)
                   (clone-of                . t)
                   (no-other-window         . t)
                   (no-delete-other-windows . t)

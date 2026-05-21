@@ -140,7 +140,7 @@
   (doom-modeline-def-modeline
     '+default-modeline
     '(evil ace-window-number buffer-info-extra buffer-info window-id dedicated remote-host purpose)
-    '(misc-info minibuffer-depth selection-info lsp repl check buffer-position))
+    '(misc-info minibuffer-depth selection-info lsp repl check buffer-position major-mode))
 
   (doom-modeline-def-segment sub-workspace-name
     (when-let* ((ws (activities-current-workspace))
@@ -166,7 +166,6 @@
 
   :hook
   (util/windows-side-window . +mode-line-setup)
-  (util/windows-pop-up-window . +mode-line-setup)
   (doom-modeline-mode . +doom-modeline-set)
   (doom-modeline-mode . column-number-mode)
   (after-init . doom-modeline-mode))

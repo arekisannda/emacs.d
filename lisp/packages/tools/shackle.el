@@ -37,28 +37,15 @@
                  (list :tag "Custom function"
                        (const :tag "Custom" :custom) function)))
 
-(defun +shackle-bottom-preset-size-0 ()
+(defun +shackle-display-side-bottom-preset-select-size-0 ()
   `( :custom util/windows-display-buffer-in-side-window
      :side bottom
      :slot 0
-     :size ,util/windows-min-bottom-height
-     :fixed height))
+     :flags (enable-alt-face disable-mode-line)
+     :fixed height
+     :select t))
 
-(defun +shackle-bottom-select-preset-size-0 ()
-  `(,@(+shackle-bottom-preset-size-0) :select t))
-
-(defun +shackle-bottom-preset-size-1 ()
-  `( :custom util/windows-display-buffer-in-side-window
-     :side bottom
-     :slot 1
-     :size ,util/windows-min-bottom-height
-     :flags (enable-only-buffer-tab-line)
-     :fixed height))
-
-(defun +shackle-bottom-select-preset-size-1 ()
-  `(,@(+shackle-bottom-preset-size-1) :select t))
-
-(defun +shackle-left-preset-size-0 ()
+(defun +shackle-display-side-left-preset-size-0 ()
   `( :custom util/windows-display-buffer-in-side-window
      :side left
      :slot 0
@@ -66,7 +53,7 @@
      :size ,util/windows-min-left-width
      :fixed width))
 
-(defun +shackle-right-preset-0 ()
+(defun +shackle-display-side-right-preset-0 ()
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 0
@@ -74,17 +61,30 @@
      :fixed width))
 
 (defun +shackle-right-select-preset-0 ()
-  `(,@(+shackle-right-preset-0) :select t))
+  `(,@(+shackle-display-side-right-preset-0) :select t))
 
-(defun +shackle-right-preset-1 ()
+(defun +shackle-display-side-right-preset-1 ()
   `( :custom util/windows-display-buffer-in-side-window
      :side right
      :slot 1
      :flags (enable-alt-face)
      :fixed width))
 
-(defun +shackle-right-select-preset-1 ()
-  `(,@(+shackle-right-preset-1) :select t))
+(defun +shackle-display-side-right-select-preset-1 ()
+  `(,@(+shackle-display-side-right-preset-1) :select t))
+
+(defun +shackle-display-aux-preset ()
+  `( :custom util/windows-display-buffer-in-aux-window
+     :size 0.3))
+
+(defun +shackle-display-popup-preset ()
+  `( :custom util/windows-display-buffer-in-popup-window
+     :dedicated t
+     :size 0.3
+     :fixed height))
+
+(defun +shackle-display-popup-preset-select ()
+  `(,@(+shackle-display-popup-preset) :select t))
 
 (defun +shackle-display-in-popup-frame (buffer &optional alist plist)
   (windex-frame-display-buffer
@@ -92,14 +92,14 @@
    `(,@alist
      (prefix . ,(format "[Emacs Tool] "))
      (init-buffer . ,buffer)
-     (pop-up . t))
+     (popup . t))
    ))
 
 (use-package shackle :after windex
   :custom
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
   (util/windows-max-width 100)
-  (util/windows-min-bottom-height 0.3)
+  (util/windows-min-bottom-height 25)
   (util/windows-min-left-width 54)
   (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
@@ -118,11 +118,36 @@
        "^ \\*http.*\\*")
       :ignore t)
 
-     ((scad-preview-mode)
-      :same t)
+     (("^ \\*Treemacs-Buffer-Tab.*"
+       treemacs-mode)
+      ,@(+shackle-display-side-left-preset-size-0))
 
-     ((treemacs-mode)
-      ,@(+shackle-left-preset-size-0))
+     (("^\\*Man.*\\*$"
+       "^\\*WoMan.*\\*$"
+       "^\\*eww\\*$"
+       "^\\*w3m\\*$"
+
+       rfc-mode
+       w3m-mode
+       eww-mode
+       devdocs-mode
+       Info-mode)
+      :custom util/windows-display-buffer-by-condition
+      :fallback (:same t :select t)
+      :conditions
+      (((".*")
+        :if (lambda (window &rest _)
+              (or (window-parameter window 'window-side)
+                  (window-parameter window 'window-popup)))
+        :mru t :select t :reuse t)
+
+       ((".*")
+        :if (lambda (window &rest _)
+              (and (not (and (window-parameter window 'window-side)
+                             (window-parameter window 'window-popup)))
+                   (window-dedicated-p window)))
+        :mru t :select t :reuse t)
+       ))
 
      (("^\\*Org Agenda .*\\*$"
        "^\\*Org Agenda\\*$"
@@ -143,53 +168,37 @@
         :same t :select t)
        ))
 
-     (("^\\*Shell Command Output\\*$"
-       "^\\*shell\\*$"
-
-       compilation-mode)
-      ,@(+shackle-bottom-preset-size-0))
+     (("^\\*eldoc.*\\*$"
+       "^ \\*eglot doc\\*evil-list-view-mode$"
+       "^\\*yasnippet-capf-doc\\*$"
+       "^\\*corfu doc.*\\*$"
+       "^\\*org-roam\\*$"
+       org-roam-mode
+       evil-list-view-mode
+       flymake-diagnostics-buffer-mode)
+      ,@(+shackle-display-aux-preset))
 
      (("^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"
        "^\\*Customize .*\\*$"
        "^\\*Shortdoc.*\\*$"
        "^\\*Customize.*\\*$"
-       "^\\*Man.*\\*$"
-       "^\\*WoMan.*\\*$"
-       "^\\*eww\\*$"
-       "^\\*w3m\\*$"
 
-       rfc-mode
-       Custom-mode
        calc-mode
-       w3m-mode
-       eww-mode
-       devdocs-mode
+       Custom-mode
        dictionary-mode)
       ,@(+shackle-right-select-preset-0)
-      :size +shackle-get-dimensions)
-
-     (("^\\*org-roam\\*$"
-       org-roam-mode)
-      ,@(+shackle-bottom-preset-size-0)
-      :size +shackle-get-dimensions)
-
-     (("^\\*eldoc.*\\*"
-       "^ \\*eglot doc\\*$"
-       "^\\*yasnippet-capf-doc\\*$"
-       "^\\*corfu doc.*\\*$")
-      ,@(+shackle-right-preset-0)
       :size +shackle-get-dimensions)
 
      (("\\*Gnuplot Commands\\*"
        "\\*Gnuplot Trail\\*"
        calc-trail-mode)
-      ,@(+shackle-right-preset-1)
+      ,@(+shackle-display-side-right-preset-1)
       :size +shackle-get-dimensions)
 
      (("^\\*Org Preview.*\\*$"
        "^\\*Org Src.*\\*$"
-
+       scad-preview-mode
        dashboard-mode
        pdf-view-mode)
       :same t :select t)
@@ -207,12 +216,15 @@
        "^COMMIT_EDITMSG$"
        "^\\*detached-session-info\\*$"
        "^\\*detached-list\\*$"
-       "^\\*IBuffer\\*$"
        "^\\*envrc\\*$"
        "^\\*ChatGPT.*\\*$"
        "^\\*Claude.*\\*$"
        "^\\*Diff\\*$"
+       "^\\*scratch\\*$"
+       "^\\*Shell Command Output\\*$"
+       "^\\*shell\\*$"
 
+       compilation-mode
        git-rebase-mode
        detached-list-mode
        detached-log-mode
@@ -228,22 +240,13 @@
        messages-buffer-mode
        occur-mode
        xref--xref-buffer-mode
-       flymake-diagnostics-buffer-mode
        flymake-project-diagnostics-mode
        lisp-interaction-mode
        term-mode
        vterm-mode
        embark-collect-mode
        tabulated-list-mode)
-      ,@(+shackle-bottom-select-preset-size-0))
-
-     (("^\\*Edit Formulas\\*")
-      ,@(+shackle-bottom-select-preset-size-1))
-
-     (("^ \\*transient\\*$"
-       "^ \\*CDLaTeX Help\\*"
-       "^\\*Org Select\\*$")
-      :custom util/windows-display-buffer-in-pop-up-window)
+      ,@(+shackle-display-popup-preset-select))
 
      (("^\\*diff-hl\\*"
        "^\\*diff-hl-revert\\*"
@@ -259,20 +262,19 @@
        "^\\*Command Line\\*$"
        "^\\*trace-output\\*$"
        "^ \\*Agenda Commands\\*$"
+       "^\\*Edit Formulas\\*"
+       "^ \\*transient\\*$"
+       "^ \\*CDLaTeX Help\\*"
+       "^\\*Org Select\\*$"
 
        calendar-mode
        evil-command-window-mode
        backtrace-mode)
-      :custom util/windows-display-buffer-in-pop-up-window
-      :select t)
+      ,@(+shackle-display-side-bottom-preset-select-size-0))
 
      ;;; base mode fallback
-     ((help-mode)
-      ,@(+shackle-right-select-preset-0)
-      :size +shackle-get-dimensions)
-
-     ((special-mode
-       Info-mode)
+     ((help-mode
+       special-mode)
       ,@(+shackle-right-select-preset-0)
       :size +shackle-get-dimensions)
 
@@ -286,15 +288,19 @@
       :conditions
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
-        :action util/windows-display-buffer-in-side-window
-        ,@(+shackle-bottom-select-preset-size-0)
-        :flags (disable-tab-line))
+        :action util/windows-display-buffer-in-popup-window
+        ,@(+shackle-display-popup-preset-select))
 
        ((".*")
         :if (lambda (window &rest _)
-              (not (frame-parameter (selected-frame) 'pop-up)))
+              (not (frame-parameter (selected-frame) 'popup)))
         :action +shackle-display-in-popup-frame)
        ))
+
+     ((".*")
+      :if (lambda (&rest _)
+            (util/windows-aux-window-p (selected-window)))
+      :custom util/windows-display-buffer-in-aux-source-window)
 
      ((prog-mode
        text-mode
@@ -306,9 +312,8 @@
       :conditions
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
-        :action util/windows-display-buffer-in-side-window
-        ,@(+shackle-bottom-select-preset-size-0)
-        :flags (disable-tab-line))
+        :action util/windows-display-buffer-in-popup-window
+        ,@(+shackle-display-popup-preset-select))
 
        ((".*")
         :if (lambda (window &rest _)
@@ -322,8 +327,6 @@
                              (window-parameter window 'window-popup)))
                    (window-dedicated-p window)))
         :mru t :select t :reuse t)
-
-       (org-roam-mode :mru t :select t)
 
        ((prog-mode
          text-mode

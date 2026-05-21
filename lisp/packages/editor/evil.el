@@ -64,6 +64,7 @@
                    inferior-sml-mode
                    prolog-inferior-mode
                    racket-repl-mode
+                   shell-command-mode
                    shell-mode
                    special-mode
                    term-mode
@@ -78,27 +79,26 @@
                  evil-normal-state-modes)))
 
   (setq evil-motion-state-modes
-        '(apropos-mode
-          shell-command-mode
-          eww-mode
-          detached-log-mode
-          color-theme-mode
-          tabulated-list
-          command-history-mode
-          messages-buffer-mode
+        '(Info-mode
+          Man-mode
+          apropos-mode
           backtrace-mode
+          color-theme-mode
+          command-history-mode
           compilation-mode
+          detached-log-mode
+          devdocs-mode
           dictionary-mode
+          embark-collect-mode
           ert-results-mode
+          eww-mode
           help-mode
           helpful-mode
-          Info-mode
-          devdocs-mode
-          Man-mode
-          speedbar-mode
-          embark-collect-mode
-          undo-tree-visualizer-mode
+          messages-buffer-mode
           rfc-mode
+          speedbar-mode
+          tabulated-list
+          undo-tree-visualizer-mode
           woman-mode))
 
   (advice-add #'evil-next-line :around (evil-move-or-goto-line-around t))
