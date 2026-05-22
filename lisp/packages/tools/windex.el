@@ -71,7 +71,8 @@
 (use-package windex-scroll :after (evil)
   :custom
   (windex-scroll-frame-selector nil)
-  (windex-scroll-window-selector #'ignore)
+  (windex-scroll-window-selector
+   (lambda () (util/windows-get-aux-window (selected-window))))
 
   (windex-scroll-left-function #'evil-scroll-column-left)
   (windex-scroll-right-function #'evil-scroll-column-right)

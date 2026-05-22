@@ -147,25 +147,34 @@
   :prefix-command '+keybinds-org-agenda-command)
 
 (+keybinds-org-agenda
-  "."   '("org-agenda"        . org-agenda)
+  "."   '("org-agenda"      . org-agenda)
 
-  "a"   `("Today View"        . ,(+org-agenda-list-key "a"))
-  "w"   `("Week View"         . ,(+org-agenda-list-key "w"))
-  "t"   `("Task View"         . ,(+org-agenda-list-key "t"))
-  "T"   `("All Todo View"     . ,(+org-agenda-list-key "T"))
-  "k"   `("Kanban View"       . ,(+org-agenda-list-key "k"))
+  "a"   `("Today View"      . ,(+org-agenda-list-key "a"))
+  "w"   `("Week View"       . ,(+org-agenda-list-key "w"))
+  "t"   `("Task View"       . ,(+org-agenda-list-key "t"))
+  "T"   `("All Todo View"   . ,(+org-agenda-list-key "T"))
+  "k"   `("Kanban View"     . ,(+org-agenda-list-key "k"))
+  )
 
-  "C-t" `("capture todo"      . ,(+org-capture-key "t"))
-  "C-s" `("capture schedule"  . ,(+org-capture-key "s"))
-  "C-d" `("capture deadline"  . ,(+org-capture-key "d"))
-  "C-j" `("capture journal"   . ,(+org-capture-key "j"))
-  "C-a" `("capture agenda"    . ,(+org-capture-key "a"))
+(general-create-definer +keybinds-org-agenda-file
+  :prefix-command '+keybinds-org-agenda-file-command)
 
-  ;;; view capt
-  "M-t" `("view todo"         . ,(+org-capture-open "todo" "todo.org"))
-  "M-s" `("view schedule"     . ,(+org-capture-open "schedule" "schedule.org"))
-  "M-j" `("view journal"      . ,(+org-capture-open "journal" "journal.org"))
-  "M-a" `("view journal"      . ,(+org-capture-open "agenda" nil)))
+(+keybinds-org-agenda-file
+  "t" `("view todo"         . ,(+org-capture-open "todo" "todo.org"))
+  "s" `("view schedule"     . ,(+org-capture-open "schedule" "schedule.org"))
+  "j" `("view journal"      . ,(+org-capture-open "journal" "journal.org"))
+  "a" `("view agenda"       . ,(+org-capture-open "agenda" nil)))
+
+(general-create-definer +keybinds-org-agenda-capture
+  :prefix-command '+keybinds-org-agenda-capture-command)
+
+(+keybinds-org-agenda-capture
+  "t" `("capture todo"      . ,(+org-capture-key "t"))
+  "s" `("capture schedule"  . ,(+org-capture-key "s"))
+  "d" `("capture deadline"  . ,(+org-capture-key "d"))
+  "j" `("capture journal"   . ,(+org-capture-key "j"))
+  "a" `("capture agenda"    . ,(+org-capture-key "a")))
+
 #+end_src
 *** Org Remark
 #+begin_src emacs-lisp :tangle yes
@@ -705,11 +714,17 @@
  "<f9>"     (general-predicate-dispatch nil
               (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-continue)
 
- "<f10>"   '("menu"        . menu-bar-open)
- "<f11>"   '("mru"         . evil-window-mru)
- "S-<f12>" '("tree toggle" . treemacs-autohide-mode)
- "<f12>"   (general-predicate-dispatch nil
-             (activities-current) #'treemacs-select-window))
+ "<f10>"    '("menu" . menu-bar-open)
+
+ "<f11>"    '("mru" . util/windows-select-aux-window)
+
+ "C-<f11>"  '("mru" . util/windows-select-aux-window)
+
+ "S-<f12>"  '("tree toggle" . treemacs-autohide-mode)
+
+ "<f12>"    (general-predicate-dispatch nil
+              (activities-current) #'treemacs-select-window)
+ )
 
 (defhydra +hydra-text-scale
   (:foreign-key exit :exit nil :timeout nil)
@@ -738,7 +753,8 @@
  "w"    '("workspace"       . +keybinds-workspace-command)
  "C-w"  '("workspace"       . +keybinds-workspace-command)
  "a"    '("agenda"          . +keybinds-org-agenda-command)
- "C-a"  '("agenda"          . +keybinds-org-agenda-command)
+ "C-a"  '("agenda capture"  . +keybinds-org-agenda-capture-command)
+ "A"    '("agenda file"     . +keybinds-org-agenda-file-command)
  "f"    '("notes"           . +keybinds-org-roam-command)
  "C-f"  '("notes"           . +keybinds-org-roam-command)
  "e"    '("flymake"         . +keybinds-flymake-command)
@@ -1686,11 +1702,10 @@
  "C-SPC" '("lsp" . +keybinds-editor-lsp-command))
 
 (+keybinds-editor-lsp
-  "<escape>" #'+eldoc-close-buffer
-  
   "d"   '("definition"       . xref-find-definitions)
   "D"   '("definition other" . xref-find-definitions-other-window)
-  "i"   '("describe"         . eldoc)
+  "i"   '("doc box"          . +eldoc-box)
+  "C-i" '("doc buffer"       . +eldoc)
   "I"   '("implementation"   . eglot-find-implementation)
   "r"   '("references"       . xref-find-references)
   "R"   '("rename"           . eglot-rename)

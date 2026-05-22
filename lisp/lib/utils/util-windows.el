@@ -16,7 +16,11 @@
   :type 'integer)
 
 (defcustom util/windows-min-bottom-height 20
-  "Bottom side window min width in lines."
+  "Bottom side window min height in lines."
+  :type 'integer)
+
+(defcustom util/windows-max-bottom-height 30
+  "Bottom side window min height in lines."
   :type 'integer)
 
 (defcustom util/windows-disable-shrink nil
@@ -198,9 +202,10 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (defun util/windows-split-main-window-below (size frame)
   (with-selected-frame frame
-    (let ((size (max util/windows-min-bottom-height
-                     (if (integerp size) size (floor (* size (frame-height frame))))
-                     ))
+    (let ((size (min util/windows-max-bottom-height
+                     (max util/windows-min-bottom-height
+                          (if (integerp size) size (floor (* size (frame-height frame))))
+                          )))
           (sentinel (get-buffer-create " *split-sentinel*"))
           (toggle (and (window-with-parameter 'window-side nil frame)))
           root-window
@@ -282,14 +287,29 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
        ))
     ))
 
+(defun util/windows-get-aux-other-window (&optional window)
+  (let ((window (window-normalize-window window)))
+    (with-selected-window window
+      (when (or (util/windows-aux-window-p window)
+                (util/windows-aux-source-window-p window))
+        (window-with-parameter 'window-aux-id (window-parameter window 'window-aux-other))
+        ))
+    ))
+
+(defun util/windows-kill-aux-window (&optional window)
+  (interactive)
+  (if-let ((aux-window (util/windows-get-aux-window window)))
+      (when (window-live-p aux-window)
+        (delete-window aux-window))
+    ))
+
 (defun util/windows-display-buffer-in-aux-source-window (buffer &optional alist plist)
   (let ((init-window (window-normalize-window nil))
         parameters
         window)
     (if (not (util/windows-aux-window-p init-window)) 'fail
       (setq window (window-with-parameter 'window-aux-id (window-parameter window 'window-aux-other)))
-      (window--display-buffer buffer window 'window alist))))
-
+      (window--display-buffer buffer window 'reuse alist))))
 
 (defun util/windows--aux-uuid ()
   (let ((rnd (md5 (format "%s%s%s%s%s%s%s"
@@ -328,8 +348,8 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
   ;; sub window buffer: calling main window buffer
   (if-let* ((init-window (window-normalize-window nil))
             (ignorep (plist-get plist :ignore))
-            (aux-splittable-p (not (and (util/windows-side-window-p init-window)
-                                        (util/windows-popup-window-p init-window)))))
+            (aux-splittable-p (not (or (util/windows-side-window-p init-window)
+                                       (util/windows-popup-window-p init-window)))))
       'fail
     (let ((size (plist-get plist :size))
           (fixed (plist-get plist :fixed))
@@ -368,7 +388,8 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
                  (window-height     . ,size)
                  )))
 
-        (let ((aux-source-id (util/windows--aux-uuid))
+        (let ((aux-source-id (or (window-parameter init-window 'window-aux-id)
+                                 (util/windows--aux-uuid)))
               (aux-id (util/windows--aux-uuid)))
           (set-window-prev-buffers window nil)
           (set-window-parameter init-window 'window-aux 'source)
@@ -385,6 +406,8 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
         (setq-local window-size-fixed fixed)
         (window-preserve-size window nil t)
+
+        (set-window-dedicated-p window t)
         (set-window-parameter window 'no-other-window t)
         (set-window-parameter window 'quit-restore `(window window ,init-window ,buffer))
         (set-window-parameter window 'split-window (lambda (&rest _) (error "Cannot split aux window")))
@@ -414,6 +437,27 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (add-hook 'window-configuration-change-hook #'util/windows--aux-window-cleanup)
 
+(defun util/windows-select-aux-window (&optional arg)
+  (interactive "p")
+  (let* ((init-window (window-normalize-window nil))
+         (aux-splittable-p (not (or (util/windows-side-window-p init-window)
+                                    (util/windows-popup-window-p init-window)))))
+    (unless aux-splittable-p
+      (user-error "Not an aux-capable window."))
+
+    (pcase arg
+      (4 (if-let ((window (util/windows-get-aux-window init-window))) (delete-window window)))
+
+      (16 (let ((uuid (or (window-parameter init-window 'window-aux-id)
+                          (util/windows--aux-uuid))))
+            (set-window-parameter init-window 'window-aux-id uuid)
+            (display-buffer (get-buffer-create (format " *notes %s*" uuid)))
+            ))
+
+      (_ (when-let ((window (util/windows-get-aux-other-window init-window)))
+           (select-window window)))
+      )
+    ))
 
 (defun util/windows-print-window-tree ()
   "Print the window tree of the current frame, including internal windows."

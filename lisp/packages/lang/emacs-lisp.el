@@ -23,5 +23,4 @@
 
 (use-package elisp-mode
   :hook
-  (emacs-lisp-mode . eldoc-mode)
   (emacs-lisp-mode . +lang-elisp-mode-setup))

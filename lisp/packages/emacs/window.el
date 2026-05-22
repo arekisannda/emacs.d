@@ -4,6 +4,7 @@
 
 (use-package window
   :custom
+  (window-min-height 1)
   (switch-to-buffer-obey-display-actions t)
   (window-combination-limit 'window-size)
   (window-combination-resize nil)

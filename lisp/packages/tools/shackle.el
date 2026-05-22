@@ -99,7 +99,8 @@
   :custom
   (util/windows-display-buffer-by-condition-switch-function #'+shackle-switch-function)
   (util/windows-max-width 100)
-  (util/windows-min-bottom-height 25)
+  (util/windows-min-bottom-height 20)
+  (util/windows-max-bottom-height 30)
   (util/windows-min-left-width 54)
   (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
@@ -173,10 +174,15 @@
        "^\\*yasnippet-capf-doc\\*$"
        "^\\*corfu doc.*\\*$"
        "^\\*org-roam\\*$"
+
        org-roam-mode
-       evil-list-view-mode
-       flymake-diagnostics-buffer-mode)
+       evil-list-view-mode)
       ,@(+shackle-display-aux-preset))
+
+     (("^ \\*notes .*\\*$"
+       flymake-diagnostics-buffer-mode)
+      ,@(+shackle-display-aux-preset)
+      :select t)
 
      (("^\\*Dictionary\\*$"
        "^\\*Customize Apropos\\*$"

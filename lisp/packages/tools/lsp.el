@@ -95,8 +95,7 @@ If it is not set, use ALTERNATIVE instead."
   :hook
   (prog-mode . util/lsp-ensure-modes)
   (text-mode . util/lsp-ensure-modes)
-  (eglot-managed-mode . +eglot-flymake-setup)
-  (eglot-managed-mode . eldoc-mode))
+  (eglot-managed-mode . +eglot-flymake-setup))
 
 (use-package consult-eglot :after eglot)
 
