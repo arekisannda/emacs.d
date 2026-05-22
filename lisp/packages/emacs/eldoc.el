@@ -79,6 +79,18 @@
   (create-eldoc-scroll-defun right)
   (create-eldoc-scroll-defun left)
 
+  (defun eldoc-box--enable ()
+    "Enable eldoc-box hover.
+Intended for internal use."
+    (if (not (boundp 'eldoc-display-functions))
+        (add-function :before-while (local 'eldoc-message-function)
+                      #'eldoc-box--eldoc-message-function)
+      (setq-local eldoc-box--old-eldoc-functions
+                  eldoc-display-functions)
+      (remove-hook 'eldoc-display-functions #'eldoc-display-in-echo-area t)
+      (add-hook 'eldoc-display-functions #'eldoc-box--eldoc-display-function -90 t))
+    (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame))
+
   (defun +eldoc-decode-entities ()
     (goto-char (point-min))
     (while (re-search-forward "&nbsp;" nil t) (replace-match " "))
@@ -140,7 +152,7 @@
             (doc (with-current-buffer buf
                    (buffer-string))))
         (if (equal doc "")
-            (message "There’s no doc to display at this point")
+            (eldoc-box--display "There’s no doc to display at this point")
           (eldoc-box--display doc)))
 
       (setq eldoc-box--help-at-point-last-point (point))
@@ -222,22 +234,21 @@ If INTERACTIVE is t, also display the buffer."
 
   (defun +eldoc-box ()
     (interactive)
-    (setq eldoc-box--show t)
-    (setq eldoc--last-request-state nil)
-    (eldoc))
+    (if eldoc-box--show
+        (+eldoc-box-quit-frame)
+      (setq eldoc-box--show t)
+      (setq eldoc--last-request-state nil)
+      (eldoc)))
 
-  (defun +eldoc (&optional arg)
-    (interactive "p")
-    (pcase arg
-      (4 (if-let ((window (util/windows-get-aux-window (selected-window)))) (delete-window window)))
-
-      (_
-       (setq eldoc--last-request-state nil)
-       (eldoc-box-quit-frame)
-       (call-interactively #'eldoc))
-      )
-    )
+  (defun +eldoc ()
+    (interactive)
+    (if-let* ((uuid (window-parameter (util/windows-get-aux-window (selected-window)) 'window-aux-other))
+              (buf-name (format "*eldoc %s*" uuid))
+              (window (get-buffer-window buf-name)))
+        (quit-window nil window)
+      (setq eldoc--last-request-state nil)
+      (eldoc-box-quit-frame)
+      (call-interactively #'eldoc)))
 
   (setq-default eldoc-display-functions '(eldoc-display-in-child-frame eldoc-display-in-buffer))
-  (setq eldoc-display-functions '(eldoc-display-in-child-frame eldoc-display-in-buffer))
   )

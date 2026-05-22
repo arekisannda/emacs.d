@@ -64,7 +64,6 @@
                    inferior-sml-mode
                    prolog-inferior-mode
                    racket-repl-mode
-                   shell-command-mode
                    shell-mode
                    special-mode
                    term-mode
@@ -96,6 +95,7 @@
           helpful-mode
           messages-buffer-mode
           rfc-mode
+          shell-command-mode
           speedbar-mode
           tabulated-list
           undo-tree-visualizer-mode

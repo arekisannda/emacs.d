@@ -680,36 +680,40 @@
               (derived-mode-p 'dape-active-mode) #'dape-quit)
 
  "<f6>"     (general-predicate-dispatch nil 
-              (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
               (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-in
+              (derived-mode-p 'calc-mode) #'calc-trail-display
+              (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
               (derived-mode-p 'prog-mode) #'+rmsbolt-toggle)
 
  "<f7>"     (general-predicate-dispatch nil
-              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-out)
-
- "<f8>"     (general-predicate-dispatch nil 
-              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-next
-              (derived-mode-p 'calc-mode) #'calc-trail-display
+              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-out
               (derived-mode-p 'prog-mode) #'project-recompile)
 
- "C-<f8>"   (general-predicate-dispatch nil 
+ "C-<f7>"   (general-predicate-dispatch nil 
               (derived-mode-p 'dape-active-mode) nil
               (derived-mode-p 'prog-mode) #'recompile)
 
- "S-<f8>"   (general-predicate-dispatch nil 
+ "S-<f7>"   (general-predicate-dispatch nil 
               (derived-mode-p 'dape-active-mode) nil
               (derived-mode-p 'prog-mode) #'project-compile)
 
- "C-S-<f8>" (general-predicate-dispatch nil
+ "C-S-<f7>" (general-predicate-dispatch nil
               (derived-mode-p 'dape-active-mode) nil
               (derived-mode-p 'prog-mode) #'compile)
 
- "M-<f8>"   (general-predicate-dispatch nil
+ "M-<f7>"   (general-predicate-dispatch nil
               (derived-mode-p 'dape-active-mode) nil
               (derived-mode-p 'prog-mode) #'detached-project-compile)
 
- "M-S-<f8>" (general-predicate-dispatch #'kill-compilation
+ "M-S-<f7>" (general-predicate-dispatch #'kill-compilation
               (derived-mode-p 'dape-active-mode) nil)
+
+ "<f8>"     (general-predicate-dispatch nil 
+              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-next
+              (derived-mode-p 'prog-mode) #'+eldoc-box)
+ 
+ "M-<f8>"   (general-predicate-dispatch nil
+              (derived-mode-p 'prog-mode) #'+eldoc)
 
  "<f9>"     (general-predicate-dispatch nil
               (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-continue)
@@ -1704,8 +1708,6 @@
 (+keybinds-editor-lsp
   "d"   '("definition"       . xref-find-definitions)
   "D"   '("definition other" . xref-find-definitions-other-window)
-  "i"   '("doc box"          . +eldoc-box)
-  "C-i" '("doc buffer"       . +eldoc)
   "I"   '("implementation"   . eglot-find-implementation)
   "r"   '("references"       . xref-find-references)
   "R"   '("rename"           . eglot-rename)
@@ -1713,8 +1715,6 @@
   "C-f" '("action fix"       . eglot-code-action-quickfix)
   "C-r" '("action rewrite"   . eglot-code-action-rewrite)
   "f"   '("action"           . eglot-code-actions)
-
-  "!" '("toggle hover mode" . eldoc-box-hover-at-point-mode)
   )
 #+end_src
 ** Org-mode

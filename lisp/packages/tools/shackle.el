@@ -229,7 +229,8 @@
        "^\\*scratch\\*$"
        "^\\*Shell Command Output\\*$"
        "^\\*shell\\*$"
-
+       "^\\*Ibuffer\\*$"
+       ibuffer-mode
        compilation-mode
        git-rebase-mode
        detached-list-mode
