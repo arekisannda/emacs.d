@@ -8,7 +8,7 @@
     (min max-width set-width)))
 
 (defun +eldoc-box-max-height ()
-  (let ((max-height (ceiling (* (frame-pixel-height) (/ 20.0 (frame-width)))))
+  (let ((max-height (ceiling (* (frame-pixel-height) (/ 20.0 (frame-height)))))
         (set-height (ceiling (* (frame-pixel-height) 0.3))))
     (min max-height set-height)))
 
@@ -37,7 +37,7 @@
           (no-accept-focus . t)
           (no-focus-on-map . t)
           (min-width . 80)
-          (min-height . 20)
+          (min-height . 0)
           (internal-border-width . 1)
           (vertical-scroll-bars . nil)
           (horizontal-scroll-bars . nil)
@@ -91,11 +91,28 @@
     (goto-char (point-min))
     (while (re-search-forward "&quot;" nil t) (replace-match "\"")))
 
-  (defun +eldoc-doc-in-aux (&optional interactive)
-    "Get or display ElDoc documentation buffer.
+  (defun +eldoc--setup-buffer (buffer-name)
+    (let (buf)
+      (if (setq buf (get-buffer buffer-name))
+          (with-current-buffer buf
+            (let ((inhibit-read-only t))
+              (erase-buffer)
+              (replace-buffer-contents eldoc--doc-buffer)))
+        (with-current-buffer eldoc--doc-buffer
+          (setq buf (clone-buffer buffer-name nil))))
 
-The buffer holds the results of the last documentation request.
-If INTERACTIVE, display it.  Else, return said buffer."
+      (with-current-buffer buf
+        (emacs-set-alt-face)
+        (setq-local truncate-lines t)
+        (local-set-key (kbd "C-c C-o") #'markdown-follow-thing-at-point)
+        (visual-line-mode 1)
+        (word-wrap-whitespace-mode)
+        (rename-buffer buffer-name)
+        (goto-char (point-min))
+        buf)))
+
+  (defun +eldoc-doc-in-aux (&optional interactive)
+    "Get or display ElDoc documentation buffer."
     (interactive (list t))
     (unless (buffer-live-p eldoc--doc-buffer)
       (user-error (format
@@ -105,29 +122,30 @@ If INTERACTIVE, display it.  Else, return said buffer."
            (uuid (or (window-parameter init-window 'window-aux-id)
                      (util/windows--aux-uuid)))
            (buf-name (format "*eldoc %s*" uuid))
-           (buf))
-
+           (buf (+eldoc--setup-buffer buf-name)))
       (set-window-parameter init-window 'window-aux-id uuid)
+      (display-buffer buf)))
 
-      (if (setq buf (get-buffer buf-name))
-          (with-current-buffer buf
-            (let ((inhibit-read-only t))
-              (erase-buffer)
-              (replace-buffer-contents eldoc--doc-buffer)
-              (+eldoc-decode-entities)
-              ))
-        (with-current-buffer eldoc--doc-buffer
-          (setq buf (clone-buffer buf-name nil))))
-      (with-current-buffer buf
-        (emacs-set-alt-face)
-        (setq-local truncate-lines t)
-        (local-set-key (kbd "C-c C-o") #'markdown-follow-thing-at-point)
-        (visual-line-mode 1)
-        (word-wrap-whitespace-mode)
-        (rename-buffer buf-name)
-        )
-      (display-buffer buf)
-      ))
+  (defun +eldoc-doc-in-box (&optional interactive)
+    "Get or display ElDoc documentation child frame."
+    (interactive (list t))
+    (unless (buffer-live-p eldoc--doc-buffer)
+      (user-error (format
+                   "ElDoc buffer doesn't exist, maybe `%s' to produce one."
+                   (substitute-command-keys "\\[eldoc]"))))
+    (let* ((buf-name eldoc-box--buffer)
+           (buf (+eldoc--setup-buffer buf-name)))
+      (let ((eldoc-box-position-function
+             eldoc-box-at-point-position-function)
+            (doc (with-current-buffer buf
+                   (buffer-string))))
+        (if (equal doc "")
+            (message "There’s no doc to display at this point")
+          (eldoc-box--display doc)))
+
+      (setq eldoc-box--help-at-point-last-point (point))
+      (run-with-timer 0.1 nil #'eldoc-box--help-at-point-cleanup)
+      (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame)))
 
   (defun eldoc-box--help-at-point-cleanup ()
     "Try to clean up the childframe."
@@ -144,47 +162,49 @@ If INTERACTIVE, display it.  Else, return said buffer."
 
   (advice-add #'eldoc-box-quit-frame :override #'+eldoc-box-quit-frame)
 
-  (defun +eldoc-doc-in-box (&optional interactive)
-    "Get or display ElDoc documentation child frame.
+  (defun eldoc--format-doc-buffer-override (docs)
+    "Ensure DOCS are displayed in an *eldoc* buffer."
+    (with-current-buffer (if (buffer-live-p eldoc--doc-buffer)
+                             eldoc--doc-buffer
+                           (setq eldoc--doc-buffer
+                                 (get-buffer-create " *eldoc*")))
+      (let ((inhibit-read-only t)
+            (things-reported-on))
+        (special-mode)
+        (erase-buffer)
+        (setq-local nobreak-char-display nil)
+        (cl-loop for (docs . rest) on docs
+                 for (this-doc . plist) = docs
+                 for thing = (plist-get plist :thing)
+                 when thing do
+                 (cl-pushnew thing things-reported-on)
+                 (setq this-doc
+                       (concat
+                        (propertize (format "%s" thing)
+                                    'face (plist-get plist :face))
+                        ": "
+                        this-doc))
+                 do (insert this-doc)
+                 when rest do
+                 (insert eldoc-doc-buffer-separator)
+                 finally
+                 (+eldoc-decode-entities)
+                 (goto-char (point-min)))
 
-The buffer holds the results of the last documentation request.
-If INTERACTIVE, display it.  Else, return said buffer."
-    (interactive (list t))
-    (unless (buffer-live-p eldoc--doc-buffer)
-      (user-error (format
-                   "ElDoc buffer doesn't exist, maybe `%s' to produce one."
-                   (substitute-command-keys "\\[eldoc]"))))
-    (let* ((parent-buffer (current-buffer))
-           (buf-name eldoc-box--buffer)
-           (buf))
-      (if (setq buf (get-buffer buf-name))
-          (with-current-buffer buf
-            (let ((inhibit-read-only t))
-              (erase-buffer)
-              (replace-buffer-contents eldoc--doc-buffer)))
-        (with-current-buffer eldoc--doc-buffer
-          (setq buf (clone-buffer buf-name nil))))
-      (with-current-buffer buf
-        (emacs-set-alt-face)
-        (setq-local truncate-lines t
-                    mode-line-format nil)
-        (visual-line-mode 1)
-        (word-wrap-whitespace-mode)
-        (rename-buffer buf-name))
+        ;; Rename the buffer, taking into account whether it was
+        ;; hidden or not
+        (rename-buffer (format "%s*eldoc%s*"
+                               (if (string-match "^ " (buffer-name)) " " "")
+                               (if things-reported-on
+                                   (format " for %s"
+                                           (mapconcat
+                                            (lambda (s) (format "%s" s))
+                                            things-reported-on
+                                            ", "))
+                                 "")))))
+    eldoc--doc-buffer)
 
-      (let ((eldoc-box-position-function
-             eldoc-box-at-point-position-function)
-            (doc (with-current-buffer buf
-                   (buffer-string))))
-        (if (equal doc "")
-            (message "There’s no doc to display at this point")
-          (eldoc-box--display doc)
-          ))
-
-      (setq eldoc-box--help-at-point-last-point (point))
-      (run-with-timer 0.1 nil #'eldoc-box--help-at-point-cleanup)
-      (advice-add #'keyboard-quit :before #'eldoc-box-quit-frame)
-      ))
+  (advice-add #'eldoc--format-doc-buffer :override #'eldoc--format-doc-buffer-override)
 
   (defun eldoc-display-in-buffer (docs interactive)
     "Display DOCS in a dedicated buffer.
@@ -206,11 +226,17 @@ If INTERACTIVE is t, also display the buffer."
     (setq eldoc--last-request-state nil)
     (eldoc))
 
-  (defun +eldoc ()
-    (interactive)
-    (setq eldoc--last-request-state nil)
-    (eldoc-box-quit-frame)
-    (call-interactively #'eldoc))
+  (defun +eldoc (&optional arg)
+    (interactive "p")
+    (pcase arg
+      (4 (if-let ((window (util/windows-get-aux-window (selected-window)))) (delete-window window)))
+
+      (_
+       (setq eldoc--last-request-state nil)
+       (eldoc-box-quit-frame)
+       (call-interactively #'eldoc))
+      )
+    )
 
   (setq-default eldoc-display-functions '(eldoc-display-in-child-frame eldoc-display-in-buffer))
   (setq eldoc-display-functions '(eldoc-display-in-child-frame eldoc-display-in-buffer))
