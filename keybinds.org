@@ -870,8 +870,6 @@
 (general-define-key
  :keymaps 'global
 
- "C-<home>"    '("beginning"    . beginning-of-buffer)
- "C-<end>"     '("end"          . end-of-buffer)
  "<prior>"     '("scroll up"    . scroll-down-command)
  "<next>"      '("scroll down"  . scroll-up-command)
  "C-<prior>"   '("scroll up"    . windex-scroll-up)
@@ -1421,7 +1419,7 @@
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
  :states 'insert
- "C-<tab>" '("extra"          . with-capf-extras-command)
+ "C-S-SPC" '("extra"          . +keybinds-completion-extra-command)
  "C-SPC"   '("completion"     . completion-at-point)
  "M-SPC"   '("preview insert" . completion-preview-complete)
  "M-C-SPC" '("preview insert" . completion-preview-insert))
@@ -1478,8 +1476,10 @@
   :prefix-command '+keybinds-completion-extra-command)
 
 (+keybinds-completion-extra
+  "f" '("capf file"    . cape-file)
+  "l" '("capf line"    . cape-line)
   "t" '("capf snippet" . yasnippet-capf)
-  "w" '("capf word"    . cape-dict)
+  "w" '("capf word"    . cape-keyword)
   "y" `("capf math"    . cape-math-symbols-unicode))
 #+end_src
 ** Evil

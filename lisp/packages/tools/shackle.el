@@ -165,8 +165,9 @@
       :fallback
       (:action +shackle-display-in-popup-frame)
       :conditions
-      (((magit-mode)
-        :same t :select t)
+      (((".*")
+        :if (lambda (window &rest _) (frame-parameter (selected-frame) 'popup))
+        :mru t :select t :reuse t)
        ))
 
      (("^\\*eldoc.*\\*$"
@@ -227,11 +228,9 @@
        "^\\*Claude.*\\*$"
        "^\\*Diff\\*$"
        "^\\*scratch\\*$"
-       "^\\*Shell Command Output\\*$"
        "^\\*shell\\*$"
        "^\\*Ibuffer\\*$"
        ibuffer-mode
-       compilation-mode
        git-rebase-mode
        detached-list-mode
        detached-log-mode
@@ -244,7 +243,6 @@
        comint-mode
        grep-mode
        log4e-mode
-       messages-buffer-mode
        occur-mode
        xref--xref-buffer-mode
        flymake-project-diagnostics-mode
@@ -254,6 +252,12 @@
        embark-collect-mode
        tabulated-list-mode)
       ,@(+shackle-display-popup-preset-select))
+
+     (("^\\*Shell Command Output\\*$"
+       shell-command-mode
+       compilation-mode
+       messages-buffer-mode)
+      ,@(+shackle-display-popup-preset))
 
      (("^\\*diff-hl\\*"
        "^\\*diff-hl-revert\\*"
