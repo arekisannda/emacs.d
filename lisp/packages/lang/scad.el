@@ -146,7 +146,7 @@
     )
 
   (defun +scad-preview-toggle (&optional arg)
-    (interactive nil '(scad-mode scad-preview-mode))
+    (interactive nil 'scad-mode 'scad-preview-mode)
     (pcase arg
       (4 (+scad-preview-quit))
       (_ (if (and scad--preview-buffer

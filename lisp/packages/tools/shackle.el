@@ -43,6 +43,7 @@
      :slot 0
      :flags (enable-alt-face disable-mode-line)
      :fixed height
+     :dedicated t
      :select t))
 
 (defun +shackle-display-side-left-preset-size-0 ()

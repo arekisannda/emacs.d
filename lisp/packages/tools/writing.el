@@ -21,4 +21,4 @@
   (setq google-translate-translation-directions-alist
         '(("ja" . "en") ("en" . "ja") )))
 
-(use-package writegood)
+(use-package writegood :defer t)

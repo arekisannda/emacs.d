@@ -41,16 +41,16 @@
   (completion-preview-mode 1)
   (yas-minor-mode 1)
 
-  (util/add-capf-hooks
-   #'yasnippet-capf
-   #'cape-file
-   #'cape-tex
-   #'cape-elisp-block
-   #'cape-keyword)
+  (util/add-capf-hooks t
+    #'yasnippet-capf
+    #'cape-file
+    #'cape-tex
+    #'cape-elisp-block
+    #'cape-keyword)
 
-  (util/remove-capf-hooks
-   #'pcomplete-completions-at-point
-   t))
+  (util/remove-capf-hooks t
+    #'pcomplete-completions-at-point
+    t))
 
 (use-package org
   :custom

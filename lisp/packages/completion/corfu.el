@@ -42,7 +42,7 @@
   (corfu-bar-width 0.5)
   (global-corfu-modes
    '(agent-shell-mode
-     (not repl-mode vterm-mode comint-mode)
+     (not repl-mode vterm-mode)
      t))
   (global-corfu-minibuffer
    (lambda ()

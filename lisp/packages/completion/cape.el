@@ -4,10 +4,10 @@
   :config
   (require 'cape-char)
 
-  (dolist (capf '(#'cape-dabbrev
-                  #'cape-file
-                  #'cape-keyword))
-    (add-hook 'completion-at-point-functions capf))
+  (util/add-capf-hooks nil
+    #'cape-dabbrev
+    #'cape-file
+    #'cape-keyword)
 
   (plist-put cape--tex-properties :exit-function nil)
 

@@ -143,7 +143,10 @@
   (defun treemacs-autohide-set-threshold (threshold)
     "Set `treemacs-autohide-threshold' to THRESHOLD."
     (interactive
-     (list (read-number "Set `treemacs-autohide-threshold': " treemacs-autohide-threshold)))
+     (list (read-number
+            (format "Set `treemacs-autohide-threshold' (current width: %d): "
+                    (frame-width (selected-frame)))
+            treemacs-autohide-threshold)))
     (setq treemacs-autohide-threshold threshold)
     (treemacs-autohide-on-size-change (selected-frame) 'force))
 
@@ -173,7 +176,7 @@
     (with-selected-frame frame
       (let ((window (frame-selected-window frame)))
         (unless (or (minibuffer-window-active-p window)
-                    (window-with-parameter 'window-popup nil frame))
+                    (window-with-parameter 'window-side 'bottom frame))
           (when (and (< (frame-width) treemacs-autohide-threshold)
                      (not (eq window (treemacs-get-local-window)))
                      (eq 'visible (treemacs-current-visibility)))

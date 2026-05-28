@@ -16,6 +16,7 @@
  "<escape> <escape>"
  "<escape> <escape> <escape>"
  "M-i"
+ "C-x"
  "C-M-i"
  "<tab>"
  "C-<tab>"
@@ -280,9 +281,12 @@
   (magit-section-show (magit-section-at)))
 
 (general-define-key
- :states '(normal motion emacs)
+ :states '(normal motion emacs visual)
  :keymaps '(magit-status-mode-map
             magit-diff-mode-map)
+
+ "<up>"   #'evil-previous-visual-line
+ "<down>" #'evil-next-visual-line
 
  "C-r" #'magit-reset-view
 
@@ -664,6 +668,26 @@
 #+end_src
 * Interface
 #+begin_src emacs-lisp :tangle yes
+(defun +compilation-dispatch (&optional arg)
+  (interactive "p")
+  (pcase arg
+    (1 (call-interactively (setq this-command #'compile)))
+    (4 (call-interactively (setq this-command #'project-compile)))
+    (16 (call-interactively (setq this-command #'detached-compile)))
+    (64 (call-interactively (setq this-command #'detached-project-compile)))
+    (_ (call-interactively #'kill-compilation))
+    ))
+
+(defun +recompilation-dispatch (&optional arg)
+  (interactive "p")
+  (pcase arg
+    (1 (call-interactively (setq this-command #'recompile)))
+    (4 (call-interactively (setq this-command #'project-recompile)))
+    (16 (call-interactively (setq this-command #'detached-compile-recompile)))
+    (64 (call-interactively (setq this-command #'detached-project-recompile)))
+    (_ (set)(call-interactively #'kill-compilation))
+    ))
+
 (general-define-key
  :keymaps 'override
  "<f5>"     (general-predicate-dispatch nil
@@ -687,32 +711,17 @@
 
  "<f7>"     (general-predicate-dispatch nil
               (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-out
-              (derived-mode-p 'prog-mode) #'project-recompile)
+              (derived-mode-p 'prog-mode) #'+compilation-dispatch)
 
- "C-<f7>"   (general-predicate-dispatch nil 
-              (derived-mode-p 'dape-active-mode) nil
-              (derived-mode-p 'prog-mode) #'recompile)
+ "C-<f7>"   (general-predicate-dispatch #'+recompilation-dispatch)
 
- "S-<f7>"   (general-predicate-dispatch nil 
-              (derived-mode-p 'dape-active-mode) nil
-              (derived-mode-p 'prog-mode) #'project-compile)
-
- "C-S-<f7>" (general-predicate-dispatch nil
-              (derived-mode-p 'dape-active-mode) nil
-              (derived-mode-p 'prog-mode) #'compile)
-
- "M-<f7>"   (general-predicate-dispatch nil
-              (derived-mode-p 'dape-active-mode) nil
-              (derived-mode-p 'prog-mode) #'detached-project-compile)
-
- "M-S-<f7>" (general-predicate-dispatch #'kill-compilation
-              (derived-mode-p 'dape-active-mode) nil)
+ "C-S-<f7>" (general-predicate-dispatch #'detached-project-compile)
 
  "<f8>"     (general-predicate-dispatch nil 
               (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-next
               (derived-mode-p 'prog-mode) #'+eldoc-box)
  
- "M-<f8>"   (general-predicate-dispatch nil
+ "C-<f8>"   (general-predicate-dispatch nil
               (derived-mode-p 'prog-mode) #'+eldoc)
 
  "<f9>"     (general-predicate-dispatch nil
@@ -1329,6 +1338,7 @@
   "c"   '("insert char"      . insert-char)
   "t"   '("insert template"  . yas-insert-snippet)
   "n"   '("insert nerd-icon" . nerd-icons-insert)
+  "m"   '("expression eval"  . quick-calc)
 
   "I"   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode) #'org-download-image)
@@ -1476,6 +1486,8 @@
   :prefix-command '+keybinds-completion-extra-command)
 
 (+keybinds-completion-extra
+  "a" '("capf abbrev"  . cape-abbrev)
+  "d" '("capf dabbrev" . cape-dabbrev)
   "f" '("capf file"    . cape-file)
   "l" '("capf line"    . cape-line)
   "t" '("capf snippet" . yasnippet-capf)
@@ -1576,8 +1588,8 @@
   (:foreign-key exit :exit nil :timeout nil :hint nil)
   ("["   #'evil-prev-buffer "prev buffer")
   ("]"   #'evil-next-buffer "next buffer")
-  ("M-[" #'evil-prev-buffer-with-selector-window "other prev buffer")
-  ("M-]" #'evil-next-buffer-with-selector-window "other next buffer"))
+  ("M-[" #'previous-buffer  "prev buffer")
+  ("M-]" #'next-buffer      "next buffer"))
 (hydra-set-property #'+hydra-evil-motion :verbosity 0)
 
 (defmacro +window-split (splitfn)
@@ -1644,15 +1656,13 @@
  "C-/" '("open ace"        . windex-windmove-display-aw)
  "."   '("open same"       . windmove-display-same-window)
 
- "C-<up>"    '("up"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
- "C-<left>"  `("left"      . ,(+aw-select-with-filter +aw-select-left-filter))
- "C-<right>" `("right"     . ,(+aw-select-with-filter +aw-select-right-filter))
- "C-<down>"  `("bottom"    . ,(+aw-select-with-filter +aw-select-bottom-filter))
+ "P"   '("mru main"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
+ "z"   `("bottom"          . ,(+aw-select-with-filter +aw-select-bottom-filter))
 
  "["   '("prev buffer"     . +hydra-evil-motion/evil-prev-buffer)
  "]"   '("next buffer"     . +hydra-evil-motion/evil-next-buffer)
- "M-[" '("prev buffer"     . +hydra-evil-motion/evil-prev-buffer-with-selector-window)
- "M-]" '("next buffer"     . +hydra-evil-motion/evil-next-buffer-with-selector-window)
+ "M-[" '("prev buffer"     . +hydra-evil-motion/previous-buffer)
+ "M-]" '("next buffer"     . +hydra-evil-motion/next-buffer)
 
  "d"   '("toggle buffer"   . toggle-window-dedicated)
  "m"   '("window purpose"  . windex-set-window-purpose))

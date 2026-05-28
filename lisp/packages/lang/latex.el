@@ -6,11 +6,12 @@
   "Setup to run for latex major modes."
   (display-line-numbers-mode 1)
 
-  (util/add-capf-hooks
-   #'cape-dabbrev
-   #'cape-file
-   #'cape-tex
-   #'cape-keyword)
+  (util/add-capf-hooks t
+    #'cape-dabbrev
+    #'cape-file
+    #'cape-tex
+    #'cape-keyword)
+
   (yas-minor-mode 1)
   (cdlatex-mode)
   (orgtbl-mode)
@@ -61,11 +62,11 @@
     "latex"
     '(:ltex
       ( :enabled t
-         :language "en-US"
-         :checkFrequency "edit"
-         :additionalRules ( :motherTongue "en-US"
-                            :enablePickyRules t)
-         :diagnosticSeverity "information"
-         :ltex-ls (:logLevel "fine")))
+        :language "en-US"
+        :checkFrequency "edit"
+        :additionalRules ( :motherTongue "en-US"
+                           :enablePickyRules t)
+        :diagnosticSeverity "information"
+        :ltex-ls (:logLevel "fine")))
     ))
   )

@@ -139,7 +139,7 @@
 
   (doom-modeline-def-modeline
     '+default-modeline
-    '(evil ace-window-number buffer-info-extra buffer-info window-id dedicated remote-host purpose)
+    '(evil ace-window-number buffer-info-extra buffer-info dedicated remote-host purpose window-id)
     '(misc-info minibuffer-depth selection-info buffer-position repl lsp check major-mode))
 
   (doom-modeline-def-segment sub-workspace-name

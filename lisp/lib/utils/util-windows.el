@@ -200,6 +200,45 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
       (if (plist-get plist :select) window init-window)
       )))
 
+(defun util/windows--split-state-get (frame)
+  (with-selected-frame frame
+    (let (side-window-states)
+      (walk-windows
+       (lambda
+         (window)
+         (when (util/windows-side-window-p window)
+           (add-to-list 'side-window-states
+                        (list
+                         (window-parameter window 'window-side)
+                         (window-parameter window 'window-slot)
+                         (window-state-get window t)
+                         ))))
+       'nomini)
+      side-window-states)
+    ))
+
+(defun util/windows--split-state-put (frame side-window-states)
+  (with-selected-frame frame
+    (dolist (s side-window-states)
+      (pcase-let ((`(,side ,slot ,state) s))
+        (let ((sentinel (get-buffer-create " *split-sentinel*"))
+              window)
+          (setq window (display-buffer-in-side-window sentinel `((side . ,side)
+                                                                 (slot . ,slot))))
+          (window-state-put state window t)
+          )))
+    ))
+
+(defun util/windows--split-close-sides (frame)
+  (with-selected-frame frame
+    (walk-windows
+     (lambda
+       (window)
+       (when (util/windows-side-window-p window)
+         (delete-window window)))
+     'nomini)
+    ))
+
 (defun util/windows-split-main-window-below (size frame)
   (with-selected-frame frame
     (let ((size (min util/windows-max-bottom-height
@@ -208,14 +247,18 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
                           )))
           (sentinel (get-buffer-create " *split-sentinel*"))
           (toggle (and (window-with-parameter 'window-side nil frame)))
+          side-states
           root-window
           window)
-      (and toggle (window-toggle-side-windows))
+      (and toggle
+           (setq side-states (util/windows--split-state-get frame))
+           (util/windows--split-close-sides frame))
       (setq root-window (frame-root-window frame))
       (setq window (split-window-below (- size) root-window))
       (set-window-buffer window sentinel)
-      (and toggle (window-toggle-side-windows))
-      (get-buffer-window sentinel frame))))
+      (and toggle (util/windows--split-state-put frame side-states))
+      (get-buffer-window sentinel frame))
+    ))
 
 (defun util/windows-display-buffer-in-popup-window (buffer &optional alist plist)
   (let ((frame (shackle--splittable-frame)))

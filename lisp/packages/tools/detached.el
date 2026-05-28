@@ -14,9 +14,6 @@
   (interactive "P")
   (let ((compilation-buffer-name-function
          (or project-compilation-buffer-name-function
-             ;; Should we error instead?  When there's no
-             ;; project-specific naming, there is no point in using
-             ;; this command.
              compilation-buffer-name-function)))
     (detached-compile-recompile edit-command)))
 
@@ -54,7 +51,10 @@ This function uses the `notifications' library."
        :title (pcase status
                 ('success (format "Detached finished [%s]" host))
                 ('failure (format "Detached failed [%s]" host)))
-       :body (detached-session-command session)
+       :body (concat
+              (detached-session-working-directory session)
+              "\n\n"
+              (detached-session-command session))
        :urgency (pcase status
                   ('success 'normal)
                   ('failure 'normal)))))
@@ -71,6 +71,14 @@ This function uses the `notifications' library."
       (detached-open-session session)))
 
   (advice-add #'detached-list-open-session :override #'+detached-list-open-session)
+
+  (defun detached-command-around (orig-fn &rest args)
+    (unless (derived-mode-p '(detached-compilation-mode detached-log-mode))
+      (user-error "`%s' only works in detached modes" (symbol-name this-command)))
+    (apply orig-fn args))
+
+  (advice-add #'detached-project-recompile :around #'detached-command-around)
+  (advice-add #'detached-compile-recompile :around #'detached-command-around)
 
   :bind (([remap async-shell-command]   . util/commands-run-command)
          ([remap detached-open-session] . detached-consult-session))

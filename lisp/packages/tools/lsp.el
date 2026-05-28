@@ -67,7 +67,7 @@ If it is not set, use ALTERNATIVE instead."
                     ((markdown-mode              :language-id "markdown")         . ,ltex-ls-plus)
                     ((rst-mode                   :language-id "restructuredtext") . ,ltex-ls-plus)
                     (((python-ts-mode            :language-id "python")
-                      (python-mode               :language-id "python"))          . ,pyrefly)
+                      (python-mode               :language-id "python"))          . ,ty)
                     ((html-mode                  :language-id "html")             . ,html)
                     (((rust-mode                 :language-id "rust")
                       (rust-ts-mode              :language-id "rust"))           . ,rust-analyzer)

@@ -12,12 +12,12 @@
 (defun +lang-elisp-mode-setup ()
   "Setup to run for `emacs-lisp-mode` modes."
   (add-hook 'before-save-hook #'+lang-elisp-exec-on-save nil 'local)
-  (util/add-capf-hooks
-   #'yasnippet-capf
-   #'cape-dabbrev
-   #'cape-file
-   #'cape-elisp-symbol
-   #'cape-keyword)
+  (util/add-capf-hooks t
+    #'yasnippet-capf
+    #'cape-dabbrev
+    #'cape-file
+    #'cape-elisp-symbol
+    #'cape-keyword)
 
   (flymake-mode -1))
 

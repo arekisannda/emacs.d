@@ -19,9 +19,9 @@
    ((treesit-fold-ready-p) (treesit-fold-mode 1))
    ((derived-mode-p 'emacs-lisp-mode) (hs-minor-mode 1)))
 
-  (util/add-capf-hooks
-   #'cape-file
-   #'cape-keyword))
+  (util/add-capf-hooks t
+    #'cape-file
+    #'cape-keyword))
 
 (use-package prog-mode
   :hook
