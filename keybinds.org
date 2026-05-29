@@ -1313,6 +1313,15 @@
 (defmacro +strings-insert-char (char)
   `(lambda () (interactive) (insert ,char)))
 
+(defun +quick-calc (&optional start end)
+  (interactive "r")
+  (if (use-region-p)
+      (let ((result (calc-eval (buffer-substring start end))))
+        (delete-region start end)
+        (insert result))
+    (calc-do-quick-calc t))
+  )
+
 (general-define-key
  :keymaps 'global
 
@@ -1338,7 +1347,7 @@
   "c"   '("insert char"      . insert-char)
   "t"   '("insert template"  . yas-insert-snippet)
   "n"   '("insert nerd-icon" . nerd-icons-insert)
-  "m"   '("expression eval"  . quick-calc)
+  "m"   '("expression eval"  . +quick-calc)
 
   "I"   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode) #'org-download-image)

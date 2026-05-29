@@ -196,7 +196,39 @@ vertico-posframe works with vertico multiform toggle."
 
   (advice-add #'vertico-posframe--show :after #'+vertico-posframe-show-cursor))
 
-(use-package marginalia)
+(use-package marginalia
+  :custom
+  (marginalia-field-width 60)
+  :config
+
+  (defun marginalia-annotate-function-override (cand)
+    "Annotate function CAND with its documentation string."
+    (when-let* ((sym (intern-soft cand)))
+      (marginalia--fields
+       (:left (marginalia-annotate-binding cand))
+       ((marginalia--symbol-class sym) :face 'marginalia-type)
+       ((marginalia--function-args sym) :face 'marginalia-value
+        :truncate 1.0))))
+
+  (advice-add #'marginalia-annotate-function :override #'marginalia-annotate-function-override)
+
+(defun marginalia-annotate-variable-override (cand)
+  "Annotate variable CAND with its documentation string."
+  (when-let* ((sym (intern-soft cand)))
+    (marginalia--fields
+     ((marginalia--symbol-class sym) :face 'marginalia-type)
+     ((marginalia--variable-value sym) :truncate 1.0))))
+
+  (advice-add #'marginalia-annotate-variable :override #'marginalia-annotate-variable-override)
+
+(defun marginalia-annotate-face-override (cand)
+  "Annotate face CAND with its documentation string and face example."
+  (when-let* ((sym (intern-soft cand)))
+    (marginalia--fields
+     ((concat marginalia--pangram #(" " 0 1 (display (space :align-to right))))
+      :face sym))))
+
+  (advice-add #'marginalia-annotate-face :override #'marginalia-annotate-face-override))
 
 (use-package orderless
   :custom

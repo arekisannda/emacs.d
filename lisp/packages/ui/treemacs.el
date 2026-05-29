@@ -155,6 +155,8 @@
       (pcase visibility
         ('visible nil)
         ('exists (display-buffer (treemacs-get-local-buffer-create)))
+        ('none (if-let ((buffer (treemacs-get-local-buffer)))
+                        (display-buffer buffer)))
         )))
 
   (defun treemacs-autohide--hide ()
