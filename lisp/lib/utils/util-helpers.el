@@ -64,6 +64,58 @@
   `(mapc (lambda (spec) (apply #'face-spec-set spec))
          (backquote ,faces)))
 
+(defun util/apply-rcs-patch-to-buffer (patch-buffer)
+  "Apply an RCS-formatted diff from PATCH-BUFFER to the current buffer."
+  (let ((target-buffer (current-buffer))
+        (line-offset 0)
+        (column (current-column)))
+    (save-excursion
+      (with-current-buffer patch-buffer
+        (goto-char (point-min))
+        (while (not (eobp))
+          (unless (looking-at "^\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
+            (error "Invalid rcs patch"))
+          (forward-line)
+          (let ((action (match-string 1))
+                (from (string-to-number (match-string 2)))
+                (len  (string-to-number (match-string 3))))
+            (cond
+             ((equal action "a")
+              (let ((start (point)))
+                (forward-line len)
+                (let ((text (buffer-substring start (point))))
+                  (with-current-buffer target-buffer
+                    (cl-decf line-offset len)
+                    (goto-char (point-min))
+                    (forward-line (- from len line-offset))
+                    (insert text)))))
+             ((equal action "d")
+              (with-current-buffer target-buffer
+                (goto-char (point-min))
+                (forward-line (1- (- from line-offset)))
+                (setq line-offset (+ line-offset len))
+                (let ((beg (point)))
+                  (forward-line len)
+                  (delete-region (point) beg))))
+             (t
+              (error "Invalid rcs patch")))))))
+    (move-to-column column)))
+
+(defun util/call-diff (diff-cmd outputfile patchbuf &optional start end)
+  "Call diff command to generate patch between current buffer and OUTPUTFILE.
+PATCHBUF is the buffer where the diff output will be written."
+  (let ((start-point (or start (point-min)))
+        (end-point (or end (point-max)))
+        (local-copy (file-local-copy outputfile)))
+    (unwind-protect
+        (call-process-region
+         start-point
+         end-point
+         diff-cmd nil patchbuf nil
+         "-n" "--strip-trailing-cr" "-" (or local-copy outputfile))
+      (when local-copy (delete-file local-copy)))
+    ))
+
 (provide 'util-helpers)
 
 ;;; util-helpers.el ends here

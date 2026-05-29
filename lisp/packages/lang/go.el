@@ -10,14 +10,13 @@
 
 (defun +lang-go-mode-setup ()
   "Setup to run for `go` modes."
-  (add-hook 'before-save-hook #'gofmt-before-save nil t)
   (when (+envrc-root)
     (add-hook '+envrc-update-hook #'+lang-go-flymake-setup nil t))
   (+lang-go-flymake-setup))
 
 (use-package flymake-golangci)
 
-(use-package go-mode
+(use-package go-ts-mode
   :custom
   (go-ts-mode-indent-offset 4)
   :mode

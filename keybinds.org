@@ -1674,25 +1674,32 @@
 
 (defun +eglot-formatting-p ()
   (with-current-buffer (current-buffer)
-    (plist-get (eglot--capabilities (eglot-current-server)) :documentFormattingProvider)))
+    (eglot-server-capable :documentFormattingProvider)))
 
 (defun +editorconfig-formatting-p ()
   (locate-dominating-file default-directory ".editorconfig"))
 
 (+keybinds-editor-edit
-  "+" '("sort lines"      . sort-lines)
-  "=" (general-predicate-dispatch '("indent" . util/indent-buffer)
+  "=" (general-predicate-dispatch '("format" . util/indent-buffer)
+        (and (eglot-managed-p) (+eglot-formatting-p))
+        '("format" . eglot-format-buffer)
+
         (derived-mode-p '(json-ts-mode
                           js-json-mode))
-        '("indent" . json-pretty-print-buffer)
+        '("format" . json-pretty-print-buffer)
+
         (derived-mode-p '(css-ts-mode
                           yaml-ts-mode
                           html-mode))
-        '("indent" . prettier-js)
-        (and (eglot-managed-p) (+eglot-formatting-p))
-        '("indent" . eglot-format-buffer)
+        '("format" . prettier-js)
+
+        (derived-mode-p '(python-ts-mode))
+        '("format" . +lang-python-format-buffer)
+
         (+editorconfig-formatting-p)
-        '("indent" . editorconfig-format-buffer))
+        '("format" . editorconfig-format-buffer))
+
+  "+" '("sort lines"      . sort-lines)
 
   "c" '("comment line"    . evilnc-comment-or-uncomment-lines)
   "C" '("comment block"   . evilnc-comment-or-uncomment-paragraphs)

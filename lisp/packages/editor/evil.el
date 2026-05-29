@@ -47,7 +47,6 @@
                    calc-mode
                    calculator-mode
                    calendar-mode
-                   comint-mode
                    dap-ui-breakpoints-ui-list-mode
                    dape-info-parent-mode
                    dape-repl-mode
@@ -83,6 +82,7 @@
           apropos-mode
           backtrace-mode
           color-theme-mode
+          comint-mode
           command-history-mode
           compilation-mode
           detached-log-mode

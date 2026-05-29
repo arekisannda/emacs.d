@@ -92,6 +92,8 @@
    buffer
    `(,@alist
      (prefix . ,(format "[Emacs Tool] "))
+     (width . 160)
+     (height . 60)
      (init-buffer . ,buffer)
      (popup . t))
    ))
@@ -231,6 +233,7 @@
        "^\\*scratch\\*$"
        "^\\*shell\\*$"
        "^\\*Ibuffer\\*$"
+       messages-buffer-mode
        ibuffer-mode
        git-rebase-mode
        detached-list-mode
@@ -256,8 +259,7 @@
 
      (("^\\*Shell Command Output\\*$"
        shell-command-mode
-       compilation-mode
-       messages-buffer-mode)
+       compilation-mode)
       ,@(+shackle-display-popup-preset))
 
      (("^\\*diff-hl\\*"
