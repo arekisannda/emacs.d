@@ -52,4 +52,5 @@
   (interactive)
   (call-interactively #'narrow-to-region)
   (edebug-defun)
-  (call-interactively #'widen))
+  (call-interactively #'widen)
+  (deactivate-mark))

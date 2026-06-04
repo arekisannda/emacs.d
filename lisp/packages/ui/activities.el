@@ -8,6 +8,11 @@
   "Default directory for `activities'."
   :type 'directory)
 
+(defcustom +activities-post-apply-state-hook '()
+  "Called when restoring `activites' window state.
+Function takes one argument FRAME."
+  :type 'hook)
+
 (use-package activities :after project
   :custom
   (activities-name-prefix "@")
@@ -32,6 +37,8 @@
   (+activities-save-all-skip
    '((lambda() (when (fboundp 'treemacs-is-treemacs-window-selected?) (treemacs-is-treemacs-window-selected?)))))
   (activities-bookmark-store nil)
+  (treemacs-autohide-condition-check-functions
+   '((lambda (f) (and (activities-current) t))))
   :init
   (when init-file-debug
     (advice-add #'activities-save-all :override #'ignore)
@@ -65,7 +72,6 @@
         (let ((default-directory +activities-default-directory)
               (activity nil))
           (call-interactively #'project-switch-project)
-          (tab-line-close-other-tabs)
           (setq activity (call-interactively #'activities-define))
           (treemacs--init)
           (setq activity (activities-define (activities-activity-name activity) :forcep t))
@@ -90,7 +96,41 @@ It will not be recoverable."
       ))
 
   (advice-add #'activities-discard :override #'+activities-discard-override)
+
+  (defun activities--windows-set-override (state)
+    "Set window configuration according to STATE."
+    (run-at-time nil nil
+                 (lambda (frame state)
+                   (let ((window-persistent-parameters
+                          (append activities-window-persistent-parameters
+                                  window-persistent-parameters)))
+                     (window-state-put state (frame-root-window frame) 'safe))
+                   (run-hook-with-args '+activities-post-apply-state-hook frame))
+                 (selected-frame)
+                 ;; NOTE: We copy the state so as not to mutate the one in storage.
+                 (activities--bufferize-window-state (copy-tree state))))
+
+  (advice-add #'activities--windows-set :override #'activities--windows-set-override)
+
+  (defun activities--treemacs-auto-hide-setup (frame)
+    (treemacs-autohide-on-size-change frame t))
+
+  (defun activities--close-non-main-error-windows (frame)
+    (dolist (w (window-list frame))
+      (when (or (util/windows-side-window-p w)
+                (util/windows-aux-window-p w)
+                (util/windows-popup-window-p w))
+        (delete-window w)))
+
+    (dolist (b (buffer-list frame))
+      (when (string-match "^\\*Activities (error):.*\\*$" (buffer-name b))
+        (dolist (w (get-buffer-window-list b nil frame))
+          (set-window-buffer w (get-buffer "*scratch*")))
+        (kill-buffer b))))
+
   :hook
+  (+activities-post-apply-state . activities--treemacs-auto-hide-setup)
+  (+activities-post-apply-state . activities--close-non-main-error-windows)
   (after-init      . activities-mode)
   (activities-mode . activities-tabs-mode))
 

@@ -41,6 +41,8 @@ Function takes two arguments WINDOW and BUFFER."
 Function takes two arguments WINDOW and buffer and optional FLAGS."
   :type 'hook)
 
+(defvar util/windows-temporary-buffer-name " *split-sentinel*")
+
 (advice-add 'shrink-window-if-larger-than-buffer
             :before-while (lambda (&rest args) util/windows-disable-shrink))
 
@@ -94,7 +96,7 @@ Open BUFFER in the most recently used window
 Open BUFFER in the least recently used window
 
 If the inititial window is not a side window, display BUFFER using `:fallback`"
-  (if (plist-get plist :ignore) 'fail
+  (if (plist-get plist :ignore) (user-error "Buffer ignored by rule.")
     (let* ((init-window (window-normalize-window nil))
            window
            rule-plist)
@@ -119,7 +121,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (defun util/windows-display-buffer-in-mru-main-window (buffer &optional alist plist)
   "Display BUFFER in most recently used window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
+  (if (plist-get plist :ignore) (user-error "Buffer ignored by rule.")
     (let* ((init-window (window-normalize-window nil))
            window)
       (cond
@@ -134,7 +136,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (defun util/windows-display-buffer-in-lru-main-window (buffer &optional alist plist)
   "Display BUFFER in least recently used window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
+  (if (plist-get plist :ignore) (user-error "Buffer ignored by rule.")
     (let* ((init-window (window-normalize-window nil))
            window)
       (cond
@@ -149,7 +151,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (defun util/windows-display-buffer-in-side-window (buffer &optional alist plist)
   "Display BUFFER in side window according to ALIST and PLIST."
-  (if (plist-get plist :ignore) 'fail
+  (if (plist-get plist :ignore) (user-error "Buffer ignored by rule.")
     (let* ((side (plist-get plist :side))
            (slot (plist-get plist :slot))
            (size (plist-get plist :size))
@@ -200,44 +202,41 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
       (if (plist-get plist :select) window init-window)
       )))
 
-(defun util/windows--split-state-get (frame)
+(defun util/windows--state-list-stash (frame state-fn)
+  "STATE-FN takes 1 argument WINDOW and return a list of (WINDOW-TYPE SLOT WINDOW-STATE)."
   (with-selected-frame frame
-    (let (side-window-states)
+    (let (window-states
+          windows-to-delete)
       (walk-windows
        (lambda
          (window)
-         (when (util/windows-side-window-p window)
-           (add-to-list 'side-window-states
-                        (list
-                         (window-parameter window 'window-side)
-                         (window-parameter window 'window-slot)
-                         (window-state-get window t)
-                         ))))
+         (when-let ((state (funcall state-fn window)))
+           (add-to-list 'window-states state)
+           (add-to-list 'windows-to-delete window)))
        'nomini)
-      side-window-states)
-    ))
 
-(defun util/windows--split-state-put (frame side-window-states)
+      (dolist (w windows-to-delete)
+        (delete-window w))
+
+      window-states)))
+
+(defun util/windows--state-list-restore (frame window-states)
   (with-selected-frame frame
-    (dolist (s side-window-states)
+    (dolist (s window-states)
       (pcase-let ((`(,side ,slot ,state) s))
-        (let ((sentinel (get-buffer-create " *split-sentinel*"))
+        (let ((sentinel (get-buffer-create util/windows-temporary-buffer-name))
               window)
-          (setq window (display-buffer-in-side-window sentinel `((side . ,side)
-                                                                 (slot . ,slot))))
-          (window-state-put state window t)
-          )))
-    ))
 
-(defun util/windows--split-close-sides (frame)
-  (with-selected-frame frame
-    (walk-windows
-     (lambda
-       (window)
-       (when (util/windows-side-window-p window)
-         (delete-window window)))
-     'nomini)
-    ))
+          (pcase side
+            ('popup
+             (setq window (util/windows-display-buffer-in-popup-window sentinel nil nil)))
+            ((or 'left 'right 'bottom 'top)
+             (setq window (display-buffer-in-side-window sentinel `((side . ,side)
+                                                                    (slot . ,slot))))
+             ))
+
+          (window-state-put state window t)))
+      )))
 
 (defun util/windows-split-main-window-below (size frame)
   (with-selected-frame frame
@@ -245,28 +244,51 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
                      (max util/windows-min-bottom-height
                           (if (integerp size) size (floor (* size (frame-height frame))))
                           )))
-          (sentinel (get-buffer-create " *split-sentinel*"))
+          (sentinel (get-buffer-create util/windows-temporary-buffer-name))
           (toggle (and (window-with-parameter 'window-side nil frame)))
+          (state-fn
+           (lambda (window)
+             (when (util/windows-side-window-p window)
+               (list
+                (window-parameter window 'window-side)
+                (window-parameter window 'window-slot)
+                (window-state-get window t)
+                ))))
           side-states
           root-window
-          window)
+          window
+          (window-combination-limit t))
       (and toggle
-           (setq side-states (util/windows--split-state-get frame))
-           (util/windows--split-close-sides frame))
+           (setq side-states (util/windows--state-list-stash frame state-fn))
+           )
       (setq root-window (frame-root-window frame))
       (setq window (split-window-below (- size) root-window))
       (set-window-buffer window sentinel)
-      (and toggle (util/windows--split-state-put frame side-states))
+      (set-window-combination-limit (window-parent window) t)
+      (and toggle
+           (util/windows--state-list-restore frame side-states))
+      (balance-windows root-window)
       (get-buffer-window sentinel frame))
     ))
+
+(defun util/windows-select-popup-window ()
+  (interactive)
+  (when-let ((window (window-with-parameter 'window-popup 'bottom (selected-frame))))
+    (select-window window)))
+
+
+(defun util/windows-select-popup-window ()
+  (interactive)
+  (when-let ((window (window-with-parameter 'window-popup 'bottom (selected-frame))))
+    (select-window window)))
 
 (defun util/windows-display-buffer-in-popup-window (buffer &optional alist plist)
   (let ((frame (shackle--splittable-frame)))
     (when frame
-      (if (plist-get plist :ignore) 'fail
+      (if (plist-get plist :ignore) (user-error "Buffer ignored by rule.")
         (let* ((init-window (window-normalize-window nil))
                (popup-window (window-with-parameter 'window-popup 'bottom frame))
-               (size (plist-get plist :size))
+               (size (or (plist-get plist :size) util/windows-min-bottom-height))
                (fixed (plist-get plist :fixed))
                (alist `(,@alist
                         (window-popup        . bottom)
@@ -277,10 +299,13 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
                window)
 
           (cond
-           ((window-live-p popup-window) (setq window popup-window))
-           (t (setq window (util/windows-split-main-window-below size frame))))
+           ((window-live-p popup-window)
+            (setq window popup-window)
+            (window--display-buffer buffer window 'reuse alist))
+           (t
+            (setq window (util/windows-split-main-window-below size frame))
+            (window--display-buffer buffer window 'window alist)))
 
-          (window--display-buffer buffer window 'window alist)
           (with-current-buffer buffer
             (unless (bound-and-true-p util/windows--popup-configured)
               (setq-local util/windows--popup-configured t))
@@ -350,7 +375,8 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
   (let ((init-window (window-normalize-window nil))
         parameters
         window)
-    (if (not (util/windows-aux-window-p init-window)) 'fail
+    (if (not (util/windows-aux-window-p init-window))
+        (user-error "Initial window is not an aux-window.")
       (setq window (window-with-parameter 'window-aux-id (window-parameter window 'window-aux-other)))
       (window--display-buffer buffer window 'reuse alist))))
 
@@ -378,22 +404,13 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
             (substring rnd 20 32))))
 
 (defun util/windows-display-buffer-in-aux-window (buffer &optional alist plist)
-  ;; pseudo
-  ;; check if selected window has a sub window
-  ;; if there is one, display buffer in sub window; else create and display buffer
-  ;; in sub window
-  ;; add parameter for sub window to detect if main window buffer has changed;
-  ;; if changed, remove sub window
-  ;; use `window-buffer-change-functions` as buffer-local function
-  ;; thing to track:
-  ;; main window: sub window id
-  ;; sub window: main window id (for selecting window when closed)
-  ;; sub window buffer: calling main window buffer
   (if-let* ((init-window (window-normalize-window nil))
-            (ignorep (plist-get plist :ignore))
-            (aux-splittable-p (not (or (util/windows-side-window-p init-window)
-                                       (util/windows-popup-window-p init-window)))))
-      'fail
+            (invalid (or (plist-get plist :ignore)
+                         (util/windows-side-window-p init-window)
+                         (util/windows-popup-window-p init-window)
+                         (window-combined-p init-window)
+                         )))
+      (user-error "Window cannot be split for aux-window.")
     (let ((size (plist-get plist :size))
           (fixed (plist-get plist :fixed))
           (alist `(,@alist
@@ -483,8 +500,10 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 (defun util/windows-select-aux-window (&optional arg)
   (interactive "p")
   (let* ((init-window (window-normalize-window nil))
-         (aux-splittable-p (not (or (util/windows-side-window-p init-window)
-                                    (util/windows-popup-window-p init-window)))))
+         (aux-splittable-p (and (not (or (util/windows-side-window-p init-window)
+                                         (util/windows-popup-window-p init-window)))
+                                (eq (window-main-window) (window-parent init-window))
+                                )))
     (unless aux-splittable-p
       (user-error "Not an aux-capable window."))
 
@@ -521,6 +540,24 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
       (while child
         (util/windows--print-window-tree-walk child (1+ depth))
         (setq child (window-next-sibling child))))))
+
+(defun util/windows--quit-popup-window (orig-fn &optional kill window)
+  (let* ((win (or window (selected-window)))
+         (popup (window-parameter win 'window-popup)))
+    (if (not popup)
+        (funcall orig-fn kill window)
+      ;; Remove current buffer from prev-buffers
+      (set-window-prev-buffers
+       win
+       (seq-filter (lambda (entry)
+                     (buffer-live-p (car entry)))
+                   (window-prev-buffers win)))
+      ;; If no live prev-buffers remain, force delete
+      (if (null (window-prev-buffers win))
+          (progn
+            (when kill (kill-buffer (window-buffer win)))
+            (delete-window win))
+        (funcall orig-fn kill window)))))
 
 (provide 'util-windows)
 

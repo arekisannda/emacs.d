@@ -42,7 +42,6 @@
     "Delete other windows, keep only *leetcode* buffer."
     (when leetcode-focus
       (delete-other-windows)
-      (tab-line-close-other-tabs)
       ))
 
   (advice-add #'leetcode--maybe-focus :override #'+leetcode--maybe-focus)
@@ -182,27 +181,29 @@ major mode by `leetcode-prefer-language'and `auto-mode-alist'."
 
   (advice-add #'leetcode--start-coding :override #'+leetcode--start-coding)
 
-  (defun +leetcode-window-setup ()
-    (tab-line-close-other-tabs))
+  (defcustom leetcode-setup-functions '()
+    "Called when creating `leetcode' window.
+Function takes two arguments WINDOW and BUFFER."
+    :type 'hook)
 
   (defun +leetcode--display-result-override (buffer &optional alist)
     (set-window-buffer leetcode--result-window buffer)
-    (+leetcode-window-setup)
+    (run-hook-with-args 'leetcode-setup-functions leetcode--result-window buffer)
     leetcode--result-window)
 
   (defun +leetcode--display-testcase-override (buffer &optional alist)
     (set-window-buffer leetcode--testcase-window buffer)
-    (+leetcode-window-setup)
+    (run-hook-with-args 'leetcode-setup-functions leetcode--testcase-window buffer)
     leetcode--testcase-window)
 
   (defun +leetcode--display-detail-override (buffer &optional _alist)
     (set-window-buffer leetcode--description-window buffer)
-    (+leetcode-window-setup)
+    (run-hook-with-args 'leetcode-setup-functions leetcode--description-window buffer)
     leetcode--description-window)
 
   (defun +leetcode--display-code-override (buffer &optional _alist)
     (set-window-buffer leetcode--code-window buffer)
-    (+leetcode-window-setup)
+    (run-hook-with-args 'leetcode-setup-functions leetcode--code-window buffer)
     leetcode--code-window)
 
   (advice-add #'leetcode--solving-window-layout :override #'+leetcode--solving-window-layout-override)

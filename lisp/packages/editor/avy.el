@@ -4,18 +4,20 @@
   :custom
   (avy-all-windows nil)
   (avy-timeout-seconds 0.5)
-  (avy-background nil)
+  (avy-background t)
   :custom-face
+  (avy-background-face
+   ((nil :stipple nil)))
   (avy-lead-face
    ((nil :weight bold
          :underline (:color foreground-color :style line :position nil)
          :foreground ,(doom-color 'red)
-         :background ,(doom-color 'bg-alt)
+         :background ,(doom-color 'bg)
          )))
   (avy-lead-face-0
-   ((nil :inherit avy-lead-face :foreground unspecified :background unspecified)))
+   ((nil :inherit unspecified :foreground ,(doom-color 'vertical-bar) :background unspecified)))
   (avy-lead-face-1
-   ((nil :inherit avy-lead-face :foreground unspecified :background unspecified)))
+   ((nil :inherit unspecified :foreground ,(doom-color 'vertical-bar) :background unspecified)))
   (avy-lead-face-2
-   ((nil :inherit avy-lead-face :foreground unspecified :background unspecified)))
+   ((nil :inherit unspecified :foreground ,(doom-color 'vertical-bar) :background unspecified)))
   )

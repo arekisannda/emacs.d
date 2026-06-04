@@ -7,6 +7,13 @@
   (magit-commit-show-diff nil)
   (magit-branch-direct-configure nil)
   (magit-refresh-status-buffer nil)
+  (magit-repolist-columns
+   '(("Name" 30 magit-repolist-column-ident nil)
+     ("Version" 30 magit-repolist-column-version ((:sort magit-repolist-version<)))
+     ("Updates" 8 magit-repolist-column-unpulled-from-upstream ((:right-align t) (:sort <)))
+     ("Changes" 8 magit-repolist-column-unpushed-to-upstream ((:right-align t) (:sort <)))
+     ("Path" 99 magit-repolist-column-path nil)))
+
   :custom-face
   (hl-line
    ((nil :background unspecified)))

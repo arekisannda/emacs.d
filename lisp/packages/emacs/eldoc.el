@@ -242,6 +242,10 @@ If INTERACTIVE is t, also display the buffer."
 
   (defun +eldoc ()
     (interactive)
+    (let ((window (selected-window)))
+      (when (or (util/windows-side-window-p window)
+                  (util/windows-popup-window-p window))
+        (user-error "Window is cannot be split.")))
     (if-let* ((uuid (window-parameter (util/windows-get-aux-window (selected-window)) 'window-aux-other))
               (buf-name (format "*eldoc %s*" uuid))
               (window (get-buffer-window buf-name)))

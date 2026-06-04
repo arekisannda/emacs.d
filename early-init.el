@@ -105,20 +105,51 @@
 (epa-file-enable)
 (auth-source-pass-enable)
 
-(defvar +fonts-fixed-pitch-face "SauceCodePro NFM")
-(defvar +fonts-fixed-pitch-italic-face "SauceCodePro NFM")
-(defvar +fonts-variable-pitch-face "SauceCodePro NFP")
-(defvar +fonts-fixed-pitch-size 90)
-(defvar +fonts-variable-pitch-size 90)
-(defvar +fonts-tab-size 100)
+(defcustom +fonts-ckj-family "Source Han Sans"
+  "Emacs CKJ font family."
+  :type 'string
+  :group 'basic-faces)
 
-(add-to-list
- 'default-frame-alist
- `(font . ,(concat +fonts-fixed-pitch-face
-                   (format " %d" (/ +fonts-fixed-pitch-size 10)))))
+(defcustom +fonts-fixed-pitch-family "SauceCodePro NFM"
+  "Emacs fixed-pitch font family."
+  :type 'string
+  :group 'basic-faces)
 
-(set-fontset-font "fontset-default" 'han (font-spec :family "Source Han Sans"))
-(set-fontset-font "fontset-default" 'kana (font-spec :family "Source Han Sans"))
+(defcustom +fonts-fixed-pitch-italic-family "SauceCodePro NFM"
+  "Emacs fixed-pitch italic font family."
+  :type 'string
+  :group 'basic-faces)
+
+(defcustom +fonts-variable-pitch-family "SauceCodePro NFP"
+  "Emacs variable-pitch font family."
+  :type 'string
+  :group 'basic-faces)
+
+(defcustom +fonts-fixed-pitch-size 90
+  "Emacs fixed-pitch font size."
+  :type 'integer
+  :group 'basic-faces)
+
+(defcustom +fonts-variable-pitch-size 90
+  "Emacs variable-pitch font size."
+  :type 'integer
+  :group 'basic-faces)
+
+(defcustom +fonts-tab-size 100
+  "Emacs tab font size."
+  :type 'integer
+  :group 'basic-faces)
+
+(defun +emacs-set-font ()
+  (add-to-list
+   'default-frame-alist
+   `(font . ,(concat +fonts-fixed-pitch-family
+                     (format " %d" (/ +fonts-fixed-pitch-size 10)))))
+
+  (set-fontset-font "fontset-default" 'han (font-spec :family +fonts-ckj-family))
+  (set-fontset-font "fontset-default" 'kana (font-spec :family +fonts-ckj-family)))
+
+(+emacs-set-font)
 
 (setq-default frame-title-format
               '((:eval (when init-file-debug "[DEBUG] "))

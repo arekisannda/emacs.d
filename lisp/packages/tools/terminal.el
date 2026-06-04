@@ -1,6 +1,9 @@
 ;;; editor/terminal.el -*- lexical-binding: t; -*-
 
+(require 'util-helpers)
+
 (use-package vterm
+  :disabled t
   :custom
   (vterm-term-environment-variable "xterm-256color")
   :custom-face
@@ -73,9 +76,21 @@ The optional ARGS are keyword arguments."
     (let* ((project (project-current))
            (project-dir (if project (project-root project) default-directory))
            (default-directory project-dir)
-           (term-buffer (format "*vterm - %s*" project-dir)))
+           (term-buffer (format "*vterm - %s*" project-dir))
+           buffer)
       (if-let ((buffer (get-buffer term-buffer)))
           (display-buffer buffer)
-        (vterm term-buffer))
-      ))
-  )
+        (setq buffer (vterm term-buffer))
+        (with-current-buffer buffer
+          (add-hook 'vterm-exit-functions #'+vterm-close-window-on-exit nil t))
+        )))
+
+  (defun +vterm-close-window-on-exit (&optional buffer event)
+    (when (and (buffer-live-p buffer)
+               (= (length (tab-line-tabs-window-buffers)) 1))
+      (if-let ((window (get-buffer-window buffer)))
+          (delete-window window)))))
+
+(use-package ghostel
+  :custom
+  (ghostel-set-title-function nil))

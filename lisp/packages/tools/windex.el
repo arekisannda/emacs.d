@@ -6,7 +6,7 @@
   :custom
   (windex-window-filter-functions
    '((lambda (window)
-       (or (member (window-parameter window 'window-side) '(right bottom))
+       (or (member (window-parameter window 'window-side) '(left right bottom))
            (window-parameter window 'window-popup)
            (window-minibuffer-p window)))))
   (windex-window-aw-filter-functions windex-window-filter-functions)

@@ -34,7 +34,7 @@
      (text
       (fill . ,(doom-color 'bg-alt)) ;; Not edraw-package-default-fill
       (font-size . 16)
-      (font-family . ,+fonts-variable-pitch-face)
+      (font-family . ,+fonts-variable-pitch-family)
       (text-anchor . "middle"))
      (image)))
   :config

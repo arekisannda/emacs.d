@@ -21,3 +21,9 @@
 (advice-add #'bookmark-jump :after (lambda (&rest _) (pulse-momentary-highlight-one-line (point))))
 
 (setq comp-async-buffer-name " *Async-native-compile-log*")
+
+(defun emacs-copy-buffer-file-name ()
+  (interactive)
+  (if-let ((buffer-file-name buffer-file-name))
+      (kill-new buffer-file-name)
+    (user-error "Buffer is not a file.")))

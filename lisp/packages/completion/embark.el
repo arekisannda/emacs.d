@@ -9,8 +9,6 @@
   (embark-selected
    ((nil :inherit unspecified
          :foreground ,(doom-color 'magenta))))
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode)
   :config
   (defvar +vertico-embark-prompter-map (make-sparse-keymap)
     "Embark completion read prompter map.")
@@ -82,8 +80,12 @@ Executes FN with ARGS."
       (apply fn args)))
 
   (advice-add #'embark-completing-read-prompter
-              :around #'+vertico-embark-hide-which-key-indicator))
+              :around #'+vertico-embark-hide-which-key-indicator)
 
-(use-package embark-consult :after (embark consult)
+  (defun embark-collect-mode-setup ()
+    (setq-local embark--target-buffer nil)
+    (setq-local embark--target-window nil)
+    )
+
   :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+  (embark-collect-mode . embark-collect-mode-setup))

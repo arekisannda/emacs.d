@@ -53,6 +53,7 @@
                    dashboard-mode
                    eglot-list-connections-mode
                    eshell-mode
+                   ghostel-mode
                    inferior-apl-mode
                    inferior-caml-mode
                    inferior-emacs-lisp-mode
@@ -61,6 +62,7 @@
                    inferior-python-mode
                    inferior-scheme-mode
                    inferior-sml-mode
+                   nix-repl-mode
                    prolog-inferior-mode
                    racket-repl-mode
                    shell-mode
@@ -105,9 +107,6 @@
   (advice-add #'evil-previous-line :around (evil-move-or-goto-line-around nil))
   (advice-add #'evil-next-visual-line :around (evil-move-or-goto-line-around t))
   (advice-add #'evil-previous-visual-line :around (evil-move-or-goto-line-around nil))
-
-  (advice-add #'evil-next-buffer :override (apply-partially #'tab-line-switch-to-next-tab nil))
-  (advice-add #'evil-prev-buffer :override (apply-partially #'tab-line-switch-to-prev-tab nil))
   :hook
   (after-init . evil-mode))
 

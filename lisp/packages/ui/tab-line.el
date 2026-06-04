@@ -100,7 +100,7 @@
       (if (called-interactively-p)
           (message "Cleared other tabs."))))
 
-  (defmacro tab-line-main-window-for-each (frame &rest body)
+  (defmacro tab-line-window-for-each (frame &rest body)
     (declare (indent 1) (debug (form body)))
     `(let ((frame ,frame))
        (unless (frame-parameter frame 'popup)
@@ -113,7 +113,7 @@
            ))))
 
   (defun tab-line-main-window-setup (&optional frame)
-    (tab-line-main-window-for-each frame
+    (tab-line-window-for-each frame
       (let ((wframe (window-frame)))
         (if (or (window-parameter window 'window-side)
                 (window-parameter window 'window-popup)
@@ -123,7 +123,7 @@
         )))
 
   (defun tab-line-main-window-teardown (&optional frame)
-    (tab-line-main-window-for-each frame
+    (tab-line-window-for-each frame
       (let ((wframe (window-frame)))
         (unless (or (window-parameter window 'window-side)
                     (window-parameter window 'window-popup)
@@ -135,6 +135,7 @@
     "Toggle display of tab line in main window only."
     :global t
     :lighter nil
+    (when tab-line-popup-window-mode (tab-line-popup-window-mode -1))
     (if tab-line-main-window-mode
         (progn
           (add-hook 'window-configuration-change-hook #'tab-line-main-window-setup)
@@ -145,4 +146,32 @@
       (remove-hook 'window-buffer-change-functions #'tab-line-main-window-setup)
       (tab-line-main-window-teardown)
       (force-mode-line-update t)))
-  )
+
+  (defun tab-line-popup-window-setup (&optional frame)
+    (tab-line-window-for-each frame
+      (let ((wframe (window-frame)))
+        (tab-line-mode (if (window-parameter window 'window-popup) 1 -1))
+        )))
+
+  (defun tab-line-popup-window-teardown (&optional frame)
+    (tab-line-window-for-each frame
+      (tab-line-mode -1)))
+
+  (define-minor-mode tab-line-popup-window-mode
+    "Toggle display of tab line in popup window only."
+    :global t
+    :lighter nil
+    (when tab-line-main-window-mode (tab-line-main-window-mode -1))
+    (if tab-line-popup-window-mode
+        (progn
+          (add-hook 'window-configuration-change-hook #'tab-line-popup-window-setup)
+          (add-hook 'window-buffer-change-functions #'tab-line-popup-window-setup)
+          (tab-line-popup-window-setup)
+          (force-mode-line-update t))
+      (remove-hook 'window-configuration-change-hook #'tab-line-popup-window-setup)
+      (remove-hook 'window-buffer-change-functions #'tab-line-popup-window-setup)
+      (tab-line-popup-window-teardown)
+      (force-mode-line-update t)))
+
+  :hook
+  (window-setup . tab-line-popup-window-mode))

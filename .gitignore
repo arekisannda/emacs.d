@@ -37,3 +37,4 @@ forge-database.sqlite
 # Undo-tree save-files
 *.~undo-tree
 
+/.claude/

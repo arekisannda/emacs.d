@@ -2,7 +2,10 @@
 
 (use-package nix-ts-mode
   :mode
-  ("\\.nix\\'" . nix-ts-mode))
+  ("\\.nix\\'" . nix-ts-mode)
+  :bind
+  ( :map nix-ts-mode-map
+    ("C-c C-p" . nix-repl)))
 
 (use-package nix-mode)
 

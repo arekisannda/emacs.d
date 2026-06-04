@@ -2,7 +2,7 @@
 
 (require 'util-lang)
 
-(require 'google-c-style)
+(use-package google-c-style)
 
 (use-package c-ts-mode
   :custom

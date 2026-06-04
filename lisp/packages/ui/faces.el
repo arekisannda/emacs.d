@@ -29,8 +29,25 @@
   (when (member 'enable-alt-face flags)
     (emacs-alt-face-setup window buffer)))
 
+(defun emacs-tabulated-list-setup ()
+  (face-remap-add-relative 'hl-line `(nil :background ,(doom-color 'bg-alt)))
+  (face-remap-add-relative 'header-line `(nil :background ,(doom-color 'bg)))
+  (hl-line-mode 1))
+
 (use-package nil ; _faces_
+  :custom
+  (+fonts-ckj-family "Source Han Sans")
+  (+fonts-fixed-pitch-family "SauceCodePro NFM")
+  (+fonts-fixed-pitch-italic-family "SauceCodePro NFM")
+  (+fonts-variable-pitch-family "SauceCodePro NFP")
+  (+fonts-fixed-pitch-size 90)
+  (+fonts-variable-pitch-size 90)
+  (+fonts-tab-size 100)
   :custom-face
+  (shadow
+   ((nil :inherit unspecified
+         :foreground ,(doom-color 'grey)
+         )))
   (header-line
    ((nil :inherit unspecified
          :foreground ,(doom-color 'fg-alt)
@@ -95,32 +112,34 @@
 
   (default
    ((nil :weight normal
-         :font ,+fonts-fixed-pitch-face
+         :font ,+fonts-fixed-pitch-family
          :height ,+fonts-fixed-pitch-size)))
   (fixed-pitch
    ((nil :weight normal
-         :font ,+fonts-fixed-pitch-face
+         :font ,+fonts-fixed-pitch-family
          :height ,+fonts-fixed-pitch-size)))
   (variable-pitch
    ((nil :weight normal
-         :font ,+fonts-variable-pitch-face
+         :font ,+fonts-variable-pitch-family
          :height ,+fonts-variable-pitch-size)))
   (variable-pitch-text
    ((nil :weight normal
-         :font ,+fonts-variable-pitch-face
+         :font ,+fonts-variable-pitch-family
          :height ,+fonts-variable-pitch-size)))
   (italic
    ((nil :slant italic
          :underline nil
-         :font ,+fonts-fixed-pitch-italic-face)))
+         :font ,+fonts-fixed-pitch-italic-family)))
   (bold-italic
    ((nil :weight bold
          :slant italic
          :underline nil
-         :font ,+fonts-fixed-pitch-italic-face)))
+         :font ,+fonts-fixed-pitch-italic-family)))
+  (region
+   ((nil :stipple nil :foreground unspecified)))
   (highlight
-   ((nil :extend t
-         :background ,(doom-color 'selection)
+   ((nil :inherit region
+         :background unspecified
          :foreground unspecified)))
   (fringe
    ((nil :foreground ,(doom-color 'fg-alt))))
@@ -174,6 +193,8 @@
          :background unspecified
          :foreground ,(doom-color 'red))))
   :hook
+  (window-setup . +emacs-set-font)
+  (tabulated-list-mode . emacs-tabulated-list-setup)
   (util/windows-side-window . emacs-alt-face-side-setup)
   (Custom-mode . emacs-set-alt-face))
 

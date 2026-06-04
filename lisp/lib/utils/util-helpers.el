@@ -116,6 +116,16 @@ PATCHBUF is the buffer where the diff output will be written."
       (when local-copy (delete-file local-copy)))
     ))
 
+(defun util/region-is-whole-line-p (&optional start end)
+  "Return t if region spans the entire line, nil if partial."
+  (and (use-region-p)
+       (save-excursion
+         (goto-char (or start (region-beginning)))
+         (bolp))
+       (save-excursion
+         (goto-char (or end (region-end)))
+         (or (eolp) (bolp)))))
+
 (provide 'util-helpers)
 
 ;;; util-helpers.el ends here

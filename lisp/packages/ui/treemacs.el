@@ -125,10 +125,20 @@
   :config (treemacs-set-scope-type 'Tabs))
 
 (with-eval-after-load 'treemacs
+  (defgroup treemacs-autohid nil
+    "Treemacs-autohide configuration options."
+    :group 'treemacs
+    :prefix "treemacs-autohide-")
+
   (defcustom treemacs-autohide-threshold 460
     "Auto hide `treemacs` when `frame-width` is below threshold."
-    :group 'treemacs
-    :type 'integer)
+    :type 'integer
+    :group 'treemacs-autohide)
+
+  (defcustom treemacs-autohide-condition-check-functions nil
+    "List of `treemacs-autohide' condition checks"
+    :type '(repeat function)
+    :group 'treemacs-autohide)
 
   (defun treemacs-autohide-frame-size-changed-p (frame)
     (let ((new-size (cons (frame-width) (frame-height)))
@@ -150,13 +160,55 @@
     (setq treemacs-autohide-threshold threshold)
     (treemacs-autohide-on-size-change (selected-frame) 'force))
 
+  (defun treemacs-autohide--init (&optional root name)
+    (treemacs--maybe-load-workspaces)
+    (let ((init-window (selected-window))
+          (origin-buffer (current-buffer))
+          (current-workspace (treemacs-current-workspace))
+          (run-hook? nil)
+          (visibility (treemacs-current-visibility)))
+
+      (unless (eq visibility 'none)
+        (user-error "Treemacs already exists."))
+
+      (treemacs--setup-buffer)
+      (treemacs-mode)
+      ;; Render the projects even if there are none. This ensures that top-level
+      ;; extensions are always rendered, and the project markers are initialized.
+      (treemacs--render-projects (treemacs-workspace->projects current-workspace))
+      (when (treemacs-workspace->is-empty?)
+        (let* ((path (-> (treemacs--read-first-project-path)
+                         (treemacs-canonical-path)))
+               (name (treemacs--filename path)))
+          (treemacs-do-add-project-to-workspace path name)
+          (treemacs-log "Created first project.")))
+      (goto-char 2)
+      (run-hooks 'treemacs-post-buffer-init-hook)
+      (setf run-hook? t)
+      (when root (treemacs-do-add-project-to-workspace (treemacs-canonical-path root) name))
+      (with-no-warnings (setq treemacs--ready-to-follow t))
+      (let* ((origin-file (buffer-file-name origin-buffer))
+             (file-project (treemacs-is-path origin-file :in-workspace)))
+        (cond
+         ((and (or treemacs-follow-after-init (with-no-warnings treemacs-follow-mode))
+               file-project)
+          (treemacs-goto-file-node origin-file file-project))
+         (treemacs-expand-after-init
+          (treemacs-toggle-node))))
+      ;; The hook should run at the end of the setup, but also only
+      ;; if a new buffer was created, as the other cases are already covered
+      ;; in their respective setup functions.
+      (when run-hook? (run-hook-with-args 'treemacs-select-functions visibility))
+      (select-window init-window)))
+
   (defun treemacs-autohide--show ()
     (let ((visibility (treemacs-current-visibility)))
       (pcase visibility
         ('visible nil)
         ('exists (display-buffer (treemacs-get-local-buffer-create)))
         ('none (if-let ((buffer (treemacs-get-local-buffer)))
-                        (display-buffer buffer)))
+                   (display-buffer buffer)
+                 (treemacs-autohide--init)))
         )))
 
   (defun treemacs-autohide--hide ()
@@ -165,9 +217,12 @@
         (delete-window (treemacs-get-local-window)))
       ))
 
-  (defun treemacs-autohide-on-size-change (&optional frame forcep)
+  (defun treemacs-autohide-on-size-change (frame &optional forcep)
     (with-selected-frame frame
-      (when (or (treemacs-autohide-frame-size-changed-p frame) forcep)
+      (when (and
+             (cl-every (lambda (f) (funcall f frame)) treemacs-autohide-condition-check-functions)
+             (or (treemacs-autohide-frame-size-changed-p frame)
+                 forcep))
         (if (< (frame-width) treemacs-autohide-threshold)
             (treemacs-autohide--hide)
           (treemacs-autohide--show)

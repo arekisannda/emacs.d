@@ -18,8 +18,7 @@
 ;;;###autoload
 (defun swaywm/notes-open (title)
   (util/frames-select-frame-with-params notes-frame-parameters
-    (org-roam-node-visit (org-roam-node-from-title-or-alias title t))
-    (tab-line-close-other-tabs)))
+    (org-roam-node-visit (org-roam-node-from-title-or-alias title t))))
 
 ;;;###autoload
 (defun swaywm/notes-create (key title)
@@ -27,5 +26,4 @@
     (let ((buffer (generate-new-buffer "*new*")))
       (set-buffer-major-mode buffer)
       (set-window-buffer nil buffer))
-    (org-roam-capture- :keys key :node (org-roam-node-create :title title))
-    (tab-line-close-other-tabs)))
+    (org-roam-capture- :keys key :node (org-roam-node-create :title title))))

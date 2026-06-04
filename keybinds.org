@@ -274,11 +274,10 @@
 
 (defun magit-reset-view ()
   (interactive)
+  (magit-section-cycle-global)
   (magit-section-show-level-2-all)
-  (magit-section-cycle-diffs)
-  (magit-section-cycle-diffs)
-  (magit-section-cycle-diffs)
-  (magit-section-show (magit-section-at)))
+  (when (magit-section-at)
+    (magit-section-show (magit-section-at))))
 
 (general-define-key
  :states '(normal motion emacs visual)
@@ -1022,6 +1021,60 @@
  "o"   '("embark-ace bookmark" . +vertico-embark-ace-bookmark-jump))
 #+end_src
 ** Terminal
+*** Comint-mode
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :states 'emacs
+ :keymaps 'comint-mode-map
+
+ "<up>"   #'comint-previous-input
+ "<down>" #'comint-next-input
+ "M-p"    #'comint-previous-prompt
+ "M-n"    #'comint-next-prompt)
+#+end_src
+*** GhostTTY
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ :states '(normal insert motion)
+ :keymaps 'ghostel-mode-map
+
+ "<prior>"     '("scroll up"           . scroll-down-command)
+ "<next>"      '("scroll down"         . scroll-up-command)
+ "C-<prior>"   '("scroll up"           . windex-scroll-up)
+ "C-<next>"    '("scroll down"         . windex-scroll-down)
+ "C-S-<next>"  '("scroll left"         . windex-scroll-left)
+ "C-S-<prior>" '("scroll right"        . windex-scroll-right)
+
+ "M-<prior>"   '("owindow scroll up"   . windex-scroll-minibuffer-scroll-other-up)
+ "M-<next>"    '("owindow scroll down" . windex-scroll-minibuffer-scroll-other-down)
+ "M-:"         '("eval"                . eval-expression))
+
+(general-define-key
+ :states 'emacs
+ :keymaps 'ghostel-mode-map
+
+ "<escape>"    #'ghostel--send-event
+ "C-c"         #'ghostel-send-C-c
+ "C-d"         #'ghostel-send-C-d
+ "C-y"         #'ghostel--send-event
+ "C-g"         #'ghostel-send-C-g
+ "C-l"         #'ghostel--self-insert
+ "C-S-l"       #'ghostel-clear-scrollback
+ "C-u"         #'ghostel--self-insert
+ "C-x"         #'ghostel--self-insert
+ "C-t"         #'ghostel--self-insert
+ "C-_"         #'ghostel--self-insert
+ "C-S-v"       #'ghostel-paste
+
+ "C-<prior>"   '("scroll up"           . windex-scroll-up)
+ "C-<next>"    '("scroll down"         . windex-scroll-down)
+ "C-S-<next>"  '("scroll left"         . windex-scroll-left)
+ "C-S-<prior>" '("scroll right"        . windex-scroll-right)
+
+ "M-<prior>"   '("owindow scroll up"   . windex-scroll-minibuffer-scroll-other-up)
+ "M-<next>"    '("owindow scroll down" . windex-scroll-minibuffer-scroll-other-down)
+ "M-:"         '("eval"                . eval-expression))
+#+end_src
 *** VTerm
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
@@ -1185,8 +1238,8 @@
   "C-n"   '("forge dispatch"  . forge-dispatch)
   "C-S-n" '("gh notification" . forge-list-notifications)
 
-  "p"     '("agent shell"     . agent-shell-no-context)
-  "M-p"   '("agent shell add" . agent-shell)
+  "p"     '("agent shell"     . ghostel-project-claude)
+  "M-p"   '("agent shell add" . ghostel-project-claude-with-context)
   "C-p"   (general-predicate-dispatch #'gptel-run
             (derived-mode-p 'agent-shell-mode) #'agent-shell-help-menu)
 
@@ -1196,7 +1249,7 @@
   "C-S-s" '("org scratch"     . +org-scratch-buffer)
   "C-t"   '("latex scratch"   . +latex-scratch-buffer)
   "C-e"   '("eshell"          . project-eshell)
-  "C-v"   '("toggle term"     . +vterm-project))
+  "C-v"   '("toggle term"     . ghostel-project))
 #+end_src
 ** Search
 #+begin_src emacs-lisp :tangle yes
@@ -1285,7 +1338,17 @@
  ","   (general-predicate-dispatch            '("edit" . +keybinds-editor-edit-command)
          (derived-mode-p 'org-mode)           '("edit" . +keybinds-org-edit-command))
 
+ "C-," (general-predicate-dispatch            '("edit" . +keybinds-editor-edit-command)
+         (derived-mode-p 'org-mode)           '("edit" . +keybinds-org-edit-command))
+
  "."   (general-predicate-dispatch nil
+         (derived-mode-p 'org-mode)           '("exec" . +keybinds-org-exec-command)
+         (derived-mode-p 'typst-ts-mode)      '("exec" . +keybinds-typst-exec-command)
+         (derived-mode-p 'emacs-lisp-mode)    '("exec" . +keybinds-elisp-exec-command)
+         (derived-mode-p 'markdown-view-mode) '("exec" . +keybinds-markdown-view-exec-command)
+         (derived-mode-p 'markdown-mode)      '("exec" . +keybinds-markdown-exec-command))
+
+ "C-." (general-predicate-dispatch nil
          (derived-mode-p 'org-mode)           '("exec" . +keybinds-org-exec-command)
          (derived-mode-p 'typst-ts-mode)      '("exec" . +keybinds-typst-exec-command)
          (derived-mode-p 'emacs-lisp-mode)    '("exec" . +keybinds-elisp-exec-command)
@@ -1392,13 +1455,13 @@
   "["   '("avy prev"           . +hydra-avy-motion/avy-prev)
   "]"   '("avy next"           . +hydra-avy-motion/avy-next)
 
-  "J"   '("to symbol below"    . evil-avy-goto-symbol-1-below)
-  "j"   '("to char below"      . evil-avy-goto-char-2-below)
-  "k"   '("to char above"      . evil-avy-goto-char-2-above)
-  "K"   '("to symbol above"    . evil-avy-goto-symbol-1-above)
-  "l"   '("avy line"           . evil-avy-goto-char-in-line)
-  "h"   '("avy line"           . evil-avy-goto-char-in-line)
-  "/"   '("avy search"         . evil-avy-goto-char-timer)
+  "J"   '("to symbol below"    . avy-goto-word-1-below)
+  "j"   '("to char below"      . avy-goto-char-2-below)
+  "k"   '("to char above"      . avy-goto-char-2-above)
+  "K"   '("to symbol above"    . avy-goto-word-1-above)
+  "l"   '("avy line"           . avy-goto-char-in-line)
+  "h"   '("avy line"           . avy-goto-char-in-line)
+  "/"   '("avy search"         . avy-goto-char-timer)
 
   "b"   `("line to bottom-ish" . ,(windex-scroll-line-to 90))
   "B"   '("line to bottom"     . evil-scroll-line-to-bottom)
@@ -1573,6 +1636,7 @@
 (general-define-key
  :keymaps 'emacs
  "<escape>" (general-predicate-dispatch    #'keyboard-quit
+              (derived-mode-p 'ghostel-mode) nil
               (derived-mode-p 'vterm-mode) #'vterm--self-insert))
 #+end_src
 *** Object
@@ -1593,12 +1657,22 @@
 (function-with-selector nil windex-scroll-window-selector #'evil-prev-buffer)
 (function-with-selector nil windex-scroll-window-selector #'evil-next-buffer)
 
+(defun +previous-buffer ()
+  (interactive)
+  (cond
+   (tab-line-mode (tab-line-switch-to-prev-tab))
+   (t (previous-buffer))))
+
+(defun +next-buffer ()
+  (interactive)
+  (cond
+   (tab-line-mode (tab-line-switch-to-next-tab))
+   (t (next-buffer))))
+
 (defhydra +hydra-evil-motion
   (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("["   #'evil-prev-buffer "prev buffer")
-  ("]"   #'evil-next-buffer "next buffer")
-  ("M-[" #'previous-buffer  "prev buffer")
-  ("M-]" #'next-buffer      "next buffer"))
+  ("[" #'+previous-buffer "prev buffer")
+  ("]" #'+next-buffer     "next buffer"))
 (hydra-set-property #'+hydra-evil-motion :verbosity 0)
 
 (defmacro +window-split (splitfn)
@@ -1666,12 +1740,10 @@
  "."   '("open same"       . windmove-display-same-window)
 
  "P"   '("mru main"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
- "z"   `("bottom"          . ,(+aw-select-with-filter +aw-select-bottom-filter))
+ "z"   `("bottom"          . util/windows-select-popup-window)
 
- "["   '("prev buffer"     . +hydra-evil-motion/evil-prev-buffer)
- "]"   '("next buffer"     . +hydra-evil-motion/evil-next-buffer)
- "M-[" '("prev buffer"     . +hydra-evil-motion/previous-buffer)
- "M-]" '("next buffer"     . +hydra-evil-motion/next-buffer)
+ "["   '("prev buffer"     . +hydra-evil-motion/+previous-buffer)
+ "]"   '("next buffer"     . +hydra-evil-motion/+next-buffer)
 
  "d"   '("toggle buffer"   . toggle-window-dedicated)
  "m"   '("window purpose"  . windex-set-window-purpose))

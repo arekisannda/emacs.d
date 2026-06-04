@@ -63,6 +63,7 @@ Output only the raw code characters, nothing else — no preamble, no explanatio
   )
 
 (use-package agent-shell
+  :disabled t
   :custom
   (agent-shell-dot-subdir-function
    (lambda (subdir)
@@ -96,4 +97,104 @@ Output only the raw code characters, nothing else — no preamble, no explanatio
     (let (agent-shell-context-sources)
       (call-interactively #'agent-shell)
       ))
+
+  (defun agent-shell-mode-setup ()
+    (face-remap-add-relative 'hl-line `(nil :background ,(doom-color 'bg-alt)))
+    (face-remap-add-relative 'header-line `(nil :background ,(doom-color 'bg)))
+    )
+  :hook
+  (agent-shell-mode . agent-shell-mode-setup))
+
+(with-eval-after-load 'ghostel
+  (defvar ghostel-project-claude--last nil)
+
+  (define-derived-mode ghostel-claude-mode ghostel-mode "Claude")
+
+  (defun ghostel-claude-focus-handler (window)
+    (when (derived-mode-p 'ghostel-claude-mode)
+      (with-selected-window window
+        (setq ghostel-project-claude--last (window-buffer)))))
+
+  (defun ghostel-project-claude--init (bufname)
+    (let ((buffer (get-buffer-create bufname)))
+      (with-current-buffer buffer
+        (ghostel-claude-mode)
+        (add-hook 'window-buffer-change-functions #'ghostel-claude-focus-handler nil t))
+
+      (display-buffer buffer)
+      (ghostel-exec buffer "claude")
+      buffer))
+
+  (defun ghostel-project-claude (&optional arg)
+    (interactive)
+    (let* ((default-directory (project-root (project-current t)))
+           (ghostel-buffer-name  (project-prefixed-buffer-name "claude"))
+           (buffer (get-buffer ghostel-buffer-name)))
+      (if (buffer-live-p buffer)
+          (display-buffer buffer)
+        (setq buffer (ghostel-project-claude--init ghostel-buffer-name)))
+      (setq ghostel-project-claude--last buffer)
+      buffer))
+
+  (defun ghostel-project-claude--file-context (filename &optional start end)
+    (let (context)
+      (if (use-region-p)
+          (let ((line-start (line-number-at-pos start))
+                (line-end (line-number-at-pos end)))
+            (setq context
+                  (cond
+                   ((util/region-is-whole-line-p start end)
+                    (format "@%s#L%d" filename line-start))
+                   ((= line-start line-end)
+                    (format "`%s`" (buffer-substring-no-properties start end)))
+                   (t (format "@%s#L%d-%d" filename line-start line-end)))))
+        (setq context (format "@%s" filename)))
+      context))
+
+  (defun ghostel-project-claude--non-file-context (&optional start end)
+    (let (context)
+      (if (use-region-p)
+          (let ((line-start (line-number-at-pos start))
+                (line-end (line-number-at-pos end)))
+            (setq context
+                  (format "`%s`" (buffer-substring-no-properties start end)))
+            )
+        (user-error "Unable all of non-file buffer as context. Select a region."))
+      context))
+
+  (defun ghostel-project-claude-with-context (&optional arg start end)
+    (interactive
+     (list (prefix-numeric-value current-prefix-arg)
+           (when (use-region-p) (region-beginning))
+           (when (use-region-p) (region-end))))
+
+    (let* ((init-buffer (current-buffer))
+           (claude-buffer (or (and
+                               (buffer-live-p ghostel-project-claude--last)
+                               ghostel-project-claude--last)
+                              (ghostel-project-claude)))
+           filename
+           context)
+
+      (with-current-buffer init-buffer
+        (cond
+         ((setq filename buffer-file-name)
+          (setq context (ghostel-project-claude--file-context filename start end)))
+         (t ; non-file-backed buffers
+          (setq context (ghostel-project-claude--non-file-context start end)))
+         )
+        (deactivate-mark))
+
+      (with-current-buffer claude-buffer
+        (deactivate-mark)
+        (pcase arg
+          (4  (ghostel--send-encoded "s" "ctrl")
+              (sit-for 0.1))
+          (16 (ghostel--send-encoded "escape" "")
+              (ghostel--send-encoded "escape" "")
+              (sit-for 0.1)))
+
+        (ghostel-send-string (concat context "\n"))
+        )
+      (display-buffer claude-buffer)))
   )

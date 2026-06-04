@@ -80,7 +80,6 @@
 
 (defun +shackle-display-popup-preset ()
   `( :custom util/windows-display-buffer-in-popup-window
-     :dedicated t
      :size 0.3
      :fixed height))
 
@@ -109,6 +108,7 @@
   (shackle-default-rule nil)
   (shackle-disable-list
    `("^ \\*which-key\\*$"
+     util/windows-temporary-buffer-name
      leetcode--problems-mode
      leetcode--problem-detail-mode))
 
@@ -233,6 +233,7 @@
        "^\\*scratch\\*$"
        "^\\*shell\\*$"
        "^\\*Ibuffer\\*$"
+       "^\\*Nix-REPL\\*$"
        messages-buffer-mode
        ibuffer-mode
        git-rebase-mode
@@ -253,6 +254,7 @@
        lisp-interaction-mode
        term-mode
        vterm-mode
+       ghostel-mode
        embark-collect-mode
        tabulated-list-mode)
       ,@(+shackle-display-popup-preset-select))
@@ -326,6 +328,13 @@
       :conditions
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
+        :action util/windows-display-buffer-in-popup-window
+        ,@(+shackle-display-popup-preset-select))
+
+       ((ghostel-mode)
+        :if (lambda (window &rest _)
+              (or (window-parameter window 'window-side)
+                  (window-parameter window 'window-popup)))
         :action util/windows-display-buffer-in-popup-window
         ,@(+shackle-display-popup-preset-select))
 
