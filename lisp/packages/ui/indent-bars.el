@@ -25,6 +25,12 @@
   :config
   (defun indent-bars--create-faces (style num)
     "Create bar faces up to depth NUM for STYLE."
+    (mapc (lambda (face)
+            (unless (string-match-p "indent-bar" (symbol-name face))
+              (set-face-attribute face nil :stipple nil)))
+          (face-list))
+
+
     (face-spec-set (intern "indent-bars-face")
                    `((t . ( :stipple nil :inherit nil
                             :foreground unspecified ))))

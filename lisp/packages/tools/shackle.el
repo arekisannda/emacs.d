@@ -122,6 +122,10 @@
        "^ \\*http.*\\*")
       :ignore t)
 
+     (".*"
+      :if (lambda (&rest _) (tty-type))
+      :same t :select t)
+
      (("^ \\*Treemacs-Buffer-Tab.*"
        treemacs-mode)
       ,@(+shackle-display-side-left-preset-size-0))
@@ -255,6 +259,7 @@
        term-mode
        vterm-mode
        ghostel-mode
+       ghostel-claude-mode
        embark-collect-mode
        tabulated-list-mode)
       ,@(+shackle-display-popup-preset-select))
@@ -331,7 +336,7 @@
         :action util/windows-display-buffer-in-popup-window
         ,@(+shackle-display-popup-preset-select))
 
-       ((ghostel-mode)
+       ((ghostel-claude-mode)
         :if (lambda (window &rest _)
               (or (window-parameter window 'window-side)
                   (window-parameter window 'window-popup)))

@@ -13,7 +13,16 @@
      ("Updates" 8 magit-repolist-column-unpulled-from-upstream ((:right-align t) (:sort <)))
      ("Changes" 8 magit-repolist-column-unpushed-to-upstream ((:right-align t) (:sort <)))
      ("Path" 99 magit-repolist-column-path nil)))
-
+  (magit-blame-styles
+   '((headings
+      (heading-format . "%-20a %C %s\n")
+      ;; (highlight-face . magit-blame-highlight)
+      )
+     (highlight
+      (highlight-face . magit-blame-highlight))
+     (lines
+      (show-lines . t)
+      (show-message . t))))
   :custom-face
   (hl-line
    ((nil :background unspecified)))
@@ -69,6 +78,11 @@
          :foreground unspecified
          :background unspecified)))
 
+  (magit-blame-highlight
+   ((nil :foreground unspecified
+         :background ,(doom-color 'bg-alt))))
+  (magit-blame-heading
+   ((nil :background ,(doom-color 'bg-alt))))
   :config
   (defun +magit-repolist-setup-override (columns)
     (unless magit-repository-directories

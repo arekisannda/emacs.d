@@ -29,7 +29,6 @@ Output only the raw code characters, nothing else — no preamble, no explanatio
      (org-mode . "")
      (text-mode . "")))
   :config
-
   (defvar gptel--anthropic
     (gptel-make-anthropic "Claude"
       :stream t
@@ -126,15 +125,20 @@ Output only the raw code characters, nothing else — no preamble, no explanatio
       buffer))
 
   (defun ghostel-project-claude (&optional arg)
-    (interactive)
-    (let* ((default-directory (project-root (project-current t)))
-           (ghostel-buffer-name  (project-prefixed-buffer-name "claude"))
-           (buffer (get-buffer ghostel-buffer-name)))
-      (if (buffer-live-p buffer)
-          (display-buffer buffer)
-        (setq buffer (ghostel-project-claude--init ghostel-buffer-name)))
-      (setq ghostel-project-claude--last buffer)
-      buffer))
+    (interactive "p")
+    (let (target-directory)
+      (pcase arg
+        (4 (setq target-directory (and arg (funcall project-prompter))))
+        (_ (setq target-directory (project-root (project-current t)))))
+
+      (let* ((default-directory target-directory)
+             (ghostel-buffer-name  (project-prefixed-buffer-name "claude"))
+             (buffer (get-buffer ghostel-buffer-name)))
+        (if (buffer-live-p buffer)
+            (display-buffer buffer)
+          (setq buffer (ghostel-project-claude--init ghostel-buffer-name)))
+        (setq ghostel-project-claude--last buffer)
+        buffer)))
 
   (defun ghostel-project-claude--file-context (filename &optional start end)
     (let (context)
@@ -173,28 +177,31 @@ Output only the raw code characters, nothing else — no preamble, no explanatio
                                (buffer-live-p ghostel-project-claude--last)
                                ghostel-project-claude--last)
                               (ghostel-project-claude)))
+           (force-string (and arg (< arg 0)))
+           (arg (abs arg))
            filename
            context)
 
       (with-current-buffer init-buffer
         (cond
-         ((setq filename buffer-file-name)
+         ((and (not force-string) (setq filename buffer-file-name))
           (setq context (ghostel-project-claude--file-context filename start end)))
          (t ; non-file-backed buffers
           (setq context (ghostel-project-claude--non-file-context start end)))
          )
         (deactivate-mark))
 
-      (with-current-buffer claude-buffer
-        (deactivate-mark)
-        (pcase arg
-          (4  (ghostel--send-encoded "s" "ctrl")
-              (sit-for 0.1))
-          (16 (ghostel--send-encoded "escape" "")
-              (ghostel--send-encoded "escape" "")
-              (sit-for 0.1)))
+      (when claude-buffer
+        (with-current-buffer claude-buffer
+          (deactivate-mark)
+          (pcase arg
+            (4  (ghostel--send-encoded "s" "ctrl")
+                (sit-for 0.1))
+            (16 (ghostel--send-encoded "escape" "")
+                (ghostel--send-encoded "escape" "")
+                (sit-for 0.1)))
 
-        (ghostel-send-string (concat context "\n"))
-        )
-      (display-buffer claude-buffer)))
+          (ghostel-send-string (concat context "\n")))
+
+        (display-buffer claude-buffer))))
   )

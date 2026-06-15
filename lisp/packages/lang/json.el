@@ -10,4 +10,5 @@
    'major-mode-remap-alist
    '((js-json-mode . json-ts-mode)))
   :mode
-  ("\\.jsonc\\'" . json-ts-mode))
+  ("\\.jsonc\\'" . json-ts-mode)
+  ("\\.jsonl\\'" . json-ts-mode))

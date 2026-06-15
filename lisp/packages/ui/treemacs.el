@@ -7,7 +7,7 @@
   :custom
   (treemacs-user-header-line-format '("%e" (:eval (when (and tab-bar-mode (activities-current))
                                                     (concat
-                                                     (propertize (propertize " " 'display `(space :width 1)))
+                                                     (propertize (propertize " " 'display `(space :width 2)))
                                                      (format "%s" (cdr (assq 'name (tab-bar--current-tab)))))))))
   (treemacs-user-mode-line-format '("%e" (:eval (doom-modeline-format--+treemacs-modeline))))
   (treemacs-is-never-other-window t)
@@ -38,6 +38,23 @@
   (treemacs-peek-mode-indicator-face
    ((nil :background ,(doom-color 'green))))
   :config
+  (defun treemacs-visit-node-in-most-recently-used-window (&optional arg)
+    "Open current file or tag in window selected by `get-mru-window'.
+Stay in the current window with a single prefix argument ARG, or close the
+treemacs window with a double prefix argument."
+    (interactive "P")
+    (run-hook-with-args
+     'treemacs-after-visit-functions
+     (treemacs--execute-button-action
+      :window (get-mru-window (selected-frame) nil :not-selected t)
+      :file-action (find-file (treemacs-safe-button-get btn :path))
+      :dir-action (dired (treemacs-safe-button-get btn :path))
+      :tag-section-action (treemacs--visit-or-expand/collapse-tag-node btn arg nil)
+      :tag-action (treemacs--goto-tag btn)
+      :window-arg arg
+      :ensure-window-split t
+      :no-match-explanation "Node is neither a file, a directory or a tag - nothing to do here.")))
+
   (defun +treemacs-add-project-to-workspace (dir)
     (interactive (list (funcall project-prompter)))
     (treemacs-add-project-to-workspace dir))
