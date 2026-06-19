@@ -501,8 +501,9 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
   (interactive "p")
   (let* ((init-window (window-normalize-window nil))
          (aux-splittable-p (and (not (or (util/windows-side-window-p init-window)
-                                         (util/windows-popup-window-p init-window)))
-                                (eq (window-main-window) (window-parent init-window))
+                                         (util/windows-popup-window-p init-window)
+                                         (eq (window-main-window) (window-parent init-window))
+                                         ))
                                 )))
     (unless aux-splittable-p
       (user-error "Not an aux-capable window."))

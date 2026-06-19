@@ -11,6 +11,8 @@
 :VISIBILITY: folded
 :END:
 #+begin_src emacs-lisp :tangle yes
+(general-auto-unbind-keys)
+
 (general-unbind
   "<escape>"
   "<escape> <escape>"
@@ -27,9 +29,13 @@
   "C-?"
   "M-("
   "M-)"
+  "C-<home>"
+  "C-<end>"
 
   "C-c M-g" ; magit-file-dispatch
   "<f11>" ; fullscreen
+  "<f1>"
+  "<f2>"
 
   "C-0"
   "C-1"
@@ -614,11 +620,11 @@
      (_ #'hs-show-block))))
 
 (+keybinds-hs-fold
-  "!"   '("hide fold level" . hs-hide-level)
+  "!" '("hide fold level" . hs-hide-level)
 
-  "C-c" '("hide fold"       . +hs-fold-close)
-  "C-o" '("show fold"       . +hs-fold-open)
-  "C-k" '("toggle fold"     . hs-toggle-hiding))
+  "c" '("hide fold"       . +hs-fold-close)
+  "o" '("show fold"       . +hs-fold-open)
+  "f" '("toggle fold"     . hs-toggle-hiding))
 #+end_src
 *** Treesit-Fold
 #+begin_src emacs-lisp :tangle yes
@@ -640,11 +646,11 @@
      (_ #'treesit-fold-open))))
 
 (+keybinds-ts-fold
-  "!"   '("open recursively" . treesit-fold-open-recursively)
+  "!" '("open recursively" . treesit-fold-open-recursively)
 
-  "C-c" '("hide fold"        . +treesit-fold-close)
-  "C-o" '("show fold"        . +treesit-fold-open)
-  "C-k" '("toggle fold"      . treesit-fold-toggle))
+  "c" '("hide fold"        . +treesit-fold-close)
+  "o" '("show fold"        . +treesit-fold-open)
+  "f" '("toggle fold"      . treesit-fold-toggle))
 #+end_src
 *** LSP
 #+begin_src emacs-lisp :tangle yes
@@ -921,6 +927,9 @@
 
 (general-define-key
  :keymaps 'override
+ "<f1>"     'ignore
+ "<f2>"     'ignore
+
  "<f5>"     (general-predicate-dispatch nil
               (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
 
@@ -1289,6 +1298,12 @@
   (interactive)
   (forge-notifications-setup-buffer))
 
+(defun +ghostel-terminal ()
+  (interactive)
+  (if (project-current)
+      (ghostel-project)
+    (ghostel)))
+
 (general-create-definer +keybinds-tools
   :prefix-command '+keybinds-tools-command)
 
@@ -1324,7 +1339,7 @@
   "C-S-s" '("org scratch"     . +org-scratch-buffer)
   "C-t"   '("latex scratch"   . +latex-scratch-buffer)
   "C-e"   '("eshell"          . project-eshell)
-  "C-v"   '("toggle term"     . ghostel-project))
+  "C-v"   '("toggle term"     . +ghostel-terminal))
 #+end_src
 * Search
 #+begin_src emacs-lisp :tangle yes
@@ -1487,10 +1502,6 @@
  "C-h"   '("align left"      . evil-lion-left)
  "C-l"   '("align right"     . evil-lion-right)
 
- "C-f"
- (general-predicate-dispatch '("fold" . +keybinds-hs-fold-command)
-   (treesit-fold-ready-p)    '("fold" . +keybinds-ts-fold-command))
-
  "C-e"
  (general-predicate-dispatch nil
    (derived-mode-p 'org-mode)
@@ -1536,6 +1547,9 @@
  "s" '("surround"        . +evil-surround)
  "d" '("delete surround" . evil-surround-delete)
  "m" '("motion"          . +keybinds-editor-motion-command)
+
+ "f" (general-predicate-dispatch '("fold" . +keybinds-hs-fold-command)
+       (treesit-fold-ready-p)    '("fold" . +keybinds-ts-fold-command))
  )
 #+end_src
 ** Text Motion
