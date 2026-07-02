@@ -7,6 +7,7 @@
   (markdown-code-face
    ((nil :background unspecified :inherit tooltip)))
   :custom
+  (markdown-command "multimarkdown")
   (markdown-fontify-code-blocks-natively t)
   :config
   (util/update-alist

@@ -55,6 +55,7 @@
     :urgency 'critical)
    (kill-emacs)
    ))
+
 (+load "lisp/packages/emacs")
 (+load "lisp/packages/ui")
 (+load "lisp/packages/editor")
@@ -70,7 +71,7 @@
   (setq-default read-process-output-max (* 4 1024 1024))
   (setq message-log-max 2000)
   (with-current-buffer (messages-buffer) (messages-buffer-mode))
-  (setenv "EDITOR" "emacsclient -r")
+  (setenv "EDITOR" "emacsclient -q -r")
 
   (pcase (getenv "XDG_CURRENT_DESKTOP")
     ("sway" (+load "lisp/scripts/swaywm")))

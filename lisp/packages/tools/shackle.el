@@ -119,6 +119,7 @@
        "^\\*Activities (error): .*\\*$"
        "^\\*leetcode-result-.*\\*$"
        "^\\*leetcode-testcase-.*\\*$"
+       "^\\*Org Links\\*$"
        "^ \\*http.*\\*")
       :ignore t)
 
@@ -222,7 +223,6 @@
        "^\\*latex-scratch\\*$"
        "^\\*org-scratch\\*$"
        "^\\*remark-notes\\*$"
-       "^\\*Org Links\\*$"
        "^\\*\\(.*-\\)?eshell\\*$"
        "^ \\*.* stderr\\*$"
        "^\\*.* events\\*$"
@@ -323,6 +323,24 @@
             (util/windows-aux-window-p (selected-window)))
       :custom util/windows-display-buffer-in-aux-source-window)
 
+     ((".*")
+      :if (lambda (_ buffer)
+            (if-let ((buf-name (buffer-file-name buffer)))
+                (when (or (string-prefix-p "/tmp" buf-name)
+                          (string-match-p ".*\/.claude\/.*" buf-name))
+                  (with-current-buffer buffer
+                    (add-hook 'kill-buffer-query-functions
+                              (lambda ()
+                                (when (and (buffer-file-name)
+                                           (buffer-modified-p))
+                                  (save-buffer))
+                                t)
+                              nil t))
+                  t)
+              ))
+      :custom util/windows-display-buffer-in-popup-window
+      ,@(+shackle-display-popup-preset-select))
+
      ((prog-mode
        text-mode
        conf-mode
@@ -336,12 +354,7 @@
         :action util/windows-display-buffer-in-popup-window
         ,@(+shackle-display-popup-preset-select))
 
-       ((ghostel-claude-mode)
-        :if (lambda (window &rest _)
-              (or (window-parameter window 'window-side)
-                  (window-parameter window 'window-popup)))
-        :action util/windows-display-buffer-in-popup-window
-        ,@(+shackle-display-popup-preset-select))
+
 
        ((".*")
         :if (lambda (window &rest _)
@@ -364,17 +377,21 @@
        ))
      ))
   :config
+  (defvar +shackle-ignore-checks nil)
+
   (defun +shackle-condition-ignore-check (orig-func &rest args)
     (let* ((buffer (get-buffer-create (nth 0 args)))
            (buffer-name (buffer-name buffer))
            (buffer-mode (buffer-local-value 'major-mode buffer)))
-      (unless (cl-some
-               (lambda (e)
-                 (cond
-                  ((and (stringp e) (string-match-p e buffer-name)) t)
-                  ((stringp e) (string= buffer-name e))
-                  ((symbolp e) (eq buffer-mode e))))
-               shackle-disable-list)
+      (unless (or
+               +shackle-ignore-checks
+               (cl-some
+                (lambda (e)
+                  (cond
+                   ((and (stringp e) (string-match-p e buffer-name)) t)
+                   ((stringp e) (string= buffer-name e))
+                   ((symbolp e) (eq buffer-mode e))))
+                shackle-disable-list))
         (apply orig-func args))))
 
   (advice-add #'shackle-display-buffer-condition :around #'+shackle-condition-ignore-check)

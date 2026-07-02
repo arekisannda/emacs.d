@@ -142,7 +142,7 @@ treemacs window with a double prefix argument."
   :config (treemacs-set-scope-type 'Tabs))
 
 (with-eval-after-load 'treemacs
-  (defgroup treemacs-autohid nil
+  (defgroup treemacs-autohide nil
     "Treemacs-autohide configuration options."
     :group 'treemacs
     :prefix "treemacs-autohide-")

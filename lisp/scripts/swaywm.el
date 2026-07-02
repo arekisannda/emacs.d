@@ -1,11 +1,17 @@
 ;;; swaywm.el -*- lexical-binding: t; -*-
 
 (require 'util-frames)
+(require 'util-windows)
 
 ;;;###autoload
-(defun swaywm/open-new-window ()
-  (with-current-buffer (window-buffer (windex-get-mru-in-main))
-    (display-buffer (current-buffer)) (beginning-of-line)))
+(defun swaywm/open-new-window (&optional dashboard-p)
+  (let ((+shackle-ignore-checks t)
+        (last-mru-window (util/windows-get-mru-in-main t nil t)))
+    (if dashboard-p
+        (dashboard-open)
+      (switch-to-buffer (window-buffer last-mru-window))
+      (tab-line-close-other-tabs))
+    ))
 
 (defvar notes-frame-name "[Note Viewer] ")
 

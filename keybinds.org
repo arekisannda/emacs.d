@@ -158,11 +158,11 @@
   :prefix-command '+keybinds-org-agenda-capture-command)
 
 (+keybinds-org-agenda-capture
-  "t" `("capture todo"      . ,(+org-capture-key "t"))
-  "s" `("capture schedule"  . ,(+org-capture-key "s"))
-  "d" `("capture deadline"  . ,(+org-capture-key "d"))
-  "j" `("capture journal"   . ,(+org-capture-key "j"))
-  "a" `("capture agenda"    . ,(+org-capture-key "a")))
+  "C-t" `("capture todo"      . ,(+org-capture-key "t"))
+  "C-s" `("capture schedule"  . ,(+org-capture-key "s"))
+  "C-d" `("capture deadline"  . ,(+org-capture-key "d"))
+  "C-j" `("capture journal"   . ,(+org-capture-key "j"))
+  "C-a" `("capture agenda"    . ,(+org-capture-key "a")))
 
 #+end_src
 *** Org Remark
@@ -1304,6 +1304,15 @@
       (ghostel-project)
     (ghostel)))
 
+(defun +agent-shell-new ()
+  (interactive)
+  (agent-shell--dwim :new-shell t))
+
+
+(defun +agent-shell-with-context ()
+  (interactive)
+  (agent-shell--dwim :switch-to-shell t))
+
 (general-create-definer +keybinds-tools
   :prefix-command '+keybinds-tools-command)
 
@@ -1327,8 +1336,12 @@
   "C-n"   '("forge dispatch"  . forge-dispatch)
   "C-S-n" '("gh notification" . forge-list-notifications)
 
-  "p"     '("agent shell"     . ghostel-project-claude)
-  "M-p"   '("agent shell add" . ghostel-project-claude-with-context)
+  "p"     (general-predicate-dispatch #'ghostel-project-claude
+            (featurep 'agent-shell) #'+agent-shell-new) 
+
+  "M-p"   (general-predicate-dispatch #'ghostel-project-claude-with-context
+            (featurep 'agent-shell) #'+agent-shell-with-context)
+
   "C-p"   (general-predicate-dispatch #'gptel-run
             (derived-mode-p 'agent-shell-mode) #'agent-shell-help-menu)
 
@@ -1491,6 +1504,7 @@
  :prefix        "C-x"
  :global-prefix "C-x"
  
+ "C-x"   '("exchange mark"   . exchange-point-and-mark)
  "C-o"   '("pop global mark" . pop-global-mark)
  "C-r"   '("replace"         . +query-replace)
  "C-i"   '("insert"          . +keybinds-editor-insert-command)
@@ -1544,7 +1558,8 @@
  :global-prefix "C-,"
 
  "," '("comment"         . +evil-comment-or-uncomment)
- "s" '("surround"        . +evil-surround)
+ "s" '("surround"        . evil-surround-region)
+ "S" '("surround"        . evil-surround-change)
  "d" '("delete surround" . evil-surround-delete)
  "m" '("motion"          . +keybinds-editor-motion-command)
 
@@ -1627,6 +1642,7 @@
   "t"   '("insert template"  . yas-insert-snippet)
   "n"   '("insert nerd-icon" . nerd-icons-insert)
   "m"   '("expression eval"  . +quick-calc)
+  "p"   '("password"         . password-generator-paranoid)
 
   "I"   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode) #'org-download-image)

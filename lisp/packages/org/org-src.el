@@ -53,7 +53,8 @@
      ("sqlite"     . sql)
      ("toml"       . conf-toml)
      ("gnuplot"    . gnuplot)
-     ("typescript" . typescript)))
+     ("typescript" . typescript)
+     ("yaml"       . yaml-ts)))
   :config
   (defun +org-src-get-lang-mode (lang)
     (let ((mode (intern

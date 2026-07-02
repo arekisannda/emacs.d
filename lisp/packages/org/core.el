@@ -28,6 +28,7 @@
               `(("-cdac$" . 1.3)
                 (,(font-spec :family "Source Han Sans") . 1.3))
               )
+  (setq-local help-at-pt-display-when-idle t)
   (let ((font-family (org-entry-get (point-min) "font-family" t))
         (font-height (org-entry-get (point-min) "font-height" t)))
     (when font-family

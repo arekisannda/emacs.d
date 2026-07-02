@@ -9,7 +9,7 @@
   (w3m-use-header-line t)
   (w3m-use-header-line-title nil)
   (w3m-use-tab nil)
-  (w3m-use-tab-line t)
+  (w3m-use-tab-line nil)
   :custom-face
   (w3m-anchor
    ((nil :foreground ,(doom-lighten (doom-color 'dark-blue) 0.0))))

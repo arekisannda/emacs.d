@@ -557,7 +557,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
       (if (null (window-prev-buffers win))
           (progn
             (when kill (kill-buffer (window-buffer win)))
-            (delete-window win))
+            (when (window-live-p win) (delete-window win)))
         (funcall orig-fn kill window)))))
 
 (provide 'util-windows)
