@@ -13,7 +13,7 @@
 (defun util/add-capf-hooks (localp &rest capf-list)
   "Add CAPF-LIST hooks from `completion-at-point-functions`."
   (declare (indent 1))
-  (dolist (capf capf-list)
+  (dolist (capf (reverse capf-list))
     (add-hook 'completion-at-point-functions capf nil localp)))
 
 (defun util/remove-capf-hooks (localp &rest capf-list)

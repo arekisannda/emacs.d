@@ -7,10 +7,10 @@
   (display-line-numbers-mode 1)
 
   (util/add-capf-hooks t
-    #'cape-dabbrev
+    (cape-capf-super
+     #'+cape-dabbrev-dict)
     #'cape-file
-    #'cape-tex
-    #'cape-keyword)
+    #'cape-tex)
 
   (yas-minor-mode 1)
   (cdlatex-mode)

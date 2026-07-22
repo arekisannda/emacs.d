@@ -1,6 +1,8 @@
 ;;; emacs/ibuffer.el -*- lexical-binding: t; -*-
 
 (use-package ibuffer-project :after project
+  :custom
+  (ibuffer-expert t)
   :preface
   (defun +ibuffer-list ()
     (interactive)

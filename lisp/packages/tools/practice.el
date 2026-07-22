@@ -32,7 +32,12 @@
                 ))
               ))
       (select-frame-set-input-focus leetcode--frame t)
-      (with-selected-frame leetcode--frame (apply fn r))
+      (with-selected-frame leetcode--frame
+        (let ((ignore-window-parameters t))
+          (with-selected-window (util/windows-get-mru-in-main)
+           (delete-other-windows)))
+        (switch-to-buffer (get-buffer-create "*new*"))
+        (apply fn r))
       ))
 
   (advice-add #'leetcode :around #'leetcode-frame)
@@ -116,11 +121,6 @@
                 :nodes
                 (( :type buf :apply (lambda (w) (setq leetcode--description-window w)))
                  ( :type buf :select t :apply (lambda (w) (setq leetcode--code-window w)))
-                 ( :type row
-                   :nodes
-                   ((:type buf :apply (lambda (w) (setq leetcode--testcase-window w)))
-                    (:type buf :apply (lambda (w) (setq leetcode--result-window w)))
-                    ))
                  )
                 ))
              )))
@@ -177,22 +177,19 @@ major mode by `leetcode-prefer-language'and `auto-mode-alist'."
       (with-current-buffer (get-buffer-create result-buf-name)
         (erase-buffer)
         (leetcode--display-result (current-buffer)))
+
+      (select-window leetcode--code-window)
       ))
 
   (advice-add #'leetcode--start-coding :override #'+leetcode--start-coding)
 
-  (defcustom leetcode-setup-functions '()
-    "Called when creating `leetcode' window.
-Function takes two arguments WINDOW and BUFFER."
-    :type 'hook)
-
   (defun +leetcode--display-result-override (buffer &optional alist)
-    (set-window-buffer leetcode--result-window buffer)
+    (display-buffer  buffer)
     (run-hook-with-args 'leetcode-setup-functions leetcode--result-window buffer)
     leetcode--result-window)
 
   (defun +leetcode--display-testcase-override (buffer &optional alist)
-    (set-window-buffer leetcode--testcase-window buffer)
+    (display-buffer buffer)
     (run-hook-with-args 'leetcode-setup-functions leetcode--testcase-window buffer)
     leetcode--testcase-window)
 

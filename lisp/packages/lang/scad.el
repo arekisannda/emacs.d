@@ -2,7 +2,7 @@
 
 (use-package scad-mode
   :custom
-  (scad-preview-colorscheme '("Tomorrow" . "Tomorrow Night"))
+  (scad-preview-colorscheme '("Monokai Pro" . "Monokai Pro"))
   (scad-preview-camera '(0 0 0 45 0 45 400))
   (scad-extra-args '("--enable=manifold"))
   (scad-preview-view '("wireframe" "edges" "scales"))
@@ -60,7 +60,7 @@
                  (append
                   (list scad-command
                         "-o" outfile
-                        "--preview"
+                        "--preview=throwntogether"
                         (format "--projection=%s" scad-preview-projection)
                         (format "--imgsize=%d,%d"
                                 (window-pixel-width win)

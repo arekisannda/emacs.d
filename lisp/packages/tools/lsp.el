@@ -33,7 +33,7 @@ If it is not set, use ALTERNATIVE instead."
   (eglot-connect-timeout nil)
   (eglot-autoshutdown t)
   (eglot-send-changes-idle-time 3)
-  (eglot-code-action-indications '())
+  (eglot-code-action-indications nil)
   (eglot-ignored-server-capabilities '(:documentHighlightProvider
                                        :inlayHintProvider
                                        :signatureHelpProvider))
@@ -53,6 +53,26 @@ If it is not set, use ALTERNATIVE instead."
         (scad          '("openscad-lsp" "--stdio"))
         (rust-analyzer '("rust-analyzer" :initializationOptions (:check (:command "clippy"))))
         )
+
+    (dolist (mode '(scad-mode
+                    nix-ts-mode
+                    typst-ts-mode
+                    yaml-ts-mode
+                    org-mode
+                    git-commit-elisp-text-mode
+                    bibtex-mode
+                    context-mode
+                    latex-mode
+                    LaTeX-mode
+                    markdown-mode
+                    rst-mode
+                    python-ts-mode
+                    python-mode
+                    html-mode
+                    rust-mode
+                    rust-ts-mode
+                    ))
+      (setq eglot-server-programs (assq-delete-all mode eglot-server-programs)))
 
     (dolist (conf `(((scad-mode                  :language-id "scad")             . ,scad)
                     ((nix-ts-mode                :language-id "nix")              . ,nixd)

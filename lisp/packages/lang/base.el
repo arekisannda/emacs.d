@@ -19,9 +19,7 @@
    ((treesit-fold-ready-p) (treesit-fold-mode 1))
    ((derived-mode-p 'emacs-lisp-mode) (hs-minor-mode 1)))
 
-  (util/add-capf-hooks t
-    #'cape-file
-    #'cape-keyword))
+  )
 
 (use-package prog-mode
   :hook
@@ -57,7 +55,7 @@
 (defun util/commands-run--add-ci-commands (buffer)
   (with-current-buffer buffer
     (when (executable-find "act")
-      '(("CI Test"  . local-gh-action-test-command)))
+      '(("Run CI Workflow"  . local-gh-action-test-command)))
     ))
 
 (add-hook 'util/commands-run-list-additional-command-hook #'util/commands-run--add-ci-commands)

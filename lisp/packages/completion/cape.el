@@ -4,10 +4,15 @@
   :config
   (require 'cape-char)
 
+  (defun +cape-dabbrev-dict ()
+    (cape-wrap-super
+     #'cape-keyword
+     #'cape-dabbrev
+     #'cape-dict))
+
   (util/add-capf-hooks nil
-    #'cape-dabbrev
-    #'cape-file
-    #'cape-keyword)
+    #'+cape-dabbrev-dict
+    #'cape-file)
 
   (plist-put cape--tex-properties :exit-function nil)
 

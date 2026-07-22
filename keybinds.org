@@ -239,10 +239,10 @@
   :prefix-command '+keybinds-org-roam-command)
 
 (+keybinds-org-roam
-  "p" '("profile"       . +org-roam-switch-profile)
+  "n" '("files"         . +org-roam-node-find)
+  "N" '("profile"       . +org-roam-switch-profile)
   "o" '("open viewer"   . +org-roam-ui-launch-viewer)
   "b" '("toggle buffer" . org-roam-buffer-toggle)
-  "f" '("files"         . +org-roam-node-find)
   "t" '("tags"          . +org-roam-node-find-by-filetag)
   "c" '("captures"      . +org-roam-node-find-captures)
   "u" '("unmarked"      . +org-roam-node-find-uncategorized)
@@ -777,8 +777,9 @@
   :prefix-command '+keybinds-dape-debugger-command)
 
 (+keybinds-dape-debugger
-  "C-<f5>"      '("start"              . dape)
-  "<deletchar>" '("clear breakpoints"  . dape-breakpoint-remove-all)
+  "C-<f5>"      '("restart"            . dape-restart)
+  "U"           '("clear breakpoints"  . dape-breakpoint-remove-all)
+  "u"           '("clear breakpoint"   . dape-breakpoint-remove-at-point)
   "<f5>"        '("toggle breakpoint"  . dape-breakpoint-toggle)
   "<f4>"        '("add condition"      . dape-breakpoint-expression)
   "<f3>"        '("add hit condiition" . dape-breakpoint-hits)
@@ -928,7 +929,10 @@
 (general-define-key
  :keymaps 'override
  "<f1>"     'ignore
- "<f2>"     'ignore
+ "<f2>"     (general-predicate-dispatch nil 
+              (derived-mode-p 'calc-mode) #'calc-trail-display
+              (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
+              (derived-mode-p 'prog-mode) #'+rmsbolt-toggle)
 
  "<f5>"     (general-predicate-dispatch nil
               (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
@@ -936,36 +940,25 @@
  "C-<f5>"   (general-predicate-dispatch nil
               (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
 
- "S-<f5>"   (general-predicate-dispatch  nil
-              (derived-mode-p 'dape-active-mode) nil
-              (derived-mode-p 'prog-mode) #'dape-restart)
-
- "C-S-<f5>" (general-predicate-dispatch  nil
-              (derived-mode-p 'dape-active-mode) #'dape-quit)
-
  "<f6>"     (general-predicate-dispatch nil 
-              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-in
-              (derived-mode-p 'calc-mode) #'calc-trail-display
-              (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
-              (derived-mode-p 'prog-mode) #'+rmsbolt-toggle)
+              (and dape-active-mode) #'+hydra-dape-motion/dape-step-in)
 
- "<f7>"     (general-predicate-dispatch nil
-              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-step-out
-              (derived-mode-p 'prog-mode) #'+compilation-dispatch)
+ "<f7>"     (general-predicate-dispatch #'+compilation-dispatch
+              (and dape-active-mode) #'+hydra-dape-motion/dape-step-out)
 
  "C-<f7>"   (general-predicate-dispatch #'+recompilation-dispatch)
 
  "C-S-<f7>" (general-predicate-dispatch #'detached-project-compile)
 
  "<f8>"     (general-predicate-dispatch nil 
-              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-next
-              (derived-mode-p 'prog-mode) #'+eldoc-box)
+              (and dape-active-mode) #'+hydra-dape-motion/dape-next
+              (or (derived-mode-p 'prog-mode) (eglot-managed-p)) #'+eldoc-box)
  
  "C-<f8>"   (general-predicate-dispatch nil
-              (derived-mode-p 'prog-mode) #'+eldoc)
+              (or (derived-mode-p 'prog-mode) (eglot-managed-p)) #'eldoc)
 
  "<f9>"     (general-predicate-dispatch #'flyspell-correct-word-before-point
-              (derived-mode-p 'dape-active-mode) #'+hydra-dape-motion/dape-continue)
+              (and dape-active-mode) #'+hydra-dape-motion/dape-continue)
 
  "<f10>"    '("menu" . menu-bar-open)
 
@@ -974,6 +967,8 @@
  "C-<f11>"  '("mru" . util/windows-select-aux-window)
 
  "S-<f12>"  '("tree toggle" . treemacs-autohide-mode)
+
+ "M-<f12>"  '("tree toggle" . treemacs-autohide-set-threshold)
 
  "<f12>"    (general-predicate-dispatch nil
               (activities-current) #'treemacs-select-window)
@@ -1009,8 +1004,8 @@
  "a"    '("agenda"          . +keybinds-org-agenda-command)
  "C-a"  '("agenda capture"  . +keybinds-org-agenda-capture-command)
  "A"    '("agenda file"     . +keybinds-org-agenda-file-command)
- "f"    '("notes"           . +keybinds-org-roam-command)
- "C-f"  '("notes"           . +keybinds-org-roam-command)
+ "n"    '("notes"           . +keybinds-org-roam-command)
+ "C-n"  '("notes"           . +keybinds-org-roam-command)
  "e"    '("flymake"         . +keybinds-flymake-command)
  "C-e"  '("flymake"         . +keybinds-flymake-command)
  "d"    '("documentation"   . +keybinds-documentation-command)
@@ -1199,9 +1194,6 @@
 
  "C-a"   '("cycle annotators" . marginalia-cycle)
  "C-r"   '("history"          . consult-history)
- "C-,"   '("embark-act"       . embark-act)
- "C-s"   '("embark-collect"   . embark-collect)
- "C-e"   '("embark-export"    . embark-export)
  "C-d"   '("insert dir"       . consult-dir)
  "C-S-d" '("goto file"        . consult-dir-jump-file)
  "C-f"   '("insert file"      . find-file))
@@ -1321,10 +1313,7 @@
   "-"     '("text scale down" . +hydra-text-scale/text-scale-decrease)
   
   "!"     '("start checker"   . flymake-start)
-  "."     '("embark act"      . embark-act)
-  "?"     '("embark act all"  . embark-act-all)
   "d"     '("dired buffer"    . dired)
-
   "c"     '("calc"            . full-calc)
 
   "t"     '("translate"       . google-translate-smooth-translate)
@@ -1345,6 +1334,8 @@
   "C-p"   (general-predicate-dispatch #'gptel-run
             (derived-mode-p 'agent-shell-mode) #'agent-shell-help-menu)
 
+  "C-."   '("embark act"      . embark-act)
+  "C-?"   '("embark act all"  . embark-act-all)
   "C-k"   '("keybinds"        . +edit-keybinds)
   "C-S-k" '("reload keybinds" . (lambda () (interactive) (+load "keybinds.org")))
   "C-l"   '("sessions"        . detached-list-sessions)

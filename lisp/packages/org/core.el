@@ -43,11 +43,11 @@
   (yas-minor-mode 1)
 
   (util/add-capf-hooks t
-    #'yasnippet-capf
+    (cape-capf-super
+     #'+cape-dabbrev-dict)
     #'cape-file
     #'cape-tex
-    #'cape-elisp-block
-    #'cape-keyword)
+    #'cape-elisp-block)
 
   (util/remove-capf-hooks t
     #'pcomplete-completions-at-point
@@ -55,7 +55,7 @@
 
 (use-package org
   :custom
-  (+org-auto-hide-block-languages '("mermaid"))
+  (+org-auto-hide-block-languages '("mermaid" "emacs-lisp"))
 
   (org-pretty-entities-include-sub-superscripts nil)
   (org-use-tag-inheritance nil)

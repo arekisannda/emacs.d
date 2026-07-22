@@ -6,10 +6,22 @@
   :custom-face
   (dape-breakpoint-face
    ((nil :stipple nil)))
+  (dape-header-line-active-face
+   ((nil :stipple nil
+         :foreground ,(doom-color 'fg)
+         :background ,(doom-color 'bg)
+         :overline nil
+         )))
+  (dape-header-line-inactive-face
+   ((nil :stipple nil
+         :foreground ,(doom-color 'fg-alt)
+         :background ,(doom-color 'bg-alt)
+         :overline nil
+         )))
   :custom
   (dape-active-mode nil)
   (dape-inlay-hints nil)
-  (dape-buffer-window-arrangement 'right)
+  (dape-buffer-window-arrangement 'nil)
 
   ;; (dape-breakpoint-global-mode t)
   (dape-breakpoint-margin-string
@@ -27,7 +39,8 @@
      ("quit"       . dape-quit)))
 
   (dape-start-hook
-   '(dape-repl
+   '(
+     ;; dape-repl
      dape-info
      (lambda () (interactive)
        (if-let ((compilation-buffer (get-buffer "*compilation*")))
@@ -35,17 +48,25 @@
        (select-window (windex-get-mru-in-main)))))
   :config
 
-  (defvar +dape-layout-state nil)
+  (defun dape-frame (fn &rest r)
+    (interactive)
+    (let ((parent-frame (selected-frame))
+          frame)
+      (setq frame
+            (make-frame
+             (append
+              `((no-other-frame . t)
+                (left           . 0.5)
+                (top            . 0.5)
+                (minibuffer     . t))
+              )))
+      (select-frame-set-input-focus frame t)
+      (with-selected-frame frame
+        (apply fn r))
+      ))
 
-  (defun +dape-start (&rest _)
-    (setq +dape-layout-state (window-state-get (frame-root-window) t)))
 
-  (advice-add #'dape :before #'+dape-start)
-
-  (defun +dape-stop (&rest _)
-    (window-state-put +dape-layout-state (frame-root-window) 'safe))
-
-  (advice-add #'dape-quit :after #'+dape-stop)
+  ;; (advice-add #'dape :around #'dape-frame)
   )
 
 (defun +edebug-defun-region ()

@@ -11,7 +11,14 @@
    ((nil :inherit font-lock-operator-face))))
 
 (use-package devdocs
-  :defer t)
+  :defer t
+  :custom-face
+  (nxml-text
+   ((nil :background unspecified)))
+  (devdocs-code-block
+   ((nil :extend t
+         :background ,(doom-color 'bg-alt))))
+  )
 
 (use-package man
   :defer t

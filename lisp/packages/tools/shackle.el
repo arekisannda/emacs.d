@@ -108,6 +108,7 @@
   (shackle-default-rule nil)
   (shackle-disable-list
    `("^ \\*which-key\\*$"
+     dape-info-parent-mode
      util/windows-temporary-buffer-name
      leetcode--problems-mode
      leetcode--problem-detail-mode))
@@ -117,8 +118,6 @@
        "^\\*Warnings\\*$"
        "^\\*Flymake log\\*$"
        "^\\*Activities (error): .*\\*$"
-       "^\\*leetcode-result-.*\\*$"
-       "^\\*leetcode-testcase-.*\\*$"
        "^\\*Org Links\\*$"
        "^ \\*http.*\\*")
       :ignore t)
@@ -188,7 +187,7 @@
        evil-list-view-mode)
       ,@(+shackle-display-aux-preset))
 
-     (("^ \\*notes .*\\*$"
+     (("^\\*notes .*\\*$"
        flymake-diagnostics-buffer-mode)
       ,@(+shackle-display-aux-preset)
       :select t)
@@ -238,6 +237,8 @@
        "^\\*shell\\*$"
        "^\\*Ibuffer\\*$"
        "^\\*Nix-REPL\\*$"
+       "^\\*leetcode-result-.*\\*$"
+       "^\\*leetcode-testcase-.*\\*$"
        messages-buffer-mode
        ibuffer-mode
        git-rebase-mode
@@ -287,6 +288,7 @@
        "^ \\*transient\\*$"
        "^ \\*CDLaTeX Help\\*"
        "^\\*Org Select\\*$"
+       "\\*Multiple Choice Help\\*"
 
        calendar-mode
        evil-command-window-mode

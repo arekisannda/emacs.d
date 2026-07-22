@@ -40,7 +40,9 @@
      ("desktop"    . conf-desktop)
      ("dot"        . graphviz-dot)
      ("elisp"      . emacs-lisp)
+     ("gnuplot"    . gnuplot)
      ("go"         . go)
+     ("hcl"        . hcl)
      ("javascript" . javascript)
      ("json"       . js-json)
      ("kotlin"     . kotlin)
@@ -52,7 +54,7 @@
      ("shell"      . sh)
      ("sqlite"     . sql)
      ("toml"       . conf-toml)
-     ("gnuplot"    . gnuplot)
+     ("terraform"  . terraform)
      ("typescript" . typescript)
      ("yaml"       . yaml-ts)))
   :config

@@ -267,7 +267,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
       (set-window-combination-limit (window-parent window) t)
       (and toggle
            (util/windows--state-list-restore frame side-states))
-      (balance-windows root-window)
+      ;; (balance-windows root-window)
       (get-buffer-window sentinel frame))
     ))
 
@@ -408,7 +408,8 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
             (invalid (or (plist-get plist :ignore)
                          (util/windows-side-window-p init-window)
                          (util/windows-popup-window-p init-window)
-                         (window-combined-p init-window)
+                         (and (not (util/windows-get-aux-other-window init-window))
+                              (window-combined-p init-window))
                          )))
       (user-error "Window cannot be split for aux-window.")
     (let ((size (plist-get plist :size))
@@ -502,7 +503,8 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
   (let* ((init-window (window-normalize-window nil))
          (aux-splittable-p (and (not (or (util/windows-side-window-p init-window)
                                          (util/windows-popup-window-p init-window)
-                                         (eq (window-main-window) (window-parent init-window))
+                                         (and (one-window-p)
+                                              (eq (window-main-window) (window-parent init-window)))
                                          ))
                                 )))
     (unless aux-splittable-p
@@ -511,10 +513,14 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
     (pcase arg
       (4 (if-let ((window (util/windows-get-aux-window init-window))) (delete-window window)))
 
-      (16 (let ((uuid (or (window-parameter init-window 'window-aux-id)
-                          (util/windows--aux-uuid))))
+      (16 (let* ((uuid (or (window-parameter init-window 'window-aux-id)
+                           (util/windows--aux-uuid)))
+                 (bufname (format "*notes %s*" uuid))
+                 (buf (get-buffer-create bufname)))
             (set-window-parameter init-window 'window-aux-id uuid)
-            (display-buffer (get-buffer-create (format " *notes %s*" uuid)))
+            (with-current-buffer buf
+              (unless (eq major-mode 'org-mode) (org-mode)))
+            (display-buffer buf)
             ))
 
       (_ (when-let ((window (util/windows-get-aux-other-window init-window)))
