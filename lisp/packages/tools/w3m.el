@@ -59,6 +59,43 @@
      'w3m-filter-configuration
      `(t ,(format "Readability for %s" (car url-regexp)) ,(cdr url-regexp) w3m-filter-readability)))
 
+  (defun +w3m-doc-view (url)
+    "View PDF/PostScript/DVI files using `pdf-view-mode'.
+
+Where the document is displayed depends upon the `w3m-display-mode'."
+    (let* ((basename (file-name-nondirectory (w3m-url-strip-query url)))
+           (regexp (concat "\\`" (regexp-quote basename) "\\(?:<[0-9]+>\\)?\\'"))
+           (buffers (buffer-list))
+           buffer data case-fold-search)
+      (save-current-buffer
+        (while buffers
+          (setq buffer (pop buffers))
+          (if (and (string-match regexp (buffer-name buffer))
+                   (progn
+                     (set-buffer buffer)
+                     (eq major-mode 'pdf-view-mode))
+                   (equal buffer-file-name url))
+              (setq buffers nil)
+            (setq buffer nil))))
+      (unless (prog1
+                  buffer
+                (unless buffer
+                  (setq buffer (generate-new-buffer basename)
+                        data (buffer-string)))
+                (let ((pop-up-windows w3m-pop-up-windows)
+                      (pop-up-frames w3m-pop-up-frames))
+                  (pop-to-buffer buffer)))
+        (set-buffer-multibyte nil)
+        (insert data)
+        (set-buffer-modified-p nil)
+        (setq buffer-file-name url)
+        (pdf-view-mode)
+        (use-local-map w3m-doc-view-map)
+        (set-keymap-parent w3m-doc-view-map doc-view-mode-map)
+        'internal-view)))
+
+  (advice-add #'w3m-doc-view :override #'+w3m-doc-view)
+
   :hook
   (w3m-mode . visual-line-mode)
   (w3m-mode . word-wrap-whitespace-mode))

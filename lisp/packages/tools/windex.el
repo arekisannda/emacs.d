@@ -92,4 +92,26 @@
          :background unspecified
          :foreground unspecified))))
 
-(use-package windex-frame)
+(use-package windex-frame
+  :config
+  (defun windex-windmove-display-popup-frame (&optional arg)
+    (interactive)
+    (let (frame)
+      (display-buffer-override-next-command
+       (lambda (buffer alist)
+         (setq frame (windex-frame-display-buffer
+                      buffer
+                      `(,@alist
+                        (prefix . ,(format "[Emacs Tool] "))
+                        (width . 160)
+                        (height . 60)
+                        (init-buffer . ,buffer)
+                        (popup . t))
+                      ))
+         (let* ((type 'reuse)
+                (window (frame-selected-window frame)))
+           (cons window type)))
+       (lambda (ow nw) nw)
+       (format "[display-popup-frame]")
+       )))
+  )

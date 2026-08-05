@@ -35,7 +35,7 @@
       (with-selected-frame leetcode--frame
         (let ((ignore-window-parameters t))
           (with-selected-window (util/windows-get-mru-in-main)
-           (delete-other-windows)))
+            (delete-other-windows)))
         (switch-to-buffer (get-buffer-create "*new*"))
         (apply fn r))
       ))
@@ -67,19 +67,20 @@
 
   (aio-defun leetcode (&optional force)
     "Start Leetcode."
-    (when (leetcode--check-deps)
-      (if (get-buffer leetcode--buffer-name)
-          (switch-to-buffer leetcode--buffer-name)
-        (aio-await (leetcode--ensure-login))
-        (aio-await (leetcode-refresh-fetch force))
-        (switch-to-buffer leetcode--buffer-name))
-      (leetcode--maybe-focus)))
+    (with-selected-frame leetcode--frame
+      (when (leetcode--check-deps)
+        (if (get-buffer leetcode--buffer-name)
+            (switch-to-buffer leetcode--buffer-name)
+          (aio-await (leetcode--ensure-login t))
+          (aio-await (leetcode-refresh-fetch force))
+          (switch-to-buffer leetcode--buffer-name))
+        (leetcode--maybe-focus))))
 
   (aio-defun leetcode-daily ()
     "Open the daily challenge."
     (interactive)
     (unless (get-buffer leetcode--buffer-name)
-      (aio-await (leetcode--ensure-login))
+      (aio-await (leetcode--ensure-login t))
       (aio-await (leetcode-refresh-fetch)))
     (let* ((url-request-method "POST")
            (url-request-extra-headers `(,@(aio-await (leetcode--common-extra-headers))

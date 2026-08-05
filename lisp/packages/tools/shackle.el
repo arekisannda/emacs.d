@@ -42,7 +42,7 @@
      :side bottom
      :slot 0
      :flags (enable-alt-face disable-mode-line)
-     :fixed height
+     :fixed nil
      :dedicated t
      :select t))
 
@@ -108,6 +108,9 @@
   (shackle-default-rule nil)
   (shackle-disable-list
    `("^ \\*which-key\\*$"
+     "^\\*Org Agenda .*\\*$"
+     "^\\*Org Agenda\\*$"
+     org-agenda-mode
      dape-info-parent-mode
      util/windows-temporary-buffer-name
      leetcode--problems-mode
@@ -157,12 +160,13 @@
         :mru t :select t :reuse t)
        ))
 
-     (("^\\*Org Agenda .*\\*$"
-       "^\\*Org Agenda\\*$"
-       "^\\*Edit Treemacs Workspaces\\*$"
+     (("^\\*Org Preview.*\\*$"
+       "^\\*Org Src.*\\*$"
 
-       org-agenda-mode)
-      :custom +shackle-display-in-popup-frame)
+       scad-preview-mode
+       dashboard-mode
+       pdf-view-mode)
+      :same t :select t)
 
      ((magit-mode
        code-review-mode
@@ -188,6 +192,12 @@
       ,@(+shackle-display-aux-preset))
 
      (("^\\*notes .*\\*$"
+       "^\\*Code Review Comment\\*$"
+       "^COMMIT_EDITMSG$"
+
+       pr-review-input-mode
+       forge-post-mode
+       code-review-comment-mode
        flymake-diagnostics-buffer-mode)
       ,@(+shackle-display-aux-preset)
       :select t)
@@ -210,13 +220,6 @@
       ,@(+shackle-display-side-right-preset-1)
       :size +shackle-get-dimensions)
 
-     (("^\\*Org Preview.*\\*$"
-       "^\\*Org Src.*\\*$"
-       scad-preview-mode
-       dashboard-mode
-       pdf-view-mode)
-      :same t :select t)
-
      (("^\\*Error\\*$"
        "^\\*Dired log\\*$"
        "^\\*latex-scratch\\*$"
@@ -225,8 +228,6 @@
        "^\\*\\(.*-\\)?eshell\\*$"
        "^ \\*.* stderr\\*$"
        "^\\*.* events\\*$"
-       "^\\*Code Review Comment\\*$"
-       "^COMMIT_EDITMSG$"
        "^\\*detached-session-info\\*$"
        "^\\*detached-list\\*$"
        "^\\*envrc\\*$"
@@ -245,9 +246,6 @@
        detached-list-mode
        detached-log-mode
        ert-results-mode
-       code-review-comment-mode
-       pr-review-input-mode
-       forge-post-mode
        dired-mode
        eshell-mode
        comint-mode
@@ -296,11 +294,6 @@
       ,@(+shackle-display-side-bottom-preset-select-size-0))
 
      ;;; base mode fallback
-     ((help-mode
-       special-mode)
-      ,@(+shackle-right-select-preset-0)
-      :size +shackle-get-dimensions)
-
      ((org-mode)
       :if (lambda (_ buffer)
             (or (org-agenda-file-p (buffer-file-name buffer))
@@ -311,16 +304,16 @@
       :conditions
       (((org-agenda-mode)
         :if (lambda (&rest _) org-agenda-follow-mode)
-        :action util/windows-display-buffer-in-popup-window
-        ,@(+shackle-display-popup-preset-select))
-
-       ((".*")
-        :if (lambda (window &rest _)
-              (not (frame-parameter (selected-frame) 'popup)))
-        :action +shackle-display-in-popup-frame)
+        ,@(+shackle-display-aux-preset)
+        :select t
+        :action util/windows-display-buffer-in-aux-window)
        ))
 
-     ((".*")
+     ((prog-mode
+       text-mode
+       conf-mode
+       outline-mode
+       fundamental-mode)
       :if (lambda (&rest _)
             (util/windows-aux-window-p (selected-window)))
       :custom util/windows-display-buffer-in-aux-source-window)
@@ -377,6 +370,11 @@
          outline-mode)
         :same t :select t)
        ))
+
+     ((help-mode
+       special-mode)
+      ,@(+shackle-right-select-preset-0)
+      :size +shackle-get-dimensions)
      ))
   :config
   (defvar +shackle-ignore-checks nil)

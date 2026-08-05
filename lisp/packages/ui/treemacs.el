@@ -31,6 +31,8 @@
    ((nil :height 1.1 :weight normal :foreground ,(doom-color 'violet))))
   (treemacs-window-background-face
    ((nil :background ,(doom-color 'bg-alt))))
+  (treemacs-file-face
+   ((nil :foreground ,(doom-color 'fg))))
   (treemacs-hl-line-face
    ((nil :background ,(doom-color 'bg))))
   (treemacs-fringe-indicator-face

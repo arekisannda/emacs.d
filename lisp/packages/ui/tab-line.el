@@ -118,21 +118,21 @@
   (defmacro tab-line-window-for-each (frame &rest body)
     (declare (indent 1) (debug (form body)))
     `(let ((frame ,frame))
-       (unless (frame-parameter frame 'popup)
-         (unless (or (minibufferp)
-                     (frame-parent frame)
-                     (one-window-p 'nomini frame))
-           (walk-windows
-            (lambda (window) (with-selected-window window ,@body))
-            'nomini)
-           ))))
+
+       (unless (or (minibufferp)
+                   (frame-parent frame)
+                   (one-window-p 'nomini frame))
+         (walk-windows
+          (lambda (window) (with-selected-window window ,@body))
+          'nomini)
+         )))
 
   (defun tab-line-main-window-setup (&optional frame)
     (tab-line-window-for-each frame
       (let ((wframe (window-frame)))
         (if (or (window-parameter window 'window-side)
                 (window-parameter window 'window-popup)
-                (frame-parameter wframe 'popup))
+                )
             (tab-line-mode -1)
           (tab-line-mode 1))
         )))
@@ -142,7 +142,7 @@
       (let ((wframe (window-frame)))
         (unless (or (window-parameter window 'window-side)
                     (window-parameter window 'window-popup)
-                    (frame-parameter wframe 'popup))
+                    )
           (tab-line-mode -1))
         )))
 

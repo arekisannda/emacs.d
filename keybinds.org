@@ -951,6 +951,7 @@
  "C-S-<f7>" (general-predicate-dispatch #'detached-project-compile)
 
  "<f8>"     (general-predicate-dispatch nil 
+              (and (derived-mode-p 'org-mode)) #'org-latex-preview
               (and dape-active-mode) #'+hydra-dape-motion/dape-next
               (or (derived-mode-p 'prog-mode) (eglot-managed-p)) #'+eldoc-box)
  
@@ -1005,11 +1006,9 @@
  "C-a"  '("agenda capture"  . +keybinds-org-agenda-capture-command)
  "A"    '("agenda file"     . +keybinds-org-agenda-file-command)
  "n"    '("notes"           . +keybinds-org-roam-command)
- "C-n"  '("notes"           . +keybinds-org-roam-command)
  "e"    '("flymake"         . +keybinds-flymake-command)
  "C-e"  '("flymake"         . +keybinds-flymake-command)
- "d"    '("documentation"   . +keybinds-documentation-command)
- "C-d"  '("documentation"   . +keybinds-documentation-command))
+ "d"    '("documentation"   . +keybinds-documentation-command))
 #+end_src
 ** Documentation
 #+begin_src emacs-lisp :tangle yes
@@ -1112,13 +1111,27 @@
 #+end_src
 *** Scrolling
 #+begin_src emacs-lisp :tangle yes
+(defun +pixel-scroll-down (&optional n)
+  (interactive)
+  (pixel-scroll-precision-interpolate
+   (- (* (or n 5) (frame-char-height)))
+   nil 1))
+
+(defun +pixel-scroll-up (&optional n)
+  (interactive)
+  (pixel-scroll-precision-interpolate
+   (* (or n 5) (frame-char-height))
+   nil 1))
+
 (general-define-key
  :keymaps 'global
 
  "<prior>"     '("scroll up"    . scroll-down-command)
  "<next>"      '("scroll down"  . scroll-up-command)
- "C-<prior>"   '("scroll up"    . windex-scroll-up)
- "C-<next>"    '("scroll down"  . windex-scroll-down)
+ "C-<prior>"   (general-predicate-dispatch   #'windex-scroll-up
+                 pixel-scroll-precision-mode #'+pixel-scroll-up)
+ "C-<next>"    (general-predicate-dispatch   #'windex-scroll-down
+                 pixel-scroll-precision-mode #'+pixel-scroll-down)
  "S-C-<next>"  '("scroll left"  . windex-scroll-left)
  "S-C-<prior>" '("scroll right" . windex-scroll-right)
 
@@ -1322,8 +1335,6 @@
 
   "m"     '("magit status"    . magit)
   "C-m"   '("magit dispatch"  . magit-file-dispatch)
-  "C-n"   '("forge dispatch"  . forge-dispatch)
-  "C-S-n" '("gh notification" . forge-list-notifications)
 
   "p"     (general-predicate-dispatch #'ghostel-project-claude
             (featurep 'agent-shell) #'+agent-shell-new) 
@@ -1697,6 +1708,9 @@
 
  [remap next-line]                   #'corfu-next
  [remap previous-line]               #'corfu-previous
+ [remap comint-next-input]           #'corfu-next
+ [remap comint-previous-input]       #'corfu-previous
+ [remap scroll-up-command]           #'corfu-scroll-up
  [remap windex-scroll-up]            #'corfu-scroll-down
  [remap windex-scroll-down]          #'corfu-scroll-up
  [remap scroll-down-command]         #'corfu-scroll-down
@@ -1902,6 +1916,7 @@
  "M-k" '("open ace up"     . windex-windmove-display-aw-up)
  "M-l" '("open ace right"  . windex-windmove-display-aw-right)
  "C-/" '("open ace"        . windex-windmove-display-aw)
+ "C-\\" '("open popup"     . windex-windmove-display-popup-frame)
  "."   '("open same"       . windmove-display-same-window)
 
  "P"   '("mru main"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))

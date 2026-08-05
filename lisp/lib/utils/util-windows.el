@@ -193,7 +193,12 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (set-window-parameter window 'no-delete-other-windows t)
 
         (when fixed
-          (window-preserve-size window (not (eq fixed 'height)) t)
+          (cond
+           ((eq fixed 'height)
+            (window-preserve-size window nil t))
+           ((eq fixed 'width)
+            (window-preserve-size window t t))
+           )
           (setq-local window-size-fixed fixed)
           )
         )
@@ -408,8 +413,6 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
             (invalid (or (plist-get plist :ignore)
                          (util/windows-side-window-p init-window)
                          (util/windows-popup-window-p init-window)
-                         (and (not (util/windows-get-aux-other-window init-window))
-                              (window-combined-p init-window))
                          )))
       (user-error "Window cannot be split for aux-window.")
     (let ((size (plist-get plist :size))
@@ -509,6 +512,9 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
                                 )))
     (unless aux-splittable-p
       (user-error "Not an aux-capable window."))
+
+    (if (util/windows-aux-window-p init-window)
+        (setq init-window (util/windows-get-aux-other-window init-window)))
 
     (pcase arg
       (4 (if-let ((window (util/windows-get-aux-window init-window))) (delete-window window)))
