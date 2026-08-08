@@ -33,3 +33,9 @@
       (set-buffer-major-mode buffer)
       (set-window-buffer nil buffer))
     (org-roam-capture- :keys key :node (org-roam-node-create :title title))))
+
+(with-eval-after-load 'windex
+  (defun swaywm/show-scratchpad-frame (&rest args)
+    (call-process-shell-command "swaymsg '[floating app_id=\"^.*emacs.*$\"] scratchpad show'"))
+
+  (advice-add #'windex-frame-display-buffer :after #'swaywm/show-scratchpad-frame))

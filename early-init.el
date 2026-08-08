@@ -102,6 +102,7 @@
 (blink-cursor-mode -1)
 (menu-bar-mode -1)
 (window-divider-mode 1)
+(pixel-scroll-precision-mode 1)
 (epa-file-enable)
 (auth-source-pass-enable)
 
