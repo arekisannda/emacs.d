@@ -137,7 +137,11 @@
        "^\\*WoMan.*\\*$"
        "^\\*eww\\*$"
        "^\\*w3m\\*$"
+       "^\\*Claude.*\\*$"
+       "^\\Claude.*\\$"
 
+       agent-shell-mode
+       ghostel-claude-mode
        rfc-mode
        w3m-mode
        eww-mode
@@ -232,7 +236,6 @@
        "^\\*detached-list\\*$"
        "^\\*envrc\\*$"
        "^\\*ChatGPT.*\\*$"
-       "^\\*Claude.*\\*$"
        "^\\*Diff\\*$"
        "^\\*scratch\\*$"
        "^\\*shell\\*$"
@@ -258,7 +261,6 @@
        term-mode
        vterm-mode
        ghostel-mode
-       ghostel-claude-mode
        embark-collect-mode
        tabulated-list-mode)
       ,@(+shackle-display-popup-preset-select))

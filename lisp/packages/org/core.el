@@ -134,6 +134,25 @@
   (org-upcoming-distant-deadline
    ((nil :inherit unspecifed :foreground ,(doom-color 'grey))))
 
+  (org-column
+   ((nil :background unspecified)))
+  (org-column-title
+   ((nil :background unspecified)))
+
+  :config
+  (defun +org-column-setup (&rest _)
+    (mapcar (lambda (face) (face-remap-set-base face :height 1.0))
+            '( org-level-1 org-level-2 org-level-3 org-level-4
+               org-level-5 org-level-6 org-level-7 org-level-8))
+    (org-columns-content))
+
+  (defun +org-column-teardown (&rest r)
+    (mapc #'face-remap-reset-base
+          '( org-level-1 org-level-2 org-level-3 org-level-4
+             org-level-5 org-level-6 org-level-7 org-level-8)))
+
+  (advice-add 'org-columns :before #'+org-column-setup)
+  (advice-add 'org-columns-quit :after #'+org-column-teardown)
   :hook
   (org-mode . +org-mode-setup)
   (org-mode . +org-fold-auto-hide-block-languages))

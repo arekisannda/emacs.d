@@ -7,7 +7,6 @@
   (defun +cape-dabbrev-dict ()
     (cape-wrap-super
      #'cape-keyword
-     #'cape-dabbrev
      #'cape-dict))
 
   (util/add-capf-hooks nil

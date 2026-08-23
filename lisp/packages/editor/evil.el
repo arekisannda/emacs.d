@@ -20,6 +20,7 @@
 
 (use-package evil :after undo-fu
   :custom
+  (evil-toggle-key "C-|")
   (evil-want-integration t)
   (evil-default-state 'normal)
   (evil-undo-system 'undo-fu)

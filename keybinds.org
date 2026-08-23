@@ -31,6 +31,7 @@
   "M-)"
   "C-<home>"
   "C-<end>"
+  "C-z"
 
   "C-c M-g" ; magit-file-dispatch
   "<f11>" ; fullscreen
@@ -805,10 +806,12 @@
  :states 'emacs
  :keymaps 'comint-mode-map
 
- "<up>"   #'comint-previous-input
- "<down>" #'comint-next-input
- "M-p"    #'comint-previous-prompt
- "M-n"    #'comint-next-prompt)
+ "<up>" nil
+ "<down>" nil
+ "<prior>" #'comint-previous-input
+ "<next>"  #'comint-next-input
+ "M-p"     #'comint-previous-prompt
+ "M-n"     #'comint-next-prompt)
 #+end_src
 *** GhostTTY
 #+begin_src emacs-lisp :tangle yes
@@ -1676,7 +1679,7 @@
 * Completion
 #+begin_src emacs-lisp :tangle yes
 (general-define-key
- :states 'insert
+ :states '(insert emacs)
  "C-S-SPC" '("extra"          . +keybinds-completion-extra-command)
  "C-SPC"   '("completion"     . completion-at-point)
  "M-SPC"   '("preview insert" . completion-preview-complete)
@@ -1798,6 +1801,8 @@
  :keymaps 'motion
  "+"        '("expand"    . expreg-expand)
  "-"        '("contract"  . expreg-contract)
+ "t"        '("avy line"  . avy-goto-char-in-line)
+ "T"        '("avy line"  . avy-goto-char-in-line)
 
  "<escape>" '("quit"      . keyboard-quit)
 
@@ -1854,19 +1859,27 @@
   ("]" #'+next-buffer     "next buffer"))
 (hydra-set-property #'+hydra-evil-motion :verbosity 0)
 
+(defmacro +window-split-select-window ()
+  `(let ((count (round (log (car arg) 4)))
+         window)
+     (while (> count 0)
+       (setq window (or (window-parent window) window))
+       (setq count (1- count)))
+     window))
+
 (defmacro +window-split (splitfn)
   "Split window with SPLITFN."
-  `(lambda ()
-     (interactive)
-     (funcall #',splitfn)
-     (balance-windows (window-main-window))))
+  `(lambda (&rest arg)
+     (interactive "p")
+     (funcall #',splitfn nil (+window-split-select-window))
+     (balance-windows)))
 
 (defmacro +window-split-focus-other-window (splitfn)
   "Focus other window after calling SPLITFN."
-  `(lambda ()
-     (interactive)
-     (funcall #',splitfn)
-     (balance-windows (window-main-window))
+  `(lambda (&rest arg)
+     (interactive "p")
+     (funcall #',splitfn nil (+window-split-select-window))
+     (balance-windows)
      (other-window 1)))
 
 (defmacro +aw-select-with-filter (filter-list)

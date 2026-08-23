@@ -204,11 +204,47 @@ major mode by `leetcode-prefer-language'and `auto-mode-alist'."
     (run-hook-with-args 'leetcode-setup-functions leetcode--code-window buffer)
     leetcode--code-window)
 
+  (aio-defun +leetcode-restore-layout-override ()
+    "This command should be run in LeetCode code buffer.
+It will restore the layout based on current buffer's name."
+    (interactive)
+    (let* ((slug-title (leetcode--get-slug-title (current-buffer)))
+           (problem (leetcode--get-problem slug-title))
+           (problem-id (leetcode-problem-id problem))
+           (desc-buf (get-buffer (leetcode--detail-buffer-name problem-id)))
+           (testcase-buf (get-buffer-create (leetcode--testcase-buffer-name problem-id)))
+           (result-buf (get-buffer-create (leetcode--result-buffer-name problem-id))))
+      (leetcode--solving-window-layout)
+      (unless desc-buf
+        (aio-await (leetcode-show-problem problem-id)))
+
+      (display-buffer desc-buf
+                      '((display-buffer-reuse-window
+                         leetcode--display-detail)
+                        (reusable-frames . visible)))
+      (display-buffer result-buf
+                      '((display-buffer-reuse-window
+                         leetcode--display-result)
+                        (reusable-frames . visible)))
+      (display-buffer testcase-buf
+                      '((display-buffer-reuse-window
+                         leetcode--display-testcase)
+                        (reusable-frames . visible)))
+      (select-window leetcode--code-window)))
+
+  (advice-add #'leetcode-restore-layout :override #'+leetcode-restore-layout-override)
   (advice-add #'leetcode--solving-window-layout :override #'+leetcode--solving-window-layout-override)
   (advice-add #'leetcode--display-result :override #'+leetcode--display-result-override)
   (advice-add #'leetcode--display-testcase :override #'+leetcode--display-testcase-override)
   (advice-add #'leetcode--display-detail :override #'+leetcode--display-detail-override)
-  (advice-add #'leetcode--display-code :override #'+leetcode--display-code-override))
+  (advice-add #'leetcode--display-code :override #'+leetcode--display-code-override)
+
+  (defun +leetcode-detail-setup ()
+    (visual-line-mode 1)
+    (word-wrap-whitespace-mode 1))
+
+  :hook
+  (leetcode--problem-detail-mode . +leetcode-detail-setup))
 
 (use-package exercism :disabled
   :custom
