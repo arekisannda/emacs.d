@@ -39,35 +39,9 @@
      ("quit"       . dape-quit)))
 
   (dape-start-hook
-   '(
-     ;; dape-repl
-     dape-info
-     (lambda () (interactive)
-       (if-let ((compilation-buffer (get-buffer "*compilation*")))
-           (quit-window nil (get-buffer-window compilation-buffer)))
-       (select-window (windex-get-mru-in-main)))))
-  :config
-
-  (defun dape-frame (fn &rest r)
-    (interactive)
-    (let ((parent-frame (selected-frame))
-          frame)
-      (setq frame
-            (make-frame
-             (append
-              `((no-other-frame . t)
-                (left           . 0.5)
-                (top            . 0.5)
-                (minibuffer     . t))
-              )))
-      (select-frame-set-input-focus frame t)
-      (with-selected-frame frame
-        (apply fn r))
-      ))
-
-
-  ;; (advice-add #'dape :around #'dape-frame)
-  )
+   '(dape-info dape-repl))
+  :hook
+  (dape-info-parent-mode . emacs-set-alt-face))
 
 (defun +edebug-defun-region ()
   (interactive)

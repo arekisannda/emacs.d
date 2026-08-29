@@ -222,13 +222,13 @@ It will restore the layout based on current buffer's name."
                       '((display-buffer-reuse-window
                          leetcode--display-detail)
                         (reusable-frames . visible)))
-      (display-buffer result-buf
-                      '((display-buffer-reuse-window
-                         leetcode--display-result)
-                        (reusable-frames . visible)))
       (display-buffer testcase-buf
                       '((display-buffer-reuse-window
                          leetcode--display-testcase)
+                        (reusable-frames . visible)))
+      (display-buffer result-buf
+                      '((display-buffer-reuse-window
+                         leetcode--display-result)
                         (reusable-frames . visible)))
       (select-window leetcode--code-window)))
 

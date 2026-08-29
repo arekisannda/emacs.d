@@ -54,6 +54,14 @@
      :size ,util/windows-min-left-width
      :fixed width))
 
+(defun +shackle-display-side-left-preset-size-1 ()
+  `( :custom util/windows-display-buffer-in-side-window
+     :side left
+     :slot 1
+     :dedicated t
+     :size ,util/windows-min-left-width
+     :fixed width))
+
 (defun +shackle-display-side-right-preset-0 ()
   `( :custom util/windows-display-buffer-in-side-window
      :side right
@@ -61,7 +69,7 @@
      :flags (enable-alt-face)
      :fixed width))
 
-(defun +shackle-right-select-preset-0 ()
+(defun +shackle-display-right-select-preset-0 ()
   `(,@(+shackle-display-side-right-preset-0) :select t))
 
 (defun +shackle-display-side-right-preset-1 ()
@@ -73,6 +81,16 @@
 
 (defun +shackle-display-side-right-select-preset-1 ()
   `(,@(+shackle-display-side-right-preset-1) :select t))
+
+(defun +shackle-display-side-right-preset-2 ()
+  `( :custom util/windows-display-buffer-in-side-window
+     :side right
+     :slot 2
+     :flags (enable-alt-face)
+     :fixed width))
+
+(defun +shackle-display-side-right-select-preset-2 ()
+  `(,@(+shackle-display-side-right-preset-2) :select t))
 
 (defun +shackle-display-aux-preset ()
   `( :custom util/windows-display-buffer-in-aux-window
@@ -111,7 +129,6 @@
      "^\\*Org Agenda .*\\*$"
      "^\\*Org Agenda\\*$"
      org-agenda-mode
-     dape-info-parent-mode
      util/windows-temporary-buffer-name
      leetcode--problems-mode
      leetcode--problem-detail-mode))
@@ -212,16 +229,31 @@
        "^\\*Shortdoc.*\\*$"
        "^\\*Customize.*\\*$"
 
+       dape-info-watch-mode
+       dape-info-scope-mode
+
        calc-mode
        Custom-mode
        dictionary-mode)
-      ,@(+shackle-right-select-preset-0)
+      ,@(+shackle-display-right-select-preset-0)
       :size +shackle-get-dimensions)
 
      (("\\*Gnuplot Commands\\*"
        "\\*Gnuplot Trail\\*"
+
+       dape-info-stack-mode
+       dape-info-modules-mode
+       dape-info-sources-mode
+
        calc-trail-mode)
       ,@(+shackle-display-side-right-preset-1)
+      :size +shackle-get-dimensions)
+
+     ((
+       dape-info-breakpoints-mode
+       dape-info-threads-mode
+       )
+      ,@(+shackle-display-side-left-preset-size-1)
       :size +shackle-get-dimensions)
 
      (("^\\*Error\\*$"
@@ -243,6 +275,7 @@
        "^\\*Nix-REPL\\*$"
        "^\\*leetcode-result-.*\\*$"
        "^\\*leetcode-testcase-.*\\*$"
+       dape-repl-mode
        messages-buffer-mode
        ibuffer-mode
        git-rebase-mode
@@ -375,7 +408,7 @@
 
      ((help-mode
        special-mode)
-      ,@(+shackle-right-select-preset-0)
+      ,@(+shackle-display-right-select-preset-0)
       :size +shackle-get-dimensions)
      ))
   :config

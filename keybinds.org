@@ -1586,8 +1586,7 @@
   "j"   '("to char below"   . avy-goto-char-2-below)
   "k"   '("to char above"   . avy-goto-char-2-above)
   "K"   '("to symbol above" . avy-goto-word-1-above)
-  "l"   '("avy line"        . avy-goto-char-in-line)
-  "h"   '("avy line"        . avy-goto-char-in-line)
+  "f"   '("avy line"        . avy-goto-char-in-line)
   "/"   '("avy search"      . avy-goto-char-timer)
   "["   '("avy prev"        . +hydra-avy-motion/avy-prev)
   "]"   '("avy next"        . +hydra-avy-motion/avy-next)
@@ -1801,8 +1800,8 @@
  :keymaps 'motion
  "+"        '("expand"    . expreg-expand)
  "-"        '("contract"  . expreg-contract)
- "t"        '("avy line"  . avy-goto-char-in-line)
- "T"        '("avy line"  . avy-goto-char-in-line)
+ "t"        '("avy line"  . evil-find-char-to)
+ "T"        '("avy line"  . evil-find-char-to-backward)
 
  "<escape>" '("quit"      . keyboard-quit)
 
@@ -1915,6 +1914,8 @@
  "C-w" '("bury"            . tab-line-close-tab-kill-window)
  "q"   '("quit"            . evil-quit)
 
+ "C-s" nil
+ "C-v" nil
  "V"   `("vsplit"          . ,(+window-split split-window-right))
  "v"   `("vsplit focus"    . ,(+window-split-focus-other-window split-window-right))
  "S"   `("ssplit"          . ,(+window-split split-window-below))
