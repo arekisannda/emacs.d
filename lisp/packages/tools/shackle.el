@@ -322,6 +322,7 @@
        "^ \\*CDLaTeX Help\\*"
        "^\\*Org Select\\*$"
        "\\*Multiple Choice Help\\*"
+       "^\\*Choices\\*$"
 
        calendar-mode
        evil-command-window-mode

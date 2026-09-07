@@ -62,6 +62,7 @@ Output only the raw code characters, nothing else — no preamble, no explanatio
   )
 
 (use-package agent-shell
+  :demand t
   :custom
   (agent-shell-dot-subdir-function
    (lambda (subdir)

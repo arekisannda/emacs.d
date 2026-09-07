@@ -20,7 +20,7 @@
     ((nil :background unspecified)))
    (devdocs-code-block
     ((nil :extend t
-          :background ,(doom-color 'bg-alt))))
+          :background ,(doom-color 'bg))))
    ))
 
 (use-package man

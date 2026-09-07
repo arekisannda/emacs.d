@@ -945,10 +945,10 @@
               (derived-mode-p 'prog-mode) +keybinds-dape-debugger-command)
 
  "<f6>"     (general-predicate-dispatch nil 
-              (and dape-active-mode) #'+hydra-dape-motion/dape-step-in)
+              (and (require 'dape nil t) dape-active-mode) #'+hydra-dape-motion/dape-step-in)
 
  "<f7>"     (general-predicate-dispatch #'+compilation-dispatch
-              (and dape-active-mode) #'+hydra-dape-motion/dape-step-out)
+              (and (require 'dape nil t) dape-active-mode) #'+hydra-dape-motion/dape-step-out)
 
  "C-<f7>"   (general-predicate-dispatch #'+recompilation-dispatch)
 
@@ -956,14 +956,14 @@
 
  "<f8>"     (general-predicate-dispatch nil 
               (and (derived-mode-p 'org-mode)) #'org-latex-preview
-              (and dape-active-mode) #'+hydra-dape-motion/dape-next
+              (and (require 'dape nil t) dape-active-mode) #'+hydra-dape-motion/dape-next
               (or (derived-mode-p 'prog-mode) (eglot-managed-p)) #'+eldoc-box)
  
  "C-<f8>"   (general-predicate-dispatch nil
               (or (derived-mode-p 'prog-mode) (eglot-managed-p)) #'eldoc)
 
  "<f9>"     (general-predicate-dispatch #'flyspell-correct-word-before-point
-              (and dape-active-mode) #'+hydra-dape-motion/dape-continue)
+              (and (require 'dape nil t) dape-active-mode) #'+hydra-dape-motion/dape-continue)
 
  "<f10>"    '("menu" . menu-bar-open)
 
