@@ -248,7 +248,7 @@ It will not be recoverable."
     (activities-with activity
       (let* ((name (activities-activity-name activity)))
         (activities--ensure-activity-workspace name)
-        (when-let ((workspace (map-elt activities-activity-workspaces name))
+        (when-let* ((workspace (map-elt activities-activity-workspaces name))
                    (last (activities-workspaces-last workspace)))
           (activities--save-activity-workspace workspace last (selected-frame))))
       ))

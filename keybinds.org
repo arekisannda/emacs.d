@@ -811,7 +811,8 @@
  "<prior>" #'comint-previous-input
  "<next>"  #'comint-next-input
  "M-p"     #'comint-previous-prompt
- "M-n"     #'comint-next-prompt)
+ "M-n"     #'comint-next-prompt
+ "C-l"     #'comint-clear-buffer)
 #+end_src
 *** GhostTTY
 #+begin_src emacs-lisp :tangle yes

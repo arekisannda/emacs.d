@@ -4,7 +4,7 @@
 
 (defun +lang-go-flymake-setup ()
   "Setup to run for `flymake-golanci`."
-  (when-let ((exec (executable-find "golangci-lint")))
+  (when-let* ((exec (executable-find "golangci-lint")))
     (setq-local flymake-golangci-executable exec)
     (flymake-golangci-load)))
 

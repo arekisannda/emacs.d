@@ -225,7 +225,7 @@ treemacs window with a double prefix argument."
       (pcase visibility
         ('visible nil)
         ('exists (display-buffer (treemacs-get-local-buffer-create)))
-        ('none (if-let ((buffer (treemacs-get-local-buffer)))
+        ('none (if-let* ((buffer (treemacs-get-local-buffer)))
                    (display-buffer buffer)
                  (treemacs-autohide--init)))
         )))

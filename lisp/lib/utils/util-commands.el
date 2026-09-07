@@ -80,7 +80,7 @@ Function takes one argument for BUFFER and return list of command entries or nil
                (format "Run command [%s]: "
                        (shrink-path-dirs
                         (or (car (dir-locals-find-file default-directory))
-                            (when-let ((proj (project-current)))
+                            (when-let* ((proj (project-current)))
                               (project-root proj))
                             default-directory)
                         )))

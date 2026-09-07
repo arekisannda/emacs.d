@@ -30,7 +30,6 @@
   (corfu-preview-current nil)
   (corfu-on-exact-match 'show)
   (corfu-cycle nil)
-  (corfu-auto t)
   (corfu-auto-prefix 3)
   (corfu-auto-delay 0.3)
   (corfu-popupinfo-delay (cons nil 0.5))

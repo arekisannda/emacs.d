@@ -21,12 +21,12 @@
   (setq init-file-debug t
         debug-on-error t))
 
-(defalias 'yes-or-no-p 'y-or-n-p)
-
 (setq-default inhibit-message nil
               inhibit-startup-screen t
               inhibit-startup-message t
               inhibit-startup-echo-area-message t
+
+              use-short-answers t
 
               minibuffer-message-timeout 0
               ring-bell-function #'ignore
@@ -48,7 +48,6 @@
               window-divider-default-places t
               window-divider-default-right-width 1
               window-divider-default-bottom-width 1
-              mouse-avoidance-mode 'banish
               display-line-numbers-type 'relative
               display-line-numbers-width 4
               display-line-numbers-widen t
@@ -158,7 +157,7 @@
                 (:eval (when (and tab-bar-mode (activities-current))
                          (format " > %s" (cdr (assq 'name (tab-bar--current-tab))))))
                 (:eval (when (and tab-bar-mode (activities-current))
-                         (when-let ((ws (activities-workspaces-last (activities-current-workspace))))
+                         (when-let* ((ws (activities-workspaces-last (activities-current-workspace))))
                            (format " > %s" ws))))
                 ))
 

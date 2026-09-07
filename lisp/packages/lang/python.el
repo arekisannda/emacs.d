@@ -8,7 +8,7 @@
 
 (defun +lang-python-flymake-setup ()
   "Setup to run for `flymake-ruff`."
-  (when-let ((exec (executable-find "ruff")))
+  (when-let* ((exec (executable-find "ruff")))
     (setq-local flymake-ruff-program exec)
     (flymake-ruff-load)))
 

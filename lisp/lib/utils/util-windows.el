@@ -43,6 +43,12 @@ Function takes two arguments WINDOW and buffer and optional FLAGS."
 
 (defvar util/windows-temporary-buffer-name " *split-sentinel*")
 
+(defun utils/window-display-buffer (buffer window type alist)
+  (if (version< emacs-version "27")
+      (window--display-buffer buffer window type alist
+                              display-buffer-mark-dedicated)
+    (window--display-buffer buffer window type alist)))
+
 (advice-add 'shrink-window-if-larger-than-buffer
             :before-while (lambda (&rest args) util/windows-disable-shrink))
 
@@ -215,7 +221,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
       (walk-windows
        (lambda
          (window)
-         (when-let ((state (funcall state-fn window)))
+         (when-let* ((state (funcall state-fn window)))
            (add-to-list 'window-states state)
            (add-to-list 'windows-to-delete window)))
        'nomini)
@@ -278,13 +284,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (defun util/windows-select-popup-window ()
   (interactive)
-  (when-let ((window (window-with-parameter 'window-popup 'bottom (selected-frame))))
-    (select-window window)))
-
-
-(defun util/windows-select-popup-window ()
-  (interactive)
-  (when-let ((window (window-with-parameter 'window-popup 'bottom (selected-frame))))
+  (when-let* ((window (window-with-parameter 'window-popup 'bottom (selected-frame))))
     (select-window window)))
 
 (defun util/windows-display-buffer-in-popup-window (buffer &optional alist plist)
@@ -306,10 +306,10 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
           (cond
            ((window-live-p popup-window)
             (setq window popup-window)
-            (window--display-buffer buffer window 'reuse alist))
+            (utils/window-display-buffer buffer window 'reuse alist))
            (t
             (setq window (util/windows-split-main-window-below size frame))
-            (window--display-buffer buffer window 'window alist)))
+            (utils/window-display-buffer buffer window 'window alist)))
 
           (with-current-buffer buffer
             (unless (bound-and-true-p util/windows--popup-configured)
@@ -371,7 +371,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (defun util/windows-kill-aux-window (&optional window)
   (interactive)
-  (if-let ((aux-window (util/windows-get-aux-window window)))
+  (if-let* ((aux-window (util/windows-get-aux-window window)))
       (when (window-live-p aux-window)
         (delete-window aux-window))
     ))
@@ -383,12 +383,12 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
     (if (not (util/windows-aux-window-p init-window))
         (user-error "Initial window is not an aux-window.")
       (setq window (window-with-parameter 'window-aux-id (window-parameter window 'window-aux-other)))
-      (window--display-buffer buffer window 'reuse alist))))
+      (utils/window-display-buffer buffer window 'reuse alist))))
 
 (defun util/windows--aux-uuid ()
   (let ((rnd (md5 (format "%s%s%s%s%s%s%s"
                           (random)
-                          (org-time-convert-to-list nil)
+                          (time-convert nil)
                           (user-uid)
                           (emacs-pid)
                           (user-full-name)
@@ -428,13 +428,13 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
        ((util/windows-aux-window-p init-window)
         ;; assumed live if init-window is aux window
         (setq window init-window)
-        (window--display-buffer buffer window 'window alist))
+        (utils/window-display-buffer buffer window 'window alist))
 
        ((and (util/windows-aux-source-window-p init-window)
              (setq window (util/windows-get-aux-window init-window))
              (window-live-p window))
         ;; aux window is live
-        (window--display-buffer buffer window 'window alist))
+        (utils/window-display-buffer buffer window 'window alist))
 
        (t
         ;; aux window is not live
@@ -517,7 +517,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (setq init-window (util/windows-get-aux-other-window init-window)))
 
     (pcase arg
-      (4 (if-let ((window (util/windows-get-aux-window init-window))) (delete-window window)))
+      (4 (if-let* ((window (util/windows-get-aux-window init-window))) (delete-window window)))
 
       (16 (let* ((uuid (or (window-parameter init-window 'window-aux-id)
                            (util/windows--aux-uuid)))
@@ -529,7 +529,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
             (display-buffer buf)
             ))
 
-      (_ (when-let ((window (util/windows-get-aux-other-window init-window)))
+      (_ (when-let* ((window (util/windows-get-aux-other-window init-window)))
            (select-window window)))
       )
     ))

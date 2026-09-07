@@ -78,7 +78,7 @@ The optional ARGS are keyword arguments."
            (default-directory project-dir)
            (term-buffer (format "*vterm - %s*" project-dir))
            buffer)
-      (if-let ((buffer (get-buffer term-buffer)))
+      (if-let* ((buffer (get-buffer term-buffer)))
           (display-buffer buffer)
         (setq buffer (vterm term-buffer))
         (with-current-buffer buffer
@@ -88,7 +88,7 @@ The optional ARGS are keyword arguments."
   (defun +vterm-close-window-on-exit (&optional buffer event)
     (when (and (buffer-live-p buffer)
                (= (length (tab-line-tabs-window-buffers)) 1))
-      (if-let ((window (get-buffer-window buffer)))
+      (if-let* ((window (get-buffer-window buffer)))
           (delete-window window)))))
 
 (use-package ghostel

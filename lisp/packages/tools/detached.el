@@ -65,7 +65,7 @@ This function uses the `notifications' library."
     (let ((session (tabulated-list-get-id))
           (detached-open-session-display-buffer-action
            detached-list-open-session-display-buffer-action))
-      (when-let ((single-window (> (length (window-list)) 1))
+      (when-let* ((single-window (> (length (window-list)) 1))
                  (buffer (current-buffer)))
         (bury-buffer buffer))
       (detached-open-session session)))

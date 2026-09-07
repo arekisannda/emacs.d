@@ -355,7 +355,7 @@
 
      ((".*")
       :if (lambda (_ buffer)
-            (if-let ((buf-name (buffer-file-name buffer)))
+            (if-let* ((buf-name (buffer-file-name buffer)))
                 (when (or (string-prefix-p "/tmp" buf-name)
                           (string-match-p ".*\/.claude\/.*" buf-name))
                   (with-current-buffer buffer
