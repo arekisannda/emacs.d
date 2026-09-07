@@ -23,67 +23,69 @@
      (lines
       (show-lines . t)
       (show-message . t))))
-  :custom-face
-  (hl-line
-   ((nil :background unspecified)))
-  (magit-header-line
-   ((nil :weight bold
-         :box unspecified
-         :inherit header-line
-         :foreground ,(doom-color 'fg)
-         :background ,(doom-color 'bg-alt))))
-  (magit-diff-file-heading-selection
-   ((nil :foreground ,(doom-color 'red)
-         :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg) 0.1))))
-  (magit-diff-hunk-heading
-   ((nil :foreground ,(doom-color 'violet)
-         :background ,(doom-blend (doom-color 'violet) (doom-color 'bg) 0.1))))
-  (magit-diff-hunk-heading-highlight
-   ((nil :foreground ,(doom-color 'violet)
-         :background ,(doom-blend (doom-color 'violet) (doom-color 'bg) 0.1))))
-  (magit-diff-hunk-heading-selection
-   ((nil :foreground ,(doom-color 'red))))
-
-  (magit-diff-context
-   ((nil :weight regular
-         :inherit diff-context
-         :foreground unspecified
-         :background ,(doom-color 'bg-alt))))
-
-  (magit-diff-context-highlight
-   ((nil :weight regular
-         :inherit diff-context
-         :foreground unspecified
-         :background ,(doom-color 'bg-alt))))
-
-  (magit-diff-added
-   ((nil :weight regular
-         :inherit diff-refine-added
-         :foreground unspecified
-         :background unspecified)))
-  (magit-diff-added-highlight
-   ((nil :weight regular
-         :inherit diff-refine-added
-         :foreground unspecified
-         :background unspecified)))
-
-  (magit-diff-removed
-   ((nil :weight regular
-         :inherit diff-refine-removed
-         :foreground unspecified
-         :background unspecified)))
-  (magit-diff-removed-highlight
-   ((nil :weight regular
-         :inherit diff-refine-removed
-         :foreground unspecified
-         :background unspecified)))
-
-  (magit-blame-highlight
-   ((nil :foreground unspecified
-         :background ,(doom-color 'bg-alt))))
-  (magit-blame-heading
-   ((nil :background ,(doom-color 'bg-alt))))
   :config
+  (utils/custom-set-faces
+   (hl-line
+    ((nil :background unspecified)))
+   (magit-header-line
+    ((nil :weight bold
+          :box unspecified
+          :inherit header-line
+          :foreground ,(doom-color 'fg)
+          :background ,(doom-color 'bg-alt))))
+   (magit-diff-file-heading-selection
+    ((nil :foreground ,(doom-color 'red)
+          :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg) 0.1))))
+   (magit-diff-hunk-heading
+    ((nil :foreground ,(doom-color 'violet)
+          :background ,(doom-blend (doom-color 'violet) (doom-color 'bg) 0.1))))
+   (magit-diff-hunk-heading-highlight
+    ((nil :foreground ,(doom-color 'violet)
+          :background ,(doom-blend (doom-color 'violet) (doom-color 'bg) 0.1))))
+   (magit-diff-hunk-heading-selection
+    ((nil :foreground ,(doom-color 'red))))
+
+   (magit-diff-context
+    ((nil :weight regular
+          :inherit diff-context
+          :foreground unspecified
+          :background ,(doom-color 'bg-alt))))
+
+   (magit-diff-context-highlight
+    ((nil :weight regular
+          :inherit diff-context
+          :foreground unspecified
+          :background ,(doom-color 'bg-alt))))
+
+   (magit-diff-added
+    ((nil :weight regular
+          :inherit diff-refine-added
+          :foreground unspecified
+          :background unspecified)))
+   (magit-diff-added-highlight
+    ((nil :weight regular
+          :inherit diff-refine-added
+          :foreground unspecified
+          :background unspecified)))
+
+   (magit-diff-removed
+    ((nil :weight regular
+          :inherit diff-refine-removed
+          :foreground unspecified
+          :background unspecified)))
+   (magit-diff-removed-highlight
+    ((nil :weight regular
+          :inherit diff-refine-removed
+          :foreground unspecified
+          :background unspecified)))
+
+   (magit-blame-highlight
+    ((nil :foreground unspecified
+          :background ,(doom-color 'bg-alt))))
+   (magit-blame-heading
+    ((nil :background ,(doom-color 'bg-alt))))
+   )
+
   (defun +magit-repolist-setup-override (columns)
     (unless magit-repository-directories
       (user-error "You need to customize `magit-repository-directories' %s"
@@ -105,87 +107,89 @@
   (pr-review-fringe-icons nil)
   (pr-review-section-indent-width 2)
   (pr-review-diff-font-lock-syntax nil)
-  :custom-face
-  (pr-review-author-face
-   ((nil :weight normal
-         :foreground ,(doom-color 'fg-alt)
-         )))
-
-  (pr-review-branch-face
-   ((nil :inherit unspecified
-         :weight bold
-         :foreground ,(doom-color 'green))))
-
-  (pr-review-title-face
-   ((nil :inherit font-lock-type-face)))
-
-  (pr-review-button-face
-   ((nil :inherit font-lock-comment-face)))
-
-  (pr-review-check-face
-   ((nil :foreground ,(doom-color 'yellow))))
-
-  (pr-review-thread-comment-face
-   ((nil :inherit hl-line)))
-
-  (pr-review-timestamp-face
-   ((nil :height 0.8 :slant italic :foreground ,(doom-color 'fg-alt))))
-
-  (pr-review-link-face
-   ((nil :inherit default)))
-
-  (pr-review-success-state-face
-   ((nil :inherit success)))
-
-  (pr-review-error-state-face
-   ((nil :inherit error)))
-
-  (pr-review-info-state-face
-   ((nil :inherit default :slant italic :foreground ,(doom-color 'fg-alt))))
-
-  (pr-review-state-face
-   ((nil :inherit default)))
-
-  (pr-review-hash-face
-   ((nil :inherit font-lock-comment-face)))
-
-  (pr-review-label-face
-   ((nil :inherit unspecified :box unspecified)))
-
-  (pr-review-thread-item-title-face
-   ((nil :inherit font-lock-constant-face)))
-
-  (pr-review-reaction-face
-   ((nil :inherit unspecified
-         :height 1.0
-         :foreground ,(doom-color 'dark-blue)
-         :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg-alt) 0.25)
-         :box (:line-width (4 . 2) :color nil :style flat-button)
-         )))
-
-  (pr-review-in-diff-thread-title-face
-   ((nil :inherit hl-line
-         :foreground ,(doom-color 'fg-alt)
-         :background ,(doom-color 'bg-alt)
-         )))
-
-  (pr-review-in-diff-pending-body-face
-   ((nil :inherit hl-line
-         :foreground unspecified
-         :background ,(doom-color 'bg-alt)
-         )))
-  (pr-review-in-diff-pending-begin-face
-   ((nil :inherit hl-line
-         :foreground ,(doom-color 'fg-alt)
-         :background ,(doom-color 'bg-alt)
-         )))
-
-  (pr-review-in-diff-pending-end-face
-   ((nil :inherit hl-line
-         :foreground ,(doom-color 'fg-alt)
-         :background ,(doom-color 'bg-alt)
-         )))
   :config
+  (utils/custom-set-faces
+   (pr-review-author-face
+    ((nil :weight normal
+          :foreground ,(doom-color 'fg-alt)
+          )))
+
+   (pr-review-branch-face
+    ((nil :inherit unspecified
+          :weight bold
+          :foreground ,(doom-color 'green))))
+
+   (pr-review-title-face
+    ((nil :inherit font-lock-type-face)))
+
+   (pr-review-button-face
+    ((nil :inherit font-lock-comment-face)))
+
+   (pr-review-check-face
+    ((nil :foreground ,(doom-color 'yellow))))
+
+   (pr-review-thread-comment-face
+    ((nil :inherit hl-line)))
+
+   (pr-review-timestamp-face
+    ((nil :height 0.8 :slant italic :foreground ,(doom-color 'fg-alt))))
+
+   (pr-review-link-face
+    ((nil :inherit default)))
+
+   (pr-review-success-state-face
+    ((nil :inherit success)))
+
+   (pr-review-error-state-face
+    ((nil :inherit error)))
+
+   (pr-review-info-state-face
+    ((nil :inherit default :slant italic :foreground ,(doom-color 'fg-alt))))
+
+   (pr-review-state-face
+    ((nil :inherit default)))
+
+   (pr-review-hash-face
+    ((nil :inherit font-lock-comment-face)))
+
+   (pr-review-label-face
+    ((nil :inherit unspecified :box unspecified)))
+
+   (pr-review-thread-item-title-face
+    ((nil :inherit font-lock-constant-face)))
+
+   (pr-review-reaction-face
+    ((nil :inherit unspecified
+          :height 1.0
+          :foreground ,(doom-color 'dark-blue)
+          :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg-alt) 0.25)
+          :box (:line-width (4 . 2) :color nil :style flat-button)
+          )))
+
+   (pr-review-in-diff-thread-title-face
+    ((nil :inherit hl-line
+          :foreground ,(doom-color 'fg-alt)
+          :background ,(doom-color 'bg-alt)
+          )))
+
+   (pr-review-in-diff-pending-body-face
+    ((nil :inherit hl-line
+          :foreground unspecified
+          :background ,(doom-color 'bg-alt)
+          )))
+   (pr-review-in-diff-pending-begin-face
+    ((nil :inherit hl-line
+          :foreground ,(doom-color 'fg-alt)
+          :background ,(doom-color 'bg-alt)
+          )))
+
+   (pr-review-in-diff-pending-end-face
+    ((nil :inherit hl-line
+          :foreground ,(doom-color 'fg-alt)
+          :background ,(doom-color 'bg-alt)
+          )))
+   )
+
   (defvar-keymap pr-review-minor-mode-map
     :doc "Keymap for pr-review minor mode."
     "C-RET"      #'pr-review-at-point

@@ -67,15 +67,15 @@
      (file   (vertico-sort-function . +vertico-sort-directories-first))))
   (vertico-sort-function #'vertico-sort-history-length-alpha)
   (vertico-sort-override-function #'vertico-sort-history-length-alpha)
-  :custom-face
-  (vertico-default
-   ((nil :inherit tooltip
-         :background ,(doom-color 'bg-alt))))
-  (vertico-current
-   ((nil :inherit default
-         :foreground ,(doom-color 'fg)
-         :background ,(doom-color 'bg))))
   :config
+  (utils/custom-set-faces
+   (vertico-default
+    ((nil :inherit tooltip
+          :background ,(doom-color 'bg-alt))))
+   (vertico-current
+    ((nil :inherit default
+          :foreground ,(doom-color 'fg)
+          :background ,(doom-color 'bg)))))
   (advice-add
    #'vertico--format-candidate :around
    (lambda (orig-fun cand prefix suffix index start)
@@ -137,28 +137,28 @@
       :max-width 200
       :lines-truncate t
       )))
-  :custom-face
-  (vertico-posframe
-   ((nil :inherit tooltip
-         :foreground unspecified
-         :background ,(doom-color 'bg-alt))))
-  (vertico-posframe-border
-   ((nil :inherit popup-border
-         :background unspecified
-         :foreground unspecified)))
-  (vertico-posframe-border-2
-   ((nil :inherit default
-         :background ,(doom-color 'orange))))
-  (vertico-posframe-border-3
-   ((nil :inherit default
-         :background ,(doom-color 'yellow))))
-  (vertico-posframe-border-4
-   ((nil :inherit default
-         :background ,(doom-color 'base8))))
-  (vertico-posframe-border-fallback
-   ((nil :inherit default
-         :background ,(doom-color 'vertical-bar))))
   :config
+  (utils/custom-set-faces
+   (vertico-posframe
+    ((nil :inherit tooltip
+          :foreground unspecified
+          :background ,(doom-color 'bg-alt))))
+   (vertico-posframe-border
+    ((nil :inherit popup-border
+          :background unspecified
+          :foreground unspecified)))
+   (vertico-posframe-border-2
+    ((nil :inherit default
+          :background ,(doom-color 'orange))))
+   (vertico-posframe-border-3
+    ((nil :inherit default
+          :background ,(doom-color 'yellow))))
+   (vertico-posframe-border-4
+    ((nil :inherit default
+          :background ,(doom-color 'base8))))
+   (vertico-posframe-border-fallback
+    ((nil :inherit default
+          :background ,(doom-color 'vertical-bar)))))
 
   (defvar vertico-posframe-last-command nil)
 
@@ -200,7 +200,6 @@ vertico-posframe works with vertico multiform toggle."
   :custom
   (marginalia-field-width 60)
   :config
-
   (defun marginalia-annotate-function-override (cand)
     "Annotate function CAND with its documentation string."
     (when-let* ((sym (intern-soft cand)))
@@ -212,21 +211,21 @@ vertico-posframe works with vertico multiform toggle."
 
   (advice-add #'marginalia-annotate-function :override #'marginalia-annotate-function-override)
 
-(defun marginalia-annotate-variable-override (cand)
-  "Annotate variable CAND with its documentation string."
-  (when-let* ((sym (intern-soft cand)))
-    (marginalia--fields
-     ((marginalia--symbol-class sym) :face 'marginalia-type)
-     ((marginalia--variable-value sym) :truncate 1.0))))
+  (defun marginalia-annotate-variable-override (cand)
+    "Annotate variable CAND with its documentation string."
+    (when-let* ((sym (intern-soft cand)))
+      (marginalia--fields
+       ((marginalia--symbol-class sym) :face 'marginalia-type)
+       ((marginalia--variable-value sym) :truncate 1.0))))
 
   (advice-add #'marginalia-annotate-variable :override #'marginalia-annotate-variable-override)
 
-(defun marginalia-annotate-face-override (cand)
-  "Annotate face CAND with its documentation string and face example."
-  (when-let* ((sym (intern-soft cand)))
-    (marginalia--fields
-     ((concat marginalia--pangram #(" " 0 1 (display (space :align-to right))))
-      :face sym))))
+  (defun marginalia-annotate-face-override (cand)
+    "Annotate face CAND with its documentation string and face example."
+    (when-let* ((sym (intern-soft cand)))
+      (marginalia--fields
+       ((concat marginalia--pangram #(" " 0 1 (display (space :align-to right))))
+        :face sym))))
 
   (advice-add #'marginalia-annotate-face :override #'marginalia-annotate-face-override))
 

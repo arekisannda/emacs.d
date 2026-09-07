@@ -7,10 +7,11 @@
   (flymake-show-diagnostics-at-end-of-line nil)
   (flymake-fringe-indicator-position nil)
   (flymake-indicator-type nil)
-  :custom-face
-  (flymake-warning
-   ((nil :underline (:style wave :color ,(doom-color 'orange)))))
   :config
+  (utils/custom-set-faces
+   (flymake-warning
+    ((nil :underline (:style wave :color ,(doom-color 'orange)))))
+   )
 
   (defun flymake-show-buffer-diagnostics-override (&optional diagnostic)
     "Show listing of Flymake diagnostics for current buffer.

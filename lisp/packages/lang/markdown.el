@@ -3,13 +3,15 @@
 (require 'util-lang)
 
 (use-package markdown-mode
-  :custom-face
-  (markdown-code-face
-   ((nil :background unspecified :inherit tooltip)))
   :custom
   (markdown-command "multimarkdown")
   (markdown-fontify-code-blocks-natively t)
   :config
+  (utils/custom-set-faces
+   (markdown-code-face
+    ((nil :background unspecified :inherit tooltip)))
+   )
+
   (util/update-alist
    'markdown-code-lang-modes
    '(("go"         . go-mode)

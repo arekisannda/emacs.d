@@ -9,13 +9,15 @@
   (aw-dispatch-always nil)
   (aw-display-mode-overlay nil)
   (aw-background t)
-  :custom-face
-  (aw-leading-char-face
-   ((nil :weight bold
-         :height 1.0
-         :background ,(doom-color 'red)
-         :foreground ,(doom-color 'bg))))
   :config
+  (utils/custom-set-faces
+   (aw-leading-char-face
+    ((nil :weight bold
+          :height 1.0
+          :background ,(doom-color 'red)
+          :foreground ,(doom-color 'bg))))
+   )
+
   (defun +ace-swap-window ()
     "Ace swap window."
     (interactive)

@@ -3,21 +3,6 @@
 (use-package dape
   :preface
   (setq dape-key-prefix nil)
-  :custom-face
-  (dape-breakpoint-face
-   ((nil :stipple nil)))
-  (dape-header-line-active-face
-   ((nil :stipple nil
-         :foreground ,(doom-color 'fg)
-         :background ,(doom-color 'bg)
-         :overline nil
-         )))
-  (dape-header-line-inactive-face
-   ((nil :stipple nil
-         :foreground ,(doom-color 'fg-alt)
-         :background ,(doom-color 'bg-alt)
-         :overline nil
-         )))
   :custom
   (dape-active-mode nil)
   (dape-inlay-hints nil)
@@ -40,6 +25,24 @@
 
   (dape-start-hook
    '(dape-info dape-repl))
+
+  :config
+  (utils/custom-set-faces
+   (dape-breakpoint-face
+    ((nil :stipple nil)))
+   (dape-header-line-active-face
+    ((nil :stipple nil
+          :foreground ,(doom-color 'fg)
+          :background ,(doom-color 'bg)
+          :overline nil
+          )))
+   (dape-header-line-inactive-face
+    ((nil :stipple nil
+          :foreground ,(doom-color 'fg-alt)
+          :background ,(doom-color 'bg-alt)
+          :overline nil
+          )))
+   )
   :hook
   (dape-info-parent-mode . emacs-set-alt-face))
 

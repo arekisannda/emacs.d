@@ -5,11 +5,11 @@
   (embark-indicators '(+vertico-embark-which-key-indicator
                        embark-highlight-indicator
                        embark-isearch-highlight-indicator))
-  :custom-face
-  (embark-selected
-   ((nil :inherit unspecified
-         :foreground ,(doom-color 'magenta))))
   :config
+  (utils/custom-set-faces
+   (embark-selected
+    ((nil :inherit unspecified
+          :foreground ,(doom-color 'magenta)))))
   (defvar +vertico-embark-prompter-map (make-sparse-keymap)
     "Embark completion read prompter map.")
 

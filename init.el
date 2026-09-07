@@ -76,6 +76,7 @@
   (pcase (getenv "XDG_CURRENT_DESKTOP")
     ("sway" (+load "lisp/scripts/swaywm")))
 
-  (+load "keybinds.org"))
+  (+load "keybinds.org")
+  (mouse-avoidance-mode 'banish))
 
 (put 'narrow-to-region 'disabled nil)

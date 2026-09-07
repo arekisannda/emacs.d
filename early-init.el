@@ -173,3 +173,5 @@
             (lambda ()
               (with-current-buffer "*Messages*"
                 (write-region (point-min) (point-max) "/tmp/emacs-messages.log")))))
+
+(require 'compile)

@@ -40,14 +40,16 @@
 (use-package treesit-fold :after treesit
   :custom
   (treesit-fold-replacement +fold-replacement)
-  :custom-face
-  (treesit-fold-replacement-face
-   ((nil :inherit fold-replacement-face
-         :box unspecified
-         :weight unspecified
-         :foreground unspecified
-         :background unspecified
-         )))
+  :config
+  (utils/custom-set-faces
+   (treesit-fold-replacement-face
+    ((nil :inherit fold-replacement-face
+          :box unspecified
+          :weight unspecified
+          :foreground unspecified
+          :background unspecified
+          )))
+   )
   :hook
   (treesit-fold-mode-on . (lambda () (setq-local util/fold-type 'treesit-fold
                                                  util/fold-show #'treesit-fold-open

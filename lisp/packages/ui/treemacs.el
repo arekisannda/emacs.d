@@ -24,22 +24,22 @@
                                  (tag-node . treemacs-visit-node-in-most-recently-used-window)))
   (treemacs-collapse-dirs 0)
   (treemacs-sorting 'alphabetic-numeric-asc)
-  :custom-face
-  (treemacs-nerd-icons-root-face
-   ((nil :height 1.0)))
-  (treemacs-root-face
-   ((nil :height 1.1 :weight normal :foreground ,(doom-color 'violet))))
-  (treemacs-window-background-face
-   ((nil :background ,(doom-color 'bg-alt))))
-  (treemacs-file-face
-   ((nil :foreground ,(doom-color 'fg))))
-  (treemacs-hl-line-face
-   ((nil :background ,(doom-color 'bg))))
-  (treemacs-fringe-indicator-face
-   ((nil :foreground unspecified)))
-  (treemacs-peek-mode-indicator-face
-   ((nil :background ,(doom-color 'green))))
   :config
+  (utils/custom-set-faces
+   (treemacs-nerd-icons-root-face
+    ((nil :height 1.0)))
+   (treemacs-root-face
+    ((nil :height 1.1 :weight normal :foreground ,(doom-color 'violet))))
+   (treemacs-window-background-face
+    ((nil :background ,(doom-color 'bg-alt))))
+   (treemacs-file-face
+    ((nil :foreground ,(doom-color 'fg))))
+   (treemacs-hl-line-face
+    ((nil :background ,(doom-color 'bg))))
+   (treemacs-fringe-indicator-face
+    ((nil :foreground unspecified)))
+   (treemacs-peek-mode-indicator-face
+    ((nil :background ,(doom-color 'green)))))
   (defun treemacs-visit-node-in-most-recently-used-window (&optional arg)
     "Open current file or tag in window selected by `get-mru-window'.
 Stay in the current window with a single prefix argument ARG, or close the

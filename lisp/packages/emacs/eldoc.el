@@ -13,16 +13,6 @@
     (min max-height set-height)))
 
 (use-package eldoc-box :after (eldoc windex-scroll)
-  :custom-face
-  (eldoc-box-body
-   ((nil :inherit default
-         :background ,(doom-color 'bg-alt))))
-  (eldoc-box-border
-   ((nil :inherit popup-border
-         :background unspecified
-         :foreground unspecified)))
-  (eldoc-box-markdown-separator
-   ((nil :foreground "#323232")))
   :custom
   (eldoc-box-max-pixel-width #'+eldoc-box-max-width)
   (eldoc-box-max-pixel-height #'+eldoc-box-max-height)
@@ -59,6 +49,19 @@
           (tab-bar-lines . 0)
           (tab-bar-lines-keep-state . 1)))
   :config
+
+  (utils/custom-set-faces
+   (eldoc-box-body
+    ((nil :inherit default
+          :background ,(doom-color 'bg-alt))))
+   (eldoc-box-border
+    ((nil :inherit popup-border
+          :background unspecified
+          :foreground unspecified)))
+   (eldoc-box-markdown-separator
+    ((nil :foreground "#323232")))
+   )
+
   (add-to-list 'eldoc-box-self-insert-command-list 'eldoc-box-scroll-up)
   (add-to-list 'eldoc-box-self-insert-command-list 'eldoc-box-scroll-down)
   (add-to-list 'eldoc-box-self-insert-command-list 'eldoc-box-scroll-left)
@@ -244,7 +247,7 @@ If INTERACTIVE is t, also display the buffer."
     (interactive)
     (let ((window (selected-window)))
       (when (or (util/windows-side-window-p window)
-                  (util/windows-popup-window-p window))
+                (util/windows-popup-window-p window))
         (user-error "Window is cannot be split.")))
     (if-let* ((uuid (window-parameter (util/windows-get-aux-window (selected-window)) 'window-aux-other))
               (buf-name (format "*eldoc %s*" uuid))

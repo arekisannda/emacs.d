@@ -86,11 +86,13 @@
   (windex-posframe-poshandler #'posframe-poshandler-frame-center)
   (windex-posframe-min-width (ceiling (* (frame-width) 0.8)))
   (windex-posframe-min-height (ceiling (* (frame-height) 0.6)))
-  :custom-face
-  (windex-posframe-border
-   ((nil :inherit popup-border
-         :background unspecified
-         :foreground unspecified))))
+  :config
+  (utils/custom-set-faces
+   (windex-posframe-border
+    ((nil :inherit popup-border
+          :background unspecified
+          :foreground unspecified)))
+   ))
 
 (use-package windex-frame
   :config

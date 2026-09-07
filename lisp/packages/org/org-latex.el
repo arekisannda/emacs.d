@@ -1,6 +1,7 @@
 ;;; org/org-latex.el -*- lexical-binding: t; -*-
 
-(use-package nil :after org ;; org-latex
+(use-package emacs :after org ;; org-latex
+  :ensure nil
   :custom
   (org-latex-compiler "lualatex")
   (org-latex-packages-alist

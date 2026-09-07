@@ -1,14 +1,16 @@
 ;;; editor/snippets.el -*- lexical-binding: t; -*-
 
 (use-package yasnippet
-  :custom-face
-  (yas-field-highlight-face
-   ((nil :inherit region)))
   :custom
   (yas-indent-line 'fixed)
   (yas-keymap-disable-hook
    (lambda () (and (frame-live-p corfu--frame)
                    (frame-visible-p corfu--frame))))
+  :config
+  (utils/custom-set-faces
+   (yas-field-highlight-face
+    ((nil :inherit region)))
+   )
   :diminish yas-minor-mode)
 
 (use-package yasnippet-snippets :after yasnippet

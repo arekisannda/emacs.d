@@ -126,20 +126,20 @@
      (0.50000 . org-upcoming-deadline)
      (0.00000 . org-upcoming-distant-deadline)))
 
-  :custom-face
-  (org-imminent-deadline
-   ((nil :inherit unspecifed :foreground ,(doom-color 'fg))))
-  (org-upcoming-deadline
-   ((nil :inherit unspecifed :foreground ,(doom-color 'fg-alt))))
-  (org-upcoming-distant-deadline
-   ((nil :inherit unspecifed :foreground ,(doom-color 'grey))))
-
-  (org-column
-   ((nil :background unspecified)))
-  (org-column-title
-   ((nil :background unspecified)))
-
   :config
+  (utils/custom-set-faces
+   (org-imminent-deadline
+    ((nil :inherit unspecifed :foreground ,(doom-color 'fg))))
+   (org-upcoming-deadline
+    ((nil :inherit unspecifed :foreground ,(doom-color 'fg-alt))))
+   (org-upcoming-distant-deadline
+    ((nil :inherit unspecifed :foreground ,(doom-color 'grey))))
+   (org-column
+    ((nil :background unspecified)))
+   (org-column-title
+    ((nil :background unspecified)))
+   )
+
   (defun +org-column-setup (&rest _)
     (mapcar (lambda (face) (face-remap-set-base face :height 1.0))
             '( org-level-1 org-level-2 org-level-3 org-level-4

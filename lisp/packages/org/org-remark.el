@@ -7,15 +7,17 @@
   (org-remark-notes-auto-delete :auto-delete)
   (org-remark-notes-buffer-name "*remark-notes*")
   (org-remark-notes-display-buffer-action '())
-  :custom-face
-  (org-remark-highlighter
-   ((nil :inherit default
-         :weight bold)))
-  (org-remark-highlighter-warning
-   ((nil :inherit default
-         :weight bold
-         :foreground ,(doom-darken (doom-color 'yellow) 0.2))))
   :config
+  (utils/custom-set-faces
+   (org-remark-highlighter
+    ((nil :inherit default
+          :weight bold)))
+   (org-remark-highlighter-warning
+    ((nil :inherit default
+          :weight bold
+          :foreground ,(doom-darken (doom-color 'yellow) 0.2))))
+   )
+
   (org-remark-global-tracking-mode +1)
   (org-remark-line-mode +1)
 

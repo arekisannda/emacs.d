@@ -1,51 +1,6 @@
 ;;; ui/modeline.el -*- lexical-binding: t; -*-
 
 (use-package doom-modeline
-  :custom-face
-  (mode-line
-   ((nil :background ,(doom-color 'bg))))
-  (mode-line-active
-   ((nil :background ,(doom-color 'bg))))
-  (mode-line-inactive
-   ((nil :background ,(doom-color 'bg))))
-  (doom-modeline-bar
-   ((nil :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'bg-alt))))
-  (doom-modeline-bar-inactive
-   ((nil :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'bg-alt))))
-  (doom-modeline-evil-insert-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'green))))
-  (doom-modeline-evil-normal-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'blue))))
-  (doom-modeline-evil-visual-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'yellow))))
-  (doom-modeline-evil-replace-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'red))))
-  (doom-modeline-evil-motion-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'magenta))))
-  (doom-modeline-evil-operator-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'orange))))
-  (doom-modeline-evil-emacs-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'violet))))
-  (doom-modeline-evil-user-state
-   ((nil :weight bold
-         :foreground ,(doom-color 'bg-alt)
-         :background ,(doom-color 'vertical-bar))))
   :custom
   (doom-modeline-bar-width 2)
   (doom-modeline-height 15)
@@ -56,6 +11,53 @@
   (doom-modeline-env-version nil)
   (mode-line-right-align-edge 'right-fringe)
   :config
+  (utils/custom-set-faces
+   (mode-line
+    ((nil :background ,(doom-color 'bg))))
+   (mode-line-active
+    ((nil :background ,(doom-color 'bg))))
+   (mode-line-inactive
+    ((nil :background ,(doom-color 'bg))))
+   (doom-modeline-bar
+    ((nil :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'bg-alt))))
+   (doom-modeline-bar-inactive
+    ((nil :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'bg-alt))))
+   (doom-modeline-evil-insert-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'green))))
+   (doom-modeline-evil-normal-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'blue))))
+   (doom-modeline-evil-visual-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'yellow))))
+   (doom-modeline-evil-replace-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'red))))
+   (doom-modeline-evil-motion-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'magenta))))
+   (doom-modeline-evil-operator-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'orange))))
+   (doom-modeline-evil-emacs-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'violet))))
+   (doom-modeline-evil-user-state
+    ((nil :weight bold
+          :foreground ,(doom-color 'bg-alt)
+          :background ,(doom-color 'vertical-bar))))
+   )
+
   (doom-modeline-def-segment evil
     "Display evil mode states."
     (when (bound-and-true-p evil-mode)

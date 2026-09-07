@@ -126,6 +126,12 @@ PATCHBUF is the buffer where the diff output will be written."
          (goto-char (or end (region-end)))
          (or (eolp) (bolp)))))
 
+(defmacro utils/custom-set-faces (&rest specs)
+  "Apply SPECS via `custom-set-faces', now and after every theme load."
+  `(let ((fn (lambda (&rest _) (apply #'custom-set-faces (backquote ,specs)))))
+     (add-hook 'enable-theme-functions fn)
+     (funcall fn)))
+
 (provide 'util-helpers)
 
 ;;; util-helpers.el ends here
