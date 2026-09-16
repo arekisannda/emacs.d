@@ -41,9 +41,6 @@
   (+fonts-fixed-pitch-family "SauceCodePro NFM")
   (+fonts-fixed-pitch-italic-family "SauceCodePro NFM")
   (+fonts-variable-pitch-family "SauceCodePro NFP")
-  (+fonts-fixed-pitch-size 90)
-  (+fonts-variable-pitch-size 90)
-  (+fonts-tab-size 100)
   :config
   (utils/custom-set-faces
    (shadow

@@ -67,6 +67,7 @@
      :side right
      :slot 0
      :flags (enable-alt-face)
+     :dedicated t
      :fixed width))
 
 (defun +shackle-display-right-select-preset-0 ()
@@ -77,6 +78,7 @@
      :side right
      :slot 1
      :flags (enable-alt-face)
+     :dedicated t
      :fixed width))
 
 (defun +shackle-display-side-right-select-preset-1 ()
@@ -87,6 +89,7 @@
      :side right
      :slot 2
      :flags (enable-alt-face)
+     :dedicated t
      :fixed width))
 
 (defun +shackle-display-side-right-select-preset-2 ()
@@ -189,7 +192,8 @@
        pdf-view-mode)
       :same t :select t)
 
-     ((magit-mode
+     ((calc-mode
+       magit-mode
        code-review-mode
        pr-review-mode
        forge-repository-list-mode)
@@ -207,7 +211,7 @@
        "^\\*yasnippet-capf-doc\\*$"
        "^\\*corfu doc.*\\*$"
        "^\\*org-roam\\*$"
-
+       "^\\*Shortdoc.*\\*$"
        org-roam-mode
        evil-list-view-mode)
       ,@(+shackle-display-aux-preset))
@@ -215,7 +219,12 @@
      (("^\\*notes .*\\*$"
        "^\\*Code Review Comment\\*$"
        "^COMMIT_EDITMSG$"
+       "^\\*Dictionary\\*.*$"
+       "\\*Gnuplot Trail\\*"
+       "\\*Gnuplot Commands\\*"
 
+       calc-trail-mode
+       dictionary-mode
        pr-review-input-mode
        forge-post-mode
        code-review-comment-mode
@@ -223,36 +232,24 @@
       ,@(+shackle-display-aux-preset)
       :select t)
 
-     (("^\\*Dictionary\\*$"
-       "^\\*Customize Apropos\\*$"
+     (("^\\*Customize Apropos\\*$"
        "^\\*Customize .*\\*$"
-       "^\\*Shortdoc.*\\*$"
        "^\\*Customize.*\\*$"
-
-       dape-info-watch-mode
-       dape-info-scope-mode
-
-       calc-mode
        Custom-mode
-       dictionary-mode)
+       dape-info-watch-mode
+       dape-info-scope-mode)
       ,@(+shackle-display-right-select-preset-0)
       :size +shackle-get-dimensions)
 
-     (("\\*Gnuplot Commands\\*"
-       "\\*Gnuplot Trail\\*"
-
+     ((
        dape-info-stack-mode
        dape-info-modules-mode
-       dape-info-sources-mode
-
-       calc-trail-mode)
+       dape-info-sources-mode)
       ,@(+shackle-display-side-right-preset-1)
       :size +shackle-get-dimensions)
 
-     ((
-       dape-info-breakpoints-mode
-       dape-info-threads-mode
-       )
+     ((dape-info-breakpoints-mode
+       dape-info-threads-mode)
       ,@(+shackle-display-side-left-preset-size-1)
       :size +shackle-get-dimensions)
 
@@ -275,6 +272,8 @@
        "^\\*Nix-REPL\\*$"
        "^\\*leetcode-result-.*\\*$"
        "^\\*leetcode-testcase-.*\\*$"
+       "^\\*Bookmark List\\*$"
+       bookmark-menu-mode
        dape-repl-mode
        messages-buffer-mode
        ibuffer-mode

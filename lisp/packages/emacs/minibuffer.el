@@ -18,6 +18,14 @@
 (use-package minibuffer
   :custom
   (minibuffer-message-clear-timeout 0)
+  :config
+  (utils/custom-set-faces
+   (minibuffer-nonselected
+    ((nil :inherit unspecified
+          :foreground ,(doom-color 'orange)
+          :background ,(doom-color 'bg)
+          )))
+   )
   :hook
   (messages-buffer-mode . +emacs-message-buffer-setup)
   (minibuffer-setup     . +emacs-minibuffer-setup)

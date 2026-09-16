@@ -90,6 +90,8 @@
 
   (org-expiry-inactive-timestamps t)
 
+  (org-columns-default-format "%50ITEM %TODO %2PRIORITY %EFFORT %TAGS")
+
   (org-todo-keywords
    '((sequence "TODO" "ONGOING" "TESTING" "PENDING" "|" "DONE" "VOID" )))
 
@@ -126,8 +128,21 @@
      (0.50000 . org-upcoming-deadline)
      (0.00000 . org-upcoming-distant-deadline)))
 
+  (org-priority-highest ?A)
+  (org-priority-lowest ?E)
+  (org-priority-default ?E)
+
+  (org-priority-faces
+      '((?A . (:foreground "#ffffff" :weight semibold))
+        (?B . (:foreground "#ff0000" :weight semibold))
+        (?C . (:foreground "#ffff00" :weight semibold))
+        (?D . (:foreground "#00d200" :weight semibold))
+        (?E . (:foreground "#008eff" :weight semibold))))
+
   :config
   (utils/custom-set-faces
+   (org-column-title
+    ((nil :foreground ,(doom-color 'vertical-bar))))
    (org-imminent-deadline
     ((nil :inherit unspecifed :foreground ,(doom-color 'fg))))
    (org-upcoming-deadline
@@ -137,16 +152,20 @@
    (org-column
     ((nil :background unspecified)))
    (org-column-title
-    ((nil :background unspecified)))
+    ((nil :foreground ,(doom-color 'grey))))
+   (org-priority
+    ((nil :foreground unspecified)))
    )
 
   (defun +org-column-setup (&rest _)
+    (setq-local evil-cross-lines t)
     (mapcar (lambda (face) (face-remap-set-base face :height 1.0))
             '( org-level-1 org-level-2 org-level-3 org-level-4
                org-level-5 org-level-6 org-level-7 org-level-8))
     (org-columns-content))
 
   (defun +org-column-teardown (&rest r)
+    (kill-local-variable 'evil-cross-lines)
     (mapc #'face-remap-reset-base
           '( org-level-1 org-level-2 org-level-3 org-level-4
              org-level-5 org-level-6 org-level-7 org-level-8)))

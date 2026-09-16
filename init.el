@@ -79,4 +79,6 @@
   (+load "keybinds.org")
   (mouse-avoidance-mode 'banish))
 
+;; property list configurations
 (put 'narrow-to-region 'disabled nil)
+(put 'face-remapping-alist 'permanent-local t)

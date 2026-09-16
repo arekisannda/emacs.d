@@ -935,6 +935,7 @@
  "<f1>"     'ignore
  "<f2>"     (general-predicate-dispatch nil 
               (derived-mode-p 'calc-mode) #'calc-trail-display
+              (derived-mode-p 'calc-trail-mode) #'calc-trail-display
               (derived-mode-p '(scad-mode scad-preview-mode)) #'+scad-preview-toggle
               (derived-mode-p 'prog-mode) #'+rmsbolt-toggle)
 

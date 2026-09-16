@@ -133,7 +133,7 @@
       :width (buffer-local-value 'vertico-posframe-width buffer)
       :min-height 20
       :min-width 120
-      :max-height 20
+      :max-height nil
       :max-width 200
       :lines-truncate t
       )))

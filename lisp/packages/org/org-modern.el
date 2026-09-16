@@ -12,6 +12,13 @@
   (org-modern-radio-target '("  " t " "))
   (org-modern-progress nil)
   (org-modern-checkbox '((?X . "󰄳") (?- . "󰝥") (?\s . "󰝦")))
+  (org-modern-priority t)
+  (org-modern-priority-faces
+   '((?A . (:foreground "#ffffff" :weight semibold))
+     (?B . (:foreground "#ff0000" :weight semibold))
+     (?C . (:foreground "#ffff00" :weight semibold))
+     (?D . (:foreground "#00d200" :weight semibold))
+     (?E . (:foreground "#008eff" :weight semibold))))
   :config
   (utils/custom-set-faces
    (org-level-1
