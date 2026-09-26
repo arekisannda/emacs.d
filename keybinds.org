@@ -464,20 +464,16 @@
   ("j" #'diff-hl-show-hunk-next "next hunk")
   ("i" #'diff-hl-show-hunk "show hunk")
 
-  ("M-<prior>"   #'diff-hl-scroll-up)
-  ("M-<next>"    #'diff-hl-scroll-down)
-  ("S-M-<next>"  #'diff-hl-scroll-left)
-  ("S-M-<prior>" #'diff-hl-scroll-right))
+  ("<prior>"   #'diff-hl-show-hunk-inline--popup-up)
+  ("<next>"    #'diff-hl-show-hunk-inline--popup-down))
 (hydra-set-property #'+hydra-git-motion :verbosity 0)
 
 (general-define-key
- :keymaps 'diff-hl-show-hunk-posframe--transient-mode-map
- "M-<prior>"   '("scroll up"    . +hydra-git-motion/diff-hl-scroll-up)
- "M-<next>"    '("scroll down"  . +hydra-git-motion/diff-hl-scroll-down)
- "S-M-<next>"  '("scroll left"  . +hydra-git-motion/diff-hl-scroll-left)
- "S-M-<prior>" '("scroll right" . +hydra-git-motion/diff-hl-scroll-right)
- "k"           '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
- "j"           '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
+ :keymaps 'diff-hl-show-hunk-inline--transient-mode-map
+ "<prior>" '("scroll up"    . +hydra-git-motion/diff-hl-show-hunk-inline--popup-up)
+ "<next>"  '("scroll down"  . +hydra-git-motion/diff-hl-show-hunk-inline--popup-down)
+ "k"       '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
+ "j"       '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
 
 (general-create-definer +keybinds-editor-git
   :prefix-command '+keybinds-editor-git-command)
@@ -1012,6 +1008,8 @@
  "c"    '("cursor"          . +keybinds-cursor-command)
  "C-c"  '("cursor"          . +keybinds-cursor-command)
  "C-\\" '("tools"           . +keybinds-tools-command)
+ "l"    '("list"            . +keybinds-tab-list-command)
+ "C-l"  '("list"            . +keybinds-tab-list-command)
  "b"    '("buffers"         . +keybinds-buffer-command)
  "C-b"  '("buffers"         . +keybinds-buffer-command)
  "m"    '("modes"           . +keybinds-mode-interface-command)
@@ -1152,26 +1150,18 @@
  "S-C-<prior>" '("scroll right" . windex-scroll-right)
 
  "M-<prior>"   (general-predicate-dispatch #'windex-scroll-selector-up
-                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
-                 #'diff-hl-scroll-up
                  (util/frames-live-visible-p eldoc-box--frame)
                  #'eldoc-box-scroll-up)
 
  "M-<next>"    (general-predicate-dispatch #'windex-scroll-selector-down
-                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
-                 #'diff-hl-scroll-down
                  (util/frames-live-visible-p eldoc-box--frame)
                  #'eldoc-box-scroll-down)
 
  "S-M-<next>"  (general-predicate-dispatch #'windex-scroll-selector-left
-                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
-                 #'diff-hl-scroll-left
                  (util/frames-live-visible-p eldoc-box--frame)
                  #'eldoc-box-scroll-left)
 
  "S-M-<prior>" (general-predicate-dispatch #'windex-scroll-selector-right
-                 (util/frames-live-visible-p diff-hl-show-hunk--frame)
-                 #'diff-hl-scroll-right
                  (util/frames-live-visible-p eldoc-box--frame)
                  #'eldoc-box-scroll-right)
  )
@@ -1264,10 +1254,11 @@
 
 (general-define-key
  :keymaps 'help-map
- "F" '("helpful function" . helpful-callable)
- "V" '("helpful variable" . helpful-variable)
- "K" '("helpful key"      . helpful-key)
- "g" '("Emacs Docs"       . +emacs-open-docs))
+ "f" '("helpful function"  . helpful-callable)
+ "F" '("describe function" . describe-function)
+ "v" '("helpful variable"  . helpful-variable)
+ "V" '("describe variable" . describe-variable)
+ "g" '("Emacs Docs"        . +emacs-open-docs))
 
 (general-define-key
  :states '(normal motion visual emacs)
@@ -1283,6 +1274,17 @@
  :keymaps 'tabulated-list-mode-map
 
  "q" '("kill window" . quit-window))
+
+(general-create-definer +keybinds-tab-list
+  :prefix-command '+keybinds-tab-list-command)
+
+(+keybinds-tab-list
+  "a"   '("activites" . list-activities)
+  "s"   '("lsp"       . eglot-list-connections)
+  "p"   '("processes" . list-processes)
+  "l"   '("sessions"  . detached-list-sessions)
+  "b"   '("bookmark"  . list-bookmarks)
+ )
 #+end_src
 *** Tools
 #+begin_src emacs-lisp :tangle yes
@@ -1365,7 +1367,6 @@
   "C-?"   '("embark act all"  . embark-act-all)
   "C-k"   '("keybinds"        . +edit-keybinds)
   "C-S-k" '("reload keybinds" . (lambda () (interactive) (+load "keybinds.org")))
-  "C-l"   '("sessions"        . detached-list-sessions)
   "C-s"   '("scratch"         . scratch-buffer)
   "C-S-s" '("org scratch"     . +org-scratch-buffer)
   "C-t"   '("latex scratch"   . +latex-scratch-buffer)
@@ -1421,11 +1422,11 @@
  "C-S-o" '("find mark"      . consult-global-mark)
  "C-o"   '("find buf mark"  . consult-mark)
 
- "f"   (general-predicate-dispatch     '("find"    . project-find-file)
-         (org-roam-file-p)             '("notes"   . +org-roam-node-find))
+ "f"   (general-predicate-dispatch     '("find"     . project-find-file)
+         (org-roam-file-p)             '("notes"    . +org-roam-node-find))
 
  "F"   (general-predicate-dispatch      '("find"    . find-file)
-         (org-roam-file-p)             '("profile" . +org-roam-switch-profile))
+         (org-roam-file-p)             '("profile"  . +org-roam-switch-profile))
  
  "g"   (general-predicate-dispatch      '("rg"      . consult-ripgrep)
          (derived-mode-p 'devdocs-mode) '("goto"    . devdocs-goto-page))
@@ -1470,18 +1471,20 @@
     (4 (recenter -1))
     (_ (call-interactively #'windex-scroll-line-to-90-ppt))))
 
-(defun query-replace-regexp-from-top (regexp to-string &optional delimited)
+(defun query-replace-regexp-from-top (from to &optional delimited)
   (interactive
-   (let ((common (query-replace-read-args
-                  (concat "Query replace regexp"
-                          (if (use-region-p) " in region" " from top"))
-                  t)))
-     (list (nth 0 common) (nth 1 common) (nth 2 common))))
+   (let ((query-replace-read-from-regexp-default 'find-tag-default-as-regexp))
+     (pcase-let ((`(,from ,to)
+                  (query-replace-read-args
+                   (concat "Query replace regexp"
+                           (if (use-region-p) " in region" " from top"))
+                   t t)))
+       (list from to))))
   (let ((start (if (use-region-p) (region-beginning) (point-min)))
         (end   (if (use-region-p) (region-end)       (point-max))))
     (save-excursion
       (goto-char start)
-      (query-replace-regexp regexp to-string delimited start end))))
+      (query-replace-regexp from to delimited start end))))
 
 (defun +query-replace (&optional arg)
   (interactive "p")

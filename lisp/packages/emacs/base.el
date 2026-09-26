@@ -18,6 +18,8 @@
 
 (use-package impatient-mode :defer t)
 
+(use-package fringe-helper :demand t)
+
 (advice-add #'bookmark-jump :after (lambda (&rest _) (pulse-momentary-highlight-one-line (point))))
 
 (defun emacs-copy-buffer-file-name ()

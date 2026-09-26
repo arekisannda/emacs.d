@@ -2,7 +2,9 @@
 
 (require 'util-lang)
 
-(use-package helpful :defer t)
+(use-package helpful :defer t
+  :hook
+  (helpful-mode . emacs-set-alt-face))
 
 (defun +lang-elisp-exec-on-save ()
   "Operations to be executed on buffer save."

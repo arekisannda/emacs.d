@@ -3,6 +3,7 @@
 (require 'cl-lib)
 (require 'util-strings)
 (require 'util-windows)
+(require 'util-helpers)
 
 (defun +shackle-get-dimensions (side)
   (let ((min-width (or (and (eq side 'left) util/windows-min-left-width)
@@ -50,7 +51,6 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side left
      :slot 0
-     :dedicated t
      :size ,util/windows-min-left-width
      :fixed width))
 
@@ -58,7 +58,6 @@
   `( :custom util/windows-display-buffer-in-side-window
      :side left
      :slot 1
-     :dedicated t
      :size ,util/windows-min-left-width
      :fixed width))
 
@@ -67,7 +66,6 @@
      :side right
      :slot 0
      :flags (enable-alt-face)
-     :dedicated t
      :fixed width))
 
 (defun +shackle-display-right-select-preset-0 ()
@@ -78,7 +76,6 @@
      :side right
      :slot 1
      :flags (enable-alt-face)
-     :dedicated t
      :fixed width))
 
 (defun +shackle-display-side-right-select-preset-1 ()
@@ -89,7 +86,6 @@
      :side right
      :slot 2
      :flags (enable-alt-face)
-     :dedicated t
      :fixed width))
 
 (defun +shackle-display-side-right-select-preset-2 ()
@@ -151,7 +147,8 @@
 
      (("^ \\*Treemacs-Buffer-Tab.*"
        treemacs-mode)
-      ,@(+shackle-display-side-left-preset-size-0))
+      ,@(+shackle-display-side-left-preset-size-0)
+      :dedicated t)
 
      (("^\\*Man.*\\*$"
        "^\\*WoMan.*\\*$"
@@ -212,6 +209,8 @@
        "^\\*corfu doc.*\\*$"
        "^\\*org-roam\\*$"
        "^\\*Shortdoc.*\\*$"
+
+       helpful-mode
        org-roam-mode
        evil-list-view-mode)
       ,@(+shackle-display-aux-preset))
@@ -235,22 +234,27 @@
      (("^\\*Customize Apropos\\*$"
        "^\\*Customize .*\\*$"
        "^\\*Customize.*\\*$"
-       Custom-mode
-       dape-info-watch-mode
-       dape-info-scope-mode)
+       Custom-mode)
       ,@(+shackle-display-right-select-preset-0)
       :size +shackle-get-dimensions)
 
-     ((
-       dape-info-stack-mode
+     ((dape-info-watch-mode
+       dape-info-scope-mode)
+      ,@(+shackle-display-right-select-preset-0)
+      :dedicated t
+      :size +shackle-get-dimensions)
+
+     ((dape-info-stack-mode
        dape-info-modules-mode
        dape-info-sources-mode)
       ,@(+shackle-display-side-right-preset-1)
+      :dedicated t
       :size +shackle-get-dimensions)
 
      ((dape-info-breakpoints-mode
        dape-info-threads-mode)
       ,@(+shackle-display-side-left-preset-size-1)
+      :dedicated t
       :size +shackle-get-dimensions)
 
      (("^\\*Error\\*$"
@@ -273,6 +277,7 @@
        "^\\*leetcode-result-.*\\*$"
        "^\\*leetcode-testcase-.*\\*$"
        "^\\*Bookmark List\\*$"
+       "^\\*Activities\\*$"
        bookmark-menu-mode
        dape-repl-mode
        messages-buffer-mode
@@ -412,6 +417,8 @@
       :size +shackle-get-dimensions)
      ))
   :config
+  (util/dedup-add-to-list 'evil-motion-state-modes 'leetcode--problem-detail-mode)
+
   (defvar +shackle-ignore-checks nil)
 
   (defun +shackle-condition-ignore-check (orig-func &rest args)

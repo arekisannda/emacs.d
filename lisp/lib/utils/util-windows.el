@@ -112,10 +112,10 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (setq rule-plist (plist-get plist :fallback)))
 
       (cond
-       ((plist-get rule-plist :same)
-        (setq window (display-buffer-same-window buffer alist)))
        ((and (plist-get rule-plist :reuse) (setq window (get-buffer-window buffer)))
         (setq window (display-buffer-reuse-window buffer alist)))
+       ((plist-get rule-plist :same)
+        (setq window (display-buffer-same-window buffer alist)))
        ((plist-get rule-plist :mru)
         (setq window (util/windows-display-buffer-in-mru-main-window buffer alist rule-plist)))
        ((plist-get rule-plist :lru)

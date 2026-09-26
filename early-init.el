@@ -65,13 +65,13 @@
               fringe-indicator-alist nil
               left-fringe-width 16
               right-fringe-width 16
-              bookmark-fringe-mark nil
+              bookmark-set-fringe-mark nil
 
               hscroll-step 1
               scroll-step 1
               scroll-preserve-screen-position t
               scroll-conservatively most-positive-fixnum
-              scroll-margin 1
+              scroll-margin 0
               maximum-scroll-margin 0.4
               scroll-error-top-bottom t
               switch-to-buffer-preserve-window-point t
@@ -86,6 +86,7 @@
               use-dialog-box nil
               show-help-function nil
 
+              mouse-highlight nil
               set-mark-command-repeat-pop t
               bidi-display-reordering 'left-to-right
               bidi-paragraph-direction 'left-to-right

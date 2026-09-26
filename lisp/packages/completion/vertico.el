@@ -199,6 +199,11 @@ vertico-posframe works with vertico multiform toggle."
 (use-package marginalia
   :custom
   (marginalia-field-width 60)
+  (marginalia-command-categories
+   '((imenu . imenu)
+     (recentf-open . file)
+     (where-is . command)
+     ))
   :config
   (defun marginalia-annotate-function-override (cand)
     "Annotate function CAND with its documentation string."

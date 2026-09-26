@@ -38,4 +38,18 @@
           :foreground ,(doom-color 'dark-blue)
           :background ,(doom-blend (doom-color 'dark-blue) (doom-color 'bg) 0.1)
           )))
-   ))
+   )
+
+  (defun +diff-remove-footer (code &rest _)
+    "Delete the \"Diff finished\" line, except when there's something worth reporting."
+    (when (eq code 1)
+      (let ((inhibit-read-only t))
+        (save-excursion
+          (goto-char (point-max))
+          (when (re-search-backward "^Diff finished" nil t)
+            (goto-char (match-beginning 0))
+            (skip-chars-backward "\n")
+            (delete-region (point) (point-max))
+            (insert "\n"))))))
+
+  (advice-add 'diff-sentinel :after #'+diff-remove-footer))
