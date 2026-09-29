@@ -3,18 +3,20 @@
 (use-package diff-hl :after (magit fringe-helper)
   :preface
   (fringe-helper-define '+diff-hl-bar '(top repeat)
-    "....X...."
-    "....X...."
-    "....X...."
-    "....X...."
-    "....X....")
+    "X..."
+    "X..."
+    "X..."
+    "X..."
+    "X...")
 
   (defun +diff-hl-bmp (_type _pos) '+diff-hl-bar)
   :custom
   (diff-hl-show-hunk-function #'diff-hl-show-hunk-inline)
+  ;; (diff-hl-fringe-bmp-function #'+diff-hl-bmp)
   (diff-hl-disable-on-remote t)
+  ;; (diff-hl-bmp-max-width 4)
   (diff-hl-update-async t)
-  (diff-hl-flydiff-delay 0.05)
+  (diff-hl-flydiff-delay 0.1)
   (diff-hl-show-staged-changes nil)
   (diff-hl-command-prefix nil)
   (diff-hl-show-hunk-inline-scroll-indicators nil)
@@ -102,7 +104,7 @@ is closed."
 
   (advice-add #'diff-hl-show-hunk-inline-show :override #'+diff-hl-show-hunk-inline-show)
 
-  (diff-hl-flydiff-mode)
+  (diff-hl-flydiff-mode 1)
   :hook
   (diff-hl-mode . diff-hl-margin-local-mode)
   (magit-pre-refresh . diff-hl-magit-pre-refresh)

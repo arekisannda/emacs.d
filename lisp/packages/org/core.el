@@ -40,6 +40,7 @@
   (org-modern-mode 1)
   (flyspell-mode 1)
   (completion-preview-mode 1)
+  (diff-hl-mode 1)
   (yas-minor-mode 1)
 
   (util/add-capf-hooks t

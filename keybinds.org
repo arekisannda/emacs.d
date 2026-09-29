@@ -1274,7 +1274,9 @@
  :keymaps 'tabulated-list-mode-map
 
  "q" '("kill window" . quit-window))
-
+#+end_src
+****  Lists
+#+begin_src emacs-lisp :tangle yes
 (general-create-definer +keybinds-tab-list
   :prefix-command '+keybinds-tab-list-command)
 
@@ -1284,7 +1286,7 @@
   "p"   '("processes" . list-processes)
   "l"   '("sessions"  . detached-list-sessions)
   "b"   '("bookmark"  . list-bookmarks)
- )
+  )
 #+end_src
 *** Tools
 #+begin_src emacs-lisp :tangle yes
@@ -1339,7 +1341,14 @@
 (general-create-definer +keybinds-tools
   :prefix-command '+keybinds-tools-command)
 
+(defun +emacs-pulse (&optional arg)
+  (interactive "p")
+  (pcase arg
+    (4 (+emacs-pulse-window))
+    (_ (+emacs-pulse-line))))
+
 (+keybinds-tools
+  "C-\\"  '("pulse"           . +emacs-pulse)
   "+"     '("text scale up"   . +hydra-text-scale/text-scale-increase)
   "-"     '("text scale down" . +hydra-text-scale/text-scale-decrease)
   
@@ -1971,6 +1980,5 @@
 # truncate-lines: 1
 # eval: (org-indent-mode -1)
 # eval: (display-line-numbers-mode 1)
-# eval: (diff-hl-mode 1)
 # End:
 :END:

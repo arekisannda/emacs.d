@@ -60,8 +60,8 @@
               read-quoted-char-radix 16
 
               mode-line-format nil
-              left-margin-width 0
-              right-margin-width 0
+              left-margin-width 1
+              right-margin-width 1
               fringe-indicator-alist nil
               left-fringe-width 16
               right-fringe-width 16
@@ -102,7 +102,7 @@
 (blink-cursor-mode -1)
 (menu-bar-mode -1)
 (window-divider-mode 1)
-(pixel-scroll-precision-mode 1)
+(pixel-scroll-precision-mode -1)
 (epa-file-enable)
 (auth-source-pass-enable)
 

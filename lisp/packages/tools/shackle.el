@@ -201,6 +201,13 @@
       (((".*")
         :if (lambda (window &rest _) (frame-parameter (selected-frame) 'popup))
         :mru t :select t :reuse t)
+
+       ((calc-mode
+         magit-mode
+         code-review-mode
+         pr-review-mode
+         forge-repository-list-mode)
+        :mru t :select t :reuse t)
        ))
 
      (("^\\*eldoc.*\\*$"

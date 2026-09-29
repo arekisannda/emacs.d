@@ -3,6 +3,7 @@
 (use-package org-modern :after org
   :custom
   (org-modern-table nil)
+  (org-modern-block-fringe nil)
   (org-modern-timestamp nil)
   (org-modern-todo nil)
   (org-modern-todo-faces nil)
@@ -24,27 +25,27 @@
    (org-level-1
     ((nil :weight regular
           :foreground ,(doom-color 'blue)
-          :height 1.20)))
+          :height 1.00)))
    (org-level-2
     ((nil :weight regular
           :foreground ,(doom-color 'dark-blue)
-          :height 1.20)))
+          :height 1.00)))
    (org-level-3
     ((nil :weight regular
           :foreground ,(doom-color 'violet)
-          :height 1.20)))
+          :height 1.00)))
    (org-level-4
     ((nil :weight regular
           :foreground ,(doom-color 'magenta)
-          :height 1.10)))
+          :height 1.00)))
    (org-level-5
     ((nil :weight regular
           :foreground ,(doom-color 'red)
-          :height 1.10)))
+          :height 1.00)))
    (org-level-6
     ((nil :weight regular
           :foreground ,(doom-color 'orange)
-          :height 1.10)))
+          :height 1.00)))
    (org-level-7
     ((nil :weight regular
           :foreground ,(doom-color 'yellow)
