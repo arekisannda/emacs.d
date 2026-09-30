@@ -20,17 +20,23 @@
 
 (use-package fringe-helper :demand t)
 
-(defun +emacs-pulse-line (&rest _ )
-  (interactive)
-  (pulse-momentary-highlight-one-line (point) 'highlight))
+(use-package pulse
+  :custom
+  (pulse-delay 0.03)
+  (pulse-face-duration 0.02)
+  :config
+  (defun +emacs-pulse-line (&rest _ )
+    (interactive)
+    (pulse-momentary-highlight-one-line (point) 'highlight))
 
-(defun +emacs-pulse-window (&rest _)
-  (interactive)
-  (if (seq-some (lambda (f) (eq (frame-focus-state f) t)) (frame-list))
-      (pulse-momentary-highlight-region (point-min) (point-max) 'highlight)))
+  (defun +emacs-pulse-window (&rest _)
+    (interactive)
+    (if (seq-some (lambda (f) (eq (frame-focus-state f) t)) (frame-list))
+        (pulse-momentary-highlight-region (point-min) (point-max) 'highlight)))
 
-(advice-add #'bookmark-jump :after #'+emacs-pulse-line)
-(add-function :after after-focus-change-function #'+emacs-pulse-window)
+  (advice-add #'bookmark-jump :after #'+emacs-pulse-line)
+  (add-function :after after-focus-change-function #'+emacs-pulse-window)
+  )
 
 (defun emacs-copy-buffer-file-name ()
   (interactive)

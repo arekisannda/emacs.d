@@ -926,9 +926,16 @@
     (_ (set)(call-interactively #'kill-compilation))
     ))
 
+(defun +emacs-pulse (&optional arg)
+  (interactive "p")
+  (pcase arg
+    (4 (+emacs-pulse-line))
+    (_ (+emacs-pulse-window)))
+  )
+
 (general-define-key
  :keymaps 'override
- "<f1>"     'ignore
+ "<f1>"     '("pulse" . +emacs-pulse)
  "<f2>"     (general-predicate-dispatch nil 
               (derived-mode-p 'calc-mode)
               #'calc-trail-display
@@ -975,9 +982,9 @@
 
  "<f10>"    '("menu" . menu-bar-open)
 
- "<f11>"    '("mru" . util/windows-select-aux-window)
+ "<f11>"    '("aux" . util/windows-select-aux-window)
 
- "C-<f11>"  '("mru" . util/windows-select-aux-window)
+ "C-<f11>"  '("aux" . util/windows-select-aux-window)
 
  "S-<f12>"  '("tree toggle" . treemacs-autohide-mode)
 
@@ -1341,14 +1348,7 @@
 (general-create-definer +keybinds-tools
   :prefix-command '+keybinds-tools-command)
 
-(defun +emacs-pulse (&optional arg)
-  (interactive "p")
-  (pcase arg
-    (4 (+emacs-pulse-window))
-    (_ (+emacs-pulse-line))))
-
 (+keybinds-tools
-  "C-\\"  '("pulse"           . +emacs-pulse)
   "+"     '("text scale up"   . +hydra-text-scale/text-scale-increase)
   "-"     '("text scale down" . +hydra-text-scale/text-scale-decrease)
   
@@ -1930,47 +1930,62 @@
 (setq +aw-select-bottom-filter
       '((lambda (window) (not (equal (window-parameter window 'window-side) 'bottom)))))
 
+(defmacro +select-window-with-parameter (param value)
+  `(lambda (&optional arg)
+     (interactive "p")
+     (if-let* ((window (window-with-parameter ,param ,value)))
+       (pcase arg
+         (4 (delete-window window))
+         (_ (select-window window))
+         ))
+     ))
+
 (general-define-key
  :keymaps 'evil-window-map
- "="   '("balance windows" . balance-windows)
- "o"   '("clear windows"   . delete-other-windows)
- "O"   '("toggle sides"    . windex-delete-windows)
- "M-o" '("clear buffers"   . tab-line-close-other-tabs)
- "n"   '("new window"      . evil-buffer-new)
+ "="    '("balance windows" . balance-windows)
+ "o"    '("clear windows"   . delete-other-windows)
+ "O"    '("toggle sides"    . windex-delete-windows)
+ "M-o"  '("clear buffers"   . tab-line-close-other-tabs)
+ "n"    '("new window"      . evil-buffer-new)
 
- "u"   '("undo window"     . tab-bar-history-back)
- "U"   '("redo window"     . tab-bar-history-forward)
+ "u"    '("undo window"     . tab-bar-history-back)
+ "U"    '("redo window"     . tab-bar-history-forward)
 
- "C-w" '("bury"            . tab-line-close-tab-kill-window)
- "q"   '("quit"            . evil-quit)
+ "C-w"  '("bury"            . tab-line-close-tab-kill-window)
+ "q"    '("quit"            . evil-quit)
 
- "C-s" nil
- "C-v" nil
- "V"   `("vsplit"          . ,(+window-split split-window-right))
- "v"   `("vsplit focus"    . ,(+window-split-focus-other-window split-window-right))
- "S"   `("ssplit"          . ,(+window-split split-window-below))
- "s"   `("ssplit focus"    . ,(+window-split-focus-other-window split-window-below))
+ "C-s"  nil
+ "C-v"  nil
+ "V"    `("vsplit"          . ,(+window-split split-window-right))
+ "v"    `("vsplit focus"    . ,(+window-split-focus-other-window split-window-right))
+ "S"    `("ssplit"          . ,(+window-split split-window-below))
+ "s"    `("ssplit focus"    . ,(+window-split-focus-other-window split-window-below))
 
- "H"   '("open left"       . windmove-display-left)
- "J"   '("open down"       . windmove-display-down)
- "K"   '("open up"         . windmove-display-up)
- "L"   '("open right"      . windmove-display-right)
- "M-h" '("open ace left"   . windex-windmove-display-aw-left)
- "M-j" '("open ace down"   . windex-windmove-display-aw-down)
- "M-k" '("open ace up"     . windex-windmove-display-aw-up)
- "M-l" '("open ace right"  . windex-windmove-display-aw-right)
- "C-/" '("open ace"        . windex-windmove-display-aw)
- "C-\\" '("open popup"     . windex-windmove-display-popup-frame)
- "."   '("open same"       . windmove-display-same-window)
+ "H"    '("open left"       . windmove-display-left)
+ "J"    '("open down"       . windmove-display-down)
+ "K"    '("open up"         . windmove-display-up)
+ "L"    '("open right"      . windmove-display-right)
+ "M-h"  '("open ace left"   . windex-windmove-display-aw-left)
+ "M-j"  '("open ace down"   . windex-windmove-display-aw-down)
+ "M-k"  '("open ace up"     . windex-windmove-display-aw-up)
+ "M-l"  '("open ace right"  . windex-windmove-display-aw-right)
+ "C-/"  '("open ace"        . windex-windmove-display-aw)
+ "C-\\" '("open popup"      . windex-windmove-display-popup-frame)
+ "."    '("open same"       . windmove-display-same-window)
 
- "P"   '("mru main"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
- "z"   `("bottom"          . util/windows-select-popup-window)
+ "P"    '("mru main"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
+ "z"    `("bottom"          . util/windows-select-popup-window)
 
- "["   '("prev buffer"     . +hydra-evil-motion/+previous-buffer)
- "]"   '("next buffer"     . +hydra-evil-motion/+next-buffer)
+ "["    '("prev buffer"     . +hydra-evil-motion/+previous-buffer)
+ "]"    '("next buffer"     . +hydra-evil-motion/+next-buffer)
 
- "d"   '("toggle buffer"   . toggle-window-dedicated)
- "m"   '("window purpose"  . windex-set-window-purpose))
+ "d"    '("toggle buffer"   . toggle-window-dedicated)
+ "m"    '("window purpose"  . windex-set-window-purpose)
+
+ "C-<down>"  `("side bottom" . ,(+select-window-with-parameter 'window-side 'bottom))
+ "C-<right>" `("side right"  . ,(+select-window-with-parameter 'window-side 'right))
+ "C-<left>"  `("side left"   . ,(+select-window-with-parameter 'window-side 'left))
+ )
 #+end_src
 * Local Variables
 :PROPERTIES:

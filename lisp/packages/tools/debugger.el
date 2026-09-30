@@ -30,16 +30,17 @@
   (utils/custom-set-faces
    (dape-breakpoint-face
     ((nil :stipple nil)))
+
    (dape-header-line-active-face
     ((nil :stipple nil
-          :foreground ,(doom-color 'fg)
-          :background ,(doom-color 'bg)
+          :foreground ,(doom-color 'yellow)
+          :background unspecified
           :overline nil
           )))
    (dape-header-line-inactive-face
     ((nil :stipple nil
           :foreground ,(doom-color 'fg-alt)
-          :background ,(doom-color 'bg-alt)
+          :background unspecified
           :overline nil
           )))
    )
