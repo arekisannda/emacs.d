@@ -456,35 +456,37 @@
 *** Diff-hl
 #+begin_src emacs-lisp :tangle yes
 (defhydra +hydra-git-motion
-  (:foreign-key exit :exit nil :timeout nil :hint nil)
-  ("s" #'diff-hl-show-hunk-stage-hunk "stage")
-  ("d" #'diff-hl-show-hunk-revert-hunk "revert")
-  ("c" #'diff-hl-show-hunk-copy-original-text "copy")
-  ("k" #'diff-hl-show-hunk-previous "prev hunk")
-  ("j" #'diff-hl-show-hunk-next "next hunk")
-  ("i" #'diff-hl-show-hunk "show hunk")
+  (:foreign-key exit :exit nil :timeout nil)
+  ("s"      #'diff-hl-show-hunk-stage-hunk "stage")
+  ("d"      #'diff-hl-show-hunk-revert-hunk "revert")
+  ("c"      #'diff-hl-show-hunk-copy-original-text "copy")
+  ("<up>"   #'diff-hl-show-hunk-previous "prev hunk")
+  ("<down>" #'diff-hl-show-hunk-next "next hunk")
+  ("i"      #'diff-hl-show-hunk "show hunk")
 
-  ("<prior>"   #'diff-hl-show-hunk-inline--popup-up)
-  ("<next>"    #'diff-hl-show-hunk-inline--popup-down))
-(hydra-set-property #'+hydra-git-motion :verbosity 0)
+  ("<prior>"   #'windex-scroll-selector-up)
+  ("<next>"    #'windex-scroll-selector-down))
+(hydra-set-property #'+hydra-git-motion :verbosity 1)
 
 (general-define-key
- :keymaps 'diff-hl-show-hunk-inline--transient-mode-map
- "<prior>" '("scroll up"    . +hydra-git-motion/diff-hl-show-hunk-inline--popup-up)
- "<next>"  '("scroll down"  . +hydra-git-motion/diff-hl-show-hunk-inline--popup-down)
- "k"       '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
- "j"       '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
+ :keymaps 'diff-hl-show-hunk-display-buffer--transient-mode-map
+ "<prior>" '("scroll up"    . +hydra-git-motion/windex-scroll-selector-up)
+ "<next>"  '("scroll down"  . +hydra-git-motion/windex-scroll-selector-down)
+ "<up>"    '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
+ "<down>"  '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next)
+ )
 
 (general-create-definer +keybinds-editor-git
   :prefix-command '+keybinds-editor-git-command)
 
 (+keybinds-editor-git
-  "s" '("stage hunk"   . diff-hl-stage-current-hunk)
-  "d" '("delete hunk"  . diff-hl-revert-hunk)
+  "c"      '("copy hunk"    . diff-hl-show-hunk-copy-original-text)
+  "s"      '("stage hunk"   . diff-hl-stage-current-hunk)
+  "d"      '("delete hunk"  . diff-hl-revert-hunk)
 
-  "i" '("inspect hunk" . +hydra-git-motion/diff-hl-show-hunk)
-  "k" '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
-  "j" '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
+  "i"      '("inspect hunk" . +hydra-git-motion/diff-hl-show-hunk)
+  "k"      '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
+  "j"      '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next))
 #+end_src
 *** Vertico
 #+begin_src emacs-lisp :tangle yes

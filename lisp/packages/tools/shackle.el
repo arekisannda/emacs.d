@@ -216,6 +216,7 @@
        "^\\*corfu doc.*\\*$"
        "^\\*org-roam\\*$"
        "^\\*Shortdoc.*\\*$"
+       "^\\*diff-hl-show-hunk-buffer\\*"
 
        helpful-mode
        org-roam-mode
@@ -317,7 +318,6 @@
      (("^\\*diff-hl\\*"
        "^\\*diff-hl-revert\\*"
        "^\\*diff-hl-show-hunk-diff-buffer\\*"
-       "^\\*diff-hl-show-hunk-buffer\\*"
        "^\\*Deletions\\*$"
        "^ widget-choose$"
        "^\\*Ibuffer confirmation\\*"

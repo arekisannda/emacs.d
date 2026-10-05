@@ -3,18 +3,17 @@
 (use-package diff-hl :after (magit fringe-helper)
   :preface
   (fringe-helper-define '+diff-hl-bar '(top repeat)
-    "X..."
-    "X..."
-    "X..."
-    "X..."
-    "X...")
+    "X......."
+    "X......."
+    "X......."
+    "X......."
+    "X.......")
 
   (defun +diff-hl-bmp (_type _pos) '+diff-hl-bar)
   :custom
-  (diff-hl-show-hunk-function #'diff-hl-show-hunk-inline)
-  ;; (diff-hl-fringe-bmp-function #'+diff-hl-bmp)
+  (diff-hl-fringe-bmp-function #'+diff-hl-bmp)
   (diff-hl-disable-on-remote t)
-  ;; (diff-hl-bmp-max-width 4)
+  (diff-hl-bmp-max-width 16)
   (diff-hl-update-async t)
   (diff-hl-flydiff-delay 0.1)
   (diff-hl-show-staged-changes nil)
@@ -106,6 +105,16 @@ is closed."
 
   (diff-hl-flydiff-mode 1)
   :hook
-  (diff-hl-mode . diff-hl-margin-local-mode)
   (magit-pre-refresh . diff-hl-magit-pre-refresh)
   (magit-post-refresh . diff-hl-magit-post-refresh))
+
+(use-package diff-hl-show-hunk-display-buffer :after diff-hl
+  :custom
+  (diff-hl-show-hunk-function #'diff-hl-show-hunk-display-buffer)
+  :config
+
+  (advice-add #'diff-hl-show-hunk-display-buffer
+              :before
+              (lambda (buffer &optional _ignored_line)
+                (with-current-buffer buffer
+                  (emacs-set-alt-face)))))
