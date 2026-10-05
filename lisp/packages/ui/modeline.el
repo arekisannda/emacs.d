@@ -19,43 +19,53 @@
    (mode-line-inactive
     ((nil :background ,(doom-color 'bg))))
    (doom-modeline-bar
-    ((nil :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'bg-alt))))
+    ((nil :foreground ,(doom-color 'bg)
+          :background unspecified
+          )))
    (doom-modeline-bar-inactive
-    ((nil :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'bg-alt))))
+    ((nil :foreground ,(doom-color 'grey)
+          :background unspecified
+          )))
    (doom-modeline-evil-insert-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'green))))
+          :foreground ,(doom-color 'green)
+          :background unspecified
+          )))
    (doom-modeline-evil-normal-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'blue))))
+          :foreground ,(doom-color 'blue)
+          :background unspecified
+          )))
    (doom-modeline-evil-visual-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'yellow))))
+          :foreground ,(doom-color 'yellow)
+          :background unspecified
+          )))
    (doom-modeline-evil-replace-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'red))))
+          :foreground ,(doom-color 'red)
+          :background unspecified
+          )))
    (doom-modeline-evil-motion-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'magenta))))
+          :foreground ,(doom-color 'magenta)
+          :background unspecified
+          )))
    (doom-modeline-evil-operator-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'orange))))
+          :foreground ,(doom-color 'orange)
+          :background unspecified
+          )))
    (doom-modeline-evil-emacs-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'violet))))
+          :foreground ,(doom-color 'violet)
+          :background unspecified
+          )))
    (doom-modeline-evil-user-state
     ((nil :weight bold
-          :foreground ,(doom-color 'bg-alt)
-          :background ,(doom-color 'vertical-bar))))
+          :foreground ,(doom-color 'vertical-bar)
+          :background unspecified
+          )))
    )
 
   (doom-modeline-def-segment evil
@@ -71,8 +81,8 @@
                    ((evil-visual-state-p) 'doom-modeline-evil-visual-state)
                    (t 'doom-modeline-evil-user-state))))
         (propertize
-         (propertize " " 'display `(space :width 1))
-         'face (doom-modeline-face face 'doom-modeline-evil-user-state)
+         (propertize " " 'display `(space :width 1.0))
+         'face (list '(:inverse-video t) (doom-modeline-face face 'doom-modeline-evil-user-state))
          'help-echo (evil-state-property evil-state :name t)))))
 
   (doom-modeline-def-segment buffer-info-extra

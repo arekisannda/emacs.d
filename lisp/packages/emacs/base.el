@@ -34,9 +34,7 @@
     (if (seq-some (lambda (f) (eq (frame-focus-state f) t)) (frame-list))
         (pulse-momentary-highlight-region (point-min) (point-max) 'highlight)))
 
-  (advice-add #'bookmark-jump :after #'+emacs-pulse-line)
-  (add-function :after after-focus-change-function #'+emacs-pulse-window)
-  )
+  (advice-add #'bookmark-jump :after #'+emacs-pulse-line))
 
 (defun emacs-copy-buffer-file-name ()
   (interactive)
