@@ -25,30 +25,29 @@
   (org-export-with-latex 'luadvisvgm)
   (org-html-with-latex 'luadvisvgm)
   (org-latex-preview-live '(inline block edit-special))
-  (org-latex-preview-process-default 'luadvisvgm)
+  (org-preview-latex-default-process 'luadvisvgm)
   (org-latex-preview-appearance-options
    `( :foreground auto
       :background auto
       :scale nil
-      :zoom 1.3
+      :zoom 1.0
       :page-width nil
       :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
   (org-latex-pdf-process
    '("lualatex -shell-escape -interaction nonstopmode %f"))
   :init
   (add-to-list
-   'org-latex-preview-process-alist
+   'org-preview-latex-process-alist
    '(luadvisvgm :programs ("dvilualatex" "dvisvgm")
                 :description "dvi > svg"
-                :message "you need to install the programs: lualatex and dvisvgm."
-                :image-size-adjust (1.7 . 1.5)
-                :latex-precompiler
-                ("dvilualatex --output-directory=/tmp --ini --jobname=%b \"&%L\" mylatexformat.ltx %f")
-                :latex-compiler
-                ("dvilualatex --output-directory=/tmp --output-format=dvi --shell-escape --interaction=nonstopmode %f")
+                :message "you need to install the programs: dvilualatex and dvisvgm."
                 :image-input-type "dvi"
                 :image-output-type "svg"
+                :image-size-adjust (1.0 . 1.0)
+                :latex-compiler
+                ("cd %o && dvilualatex -interaction=nonstopmode -shell-escape -output-directory=%o %f")
                 :image-converter
-                ("dvisvgm --page=1- --clipjoin --relative --no-fonts -v3 --bbox=preview --output=%B-%%9p.svg %f")))
+                ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O"))
+   )
   :hook
   (org-mode . turn-on-org-cdlatex))
