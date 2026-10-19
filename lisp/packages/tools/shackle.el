@@ -93,6 +93,7 @@
 
 (defun +shackle-display-aux-preset ()
   `( :custom util/windows-display-buffer-in-aux-window
+     :flags (enable-alt-face)
      :size 0.3))
 
 (defun +shackle-display-popup-preset ()
@@ -138,6 +139,7 @@
        "^\\*Flymake log\\*$"
        "^\\*Activities (error): .*\\*$"
        "^\\*Org Links\\*$"
+       "^\\*Org Preview.*\\*$"
        "^ \\*http.*\\*")
       :ignore t)
 
@@ -189,11 +191,14 @@
        pdf-view-mode)
       :same t :select t)
 
-     ((calc-mode
+     (("^\\*excali .*\\*.*$"
+
+       calc-mode
        magit-mode
        code-review-mode
        pr-review-mode
-       forge-repository-list-mode)
+       forge-repository-list-mode
+       excali-mode)
       :custom util/windows-display-buffer-by-condition
       :fallback
       (:action +shackle-display-in-popup-frame)
@@ -202,11 +207,14 @@
         :if (lambda (window &rest _) (frame-parameter (selected-frame) 'popup))
         :mru t :select t :reuse t)
 
-       ((calc-mode
+       (("^\\*excali .*\\*.*$"
+
+         calc-mode
          magit-mode
          code-review-mode
          pr-review-mode
-         forge-repository-list-mode)
+         forge-repository-list-mode
+         excali-mode)
         :mru t :select t :reuse t)
        ))
 
@@ -286,6 +294,7 @@
        "^\\*leetcode-testcase-.*\\*$"
        "^\\*Bookmark List\\*$"
        "^\\*Activities\\*$"
+       "^\\*Org Preview LaTex Output\\*$"
        bookmark-menu-mode
        dape-repl-mode
        messages-buffer-mode
@@ -488,6 +497,12 @@ ALIST is passed to `shackle--window-display-buffer' internally."
       ))
 
   (advice-add #'quit-restore-window :around #'+shackle-quit-restore-window-around)
+
+  (defun +shackle-quit-aux-window ()
+    (if-let* ((window (util/windows-get-aux-window (selected-window)))) (delete-window window))
+    )
+
+  (advice-add #'keyboard-quit :before #'+shackle-quit-aux-window)
 
   ;; add `shackle-mode` guard to prevent adding duplicates in
   ;; `display-buffer-alist`

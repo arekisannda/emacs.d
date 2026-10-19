@@ -20,6 +20,7 @@
 
 (use-package evil :after undo-fu
   :custom
+  (evil-ex-hl-update-delay 0.01)
   (evil-toggle-key "C-|")
   (evil-cross-lines nil)
   (evil-want-integration t)

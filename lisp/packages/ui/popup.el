@@ -26,6 +26,7 @@
 
 (use-package which-key
   :custom
+  (which-key-idle-delay 0.5)
   (which-key-dont-use-unicode t)
   (which-key-popup-type 'side-window)
   (which-key-sort-order 'which-key-description-order)

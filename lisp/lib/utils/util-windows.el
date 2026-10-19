@@ -477,6 +477,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (set-window-parameter window 'split-window (lambda (&rest _) (error "Cannot split aux window")))
         )
 
+      (run-hook-with-args 'util/windows-aux-window-hook window buffer (plist-get plist :flags))
       (if (plist-get plist :select) window init-window))
     ))
 
@@ -517,8 +518,6 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (setq init-window (util/windows-get-aux-other-window init-window)))
 
     (pcase arg
-      (4 (if-let* ((window (util/windows-get-aux-window init-window))) (delete-window window)))
-
       (16 (let* ((uuid (or (window-parameter init-window 'window-aux-id)
                            (util/windows--aux-uuid)))
                  (bufname (format "*notes %s*" uuid))

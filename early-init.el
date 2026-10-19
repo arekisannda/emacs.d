@@ -94,7 +94,15 @@
               redisplay-skip-fontification-on-input t
               kill-do-not-save-duplicates t
               save-interprogram-paste-before-kill t
-              reb-re-syntax 'string)
+              reb-re-syntax 'string
+
+              show-parent-delay 0.5
+              redisplay-skip-fontification-on-input t
+              fast-but-imprecise-scrolling t
+              inhibit-compacting-font-caches t)
+
+(when (boundp 'pgtk-wait-for-event-timeout)
+  (setq pgtk-wait-for-event-timeout 0.001))
 
 (tool-bar-mode -1)
 (tooltip-mode -1)

@@ -13,6 +13,7 @@
 (defun emacs-set-alt-face ()
   (face-remap-add-relative 'default `(nil :background ,(doom-color 'bg-alt)))
   (face-remap-add-relative 'markdown-code-face `(nil :background ,(doom-color 'bg-alt)))
+  (face-remap-add-relative 'header-line `(nil :background ,(doom-color 'bg-alt)))
   (face-remap-add-relative 'mode-line-active
                            `(nil :inherit mode-line-active
                                  :foreground unspecified
@@ -195,6 +196,7 @@
   (window-setup . +emacs-set-font)
   (tabulated-list-mode . emacs-tabulated-list-setup)
   (util/windows-side-window . emacs-alt-face-side-setup)
+  (util/windows-aux-window . emacs-alt-face-side-setup)
   (Custom-mode . emacs-set-alt-face))
 
 (use-package rainbow-delimiters)

@@ -68,22 +68,73 @@
           )))
    )
 
-  (doom-modeline-def-segment evil
-    "Display evil mode states."
-    (when (bound-and-true-p evil-mode)
-      (let ((face (cond
-                   ((evil-normal-state-p) 'doom-modeline-evil-normal-state)
-                   ((evil-emacs-state-p) 'doom-modeline-evil-emacs-state)
-                   ((evil-insert-state-p) 'doom-modeline-evil-insert-state)
-                   ((evil-motion-state-p) 'doom-modeline-evil-motion-state)
-                   ((evil-operator-state-p) 'doom-modeline-evil-operator-state)
-                   ((evil-replace-state-p) 'doom-modeline-evil-replace-state)
-                   ((evil-visual-state-p) 'doom-modeline-evil-visual-state)
-                   (t 'doom-modeline-evil-user-state))))
-        (propertize
-         (propertize " " 'display `(space :width 1.0))
-         'face (list '(:inverse-video t) (doom-modeline-face face 'doom-modeline-evil-user-state))
-         'help-echo (evil-state-property evil-state :name t)))))
+  (defun +doom-modeline--evil-face ()
+    "Return the doom-modeline face for the current evil state."
+    (cond ((evil-normal-state-p)   'doom-modeline-evil-normal-state)
+          ((evil-emacs-state-p)    'doom-modeline-evil-emacs-state)
+          ((evil-insert-state-p)   'doom-modeline-evil-insert-state)
+          ((evil-motion-state-p)   'doom-modeline-evil-motion-state)
+          ((evil-operator-state-p) 'doom-modeline-evil-operator-state)
+          ((evil-replace-state-p)  'doom-modeline-evil-replace-state)
+          ((evil-visual-state-p)   'doom-modeline-evil-visual-state)
+          (t                       'doom-modeline-evil-user-state)))
+
+  (defun +doom-modeline--ace-number ()
+    "Return this window's ace-window label, or nil if there is only one window."
+    (when (bound-and-true-p ace-window-display-mode)
+      (aw-update)
+      (let ((num (window-parameter (selected-window) 'ace-window-path)))
+        (when (and (length> num 0)
+                   (length> (cl-mapcan
+                             (lambda (frame)
+                               ;; Exclude minibuffer, tooltip and child frames
+                               (unless (or (and (fboundp 'frame-parent) (frame-parent frame))
+                                           (string= (frame-parameter frame 'name)
+                                                    (alist-get 'name (bound-and-true-p tooltip-frame-parameters))))
+                                 (window-list frame 'never)))
+                             (visible-frame-list))
+                            1))
+          num))))
+
+  (defun +doom-modeline--center (str width face)
+    "Return STR centred in exactly WIDTH columns, drawn with FACE."
+    (let* ((ml-face (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
+           (label   (propertize str 'face (list face ml-face)))
+           (target  (round (* width (frame-char-width))))
+           (used    (string-pixel-width label))
+           (right    (/ (max 0 (- target used)) 2))
+           (left   (max 0 (- target used right))))
+      (concat (propertize " " 'display `(space :width (,left))  'face face)
+              label
+              (propertize " " 'display `(space :width (,right)) 'face face))))
+
+  (doom-modeline-def-segment evil-ace
+    "Evil state block; shows the ace-window number in the same spot while ace-window is active."
+    (let ((num (+doom-modeline--ace-number))
+          (width 2.0))
+      (cond
+       ;; ace-window is prompting: centred window label
+       ((and num (bound-and-true-p aw-overlays-back))
+        (let*  ((ml-face (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
+               (face (doom-modeline-face 'aw-leading-char-face 'aw-leading-char-face)))
+          (concat
+           (propertize " " 'face face)
+           (propertize (format "%s" num) 'face (list face ml-face))
+           (propertize " " 'face face)
+           )))
+       ;; normal case: evil state colour block
+       ((bound-and-true-p evil-mode)
+        (concat
+         (propertize " "
+                     'face (list '(:inverse-video t)
+                                 (doom-modeline-face (+doom-modeline--evil-face)
+                                                     'doom-modeline-evil-user-state))
+                     'help-echo (evil-state-property evil-state :name t))
+         "  "
+         ))
+       ;; no evil: keep the width stable
+       (t (propertize " " 'display '(space :width 2.0))))))
+
 
   (doom-modeline-def-segment buffer-info-extra
     `(" "
@@ -93,7 +144,7 @@
       mode-line-remote))
 
   (doom-modeline-def-segment space
-    (propertize " " 'display `(space :width 1)))
+    (propertize " " 'display `(space :width 1.0)))
 
   (doom-modeline-def-segment minibuffer-depth
     (let* ((depth (minibuffer-depth)))
@@ -151,7 +202,7 @@
 
   (doom-modeline-def-modeline
     '+default-modeline
-    '(evil ace-window-number buffer-info-extra buffer-info dedicated remote-host purpose window-id)
+    '(evil-ace buffer-info-extra buffer-info dedicated remote-host purpose window-id)
     '(misc-info minibuffer-depth selection-info buffer-position repl lsp check major-mode))
 
   (doom-modeline-def-segment sub-workspace-name
@@ -178,6 +229,7 @@
 
   :hook
   (util/windows-side-window . +mode-line-setup)
+  (util/windows-aux-window . +mode-line-setup)
   (doom-modeline-mode . +doom-modeline-set)
   (doom-modeline-mode . column-number-mode)
   (after-init . doom-modeline-mode))
