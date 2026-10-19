@@ -20,13 +20,15 @@
   "Run `diff-hl-show-hunk-hide' without jumping back to the start bookmark.
 Only applies when the display-buffer backend is the one being hidden."
   (if (eq diff-hl-show-hunk--hide-function
-          #'diff-hl-show-hunk--display-buffer-hide)
-      (cl-letf (((symbol-function 'diff-hl-show-hunk--goto-hunk-overlay)
-                 #'ignore))
-        (apply orig args))
+          #'diff-hl-show-hunk-display-buffer--hide)
+      (unwind-protect
+          (progn
+            (advice-add 'diff-hl-show-hunk--goto-hunk-overlay :override #'ignore)
+            (apply orig args))
+        (advice-remove 'diff-hl-show-hunk--goto-hunk-overlay #'ignore))
     (apply orig args)))
 
-(defun diff-hl-show-hunk--display-buffer-hide ()
+(defun diff-hl-show-hunk-display-buffer--hide ()
   "Hide the window and clean up buffer."
   (interactive)
   (diff-hl-show-hunk-display-buffer--transient-mode -1)
@@ -48,12 +50,12 @@ Only applies when the display-buffer backend is the one being hidden."
   :global t
   (if diff-hl-show-hunk-display-buffer--transient-mode
       (progn
-        (add-hook 'post-command-hook #'diff-hl-show-hunk--display-buffer-post-command-hook nil)
+        (add-hook 'post-command-hook #'diff-hl-show-hunk-display-buffer--post-command-hook nil)
         (advice-add 'diff-hl-show-hunk-hide
                     :around #'diff-hl-show-hunk-display-buffer--hide-no-goto)
 
         )
-    (remove-hook 'post-command-hook #'diff-hl-show-hunk--display-buffer-post-command-hook nil)
+    (remove-hook 'post-command-hook #'diff-hl-show-hunk-display-buffer--post-command-hook nil)
     (advice-remove 'diff-hl-show-hunk-hide #'diff-hl-show-hunk-display-buffer--hide-no-goto)
     ))
 
@@ -63,40 +65,81 @@ Only applies when the display-buffer backend is the one being hidden."
         (invoking (eq command diff-hl-show-hunk-display-buffer--invoking-command)))
     (or keys invoking)))
 
-(defun diff-hl-show-hunk--display-buffer-post-command-hook ()
+(defun diff-hl-show-hunk-display-buffer--post-command-hook ()
   "Called for each command while in `diff-hl-show-hunk-display-buffer--transient-mode."
   (let ((allowed-command (or (diff-hl-show-hunk-ignorable-command-p this-command)
-                             (string-match-p "diff-hl-show-hunk-" (symbol-name this-command))
                              (diff-hl-show-hunk-display-buffer--ignorable-command-p this-command)
                              )))
     (unless allowed-command
-      (diff-hl-show-hunk--display-buffer-hide))))
+      (diff-hl-show-hunk-display-buffer--hide))))
 
-(defun diff-hl-show-hunk--display-buffer-get-type (&optional pos)
-  "Return `insert', `delete' or `change' for the diff-hl hunk at POS."
-  (when-let* ((ov (diff-hl-hunk-overlay-at (or pos (point)))))
-    (overlay-get ov 'diff-hl-hunk-type)))
+(defun diff-hl-show-hunk-display-buffer--get-ov-at-pos (&optional pos)
+  "Return the the diff-hl hunk at POS."
+  (diff-hl-hunk-overlay-at (or pos (point))))
+
+(defun diff-hl-hunk-display-buffer--scroll (n)
+  "Scroll the diff-hl hunk window N lines (negative = towards top)."
+  (when-let* ((buf (get-buffer diff-hl-show-hunk-buffer-name))
+              (win (get-buffer-window buf t)))
+    (with-selected-window win
+      (ignore-errors
+        (let (scroll-preserve-screen-position)
+          (scroll-up n))))))
+
+(defun diff-hl-show-hunk-display-buffer--poup-up (&optional n)
+  (interactive "p")
+  (diff-hl-hunk-display-buffer--scroll (- n)))
+
+(defun diff-hl-show-hunk-display-buffer--poup-down (&optional n)
+  (interactive "p")
+  (diff-hl-hunk-display-buffer--scroll n))
+
+(defvar diff-hl-show-hunk-display-buffer--current-ov nil)
+
+(defun diff-hl-show-hunk-display-buffer--line-move (n)
+  (let (line-move-visual
+        (scroll-preserve-screen-position))
+    (line-move n)
+    (when-let ((ov (diff-hl-show-hunk-display-buffer--get-ov-at-pos)))
+      (when (and (not (eq ov diff-hl-show-hunk-display-buffer--current-ov))
+                 diff-hl-show-hunk-display-buffer--current-ov)
+        (diff-hl-show-hunk))
+      )))
+
+(defun diff-hl-show-hunk-display-buffer-line-move-up (&optional n)
+  (interactive)
+  (let (line-move-visual)
+    (diff-hl-show-hunk-display-buffer--line-move (- (or n 1)))))
+
+(defun diff-hl-show-hunk-display-buffer-line-move-down (&optional n)
+  (interactive)
+  (let (line-move-visual)
+    (diff-hl-show-hunk-display-buffer--line-move (or n 1))))
 
 ;;;###autoload
 (defun diff-hl-show-hunk-display-buffer (buffer &optional _line)
   "Implementation to show the hunk using `display-buffer'."
-  (setq diff-hl-show-hunk--hide-function #'diff-hl-show-hunk--display-buffer-hide)
+  (setq diff-hl-show-hunk--hide-function #'diff-hl-show-hunk-display-buffer--hide)
   (setq diff-hl-show-hunk-display-buffer--invoking-command this-command)
 
   (diff-hl-show-hunk-display-buffer--transient-mode 1)
 
   (display-buffer buffer)
-  (let ((win (get-buffer-window buffer))
-        (type (diff-hl-show-hunk--display-buffer-get-type)))
-    (with-current-buffer buffer
-      (when (eq type 'change)
-        (smerge-refine-exchange-point))
+  (let* ((win (get-buffer-window buffer))
+         (ov (diff-hl-show-hunk-display-buffer--get-ov-at-pos))
+         (type (and ov (overlay-get ov 'diff-hl-hunk-type))))
 
-      (let ((pos (line-beginning-position)))
+
+    (setq diff-hl-show-hunk-display-buffer--current-ov ov)
+
+    (with-current-buffer buffer
+      (font-lock-ensure)
+      (let ((pos (point-min)))
         (set-window-point win pos)
         (set-window-start win pos))
 
-      (setq cursor-type nil)
+      (setq-local cursor-type nil
+                  cursor-in-non-selected-windows nil)
       )
     ))
 

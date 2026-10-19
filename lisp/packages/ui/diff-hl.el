@@ -26,6 +26,14 @@
      (unknown   . " ")
      (ignored   . " ")
      (reference . " ")))
+  (diff-hl-show-hunk-ignorable-commands
+   '(ignore
+     diff-hl-show-hunk
+     handle-switch-frame
+     diff-hl-show-hunk--click
+     windex-scroll-up
+     windex-scroll-down
+     ))
   :init
   (setq diff-hl-show-hunk-map (make-sparse-keymap)
         diff-hl-inline-popup-transient-mode-map (make-sparse-keymap))
@@ -71,37 +79,11 @@
           :inverse-video t)))
    )
 
-  (defun +diff-hl-show-hunk-inline-show (lines &optional header footer keymap close-hook point height)
-    "Create a phantom overlay to show the inline popup, with some
-content LINES, and a HEADER and a FOOTER, at POINT.  KEYMAP is
-added to the current keymaps.  CLOSE-HOOK is called when the popup
-is closed."
-    (when diff-hl-show-hunk-inline--current-popup
-      (delete-overlay diff-hl-show-hunk-inline--current-popup)
-      (setq diff-hl-show-hunk-inline--current-popup nil))
-    (when (< (diff-hl-show-hunk-inline--compute-content-height 99) 2)
-      (user-error "There is no enough vertical space to show the inline popup"))
-    (let* ((the-point (or point (line-end-position)))
-           (the-buffer (current-buffer))
-           (overlay (make-overlay the-point the-point the-buffer)))
-      (overlay-put overlay 'phantom t)
-      (overlay-put overlay 'diff-hl-show-hunk-inline t)
-      (setq diff-hl-show-hunk-inline--current-popup overlay)
-      (setq diff-hl-show-hunk-inline--current-lines
-            (mapcar (lambda (s) (replace-regexp-in-string "\n" " " s)) lines))
-      (setq diff-hl-show-hunk-inline--current-header header)
-      (setq diff-hl-show-hunk-inline--current-footer nil)
-      (setq diff-hl-show-hunk-inline--invoking-command this-command)
-      (setq diff-hl-show-hunk-inline--current-custom-keymap keymap)
-      (setq diff-hl-show-hunk-inline--close-hook close-hook)
-      (setq diff-hl-show-hunk-inline--height (diff-hl-show-hunk-inline--compute-content-height height))
-      (setq diff-hl-show-hunk-inline--height  20)
-      ;; (diff-hl-show-hunk-inline--ensure-enough-lines point diff-hl-show-hunk-inline--height)
-      (diff-hl-show-hunk-inline-transient-mode 1)
-      (diff-hl-show-hunk-inline-scroll-to 0)
-      overlay))
+  (defun +diff-hl-show-hunk-clear (&rest _)
+    (when (buffer-live-p (get-buffer diff-hl-show-hunk-buffer-name))
+      (kill-buffer diff-hl-show-hunk-buffer-name)))
 
-  (advice-add #'diff-hl-show-hunk-inline-show :override #'+diff-hl-show-hunk-inline-show)
+  (advice-add #'diff-hl-show-hunk :before #'+diff-hl-show-hunk-clear)
 
   (diff-hl-flydiff-mode 1)
   :hook

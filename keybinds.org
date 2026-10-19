@@ -457,23 +457,40 @@
 #+begin_src emacs-lisp :tangle yes
 (defhydra +hydra-git-motion
   (:foreign-key exit :exit nil :timeout nil)
-  ("s"      #'diff-hl-show-hunk-stage-hunk "stage")
-  ("d"      #'diff-hl-show-hunk-revert-hunk "revert")
-  ("c"      #'diff-hl-show-hunk-copy-original-text "copy")
-  ("<up>"   #'diff-hl-show-hunk-previous "prev hunk")
-  ("<down>" #'diff-hl-show-hunk-next "next hunk")
-  ("i"      #'diff-hl-show-hunk "show hunk")
+  ("s"         #'diff-hl-show-hunk-stage-hunk "stage" :exit t)
+  ("d"         #'diff-hl-show-hunk-revert-hunk "revert" :exit t)
+  ("c"         #'diff-hl-show-hunk-copy-original-text "copy" :exit t)
+  ("i"         #'diff-hl-show-hunk nil)
 
-  ("<prior>"   #'windex-scroll-selector-up)
-  ("<next>"    #'windex-scroll-selector-down))
-(hydra-set-property #'+hydra-git-motion :verbosity 1)
+  ("C-<prior>" #'windex-scroll-up "prev")
+  ("C-<next>"  #'windex-scroll-down "next")
+  ("<prior>"   #'diff-hl-show-hunk-previous "prev")
+  ("<next>"    #'diff-hl-show-hunk-next "next")
+  ("M-<prior>" #'diff-hl-show-hunk-display-buffer--poup-up "scroll ")
+  ("M-<next>"  #'diff-hl-show-hunk-display-buffer--poup-down "scroll ")
+  ("<up>"      #'diff-hl-show-hunk-display-buffer-line-move-up nil)
+  ("<down>"    #'diff-hl-show-hunk-display-buffer-line-move-down nil)
+  ("k"         #'diff-hl-show-hunk-display-buffer-line-move-up nil)
+  ("j"         #'diff-hl-show-hunk-display-buffer-line-move-down nil)
+  )
+(hydra-set-property #'+hydra-git-motion :verbosity 0)
+
+(setq diff-hl-show-hunk-display-buffer--header +hydra-git-motion/hint)
 
 (general-define-key
+ :state '(normal emacs)
  :keymaps 'diff-hl-show-hunk-display-buffer--transient-mode-map
- "<prior>" '("scroll up"    . +hydra-git-motion/windex-scroll-selector-up)
- "<next>"  '("scroll down"  . +hydra-git-motion/windex-scroll-selector-down)
- "<up>"    '("prev hunk"    . +hydra-git-motion/diff-hl-show-hunk-previous)
- "<down>"  '("next hunk"    . +hydra-git-motion/diff-hl-show-hunk-next)
+ "M-<prior>" '("scroll up"   . +hydra-git-motion/diff-hl-show-hunk-display-buffer--poup-up)
+ "M-<next>"  '("scroll down" . +hydra-git-motion/diff-hl-show-hunk-display-buffer--poup-down)
+ "<prior>"   '("prev hunk"   . +hydra-git-motion/diff-hl-show-hunk-previous)
+ "<next>"    '("next hunk"   . +hydra-git-motion/diff-hl-show-hunk-next)
+ "C-<prior>" '("prev hunk"   . +hydra-git-motion/windex-scroll-up )
+ "C-<next>"  '("next hunk"   . +hydra-git-motion/windex-scroll-down)
+
+ "<up>"      '("up"          . +hydra-git-motion/diff-hl-show-hunk-display-buffer-line-move-up)
+ "<down>"    '("down"        . +hydra-git-motion/diff-hl-show-hunk-display-buffer-line-move-down)
+ "k"         '("up"          . +hydra-git-motion/diff-hl-show-hunk-display-buffer-line-move-up)
+ "j"         '("down"        . +hydra-git-motion/diff-hl-show-hunk-display-buffer-line-move-down)
  )
 
 (general-create-definer +keybinds-editor-git
@@ -1431,7 +1448,6 @@
  "C-k"   '("find kmacro"    . consult-kmacro)
  "C-m"   '("find bookmarks" . consult-bookmark)
  "C-r"   '("find reg"       . consult-register)
- "C-y"   '("find yank"      . consult-yank-replace)
  "C-S-o" '("find mark"      . consult-global-mark)
  "C-o"   '("find buf mark"  . consult-mark)
 
@@ -1654,6 +1670,10 @@
         (insert result))
     (calc-do-quick-calc t)))
 
+(defun +insert-unix-timestamp ()
+  (interactive)
+  (insert (format-time-string "%s")))
+
 (general-define-key
  :keymaps 'global
 
@@ -1675,12 +1695,17 @@
 
 (+keybinds-editor-insert
   "C-i" `("char"             . ,(general-simulate-key "C-x 8"))
-  
+
+  "y"   '("insert yank"      . consult-yank-replace)
   "c"   '("insert char"      . insert-char)
+  "f"   '("insert nerd-icon" . nerd-icons-insert)
   "t"   '("insert template"  . yas-insert-snippet)
-  "n"   '("insert nerd-icon" . nerd-icons-insert)
-  "m"   '("expression eval"  . +quick-calc)
-  "p"   '("password"         . password-generator-paranoid)
+  "m"   '("calc eval"        . +quick-calc)
+  "f"   '("insert nerd-icon" . nerd-icons-insert)
+  "u"   '("insert timestamp" . +insert-unix-timestamp)
+
+  "p" (general-predicate-dispatch nil
+          (require 'password-generator nil t) #'password-generator-paranoid)
 
   "I"   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode) #'org-download-image)
@@ -1694,7 +1719,7 @@
   "l"   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode) #'org-insert-link)
 
-  "f"   (general-predicate-dispatch nil
+  "n"   (general-predicate-dispatch nil
           (derived-mode-p 'org-mode) #'org-roam-node-insert)
 
   "b"   (general-predicate-dispatch nil
@@ -1938,10 +1963,10 @@
   `(lambda (&optional arg)
      (interactive "p")
      (if-let* ((window (window-with-parameter ,param ,value)))
-       (pcase arg
-         (4 (delete-window window))
-         (_ (select-window window))
-         ))
+         (pcase arg
+           (4 (delete-window window))
+           (_ (select-window window))
+           ))
      ))
 
 (general-define-key
