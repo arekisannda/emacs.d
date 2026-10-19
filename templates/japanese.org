@@ -4,6 +4,7 @@
 :END:
 :SETTINGS:
 #+startup: showall
+#+startup: latexpreview
 
 #+latex_compiler: lualatex
 #+latex_header: \usepackage{luatexja}

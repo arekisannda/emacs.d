@@ -21,31 +21,34 @@
                                          "acn" "acr" "alg" "glg" "gls" "ist" "ltjruby")))
   (org-latex-hyperref-template nil)
   (org-highlight-latex-and-related '(native script entities))
-  (org-startup-with-latex-preview t)
+  (org-startup-with-latex-preview nil)
   (org-export-with-latex 'luadvisvgm)
   (org-html-with-latex 'luadvisvgm)
-  (org-latex-preview-live '(inline block edit-special))
-  (org-preview-latex-default-process 'luadvisvgm)
+  (org-latex-preview-process-default 'luadvisvgm)
+  (org-latex-preview-mode-display-live '(inline block edit-special))
   (org-latex-preview-appearance-options
    `( :foreground auto
       :background auto
       :scale nil
-      :zoom 1.0
+      :zoom 1.2
       :page-width nil
       :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
   (org-latex-pdf-process
    '("lualatex -shell-escape -interaction nonstopmode %f"))
   :init
   (add-to-list
-   'org-preview-latex-process-alist
+   'org-latex-preview-process-alist
    '(luadvisvgm :programs ("dvilualatex" "dvisvgm")
                 :description "dvi > svg"
                 :message "you need to install the programs: dvilualatex and dvisvgm."
                 :image-input-type "dvi"
                 :image-output-type "svg"
-                :image-size-adjust (1.0 . 1.0)
+                :post-clean (".dvi" ".xdv" ".pdf" ".tex" ".aux" ".log" ".out")
+                :image-size-adjust (1.7 . 1.5)
                 :latex-compiler
-                ("cd %o && dvilualatex -interaction=nonstopmode -shell-escape -output-directory=%o %f")
+                ("dvilualatex -interaction=nonstopmode -shell-escape -output-directory=%o %f")
+                :latex-compiler
+                ("dvilualatex -interaction=nonstopmode -shell-escape -output-directory=%o %f")
                 :image-converter
                 ("dvisvgm %f --no-fonts --exact-bbox --scale=%S --output=%O"))
    )

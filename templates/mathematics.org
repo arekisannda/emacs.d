@@ -5,6 +5,7 @@
 :SETTINGS:
 #+startup: showall
 #+startup: hideblocks
+#+startup: latexpreview
 
 #+latex_compiler: lualatex
 #+latex_header: \usepackage{bbm}
@@ -19,7 +20,6 @@
 #+latex_header: \usepackage{pgfplots}
 
 # Local Variables:
-# eval: (org-latex-preview 'buffer)
 # eval: (add-hook 'before-save-hook #'org-babel-execute-buffer nil t)
 # End:
 :END:
