@@ -1357,6 +1357,8 @@
   "!"     '("start checker"   . flymake-start)
   "d"     '("dired buffer"    . dired)
   "c"     '("calc"            . full-calc)
+  "x"     '("excali new"      . excali-new)
+  "C-x"   '("excali open"     . excali-open)
 
   "t"     '("translate"       . google-translate-smooth-translate)
   "w"     '("word"            . dictionary-search)
