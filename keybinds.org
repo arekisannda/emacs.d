@@ -1013,13 +1013,6 @@
               (activities-current) #'treemacs-select-window)
  )
 
-(defhydra +hydra-text-scale
-  (:foreign-key exit :exit nil :timeout nil)
-  "text scale"
-  ("+" #'text-scale-increase "increase")
-  ("-" #'text-scale-decrease "decrease"))
-(hydra-set-property #'+hydra-text-scale :verbosity 1)
-
 (general-define-key
  :keymaps        'override
  :prefix         "C-\\"
@@ -1359,7 +1352,6 @@
   (interactive)
   (agent-shell--dwim :new-shell t))
 
-
 (defun +agent-shell-with-context ()
   (interactive)
   (agent-shell--dwim :switch-to-shell t))
@@ -1367,9 +1359,17 @@
 (general-create-definer +keybinds-tools
   :prefix-command '+keybinds-tools-command)
 
+(defun +text-scale-adjust (&optional arg)
+  (interactive "p")
+  (call-interactively
+   (pcase arg
+     (4 #'text-scale-adjust)
+     (_ #'global-text-scale-adjust))))
+
 (+keybinds-tools
-  "+"     '("text scale up"   . +hydra-text-scale/text-scale-increase)
-  "-"     '("text scale down" . +hydra-text-scale/text-scale-decrease)
+  "+"     '("text scale up"   . +text-scale-adjust)
+  "-"     '("text scale down" . +text-scale-adjust)
+  "0"     '("text scale zero" . +text-scale-adjust)
   
   "!"     '("start checker"   . flymake-start)
   "d"     '("dired buffer"    . dired)
@@ -1401,6 +1401,7 @@
   "C-S-s" '("org scratch"     . +org-scratch-buffer)
   "C-t"   '("latex scratch"   . +latex-scratch-buffer)
   "C-e"   '("eshell"          . project-eshell)
+  "C-S-e" '("ielm"            . ielm)
   "C-v"   '("toggle term"     . +ghostel-terminal)
   "C-S-v" '("term"            . ghostel))
 #+end_src
@@ -1704,7 +1705,7 @@
   "f"   '("insert nerd-icon" . nerd-icons-insert)
   "u"   '("insert timestamp" . +insert-unix-timestamp)
 
-  "p" (general-predicate-dispatch nil
+  "p"   (general-predicate-dispatch nil
           (require 'password-generator nil t) #'password-generator-paranoid)
 
   "I"   (general-predicate-dispatch nil

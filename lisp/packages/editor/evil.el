@@ -50,6 +50,7 @@
                    calc-mode
                    calculator-mode
                    calendar-mode
+                   comint-mode
                    dap-ui-breakpoints-ui-list-mode
                    dape-info-parent-mode
                    dape-repl-mode
@@ -69,6 +70,7 @@
                    prolog-inferior-mode
                    racket-repl-mode
                    shell-mode
+                   shell-command-mode
                    special-mode
                    term-mode
                    vterm-mode)
@@ -87,7 +89,6 @@
           apropos-mode
           backtrace-mode
           color-theme-mode
-          comint-mode
           command-history-mode
           compilation-mode
           detached-log-mode
@@ -100,7 +101,6 @@
           helpful-mode
           messages-buffer-mode
           rfc-mode
-          shell-command-mode
           speedbar-mode
           tabulated-list
           undo-tree-visualizer-mode

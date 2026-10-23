@@ -112,29 +112,26 @@
 
    (default
     ((nil :weight normal
-          :font ,+fonts-fixed-pitch-family
-          :height ,+fonts-fixed-pitch-size)))
+          :height ,+fonts-fixed-pitch-size
+          :family ,+fonts-fixed-pitch-family)))
    (fixed-pitch
     ((nil :weight normal
-          :font ,+fonts-fixed-pitch-family
-          :height ,+fonts-fixed-pitch-size)))
+          :family ,+fonts-fixed-pitch-family)))
    (variable-pitch
     ((nil :weight normal
-          :font ,+fonts-variable-pitch-family
-          :height ,+fonts-variable-pitch-size)))
+          :family ,+fonts-variable-pitch-family)))
    (variable-pitch-text
     ((nil :weight normal
-          :font ,+fonts-variable-pitch-family
-          :height ,+fonts-variable-pitch-size)))
+          :family ,+fonts-variable-pitch-family)))
    (italic
     ((nil :slant italic
           :underline nil
-          :font ,+fonts-fixed-pitch-italic-family)))
+          :family ,+fonts-fixed-pitch-italic-family)))
    (bold-italic
     ((nil :weight bold
           :slant italic
           :underline nil
-          :font ,+fonts-fixed-pitch-italic-family)))
+          :family ,+fonts-fixed-pitch-italic-family)))
    (region
     ((nil :stipple nil :foreground unspecified)))
    (highlight

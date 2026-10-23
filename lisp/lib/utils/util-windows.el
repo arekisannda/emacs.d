@@ -502,6 +502,13 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
 (add-hook 'window-configuration-change-hook #'util/windows--aux-window-cleanup)
 
+(defun util/windows--aux-note-buffer (init-window)
+  (let* ((uuid (or (window-parameter init-window 'window-aux-id)
+                   (util/windows--aux-uuid)))
+         (bufname (format "*notes %s*" uuid)))
+    (set-window-parameter init-window 'window-aux-id uuid)
+    (get-buffer-create bufname)))
+
 (defun util/windows-select-aux-window (&optional arg)
   (interactive "p")
   (let* ((init-window (window-normalize-window nil))
@@ -518,16 +525,12 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (setq init-window (util/windows-get-aux-other-window init-window)))
 
     (pcase arg
-      (16 (let* ((uuid (or (window-parameter init-window 'window-aux-id)
-                           (util/windows--aux-uuid)))
-                 (bufname (format "*notes %s*" uuid))
-                 (buf (get-buffer-create bufname)))
-            (set-window-parameter init-window 'window-aux-id uuid)
-            (with-current-buffer buf
-              (unless (eq major-mode 'org-mode) (org-mode)))
-            (display-buffer buf)
-            ))
-
+      (16 (with-current-buffer (util/windows--aux-note-buffer init-window)
+            (org-mode)
+            (display-buffer (current-buffer))))
+      (4 (with-current-buffer (util/windows--aux-note-buffer init-window)
+           (lisp-interaction-mode)
+           (display-buffer (current-buffer))))
       (_ (when-let* ((window (util/windows-get-aux-other-window init-window)))
            (select-window window)))
       )
