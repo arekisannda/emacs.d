@@ -492,7 +492,7 @@ popups in Emacs."
                     shackle-display-buffer-action)
                   display-buffer-alist))))
 
-
+
 ;; debugging support
 
 (require 'trace)

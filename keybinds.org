@@ -449,7 +449,7 @@
   "e"   '("add cursors end" . evil-mc-make-cursor-in-visual-selection-end)
   "n"   '("match go next"   . +hydra-cursor/evil-mc-make-and-goto-next-match)
   "N"   '("match go prev"   . +hydra-cursor/evil-mc-make-and-goto-prev-match)
-  "s"   '("skip go next"    . +hydra-cursor/evil-mc-skip-and-goto-next-match) 
+  "s"   '("skip go next"    . +hydra-cursor/evil-mc-skip-and-goto-next-match)
   "S"   '("skip go prev"    . +hydra-cursor/evil-mc-skip-and-goto-prev-match)
   "c"   '("match all"       . evil-mc-make-all-cursors))
 #+end_src
@@ -763,7 +763,7 @@
 
   "["    '("prev block"        . +hydra-org-src-block-motion/org-babel-previous-src-block)
   "]"    '("next block"        . +hydra-org-src-block-motion/org-babel-next-src-block)
-  
+
   "d"   '("edraw toggle"       . edraw-org-link-image-mode)
   "!"   '("toggle modern mode" . org-modern-mode))
 #+end_src
@@ -900,7 +900,7 @@
  "C-l"         #'vterm--self-insert
  "C-S-l"       #'vterm-clear-scrollback
  "C-u"         #'vterm--self-insert
- 
+
  "C-<prior>"   '("scroll up"           . windex-scroll-up)
  "C-<next>"    '("scroll down"         . windex-scroll-down)
  "C-S-<next>"  '("scroll left"         . windex-scroll-left)
@@ -955,7 +955,7 @@
 (general-define-key
  :keymaps 'override
  "<f1>"     '("pulse" . +emacs-pulse)
- "<f2>"     (general-predicate-dispatch nil 
+ "<f2>"     (general-predicate-dispatch nil
               (derived-mode-p 'calc-mode)
               #'calc-trail-display
               (derived-mode-p 'calc-trail-mode)
@@ -973,7 +973,7 @@
               (and (require 'dape nil t) (derived-mode-p 'prog-mode))
               #'+keybinds-dape-debugger-command)
 
- "<f6>"     (general-predicate-dispatch nil 
+ "<f6>"     (general-predicate-dispatch nil
               (and (require 'dape nil t) dape-active-mode)
               #'+hydra-dape-motion/dape-step-in)
 
@@ -985,13 +985,13 @@
 
  "C-S-<f7>" (general-predicate-dispatch #'detached-project-compile)
 
- "<f8>"     (general-predicate-dispatch nil 
+ "<f8>"     (general-predicate-dispatch nil
               (and (derived-mode-p 'org-mode)) #'org-latex-preview
               (and (require 'dape nil t) dape-active-mode)
               #'+hydra-dape-motion/dape-next
               (or (derived-mode-p 'prog-mode) (eglot-managed-p))
               #'+eldoc-box)
- 
+
  "C-<f8>"   (general-predicate-dispatch nil
               (or (derived-mode-p 'prog-mode) (eglot-managed-p)) #'eldoc)
 
@@ -1370,7 +1370,7 @@
   "+"     '("text scale up"   . +text-scale-adjust)
   "-"     '("text scale down" . +text-scale-adjust)
   "0"     '("text scale zero" . +text-scale-adjust)
-  
+
   "!"     '("start checker"   . flymake-start)
   "d"     '("dired buffer"    . dired)
   "c"     '("calc"            . full-calc)
@@ -1385,7 +1385,7 @@
   "C-m"   '("magit dispatch"  . magit-file-dispatch)
 
   "p"     (general-predicate-dispatch #'ghostel-project-claude
-            (featurep 'agent-shell) #'+agent-shell-new) 
+            (featurep 'agent-shell) #'+agent-shell-new)
 
   "M-p"   (general-predicate-dispatch #'ghostel-project-claude-with-context
             (featurep 'agent-shell) #'+agent-shell-with-context)
@@ -1457,7 +1457,7 @@
 
  "F"   (general-predicate-dispatch      '("find"    . find-file)
          (org-roam-file-p)             '("profile"  . +org-roam-switch-profile))
- 
+
  "g"   (general-predicate-dispatch      '("rg"      . consult-ripgrep)
          (derived-mode-p 'devdocs-mode) '("goto"    . devdocs-goto-page))
 
@@ -1559,7 +1559,7 @@
  :prefix-map    '+keybinds-C-x--map
  :prefix        "C-x"
  :global-prefix "C-x"
- 
+
  "C-x"   '("exchange mark"   . exchange-point-and-mark)
  "C-o"   '("pop global mark" . pop-global-mark)
  "C-r"   '("replace"         . +query-replace)

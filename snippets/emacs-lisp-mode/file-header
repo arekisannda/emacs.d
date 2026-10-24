@@ -6,4 +6,3 @@
 ;;; ${1:name}.el -*- lexical-binding: t; -*-
 
 `yas-selected-text`$0
- 
