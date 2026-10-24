@@ -8,9 +8,11 @@
   :type '(alist :key-type
                 (string :tag "Description")
                 :value-type
-                (choice
-                 (string :tag "Shell Command")
-                 (sexp :tag "Elisp Function"))))
+                (plist :options
+                       ((:doc (string :tag "Description"))
+                        (:command (choice
+                                   (string :tag "Shell Command")
+                                   (function :tag "Elisp Function")))))))
 
 (defcustom util/commands-string-command-function #'async-shell-command
   "Function to execute string commands."
@@ -28,17 +30,25 @@
        (t
         (setq str (concat str " " c))
         (when (string-prefix-p "\"" c) (setq in-quote t))
-        ))
-      )
-    (s-trim str)))
+        )))
+    (string-trim str)))
 
 (defun util/commands-root-dir ()
   (or (locate-dominating-file default-directory ".dir-locals.el")
       (project-root (project-current))
       default-directory))
 
-(defcustom util/commands-run-list-additional-command-hook '()
-  "Add additional commands.
+(defcustom util/commands-use-base-commands t
+  "Use base commands."
+  :type 'boolean
+  :local t)
+
+(defcustom util/commands-run-command-max-depth 1
+  "Run command recursion limit."
+  :type 'integer)
+
+(defcustom util/commands-add-base-commands-functions '()
+  "Add base commands.
 Function takes one argument for BUFFER and return list of command entries or nil."
   :type 'hook)
 
@@ -58,39 +68,71 @@ Function takes one argument for BUFFER and return list of command entries or nil
 
     (dolist (ph matches)
       (setq str (string-replace ph (util/commands--get-placeholder-value ph) str)))
-
     str))
+
+(defun util/commands--run-command-candidate (cand)
+  (let* ((command (car cand))
+         (specs (cdr cand))
+         (command-info (plist-get specs :doc)))
+    (list (util/strings-pad-string command 20) `(:info ,command-info))))
+
+(defun util/commands--run-command-annotation (command)
+  (let* ((params (car (last (assoc command minibuffer-completion-table))))
+         (info (plist-get params :info)))
+    (concat " " (util/strings-add-font-lock (copy-sequence info) 'font-lock-comment-face))))
+
+(defun util/commands--run-command (command &optional depth)
+  (when (and (numberp depth) (< depth 0)) (error "Invalid call depth %d" depth))
+
+  (when (and (numberp depth) (> depth util/commands-run-command-max-depth))
+    (error "Reached maximum call depth %d %S" depth command))
+
+  (when (stringp command)
+    (setq command (util/commands-replace-placeholders command)))
+
+  (cond
+   ((functionp command)
+    (when-let* ((res (funcall command))
+                (command (and (plistp res)
+                              (plist-get res :command))))
+      (util/commands--run-command command (1+ (or depth 0)))))
+   ((stringp command) (funcall util/commands-string-command-function command)))
+  )
 
 (defun util/commands-run-command (command &optional suppress-output)
   "Run preset command."
   (interactive
-   (let ((commands
-          (apply #'append
-                 (mapcar(lambda (fn) (funcall fn (current-buffer)))
-                        util/commands-run-list-additional-command-hook))))
-     (let ((default-directory default-directory))
-       (unless buffer-file-name
-         (hack-dir-local-variables-non-file-buffer))
+   (let ((default-directory default-directory)
+         commands)
+     (unless buffer-file-name
+       (hack-dir-local-variables-non-file-buffer))
 
-       (setq commands
-             (append commands
-                     (buffer-local-value 'util/commands-command-list (current-buffer))))
+     (setq commands
+           (append commands
+                   (buffer-local-value 'util/commands-command-list (current-buffer))
+                   (apply #'append
+                          (mapcar (lambda (fn) (funcall fn (current-buffer)))
+                                  util/commands-add-base-commands-functions))))
 
-       (let* ((prompt
-               (format "Run command [%s]: "
-                       (shrink-path-dirs
-                        (or (car (dir-locals-find-file default-directory))
-                            (when-let* ((proj (project-current)))
-                              (project-root proj))
-                            default-directory)
-                        )))
-              (selected (completing-read prompt commands))
-              (preset (alist-get selected commands nil nil #'string=)))
-         (if (functionp preset)
-             (list preset current-prefix-arg)
-           (list (or preset selected) current-prefix-arg)
-           ))
-       )))
+     (let* ((prompt
+             (format "Run command [%s]: "
+                     (shrink-path-dirs
+                      (or (car (dir-locals-find-file default-directory))
+                          (when-let* ((proj (project-current)))
+                            (project-root proj))
+                          default-directory)
+                      )))
+            (completion-extra-properties '(:annotation-function util/commands--run-command-annotation))
+            (selected (string-trim
+                       (completing-read
+                        prompt
+                        (mapcar #'util/commands--run-command-candidate commands))))
+            (preset (plist-get (alist-get selected commands nil nil #'equal) :command)))
+       (if (functionp preset)
+           (list preset current-prefix-arg)
+         (list (or preset selected) current-prefix-arg)
+         ))
+     ))
 
   (let ((default-directory (util/commands-root-dir))
         (display-buffer-alist display-buffer-alist))
@@ -101,12 +143,6 @@ Function takes one argument for BUFFER and return list of command entries or nil
               ("\\*Detached Shell Command\\*" display-buffer-no-window))
             ))
 
-    (when (stringp command)
-      (setq command (util/commands-replace-placeholders command)))
-
-    (cond
-     ((functionp command) (funcall command))
-     ((stringp command) (funcall util/commands-string-command-function command))
-     )))
+    (util/commands--run-command command)))
 
 (provide 'util-commands)
