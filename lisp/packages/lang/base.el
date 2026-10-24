@@ -52,10 +52,13 @@
       (detached-compile "act")
     ))
 
-(defun util/commands-run--add-ci-commands (buffer)
+(defun util/commands-add-ci-commands (buffer)
   (with-current-buffer buffer
     (when (executable-find "act")
-      '(("Run CI Workflow"  . local-gh-action-test-command)))
+      (list (cons "Run CI Workflow"
+                  (list :doc "Run local github actions with ACT"
+                        :command #'local-gh-action-test-command))
+            ))
     ))
 
-(add-hook 'util/commands-run-list-additional-command-hook #'util/commands-run--add-ci-commands)
+(add-hook 'util/commands-add-base-commands-functions #'util/commands-add-ci-commands)
