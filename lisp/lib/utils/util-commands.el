@@ -71,15 +71,14 @@ Function takes one argument for BUFFER and return list of command entries or nil
     str))
 
 (defun util/commands--run-command-candidate (cand)
-  (let* ((command (car cand))
-         (specs (cdr cand))
-         (command-info (plist-get specs :doc)))
-    (list (util/strings-pad-string command 20) `(:info ,command-info))))
+  (list (car cand) `(:info ,(plist-get (cdr cand) :doc))))
 
 (defun util/commands--run-command-annotation (command)
   (let* ((params (car (last (assoc command minibuffer-completion-table))))
-         (info (plist-get params :info)))
-    (concat " " (util/strings-add-font-lock (copy-sequence info) 'font-lock-comment-face))))
+         (info (or (plist-get params :info) "")))
+    (concat " "
+            (propertize " " 'display `(space :align-to 20))
+            (util/strings-add-font-lock (copy-sequence info) 'font-lock-comment-face))))
 
 (defun util/commands--run-command (command &optional depth)
   (when (and (numberp depth) (< depth 0)) (error "Invalid call depth %d" depth))

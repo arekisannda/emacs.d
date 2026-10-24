@@ -123,19 +123,16 @@ COMPUTE is called with the parsed dump.  A nil result is cached too."
 
 (defun justcmd--recipe-runner (recipe)
   (when-let* ((runner (justcmd--collect-recipe-attributes
-                     recipe "metadata"
-                     (lambda (attr)
-                       (and (vectorp attr)
-                            (> (length attr) 0)
-                            (equal (aref attr 0) "emacs")
-                            (equal (aref attr 1) "runner"))
-                       )))
-            (fn (aref (car runner) 2))
-            (sym (intern-soft fn))
-            )
-      (if (and sym (functionp sym))
-          sym
-        (error "Invalid runner function: %S" fn))))
+                       recipe "metadata"
+                       (lambda (attr)
+                         (and (vectorp attr)
+                              (equal (seq-take attr 2) ["emacs" "runner"]))
+                         )))
+              (fn (aref (car runner) 2))
+              (sym (intern-soft fn)))
+    (if (and sym (functionp sym))
+        sym
+      (error "Invalid runner function: %S" fn))))
 
 (defun justcmd--recipe-parameters (recipe)
   (cl-loop for param across (gethash "parameters" recipe)
@@ -154,8 +151,7 @@ COMPUTE is called with the parsed dump.  A nil result is cached too."
                    "metadata"
                    (lambda (attr)
                      (and (vectorp attr)
-                          (> (length attr) 0)
-                          (equal (aref attr 0) "emacs"))
+                          (equal (seq-take attr 1) ["emacs"]))
                      )))
       (pcase-let ((`(,context . ,value)
                    (pcase (append meta nil)
@@ -268,15 +264,14 @@ RECIPE must come from ENTRY's dump; lookup is by object (`eq')."
     (justcmd--build-commands project)))
 
 (defun justcmd--run-command-candidates (cand)
-  (let* ((command (car cand))
-         (specs (cdr cand))
-         (command-info (plist-get specs :doc)))
-    (list (util/strings-pad-string command 20) `(:info ,command-info))))
+  (list (car cand) `(:info ,(plist-get (cdr cand) :doc))))
 
 (defun justcmd--run-command-annotations (command)
   (let* ((params (car (last (assoc command minibuffer-completion-table))))
-         (info (plist-get params :info)))
-    (concat " " (util/strings-add-font-lock (copy-sequence info) 'font-lock-comment-face))))
+         (info (or (plist-get params :info) "")))
+    (concat " "
+            (propertize " " 'display `(space :align-to 20))
+            (util/strings-add-font-lock (copy-sequence info) 'font-lock-comment-face))))
 
 (defun justcmd-run ()
   (interactive)
