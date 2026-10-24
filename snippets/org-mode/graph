@@ -8,4 +8,3 @@ ${2:}
 print -dpng ${1:octave-chart}.png;
 ans = "$1.png";
 #+end_src
-

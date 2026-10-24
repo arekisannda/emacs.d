@@ -405,8 +405,6 @@
         :action util/windows-display-buffer-in-popup-window
         ,@(+shackle-display-popup-preset-select))
 
-
-
        ((".*")
         :if (lambda (window &rest _)
               (or (window-parameter window 'window-side)
