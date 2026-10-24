@@ -19,8 +19,10 @@
           (if (string-suffix-p ".org" path t)
               (org-babel-load-file path)
             (load path noerror nomessage nosuffix must-suffix))))
-    ((error err)
-     (message "Load error: %S" err))))
+    (error
+     (if debug-on-error
+         (signal (car err) (cdr err))
+       (message "Load error: %S" err)))))
 
 (defmacro +on (hook &rest body)
   (declare (indent 1))
