@@ -1,0 +1,27 @@
+repos:
+    # Generic text checks (not Emacs-specific)
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-merge-conflict
+
+    - repo: https://github.com/gitleaks/gitleaks
+      rev: v8.28.0
+      hooks:
+          - id: gitleaks
+
+    - repo: local
+      hooks:
+          - id: emacs-startup
+            name: Load full config headless
+            language: system
+            entry: >-
+                emacs --batch \
+                  --eval '(setq debug-on-error t)' \
+                  -l early-init.el \
+                  -l init.el \
+                  --eval '(message "Config loaded OK")'
+            pass_filenames: false # don't pass file names; load everything
+            always_run: true
