@@ -87,7 +87,7 @@
           (bury-buffer)
         (pcase arg
           (4 (tab-line-new-state))
-          (_ (when (or (not tab-line-confirm-kill-window) (yes-or-no-p "Kill window?"))
+          (_ (when (or (not tab-line-confirm-kill-window) (yes-or-no-p "Bury buffer and kill window?"))
                (delete-window window)
                (ignore-errors (balance-windows))))
           ))
@@ -100,9 +100,10 @@
           (kill-current-buffer)
         (pcase arg
           (4 (let ((buffer (current-buffer)))
-               (tab-line-new-state)
-               (kill-buffer buffer)))
-          (_ (when (or (not tab-line-confirm-kill-window) (yes-or-no-p "Kill window?"))
+               (unless (eq buffer (get-buffer-create "*new*"))
+                 (tab-line-new-state)
+                 (kill-buffer buffer))))
+          (_ (when (or (not tab-line-confirm-kill-window) (yes-or-no-p "Kill buffer and window?"))
                (kill-buffer-and-window)
                (ignore-errors (balance-windows))))
           ))

@@ -100,19 +100,24 @@
   :init
   (defun +org-roam--profile-candidate-entry (cand)
     "Create Org-roam profile CAND entry."
-    (let* ((profile-name (car cand))
-           (description (plist-get (cdr cand) :description)))
-      (list (util/strings-pad-string profile-name 20) `(:description ,(format "%s" description)))))
+    (list (car cand) `(:description ,(plist-get (cdr cand) :description))))
 
-  (defun +org-roam--profile-annotations (cand)
+  (defun +org-roam--profile-annotations (cand &optional column-width)
     "Retrieve profile CAND description."
     (let* ((option (car (last (assoc cand minibuffer-completion-table))))
            (description (copy-sequence (plist-get option :description))))
-      (concat " " (util/strings-add-font-lock description 'font-lock-comment-face))))
+      (concat " "
+              (propertize " " 'display `(space :align-to ,(or column-width 0)))
+              (util/strings-add-font-lock description 'font-lock-comment-face))))
 
   (defun +org-roam--profile-prompter ()
     "`org-roam--profile' prompter function."
-    (let* ((completion-extra-properties '(:annotation-function +org-roam--profile-annotations)))
+    (let* ((column-width (+ 5 (cl-loop for (key . _) in commands
+                                       maximize (string-width key) into max
+                                       finally return (or max 0))))
+           (completion-extra-properties `(:annotation-function
+                                          ,(lambda (cand)
+                                             (+org-roam--profile-annotations cand column-width)))))
       (s-trim
        (completing-read
         "Org-roam profile: "

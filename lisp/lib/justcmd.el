@@ -266,20 +266,28 @@ RECIPE must come from ENTRY's dump; lookup is by object (`eq')."
 (defun justcmd--run-command-candidates (cand)
   (list (car cand) `(:info ,(plist-get (cdr cand) :doc))))
 
-(defun justcmd--run-command-annotations (command)
+(defun justcmd--run-command-annotations (command &optional column-width)
   (let* ((params (car (last (assoc command minibuffer-completion-table))))
          (info (or (plist-get params :info) "")))
     (concat " "
-            (propertize " " 'display `(space :align-to 20))
+            (propertize " " 'display `(space :align-to ,(or column-width 0)))
             (util/strings-add-font-lock (copy-sequence info) 'font-lock-comment-face))))
 
-(defun justcmd-run ()
-  (interactive)
-  (let* ((commands (justcmd-commands-list))
+(defun justcmd-run (&optional dir)
+  (interactive
+   (list (when current-prefix-arg
+           (read-directory-name "Run in directory: " nil nil t))))
+  (let* ((default-directory (or dir default-directory))
+         (commands (justcmd-commands-list))
          (prompt (format "Run command [%s]: " (justcmd--root)))
+         (column-width (+ 5 (cl-loop for (key . _) in commands
+                                     maximize (string-width key) into max
+                                     finally return (or max 0))))
          (selected
           (let ((completion-extra-properties
-                 '(:annotation-function justcmd--run-command-annotations)))
+                 `(:annotation-function
+                   ,(lambda (cand)
+                      (justcmd--run-command-annotations cand column-width)))))
             (string-trim
              (completing-read
               prompt

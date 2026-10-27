@@ -52,6 +52,7 @@ If it is not set, use ALTERNATIVE instead."
         (html          '("vscode-html-language-server" "--stdio" :name "vscode-html"))
         (scad          '("openscad-lsp" "--stdio"))
         (rust-analyzer '("rust-analyzer" :initializationOptions (:check (:command "clippy"))))
+        (just-lsp      '("just-lsp" :name "just-lsp"))
         )
 
     (dolist (mode '(scad-mode
@@ -91,6 +92,8 @@ If it is not set, use ALTERNATIVE instead."
                     ((html-mode                  :language-id "html")             . ,html)
                     (((rust-mode                 :language-id "rust")
                       (rust-ts-mode              :language-id "rust"))           . ,rust-analyzer)
+                    (((just-mode                 :language-id "just")
+                      (just-ts-mode              :language-id "just"))           . ,just-lsp)
                     ))
       (setf (alist-get (car conf) eglot-server-programs nil nil #'equal)
             (+eglot-with-local (cdr conf)))))

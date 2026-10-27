@@ -35,7 +35,8 @@
 
 (defun util/commands-root-dir ()
   (or (locate-dominating-file default-directory ".dir-locals.el")
-      (project-root (project-current))
+      (when-let* ((proj (project-current)))
+        (project-root proj))
       default-directory))
 
 (defcustom util/commands-use-base-commands t
@@ -73,11 +74,11 @@ Function takes one argument for BUFFER and return list of command entries or nil
 (defun util/commands--run-command-candidate (cand)
   (list (car cand) `(:info ,(plist-get (cdr cand) :doc))))
 
-(defun util/commands--run-command-annotation (command)
+(defun util/commands--run-command-annotation (command &optional column-width)
   (let* ((params (car (last (assoc command minibuffer-completion-table))))
          (info (or (plist-get params :info) "")))
     (concat " "
-            (propertize " " 'display `(space :align-to 20))
+            (propertize " " 'display `(space :align-to ,(or column-width 0)))
             (util/strings-add-font-lock (copy-sequence info) 'font-lock-comment-face))))
 
 (defun util/commands--run-command (command &optional depth)
@@ -102,7 +103,8 @@ Function takes one argument for BUFFER and return list of command entries or nil
   "Run preset command."
   (interactive
    (let ((default-directory default-directory)
-         commands)
+         commands
+         column-width)
      (unless buffer-file-name
        (hack-dir-local-variables-non-file-buffer))
 
@@ -113,6 +115,10 @@ Function takes one argument for BUFFER and return list of command entries or nil
                           (mapcar (lambda (fn) (funcall fn (current-buffer)))
                                   util/commands-add-base-commands-functions))))
 
+     (setq column-width (+ 5 (cl-loop for (key . _) in commands
+                                      maximize (string-width key) into max
+                                      finally return (or max 0))))
+
      (let* ((prompt
              (format "Run command [%s]: "
                      (shrink-path-dirs
@@ -121,7 +127,9 @@ Function takes one argument for BUFFER and return list of command entries or nil
                             (project-root proj))
                           default-directory)
                       )))
-            (completion-extra-properties '(:annotation-function util/commands--run-command-annotation))
+            (completion-extra-properties `(:annotation-function
+                                           ,(lambda (cand)
+                                              (util/commands--run-command-annotation cand column-width))))
             (selected (string-trim
                        (completing-read
                         prompt

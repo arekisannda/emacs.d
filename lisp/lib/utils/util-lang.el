@@ -39,7 +39,8 @@
 
 (defun util/lsp-ensure-modes ()
   "Helper wrapper function to enable LSP."
-  (unless (derived-mode-p util/lsp-default-disabled-modes)
+  (unless (or (derived-mode-p util/lsp-default-disabled-modes)
+              (file-remote-p default-directory))
     (add-hook 'hack-local-variables-hook #'util/lsp-ensure t t)
     t))
 

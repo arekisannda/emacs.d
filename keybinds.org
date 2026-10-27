@@ -1136,7 +1136,7 @@
 
 (+keybinds-buffer
   "l" '("list buffers"        . +ibuffer-list)
-  "b" '("bury buffer"         . tab-line-close-tab-kill-window)
+  "b" '("bury buffer"         . bury-buffer)
   "k" '("kill buffer"         . tab-line-kill-tab-kill-window)
   "K" '("kill buffer by name" . kill-buffer)
   "c" '("clone buffer"        . +emacs-ro-clone-indirect-buffer)
@@ -1436,8 +1436,8 @@
 
  "."     '("current"        . +emacs-display-current-buffer)
  ";"     '("find file"      . affe-find)
- "C-;"   '("sudo file"      . +emacs-sudo-find-file)
- "C-M-;" '("remote file"    . +emacs-remote-find-file)
+ "C-:"   '("sudo file"      . +emacs-sudo-find-file)
+ "C-;"   '("remote file"    . +emacs-remote-find-file)
 
  "d"     '("find dir"       . consult-dir)
  "l"     '("find line"      . consult-line)
@@ -1972,45 +1972,46 @@
 
 (general-define-key
  :keymaps 'evil-window-map
- "="    '("balance windows" . balance-windows)
- "o"    '("clear windows"   . delete-other-windows)
- "O"    '("toggle sides"    . windex-delete-windows)
- "M-o"  '("clear buffers"   . tab-line-close-other-tabs)
- "n"    '("new window"      . evil-buffer-new)
+ "="         '("balance windows" . balance-windows)
+ "o"         '("clear windows"   . delete-other-windows)
+ "O"         '("toggle sides"    . windex-delete-windows)
+ "M-o"       '("clear buffers"   . tab-line-close-other-tabs)
+ "n"         '("new window"      . evil-buffer-new)
 
- "u"    '("undo window"     . tab-bar-history-back)
- "U"    '("redo window"     . tab-bar-history-forward)
+ "u"         '("undo window"     . tab-bar-history-back)
+ "U"         '("redo window"     . tab-bar-history-forward)
 
- "C-w"  '("bury"            . tab-line-close-tab-kill-window)
- "q"    '("quit"            . evil-quit)
+ "C-w"       '("bury"            . tab-line-close-tab-kill-window)
+ "C-S-w"     '("kill"            . tab-line-kill-tab-kill-window)
+ "q"         '("quit"            . evil-quit)
 
- "C-s"  nil
- "C-v"  nil
- "V"    `("vsplit"          . ,(+window-split split-window-right))
- "v"    `("vsplit focus"    . ,(+window-split-focus-other-window split-window-right))
- "S"    `("ssplit"          . ,(+window-split split-window-below))
- "s"    `("ssplit focus"    . ,(+window-split-focus-other-window split-window-below))
+ "C-s"       nil
+ "C-v"       nil
+ "V"         `("vsplit"          . ,(+window-split split-window-right))
+ "v"         `("vsplit focus"    . ,(+window-split-focus-other-window split-window-right))
+ "S"         `("ssplit"          . ,(+window-split split-window-below))
+ "s"         `("ssplit focus"    . ,(+window-split-focus-other-window split-window-below))
 
- "H"    '("open left"       . windmove-display-left)
- "J"    '("open down"       . windmove-display-down)
- "K"    '("open up"         . windmove-display-up)
- "L"    '("open right"      . windmove-display-right)
- "M-h"  '("open ace left"   . windex-windmove-display-aw-left)
- "M-j"  '("open ace down"   . windex-windmove-display-aw-down)
- "M-k"  '("open ace up"     . windex-windmove-display-aw-up)
- "M-l"  '("open ace right"  . windex-windmove-display-aw-right)
- "C-/"  '("open ace"        . windex-windmove-display-aw)
- "C-\\" '("open popup"      . windex-windmove-display-popup-frame)
- "."    '("open same"       . windmove-display-same-window)
+ "H"         '("open left"       . windmove-display-left)
+ "J"         '("open down"       . windmove-display-down)
+ "K"         '("open up"         . windmove-display-up)
+ "L"         '("open right"      . windmove-display-right)
+ "M-h"       '("open ace left"   . windex-windmove-display-aw-left)
+ "M-j"       '("open ace down"   . windex-windmove-display-aw-down)
+ "M-k"       '("open ace up"     . windex-windmove-display-aw-up)
+ "M-l"       '("open ace right"  . windex-windmove-display-aw-right)
+ "C-/"       '("open ace"        . windex-windmove-display-aw)
+ "C-\\"      '("open popup"      . windex-windmove-display-popup-frame)
+ "."         '("open same"       . windmove-display-same-window)
 
- "P"    '("mru main"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
- "z"    `("bottom"          . util/windows-select-popup-window)
+ "P"         '("mru main"        . (lambda () (interactive) (select-window (windex-get-mru-in-main))))
+ "z"         `("bottom"          . util/windows-select-popup-window)
 
- "["    '("prev buffer"     . +hydra-evil-motion/+previous-buffer)
- "]"    '("next buffer"     . +hydra-evil-motion/+next-buffer)
+ "["         '("prev buffer"     . +hydra-evil-motion/+previous-buffer)
+ "]"         '("next buffer"     . +hydra-evil-motion/+next-buffer)
 
- "d"    '("toggle buffer"   . toggle-window-dedicated)
- "m"    '("window purpose"  . windex-set-window-purpose)
+ "d"         '("toggle buffer"   . toggle-window-dedicated)
+ "m"         '("window purpose"  . windex-set-window-purpose)
 
  "C-<down>"  `("side bottom" . ,(+select-window-with-parameter 'window-side 'bottom))
  "C-<right>" `("side right"  . ,(+select-window-with-parameter 'window-side 'right))

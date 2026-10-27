@@ -273,6 +273,14 @@
       :dedicated t
       :size +shackle-get-dimensions)
 
+     (("^\\*Shell Command Output\\*$"
+       "^\\*detached-session-info\\*$"
+       messages-buffer-mode
+       detached-log-mode
+       shell-command-mode
+       compilation-mode)
+      ,@(+shackle-display-popup-preset))
+
      (("^\\*Error\\*$"
        "^\\*Dired log\\*$"
        "^\\*latex-scratch\\*$"
@@ -281,7 +289,6 @@
        "^\\*\\(.*-\\)?eshell\\*$"
        "^ \\*.* stderr\\*$"
        "^\\*.* events\\*$"
-       "^\\*detached-session-info\\*$"
        "^\\*detached-list\\*$"
        "^\\*envrc\\*$"
        "^\\*ChatGPT.*\\*$"
@@ -297,11 +304,9 @@
        "^\\*Org Preview LaTex Output\\*$"
        bookmark-menu-mode
        dape-repl-mode
-       messages-buffer-mode
        ibuffer-mode
        git-rebase-mode
        detached-list-mode
-       detached-log-mode
        ert-results-mode
        dired-mode
        eshell-mode
@@ -319,10 +324,6 @@
        tabulated-list-mode)
       ,@(+shackle-display-popup-preset-select))
 
-     (("^\\*Shell Command Output\\*$"
-       shell-command-mode
-       compilation-mode)
-      ,@(+shackle-display-popup-preset))
 
      (("^\\*diff-hl\\*"
        "^\\*diff-hl-revert\\*"

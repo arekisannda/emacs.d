@@ -1,6 +1,7 @@
 ;;; detached.el -*- lexical-binding: t; -*-
 
 (require 'util-commands)
+(require 'util-helpers)
 
 (defun detached-project-compile ()
   (interactive)
@@ -66,7 +67,7 @@ This function uses the `notifications' library."
           (detached-open-session-display-buffer-action
            detached-list-open-session-display-buffer-action))
       (when-let* ((single-window (> (length (window-list)) 1))
-                 (buffer (current-buffer)))
+                  (buffer (current-buffer)))
         (bury-buffer buffer))
       (detached-open-session session)))
 
@@ -82,4 +83,39 @@ This function uses the `notifications' library."
 
   :bind (([remap async-shell-command]   . util/commands-run-command)
          ([remap detached-open-session] . detached-consult-session))
+  )
+
+(use-package tramp
+  :custom
+  (tramp-use-connection-share nil)
+  (tramp-verbose 1)
+  (remote-file-name-inhibit-locks t)
+  (remote-file-name-inhibit-auto-save-visited t)
+  (tramp-auto-save-directory (expand-file-name "tramp-autosave" user-emacs-directory))
+  (backup-directory-alist `((,tramp-file-name-regexp . nil)
+                            ("." . ,(expand-file-name "backups" user-emacs-directory))))
+  :config
+  ;; add nix paths
+
+  (util/dedup-add-to-list 'tramp-remote-path
+                          'tramp-own-remote-path
+                          "/run/current-system/sw/bin"
+                          "~/.nix-profile/bin")
+
+
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+
+
+  (connection-local-set-profile-variables
+   'remote-detached
+   '((detached-shell-program     . "bash")
+     (detached-session-directory . "~/tmp")
+     (detached-dtach-program     . "dtach")
+     (tramp-direct-async-process . t)
+     ))
+
+  (connection-local-set-profiles
+   '(:application tramp :protocol "sshx") 'remote-detached)
+  (connection-local-set-profiles
+   '(:application tramp :protocol "ssh") 'remote-detached)
   )

@@ -22,7 +22,7 @@
     (error
      (if debug-on-error
          (signal (car err) (cdr err))
-       (message "Load error: %S" err)))))
+       (message "Load error: %S" (error-message-string err))))))
 
 (defmacro +on (hook &rest body)
   (declare (indent 1))
