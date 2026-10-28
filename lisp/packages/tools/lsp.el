@@ -117,7 +117,6 @@ If it is not set, use ALTERNATIVE instead."
   :autoload eglot-managed-p
   :hook
   (prog-mode . util/lsp-ensure-modes)
-  (text-mode . util/lsp-ensure-modes)
   (eglot-managed-mode . +eglot-flymake-setup))
 
 (use-package consult-eglot :after eglot)
