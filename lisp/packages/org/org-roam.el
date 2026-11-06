@@ -112,7 +112,7 @@
 
   (defun +org-roam--profile-prompter ()
     "`org-roam--profile' prompter function."
-    (let* ((column-width (+ 5 (cl-loop for (key . _) in commands
+    (let* ((column-width (+ 5 (cl-loop for (key . _) in +org-roam-profiles
                                        maximize (string-width key) into max
                                        finally return (or max 0))))
            (completion-extra-properties `(:annotation-function

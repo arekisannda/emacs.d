@@ -61,7 +61,7 @@
 
               mode-line-format nil
               left-margin-width 1
-              right-margin-width 1
+              right-margin-width 0
               fringe-indicator-alist nil
               left-fringe-width 16
               right-fringe-width 16

@@ -47,6 +47,7 @@
      ("json"       . js-json)
      ("kotlin"     . kotlin)
      ("mermaid"    . mermaid)
+     ("nix"        . nix-ts)
      ("ocaml"      . tuareg)
      ("python"     . python)
      ("rust"       . rust)

@@ -219,7 +219,7 @@
        ))
 
      (("^\\*eldoc.*\\*$"
-       "^ \\*eglot doc\\*evil-list-view-mode$"
+       "^ \\*eglot doc\\*$"
        "^\\*yasnippet-capf-doc\\*$"
        "^\\*corfu doc.*\\*$"
        "^\\*org-roam\\*$"
@@ -498,10 +498,20 @@ ALIST is passed to `shackle--window-display-buffer' internally."
   (advice-add #'quit-restore-window :around #'+shackle-quit-restore-window-around)
 
   (defun +shackle-quit-aux-window ()
-    (if-let* ((window (util/windows-get-aux-window (selected-window)))) (delete-window window))
-    )
+    (when-let* ((window (util/windows-get-aux-window (selected-window))))
+      (when (window-live-p window)
+        (delete-window window)
+        t)))
 
-  (advice-add #'keyboard-quit :before #'+shackle-quit-aux-window)
+  (defun +shackle--keyboard-quit (&rest _)
+    (and (eq this-command 'keyboard-quit)
+         (not (region-active-p))
+         (not (active-minibuffer-window))
+         (not defining-kbd-macro)
+         (not executing-kbd-macro)
+         (+shackle-quit-aux-window)))
+
+  (advice-add #'keyboard-quit :before-until #'+shackle--keyboard-quit)
 
   ;; add `shackle-mode` guard to prevent adding duplicates in
   ;; `display-buffer-alist`

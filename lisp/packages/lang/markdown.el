@@ -9,7 +9,7 @@
   :config
   (utils/custom-set-faces
    (markdown-code-face
-    ((nil :background unspecified :inherit tooltip)))
+    ((nil :background ,(doom-color 'bg) :inherit tooltip)))
    )
 
   (util/update-alist

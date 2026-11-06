@@ -1,10 +1,9 @@
 ;;; emacs/minibuffer.el -*- lexical-binding: t; -*-
 
 (defun +emacs-minibuffer-setup ()
-  (setq gc-cons-threshold most-positive-fixnum
-        left-margin-width 0
-        right-margin-width 0)
-  (set-window-fringes (selected-window) 8 8 nil t)
+  (setq gc-cons-threshold most-positive-fixnum)
+  (set-window-fringes nil 8 8 nil t)
+  (set-window-margins nil 0 0)
   (marginalia-mode +1))
 
 (defun +emacs-minibuffer-exit ()

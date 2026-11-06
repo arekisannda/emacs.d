@@ -41,6 +41,9 @@
   (let ((alist (copy-tree org-latex-preview-process-alist)))
     (setf (plist-get (alist-get 'dvisvgm alist) :image-size-adjust)
           '(1.7 . 1.5))
+    (cl-pushnew ".ltjruby"
+                (plist-get (alist-get 'dvisvgm alist) :post-clean)
+                :test #'equal)
     (setq org-latex-preview-process-alist alist))
   :hook
   (org-mode . turn-on-org-cdlatex))

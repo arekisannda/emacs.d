@@ -1452,11 +1452,8 @@
  "C-S-o" '("find mark"      . consult-global-mark)
  "C-o"   '("find buf mark"  . consult-mark)
 
- "f"   (general-predicate-dispatch     '("find"     . project-find-file)
-         (org-roam-file-p)             '("notes"    . +org-roam-node-find))
-
- "F"   (general-predicate-dispatch      '("find"    . find-file)
-         (org-roam-file-p)             '("profile"  . +org-roam-switch-profile))
+ "f"     '("find"           . project-find-file)
+ "F"     '("find"           . find-file)
 
  "g"   (general-predicate-dispatch      '("rg"      . consult-ripgrep)
          (derived-mode-p 'devdocs-mode) '("goto"    . devdocs-goto-page))
