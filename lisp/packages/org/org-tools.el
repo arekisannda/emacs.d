@@ -13,3 +13,5 @@
   :custom
   (org-download-image-dir "./images")
   (org-download-screenshot-method "grim -g \"$(slurp)\" %s"))
+
+(use-package om-dash)

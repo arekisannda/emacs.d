@@ -9,6 +9,8 @@
 (require 'cl-lib)
 (require 'map)
 
+(require 'let-alist)
+
 (defgroup justcmd nil
   "Run just recipes."
   :group 'tools

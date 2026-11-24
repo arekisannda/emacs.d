@@ -392,3 +392,5 @@ window."
   (forge-topics-mode  . pr-review-minor-mode)
   (forge-pullreq-mode . pr-review-minor-mode)
   (pr-review-mode     . pr-review-setup))
+
+(use-package remoto)

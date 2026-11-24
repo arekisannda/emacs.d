@@ -3,7 +3,6 @@
 (defun +emacs-minibuffer-setup ()
   (setq gc-cons-threshold most-positive-fixnum)
   (set-window-fringes nil 8 8 nil t)
-  (set-window-margins nil 0 0)
   (marginalia-mode +1))
 
 (defun +emacs-minibuffer-exit ()

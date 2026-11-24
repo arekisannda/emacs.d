@@ -134,11 +134,11 @@
   (org-priority-default ?E)
 
   (org-priority-faces
-      '((?A . (:foreground "#ffffff" :weight semibold))
-        (?B . (:foreground "#ff0000" :weight semibold))
-        (?C . (:foreground "#ffff00" :weight semibold))
-        (?D . (:foreground "#00d200" :weight semibold))
-        (?E . (:foreground "#008eff" :weight semibold))))
+   '((?A . (:foreground "#ffffff" :weight semibold))
+     (?B . (:foreground "#ff0000" :weight semibold))
+     (?C . (:foreground "#ffff00" :weight semibold))
+     (?D . (:foreground "#00d200" :weight semibold))
+     (?E . (:foreground "#008eff" :weight semibold))))
 
   :config
   (utils/custom-set-faces
@@ -173,6 +173,29 @@
 
   (advice-add 'org-columns :before #'+org-column-setup)
   (advice-add 'org-columns-quit :after #'+org-column-teardown)
+
+  (defun +org-open-table-cell-link ()
+    "In an org table, open the link in the current cell (or row).
+Return non-nil if a link was opened, so `org-open-at-point' stops."
+    (when (org-at-table-p)
+      (let* ((cell-beg (save-excursion (skip-chars-backward "^|\n") (point)))
+             (cell-end (save-excursion (skip-chars-forward "^|\n") (point)))
+             (link (save-excursion
+                     (goto-char cell-beg)
+                     (or (when (re-search-forward org-link-bracket-re cell-end t)
+                           (match-string-no-properties 0))
+                         ;; no link in this cell: use first link in the row
+                         (progn
+                           (goto-char (line-beginning-position))
+                           (when (re-search-forward org-link-bracket-re
+                                                    (line-end-position) t)
+                             (match-string-no-properties 0)))))))
+        (when link
+          (org-link-open-from-string link)
+          t))))
+
+  (add-hook 'org-open-at-point-functions #'+org-open-table-cell-link)
+
   :hook
   (org-mode . +org-mode-setup)
   (org-mode . +org-fold-auto-hide-block-languages))

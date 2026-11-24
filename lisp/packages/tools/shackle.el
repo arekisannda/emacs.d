@@ -234,6 +234,7 @@
      (("^\\*notes .*\\*$"
        "^\\*Code Review Comment\\*$"
        "^COMMIT_EDITMSG$"
+       "^\\*om-dash-edit\\*$"
        "^\\*Dictionary\\*.*$"
        "\\*Gnuplot Trail\\*"
        "\\*Gnuplot Commands\\*"
@@ -339,6 +340,7 @@
        "^\\*trace-output\\*$"
        "^ \\*Agenda Commands\\*$"
        "^\\*Edit Formulas\\*"
+       "^\\*Select Link\\*$"
        "^ \\*transient\\*$"
        "^ \\*CDLaTeX Help\\*"
        "^\\*Org Select\\*$"
@@ -393,6 +395,14 @@
       :custom util/windows-display-buffer-in-popup-window
       ,@(+shackle-display-popup-preset-select))
 
+     ((help-mode
+       special-mode)
+      ,@(+shackle-display-right-select-preset-0)
+      :size +shackle-get-dimensions)
+
+     (("^\\*.*\\*$")
+      ,@(+shackle-display-popup-preset-select))
+
      ((prog-mode
        text-mode
        conf-mode
@@ -425,11 +435,6 @@
          outline-mode)
         :same t :select t)
        ))
-
-     ((help-mode
-       special-mode)
-      ,@(+shackle-display-right-select-preset-0)
-      :size +shackle-get-dimensions)
      ))
   :config
   (util/dedup-add-to-list 'evil-motion-state-modes 'leetcode--problem-detail-mode)

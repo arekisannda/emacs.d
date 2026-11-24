@@ -96,15 +96,9 @@ This function uses the `notifications' library."
                             ("." . ,(expand-file-name "backups" user-emacs-directory))))
   :config
   ;; add nix paths
-
-  (util/dedup-add-to-list 'tramp-remote-path
-                          'tramp-own-remote-path
-                          "/run/current-system/sw/bin"
-                          "~/.nix-profile/bin")
-
-
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
-
+  (util/dedup-add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+  (util/dedup-add-to-list 'tramp-remote-path "/run/current-system/sw/bin")
+  (util/dedup-add-to-list 'tramp-remote-path "~/.nix-profile/bin")
 
   (connection-local-set-profile-variables
    'remote-detached
