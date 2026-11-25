@@ -333,6 +333,264 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
           ))
       )))
 
+(defcustom util/windows-sub-frame-hook '()
+  "Called when displaying buffer in a sub frame.
+Function takes two arguments WINDOW and BUFFER and optional FLAGS."
+  :type 'hook)
+
+(defun util/windows-sub-frame-p (&optional frame)
+  "Return non-nil if FRAME is a sub frame created by util-windows."
+  (let ((frame (window-normalize-frame frame)))
+    (and (frame-parent frame)
+         (eq frame (frame-parameter (frame-parent frame) 'util/windows-sub-frame)))))
+
+(defun util/windows--sub-frame-size (size total)
+  "Resolve SIZE against TOTAL columns/lines of the parent frame.
+A nil SIZE uses TOTAL."
+  (max 1 (min total
+              (cond
+               ((integerp size) size)
+               ((floatp size) (floor (* size total)))
+               ((functionp size) (funcall size total))
+               (t total)))))
+
+(defun util/windows--sub-frame-poshandler-info (child parent-window)
+  "Build a `posframe'-compatible poshandler info plist for CHILD."
+  (let* ((parent (window-frame parent-window))
+         (point (window-point parent-window))
+         (mouse (mouse-pixel-position)))
+    (list :posframe child
+          :posframe-buffer (window-buffer (frame-root-window child))
+          :posframe-width (frame-pixel-width child)
+          :posframe-height (frame-pixel-height child)
+          :parent-frame parent
+          :parent-frame-width (frame-pixel-width parent)
+          :parent-frame-height (frame-pixel-height parent)
+          :parent-window parent-window
+          :parent-window-top (window-pixel-top parent-window)
+          :parent-window-left (window-pixel-left parent-window)
+          :parent-window-width (window-pixel-width parent-window)
+          :parent-window-height (window-pixel-height parent-window)
+          :parent-window-start (window-start parent-window)
+          :parent-window-end (window-end parent-window)
+          :position point
+          :position-info (posn-at-point point parent-window)
+          :font-width (frame-char-width parent)
+          :font-height (frame-char-height parent)
+          :mode-line-height (window-mode-line-height parent-window)
+          :header-line-height (window-header-line-height parent-window)
+          :tab-line-height (window-tab-line-height parent-window)
+          :minibuffer-height (window-pixel-height (minibuffer-window parent))
+          :mouse-x (cadr mouse)
+          :mouse-y (cddr mouse)
+          :x-pixel-offset 0
+          :y-pixel-offset 0)))
+
+(defun util/windows--sub-frame-center (info)
+  "Default poshandler: center sub frame in parent frame using INFO."
+  (cons (max 0 (/ (- (plist-get info :parent-frame-width)
+                     (plist-get info :posframe-width))
+                  2))
+        (max 0 (/ (- (plist-get info :parent-frame-height)
+                     (plist-get info :posframe-height))
+                  2))))
+
+(defun util/windows--sub-frame-position (child parent-window position)
+  "Move CHILD according to POSITION relative to PARENT-WINDOW."
+  (let* ((info (util/windows--sub-frame-poshandler-info child parent-window))
+         (pos (pcase position
+                (`(,(pred integerp) . ,(pred integerp)) position)
+                ((pred functionp) (funcall position info))
+                (_ (util/windows--sub-frame-center info)))))
+    (set-frame-position child (car pos) (cdr pos))))
+
+(defun util/windows--sub-frame-set-border-color (frame color)
+  "Set FRAME border COLOR.
+COLOR is a color string or a face whose foreground is used."
+  (when-let* ((color (if (facep color)
+                         (face-foreground color nil 'default)
+                       color)))
+    (set-face-background 'child-frame-border color frame)
+    (set-face-background 'internal-border color frame)))
+
+(defun util/windows--make-sub-frame (parent width height)
+  "Create a WIDTH x HEIGHT sub frame for PARENT."
+  (let ((frame (make-frame `((parent-frame             . ,parent)
+                             (minibuffer               . ,(minibuffer-window parent))
+                             (width                    . ,width)
+                             (height                   . ,height)
+                             (no-accept-focus          . nil)
+                             (no-focus-on-map          . nil)
+                             (no-other-frame           . t)
+                             (undecorated              . t)
+                             (unsplittable             . t)
+                             (skip-taskbar             . t)
+                             (keep-ratio               . t)
+                             (desktop-dont-save        . t)
+                             (auto-hide-function       . delete-frame)
+                             (child-frame-border-width . 1)
+                             (internal-border-width    . 1)
+                             (left-fringe              . 8)
+                             (right-fringe             . 8)
+                             (menu-bar-lines           . 0)
+                             (tool-bar-lines           . 0)
+                             (tab-bar-lines            . 0)
+                             (vertical-scroll-bars     . nil)
+                             (horizontal-scroll-bars   . nil)))))
+    (set-frame-parameter parent 'util/windows-sub-frame frame)
+    frame))
+
+(defun util/windows-display-buffer-in-sub-frame (buffer &optional alist plist)
+  "Display BUFFER in a child frame according to ALIST and PLIST."
+  (if (plist-get plist :ignore) (user-error "Buffer ignored by rule.")
+    (let* ((init-window (window-normalize-window nil))
+           (parent (window-frame init-window))
+           (return-window init-window)
+           width
+           height
+           child
+           window
+           new)
+
+      ;; Displaying from inside a sub frame: reuse it, keep original return window.
+      (when (util/windows-sub-frame-p parent)
+        (setq return-window (frame-parameter parent 'util/windows-sub-frame-return)
+              parent (frame-parent parent)))
+
+      (setq width (util/windows--sub-frame-size (plist-get plist :width) (frame-width parent))
+            height (util/windows--sub-frame-size (plist-get plist :height) (frame-height parent)))
+
+      (setq child (frame-parameter parent 'util/windows-sub-frame))
+      (unless (frame-live-p child)
+        (setq child (util/windows--make-sub-frame parent width height)
+              new t))
+      (setq window (frame-root-window child))
+
+      ;; Window is strongly dedicated; release it so the new buffer can be shown.
+      (set-window-dedicated-p window nil)
+      (utils/window-display-buffer buffer window (if new 'frame 'reuse) alist)
+
+      (when-let* ((parameters (plist-get plist :parameters)))
+        (modify-frame-parameters child parameters))
+
+      (set-frame-size child width height)
+
+      (util/windows--sub-frame-set-border-color child (plist-get plist :border-color))
+
+      (util/windows--sub-frame-position
+       child
+       (if (window-live-p return-window) return-window (frame-selected-window parent))
+       (plist-get plist :position))
+
+      (with-current-buffer buffer
+        (when (plist-get plist :disable-modeline)
+          (set-window-parameter window 'mode-line-format 'none))
+        (set-window-parameter window 'quit-restore `(frame frame ,return-window ,buffer))
+        (set-window-parameter window 'split-window (lambda (&rest _) (error "Cannot split sub frame window")))
+        (set-window-dedicated-p window t)
+        (set-window-prev-buffers window nil)
+        (set-window-next-buffers window nil))
+
+      (set-frame-parameter child 'util/windows-sub-frame-return return-window)
+      (set-frame-parameter parent 'util/windows-sub-frame-buffer buffer)
+      (select-frame-set-input-focus child)
+      (select-window window)
+
+      (run-hook-with-args 'util/windows-sub-frame-hook window buffer (plist-get plist :flags))
+      window)))
+
+(defun util/windows--sub-frame-restore-focus (frame)
+  "Return focus to the originating window when sub FRAME is deleted."
+  (when-let* (((util/windows-sub-frame-p frame))
+              ((eq frame (selected-frame)))
+              (window (frame-parameter frame 'util/windows-sub-frame-return))
+              ((window-live-p window)))
+    (select-frame-set-input-focus (window-frame window))
+    (select-window window)))
+
+(add-hook 'delete-frame-functions #'util/windows--sub-frame-restore-focus)
+
+(defun util/windows-sub-frame-parent-window (&optional window)
+  "Return WINDOW, or its parent frame's return window if WINDOW is in a sub frame.
+Use this for UI that should be shown relative to the parent frame
+\(e.g. posframes) while still acting on the sub frame's buffer."
+  (let* ((window (window-normalize-window window))
+         (frame (window-frame window)))
+    (if (not (util/windows-sub-frame-p frame))
+        window
+      (let ((parent (frame-parent frame))
+            (return (frame-parameter frame 'util/windows-sub-frame-return)))
+        (if (and (window-live-p return) (eq (window-frame return) parent))
+            return
+          (frame-selected-window parent))))))
+
+(defun util/windows--sub-frame-redirect (fn &rest args)
+  "Call FN with ARGS from the parent frame when a sub frame is selected.
+Keeps the sub frame restricted to its own buffer: the sub frame is
+hidden and everything else is displayed through the parent frame's
+window management."
+  (let ((frame (selected-frame)))
+    (when (and (util/windows-sub-frame-p frame)
+               (not (minibuffer-window-active-p (selected-window))))
+      (util/windows-hide-sub-frame frame))
+    (apply fn args)))
+
+(advice-add 'display-buffer :around #'util/windows--sub-frame-redirect)
+(advice-add 'switch-to-buffer :around #'util/windows--sub-frame-redirect)
+
+(defun util/windows--sub-frame-posframe-show (fn &rest args)
+  "Call `posframe-show' FN with ARGS relative to the parent frame.
+`posframe-show' parents the posframe to the selected window's frame;
+when that is a sub frame, the posframe would be nested and clipped
+inside it.  Selection is restored afterwards, so focus is unchanged."
+  (let ((window (selected-window)))
+    (if (util/windows-sub-frame-p (window-frame window))
+        (with-selected-window (util/windows-sub-frame-parent-window window)
+          (apply fn args))
+      (apply fn args))))
+
+(advice-add 'posframe-show :around #'util/windows--sub-frame-posframe-show)
+
+(defun util/windows--sub-frame-parent (&optional frame)
+  "Return the parent of FRAME if it is a sub frame, otherwise FRAME."
+  (let ((frame (window-normalize-frame frame)))
+    (if (util/windows-sub-frame-p frame) (frame-parent frame) frame)))
+
+(defun util/windows--get-sub-frame (&optional frame)
+  "Return the live sub frame associated with FRAME.
+FRAME may be the sub frame itself or its parent."
+  (when-let* ((child (frame-parameter (util/windows--sub-frame-parent frame)
+                                      'util/windows-sub-frame))
+              ((frame-live-p child)))
+    child))
+
+(defun util/windows-hide-sub-frame (&optional frame)
+  "Delete the sub frame of FRAME.
+Its buffer stays tracked; `util/windows-show-sub-frame' redisplays it.
+Focus returns to the parent via `util/windows--sub-frame-restore-focus'."
+  (interactive)
+  (if-let* ((child (util/windows--get-sub-frame frame)))
+      (delete-frame child)
+    (user-error "No sub frame")))
+
+(defun util/windows-show-sub-frame (&optional frame)
+  "Redisplay the tracked sub frame buffer of FRAME.
+The buffer goes through `display-buffer', so the shackle rule that
+originally placed it recreates the sub frame."
+  (interactive)
+  (let ((buffer (frame-parameter (util/windows--sub-frame-parent frame)
+                                 'util/windows-sub-frame-buffer)))
+    (if (buffer-live-p buffer)
+        (display-buffer buffer)
+      (user-error "No sub frame buffer"))))
+
+(defun util/windows-toggle-sub-frame ()
+  "Delete the sub frame if it exists, otherwise redisplay its buffer."
+  (interactive)
+  (if (util/windows--get-sub-frame)
+      (util/windows-hide-sub-frame)
+    (util/windows-show-sub-frame)))
+
 (defun util/windows-popup-window-p (window)
   (and (window-parameter window 'window-popup)))
 
@@ -413,6 +671,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
             (invalid (or (plist-get plist :ignore)
                          (util/windows-side-window-p init-window)
                          (util/windows-popup-window-p init-window)
+                         (util/windows-sub-frame-p (window-frame init-window))
                          )))
       (user-error "Window cannot be split for aux-window.")
     (let ((size (plist-get plist :size))
@@ -514,6 +773,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
   (let* ((init-window (window-normalize-window nil))
          (aux-splittable-p (and (not (or (util/windows-side-window-p init-window)
                                          (util/windows-popup-window-p init-window)
+                                         (util/windows-sub-frame-p (window-frame init-window))
                                          (and (one-window-p)
                                               (eq (window-main-window) (window-parent init-window)))
                                          ))

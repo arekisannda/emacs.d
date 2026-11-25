@@ -1005,6 +1005,8 @@
 
  "C-<f11>"  '("aux" . util/windows-select-aux-window)
 
+ "M-<f11>"  '("sub" . util/windows-toggle-sub-frame)
+
  "S-<f12>"  '("tree toggle" . treemacs-autohide-mode)
 
  "M-<f12>"  '("tree toggle" . treemacs-autohide-set-threshold)

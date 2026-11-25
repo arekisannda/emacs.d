@@ -194,6 +194,7 @@
   (tabulated-list-mode . emacs-tabulated-list-setup)
   (util/windows-side-window . emacs-alt-face-side-setup)
   (util/windows-aux-window . emacs-alt-face-side-setup)
+  (util/windows-sub-frame . emacs-alt-face-side-setup)
   (Custom-mode . emacs-set-alt-face))
 
 (use-package rainbow-delimiters)

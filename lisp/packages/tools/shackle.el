@@ -248,13 +248,6 @@
       ,@(+shackle-display-aux-preset)
       :select t)
 
-     (("^\\*Customize Apropos\\*$"
-       "^\\*Customize .*\\*$"
-       "^\\*Customize.*\\*$"
-       Custom-mode)
-      ,@(+shackle-display-right-select-preset-0)
-      :size +shackle-get-dimensions)
-
      ((dape-info-watch-mode
        dape-info-scope-mode)
       ,@(+shackle-display-right-select-preset-0)
@@ -395,9 +388,20 @@
       :custom util/windows-display-buffer-in-popup-window
       ,@(+shackle-display-popup-preset-select))
 
-     ((help-mode
+     (("^\\*Customize Apropos\\*$"
+       "^\\*Customize .*\\*$"
+       "^\\*Customize.*\\*$"
+
+       help-mode
+       Custom-mode
        special-mode)
-      ,@(+shackle-display-right-select-preset-0)
+      :flags (enable-alt-face)
+      :width (lambda (total)
+               (min total
+                    (alist-get 'window-width (+shackle-get-dimensions 'right))))
+      :border-color ,(doom-color 'vertical-bar)
+      :position posframe-poshandler-frame-top-right-corner
+      :custom util/windows-display-buffer-in-sub-frame
       :size +shackle-get-dimensions)
 
      (("^\\*.*\\*$")

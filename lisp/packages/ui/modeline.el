@@ -230,6 +230,7 @@
   :hook
   (util/windows-side-window . +mode-line-setup)
   (util/windows-aux-window . +mode-line-setup)
+  (util/windows-sub-frame . +mode-line-setup)
   (doom-modeline-mode . +doom-modeline-set)
   (doom-modeline-mode . column-number-mode)
   (after-init . doom-modeline-mode))

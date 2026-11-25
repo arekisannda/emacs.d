@@ -173,7 +173,7 @@ Intended for internal use."
     (interactive)
     (when (and eldoc-box--frame (frame-live-p eldoc-box--frame))
       (setq eldoc-box--show nil)
-      (make-frame-invisible eldoc-box--frame t)))
+      (delete-frame eldoc-box--frame)))
 
   (advice-add #'eldoc-box-quit-frame :override #'+eldoc-box-quit-frame)
 
