@@ -8,10 +8,10 @@
   (flymake-fringe-indicator-position nil)
   (flymake-indicator-type nil)
   :config
-  (utils/custom-set-faces
-   (flymake-warning
-    ((nil :underline (:style wave :color ,(doom-color 'orange)))))
-   )
+  (utils/custom-set-faces flymake
+    (flymake-warning
+     ((nil :underline (:style wave :color ,(doom-color 'orange)))))
+    )
 
   (defun flymake-show-buffer-diagnostics-override (&optional diagnostic)
     "Show listing of Flymake diagnostics for current buffer.

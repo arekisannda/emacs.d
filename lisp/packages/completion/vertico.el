@@ -68,14 +68,14 @@
   (vertico-sort-function #'vertico-sort-history-length-alpha)
   (vertico-sort-override-function #'vertico-sort-history-length-alpha)
   :config
-  (utils/custom-set-faces
-   (vertico-default
-    ((nil :inherit tooltip
-          :background ,(doom-color 'bg-alt))))
-   (vertico-current
-    ((nil :inherit default
-          :foreground ,(doom-color 'fg)
-          :background ,(doom-color 'bg)))))
+  (utils/custom-set-faces vertico
+    (vertico-default
+     ((nil :inherit tooltip
+           :background ,(doom-color 'bg-alt))))
+    (vertico-current
+     ((nil :inherit default
+           :foreground ,(doom-color 'fg)
+           :background ,(doom-color 'bg)))))
   (advice-add
    #'vertico--format-candidate :around
    (lambda (orig-fun cand prefix suffix index start)
@@ -138,27 +138,27 @@
       :lines-truncate t
       )))
   :config
-  (utils/custom-set-faces
-   (vertico-posframe
-    ((nil :inherit tooltip
-          :foreground unspecified
-          :background ,(doom-color 'bg-alt))))
-   (vertico-posframe-border
-    ((nil :inherit popup-border
-          :background unspecified
-          :foreground unspecified)))
-   (vertico-posframe-border-2
-    ((nil :inherit default
-          :background ,(doom-color 'orange))))
-   (vertico-posframe-border-3
-    ((nil :inherit default
-          :background ,(doom-color 'yellow))))
-   (vertico-posframe-border-4
-    ((nil :inherit default
-          :background ,(doom-color 'base8))))
-   (vertico-posframe-border-fallback
-    ((nil :inherit default
-          :background ,(doom-color 'vertical-bar)))))
+  (utils/custom-set-faces vertico-posframe
+    (vertico-posframe
+     ((nil :inherit tooltip
+           :foreground unspecified
+           :background ,(doom-color 'bg-alt))))
+    (vertico-posframe-border
+     ((nil :inherit popup-border
+           :background unspecified
+           :foreground unspecified)))
+    (vertico-posframe-border-2
+     ((nil :inherit default
+           :background ,(doom-color 'orange))))
+    (vertico-posframe-border-3
+     ((nil :inherit default
+           :background ,(doom-color 'yellow))))
+    (vertico-posframe-border-4
+     ((nil :inherit default
+           :background ,(doom-color 'base8))))
+    (vertico-posframe-border-fallback
+     ((nil :inherit default
+           :background ,(doom-color 'vertical-bar)))))
 
   (defvar vertico-posframe-last-command nil)
 

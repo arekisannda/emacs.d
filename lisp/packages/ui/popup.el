@@ -22,7 +22,14 @@
   :config
   (defun +posframe-show-refresh (buffer &rest _)
     (posframe-refresh buffer))
-  (advice-add #'posframe-show :after #'+posframe-show-refresh))
+
+  (advice-add #'posframe-show :after #'+posframe-show-refresh)
+
+  (defun +posframe-theme-refresh (&rest _)
+    (posframe-delete-all))
+
+  (add-hook 'enable-theme-functions #'+posframe-theme-refresh)
+  )
 
 (use-package which-key
   :custom

@@ -7,10 +7,10 @@
    (lambda () (and (frame-live-p corfu--frame)
                    (frame-visible-p corfu--frame))))
   :config
-  (utils/custom-set-faces
-   (yas-field-highlight-face
-    ((nil :inherit region)))
-   )
+  (utils/custom-set-faces yasnippet
+    (yas-field-highlight-face
+     ((nil :inherit region)))
+    )
   :diminish yas-minor-mode)
 
 (use-package yasnippet-snippets :after yasnippet

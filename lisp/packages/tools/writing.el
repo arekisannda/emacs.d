@@ -13,12 +13,12 @@
      (list (read-string "Word: " (current-word))))
     (w3m-browse-url (format "https://etymonline.com/word/%s" word)))
   :config
-  (utils/custom-set-faces
-   (dictionary-word-entry-face
-    ((nil :inverse-video nil
-          :foreground ,(doom-color 'grey)
-          )))
-   )
+  (utils/custom-set-faces dictionary
+    (dictionary-word-entry-face
+     ((nil :inverse-video nil
+           :foreground ,(doom-color 'grey)
+           )))
+    )
   :hook
   (dictionary-mode . emacs-set-alt-face))
 

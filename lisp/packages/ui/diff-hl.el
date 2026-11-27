@@ -41,43 +41,43 @@
   (setq diff-hl-show-hunk-diff-buffer-name "*diff-hl-show-hunk-diff-buffer*")
 
   :config
-  (utils/custom-set-faces
-   (diff-hl-c
-    ((nil :inherit unspecified
-          :foreground ,(doom-color 'grey)
-          :background ,(doom-color 'bg)
-          )))
+  (utils/custom-set-faces diff-hl
+    (diff-hl-c
+     ((nil :inherit unspecified
+           :foreground ,(doom-color 'grey)
+           :background ,(doom-color 'bg)
+           )))
 
-   (diff-hl-change
-    ((nil :inherit unspecified
-          :foreground ,(doom-color 'grey)
-          :background ,(doom-color 'bg)
-          )))
+    (diff-hl-change
+     ((nil :inherit unspecified
+           :foreground ,(doom-color 'grey)
+           :background ,(doom-color 'bg)
+           )))
 
-   (diff-hl-margin-change
-    ((nil :inherit diff-hl-change
-          :inverse-video t)))
+    (diff-hl-margin-change
+     ((nil :inherit diff-hl-change
+           :inverse-video t)))
 
-   (diff-hl-insert
-    ((nil :inherit unspecified
-          :foreground ,(doom-color 'green)
-          :background ,(doom-color 'bg)
-          )))
+    (diff-hl-insert
+     ((nil :inherit unspecified
+           :foreground ,(doom-color 'green)
+           :background ,(doom-color 'bg)
+           )))
 
-   (diff-hl-margin-insert
-    ((nil :inherit diff-hl-insert
-          :inverse-video t)))
+    (diff-hl-margin-insert
+     ((nil :inherit diff-hl-insert
+           :inverse-video t)))
 
-   (diff-hl-delete
-    ((nil :inherit unspecified
-          :foreground ,(doom-color 'red)
-          :background ,(doom-color 'bg)
-          )))
+    (diff-hl-delete
+     ((nil :inherit unspecified
+           :foreground ,(doom-color 'red)
+           :background ,(doom-color 'bg)
+           )))
 
-   (diff-hl-margin-delete
-    ((nil :inherit diff-hl-delete
-          :inverse-video t)))
-   )
+    (diff-hl-margin-delete
+     ((nil :inherit diff-hl-delete
+           :inverse-video t)))
+    )
 
   (defun +diff-hl-show-hunk-clear (&rest _)
     (when (buffer-live-p (get-buffer diff-hl-show-hunk-buffer-name))

@@ -7,7 +7,7 @@
   (markdown-command "multimarkdown")
   (markdown-fontify-code-blocks-natively t)
   :config
-  (utils/custom-set-faces
+  (utils/custom-set-faces markdown
    (markdown-code-face
     ((nil :background ,(doom-color 'bg) :inherit tooltip)))
    )

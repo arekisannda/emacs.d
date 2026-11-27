@@ -141,22 +141,22 @@
      (?E . (:foreground "#008eff" :weight semibold))))
 
   :config
-  (utils/custom-set-faces
-   (org-column-title
-    ((nil :foreground ,(doom-color 'vertical-bar))))
-   (org-imminent-deadline
-    ((nil :inherit unspecifed :foreground ,(doom-color 'fg))))
-   (org-upcoming-deadline
-    ((nil :inherit unspecifed :foreground ,(doom-color 'fg-alt))))
-   (org-upcoming-distant-deadline
-    ((nil :inherit unspecifed :foreground ,(doom-color 'grey))))
-   (org-column
-    ((nil :background unspecified)))
-   (org-column-title
-    ((nil :foreground ,(doom-color 'grey))))
-   (org-priority
-    ((nil :foreground unspecified)))
-   )
+  (utils/custom-set-faces org
+    (org-column-title
+     ((nil :foreground ,(doom-color 'vertical-bar))))
+    (org-imminent-deadline
+     ((nil :inherit unspecifed :foreground ,(doom-color 'fg))))
+    (org-upcoming-deadline
+     ((nil :inherit unspecifed :foreground ,(doom-color 'fg-alt))))
+    (org-upcoming-distant-deadline
+     ((nil :inherit unspecifed :foreground ,(doom-color 'grey))))
+    (org-column
+     ((nil :background unspecified)))
+    (org-column-title
+     ((nil :foreground ,(doom-color 'grey))))
+    (org-priority
+     ((nil :foreground unspecified)))
+    )
 
   (defun +org-column-setup (&rest _)
     (setq-local evil-cross-lines t)

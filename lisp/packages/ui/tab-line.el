@@ -8,24 +8,24 @@
   (tab-line-tab-name-format-function #'tab-line-tab-name-format-padded)
   (tab-line-tab-name-truncated-max 15)
   :config
-  (utils/custom-set-faces
-   (tab-line-tab-modified
-    ((nil :inherit tab-line-tab :background unspecified)))
-   (tab-line
-    ((nil :box (:line-width (1 . 4) :style flat-button))))
-   (tab-line-tab
-    ((nil :height 1.0 :overline ,(doom-color 'fg-alt) :foreground ,(doom-color 'fg-alt))))
-   (tab-line-tab-inactive
-    ((nil :height 1.0 :background ,(doom-color 'bg-alt))))
-   (tab-line-tab-inactive-alternate
-    ((nil :inherit tab-line-tab-inactive)))
-   (tab-line-tab-current
-    ((nil :height 1.0 :overline ,(doom-color 'violet) :foreground ,(doom-color 'fg) :background ,(doom-color 'bg))))
-   (tab-line-tab-special
-    ((nil :slant italic)))
-   (tab-line-tab-modified
-    ((nil :underline unspecified :foreground ,(doom-color 'yellow))))
-   )
+  (utils/custom-set-faces tab-line
+    (tab-line-tab-modified
+     ((nil :inherit tab-line-tab :background unspecified)))
+    (tab-line
+     ((nil :box (:line-width (1 . 4) :style flat-button))))
+    (tab-line-tab
+     ((nil :height 1.0 :overline ,(doom-color 'fg-alt) :foreground ,(doom-color 'fg-alt))))
+    (tab-line-tab-inactive
+     ((nil :height 1.0 :background ,(doom-color 'bg-alt))))
+    (tab-line-tab-inactive-alternate
+     ((nil :inherit tab-line-tab-inactive)))
+    (tab-line-tab-current
+     ((nil :height 1.0 :overline ,(doom-color 'violet) :foreground ,(doom-color 'fg) :background ,(doom-color 'bg))))
+    (tab-line-tab-special
+     ((nil :slant italic)))
+    (tab-line-tab-modified
+     ((nil :underline unspecified :foreground ,(doom-color 'yellow))))
+    )
 
   (defun tab-line-tab-name-format-padded (tab tabs)
     "Default function to use as `tab-line-tab-name-format-function', which see."

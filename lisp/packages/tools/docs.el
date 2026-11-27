@@ -3,25 +3,25 @@
 (use-package rfc-mode
   :defer t
   :config
-  (utils/custom-set-faces
-   (rfc-mode-browser-status-face
-    ((nil :inherit font-lock-string-face)))
-   (rfc-mode-browser-ref-face
-    ((nil :inherit font-lock-operator-face)))
-   (rfc-mode-browser-title-face
-    ((nil :inherit font-lock-operator-face))))
+  (utils/custom-set-faces rfc-mode
+    (rfc-mode-browser-status-face
+     ((nil :inherit font-lock-string-face)))
+    (rfc-mode-browser-ref-face
+     ((nil :inherit font-lock-operator-face)))
+    (rfc-mode-browser-title-face
+     ((nil :inherit font-lock-operator-face))))
   )
 
 (use-package devdocs
   :defer t
   :config
-  (utils/custom-set-faces
-   (nxml-text
-    ((nil :background unspecified)))
-   (devdocs-code-block
-    ((nil :extend t
-          :background ,(doom-color 'bg))))
-   ))
+  (utils/custom-set-faces devdocs
+    (nxml-text
+     ((nil :background unspecified)))
+    (devdocs-code-block
+     ((nil :extend t
+           :background ,(doom-color 'bg))))
+    ))
 
 (use-package man
   :defer t

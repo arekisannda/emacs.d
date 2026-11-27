@@ -126,11 +126,28 @@ PATCHBUF is the buffer where the diff output will be written."
          (goto-char (or end (region-end)))
          (or (eolp) (bolp)))))
 
-(defmacro utils/custom-set-faces (&rest specs)
-  "Apply SPECS via `custom-set-faces', now and after every theme load."
-  `(let ((fn (lambda (&rest _) (apply #'custom-set-faces (backquote ,specs)))))
-     (add-hook 'enable-theme-functions fn)
-     (funcall fn)))
+
+(defvar utils/custom-face-specs nil
+  "Alist of (ID . FN), where each FN re-applies a set of face specs.")
+
+(defun utils/custom-faces-apply (&rest _)
+  "Re-apply every registered face spec, oldest first."
+  (dolist (entry (reverse utils/custom-face-specs))
+    (funcall (cdr entry)))
+  (when (fboundp 'posframe-delete-all)
+    (posframe-delete-all)))
+
+(add-hook 'enable-theme-functions #'utils/custom-faces-apply)
+
+(defmacro utils/custom-set-faces (id &rest specs)
+  "Register SPECS under ID and apply them now and after every theme load.
+ID is an unquoted symbol; re-evaluating replaces the existing entry."
+  (declare (indent 1))
+  `(let ((fn (lambda () (apply #'custom-set-faces (backquote ,specs)))))
+     (setf (alist-get ',id utils/custom-face-specs) fn)
+     (funcall fn)
+     (when (fboundp 'posframe-delete-all)
+       (posframe-delete-all))))
 
 (provide 'util-helpers)
 

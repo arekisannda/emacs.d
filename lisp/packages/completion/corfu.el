@@ -33,23 +33,23 @@
               (bound-and-true-p vertico--input)
               (eq (current-local-map) read-passwd-map)))))
   :config
-  (utils/custom-set-faces
-   (completion-preview
-    ((nil :inherit nil
-          :foreground ,(doom-darken (doom-color 'yellow) 0.2))))
-   (completion-preview-exact
-    ((nil :inherit completion-preview-common
-          :underline (:color ,(doom-darken (doom-color 'yellow) 0.2)
-                             :style line
-                             :position nil))))
-   (corfu-border
-    ((nil :inherit popup-border
-          :background unspecified
-          :foreground unspecified)))
-   (corfu-current
-    ((nil :inherit default
-          :background ,(doom-color 'bg))))
-   )
+  (utils/custom-set-faces corfu
+    (completion-preview
+     ((nil :inherit nil
+           :foreground ,(doom-darken (doom-color 'yellow) 0.2))))
+    (completion-preview-exact
+     ((nil :inherit completion-preview-common
+           :underline (:color ,(doom-darken (doom-color 'yellow) 0.2)
+                              :style line
+                              :position nil))))
+    (corfu-border
+     ((nil :inherit popup-border
+           :background unspecified
+           :foreground unspecified)))
+    (corfu-current
+     ((nil :inherit default
+           :background ,(doom-color 'bg))))
+    )
 
   (advice-add #'completion-preview-insert :before #'corfu-quit)
 

@@ -50,17 +50,17 @@
           (tab-bar-lines-keep-state . 1)))
   :config
 
-  (utils/custom-set-faces
-   (eldoc-box-body
-    ((nil :inherit default
-          :background ,(doom-color 'bg-alt))))
-   (eldoc-box-border
-    ((nil :inherit popup-border
-          :background unspecified
-          :foreground unspecified)))
-   (eldoc-box-markdown-separator
-    ((nil :foreground "#323232")))
-   )
+  (utils/custom-set-faces eldoc-box
+    (eldoc-box-body
+     ((nil :inherit default
+           :background ,(doom-color 'bg-alt))))
+    (eldoc-box-border
+     ((nil :inherit popup-border
+           :background unspecified
+           :foreground unspecified)))
+    (eldoc-box-markdown-separator
+     ((nil :foreground "#323232")))
+    )
 
   (add-to-list 'eldoc-box-self-insert-command-list 'eldoc-box-scroll-up)
   (add-to-list 'eldoc-box-self-insert-command-list 'eldoc-box-scroll-down)

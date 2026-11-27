@@ -11,62 +11,62 @@
   (doom-modeline-env-version nil)
   (mode-line-right-align-edge 'right-fringe)
   :config
-  (utils/custom-set-faces
-   (mode-line
-    ((nil :background ,(doom-color 'bg))))
-   (mode-line-active
-    ((nil :background ,(doom-color 'bg))))
-   (mode-line-inactive
-    ((nil :background ,(doom-color 'bg))))
-   (doom-modeline-bar
-    ((nil :foreground ,(doom-color 'bg)
-          :background unspecified
-          )))
-   (doom-modeline-bar-inactive
-    ((nil :foreground ,(doom-color 'grey)
-          :background unspecified
-          )))
-   (doom-modeline-evil-insert-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'green)
-          :background unspecified
-          )))
-   (doom-modeline-evil-normal-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'blue)
-          :background unspecified
-          )))
-   (doom-modeline-evil-visual-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'yellow)
-          :background unspecified
-          )))
-   (doom-modeline-evil-replace-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'red)
-          :background unspecified
-          )))
-   (doom-modeline-evil-motion-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'magenta)
-          :background unspecified
-          )))
-   (doom-modeline-evil-operator-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'orange)
-          :background unspecified
-          )))
-   (doom-modeline-evil-emacs-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'violet)
-          :background unspecified
-          )))
-   (doom-modeline-evil-user-state
-    ((nil :weight bold
-          :foreground ,(doom-color 'vertical-bar)
-          :background unspecified
-          )))
-   )
+  (utils/custom-set-faces doom-modeline
+    (mode-line
+     ((nil :background ,(doom-color 'bg))))
+    (mode-line-active
+     ((nil :background ,(doom-color 'bg))))
+    (mode-line-inactive
+     ((nil :background ,(doom-color 'bg))))
+    (doom-modeline-bar
+     ((nil :foreground ,(doom-color 'bg)
+           :background unspecified
+           )))
+    (doom-modeline-bar-inactive
+     ((nil :foreground ,(doom-color 'grey)
+           :background unspecified
+           )))
+    (doom-modeline-evil-insert-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'green)
+           :background unspecified
+           )))
+    (doom-modeline-evil-normal-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'blue)
+           :background unspecified
+           )))
+    (doom-modeline-evil-visual-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'yellow)
+           :background unspecified
+           )))
+    (doom-modeline-evil-replace-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'red)
+           :background unspecified
+           )))
+    (doom-modeline-evil-motion-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'magenta)
+           :background unspecified
+           )))
+    (doom-modeline-evil-operator-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'orange)
+           :background unspecified
+           )))
+    (doom-modeline-evil-emacs-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'violet)
+           :background unspecified
+           )))
+    (doom-modeline-evil-user-state
+     ((nil :weight bold
+           :foreground ,(doom-color 'vertical-bar)
+           :background unspecified
+           )))
+    )
 
   (defun +doom-modeline--evil-face ()
     "Return the doom-modeline face for the current evil state."
@@ -116,7 +116,7 @@
        ;; ace-window is prompting: centred window label
        ((and num (bound-and-true-p aw-overlays-back))
         (let*  ((ml-face (if (facep 'mode-line-active) 'mode-line-active 'mode-line))
-               (face (doom-modeline-face 'aw-leading-char-face 'aw-leading-char-face)))
+                (face (doom-modeline-face 'aw-leading-char-face 'aw-leading-char-face)))
           (concat
            (propertize " " 'face face)
            (propertize (format "%s" num) 'face (list face ml-face))

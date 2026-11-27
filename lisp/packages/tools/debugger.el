@@ -27,24 +27,24 @@
    '(dape-info dape-repl))
 
   :config
-  (utils/custom-set-faces
-   (dape-breakpoint-face
-    ((nil :stipple nil
-          :foreground ,(doom-color 'red))))
+  (utils/custom-set-faces dape
+    (dape-breakpoint-face
+     ((nil :stipple nil
+           :foreground ,(doom-color 'red))))
 
-   (dape-header-line-active-face
-    ((nil :stipple nil
-          :foreground ,(doom-color 'yellow)
-          :background unspecified
-          :overline nil
-          )))
-   (dape-header-line-inactive-face
-    ((nil :stipple nil
-          :foreground ,(doom-color 'fg-alt)
-          :background unspecified
-          :overline nil
-          )))
-   )
+    (dape-header-line-active-face
+     ((nil :stipple nil
+           :foreground ,(doom-color 'yellow)
+           :background unspecified
+           :overline nil
+           )))
+    (dape-header-line-inactive-face
+     ((nil :stipple nil
+           :foreground ,(doom-color 'fg-alt)
+           :background unspecified
+           :overline nil
+           )))
+    )
 
   (defun +dape-indicator-margin (string _bitmap face)
     "Always draw dape indicators in the left margin."

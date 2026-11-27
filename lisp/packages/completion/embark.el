@@ -6,10 +6,10 @@
                        embark-highlight-indicator
                        embark-isearch-highlight-indicator))
   :config
-  (utils/custom-set-faces
-   (embark-selected
-    ((nil :inherit unspecified
-          :foreground ,(doom-color 'magenta)))))
+  (utils/custom-set-faces embark
+    (embark-selected
+     ((nil :inherit unspecified
+           :foreground ,(doom-color 'magenta)))))
   (defvar +vertico-embark-prompter-map (make-sparse-keymap)
     "Embark completion read prompter map.")
 
