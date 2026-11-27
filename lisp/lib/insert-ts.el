@@ -6,6 +6,7 @@
 ;;
 ;; M-x +insert-timestamp  opens a transient menu.  Each entry shows a live
 ;; preview of the current time in that layout; press its key to insert it.
+;; If a region is active, the timestamp replaces it.
 ;; The inserted timestamp is always `ts-now' at the moment the key is pressed.
 ;;
 ;; Options in the menu:
@@ -94,13 +95,17 @@ Returns \"\" when the fraction is zero."
 ;;;; Commands
 
 (defun insert-ts-insert (id)
-  "Insert a timestamp in layout ID at point.
+  "Insert a timestamp in layout ID at point, replacing the region if active.
 Uses the current time, or a prompted time when `insert-ts-prompt' is set."
-  (insert (insert-ts-format-layout
-           id (and insert-ts-prompt (insert-ts--read-time)))))
+  ;; Build the string first, so cancelling the prompt leaves the region intact.
+  (let ((stamp (insert-ts-format-layout
+                id (and insert-ts-prompt (insert-ts--read-time)))))
+    (when (use-region-p)
+      (delete-region (region-beginning) (region-end)))
+    (insert stamp)))
 
 (defun insert-ts-unix ()
-  "Insert the current Unix timestamp."
+  "Insert the current Unix timestamp, replacing the region if active."
   (interactive)
   (insert-ts-insert 'unix))
 
