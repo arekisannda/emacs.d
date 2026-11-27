@@ -186,10 +186,7 @@
         :mru t :select t :reuse t)
        ))
 
-     (("^\\*Org Preview.*\\*$"
-       "^\\*Org Src.*\\*$"
-
-       scad-preview-mode
+     ((scad-preview-mode
        dashboard-mode
        pdf-view-mode)
       :same t :select t)
@@ -241,6 +238,8 @@
        "^\\*Dictionary\\*.*$"
        "\\*Gnuplot Trail\\*"
        "\\*Gnuplot Commands\\*"
+       "^\\*Org Preview.*\\*$"
+       "^\\*Org Src.*\\*$"
 
        calc-trail-mode
        dictionary-mode
