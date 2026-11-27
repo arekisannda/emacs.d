@@ -38,14 +38,17 @@
                  (list :tag "Custom function"
                        (const :tag "Custom" :custom) function)))
 
-(defun +shackle-display-side-bottom-preset-select-size-0 ()
+
+(defun +shackle-display-side-bottom-preset-size-0 ()
   `( :custom util/windows-display-buffer-in-side-window
      :side bottom
      :slot 0
      :flags (enable-alt-face disable-mode-line)
      :fixed nil
-     :dedicated t
-     :select t))
+     :dedicated t))
+
+(defun +shackle-display-side-bottom-preset-select-size-0 ()
+  `(,@(+shackle-display-side-bottom-preset-size-0) :select t))
 
 (defun +shackle-display-side-left-preset-size-0 ()
   `( :custom util/windows-display-buffer-in-side-window
@@ -334,7 +337,6 @@
        "^ \\*Agenda Commands\\*$"
        "^\\*Edit Formulas\\*"
        "^\\*Select Link\\*$"
-       "^ \\*transient\\*$"
        "^ \\*CDLaTeX Help\\*"
        "^\\*Org Select\\*$"
        "\\*Multiple Choice Help\\*"
@@ -344,6 +346,10 @@
        evil-command-window-mode
        backtrace-mode)
       ,@(+shackle-display-side-bottom-preset-select-size-0))
+
+
+     (("^ \\*transient\\*$")
+      ,@(+shackle-display-side-bottom-preset-size-0))
 
      ;;; base mode fallback
      ((org-mode)

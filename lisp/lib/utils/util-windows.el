@@ -138,7 +138,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (set-window-buffer window buffer))
        (t (user-error "Unable to get main window")))
 
-      (if (plist-get plist :select) window init-window))))
+      window)))
 
 (defun util/windows-display-buffer-in-lru-main-window (buffer &optional alist plist)
   "Display BUFFER in least recently used window according to ALIST and PLIST."
@@ -153,7 +153,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         (set-window-buffer window buffer))
        (t (user-error "Unable to get main window")))
 
-      (if (plist-get plist :select) window init-window))))
+      window)))
 
 (defun util/windows-display-buffer-in-side-window (buffer &optional alist plist)
   "Display BUFFER in side window according to ALIST and PLIST."
@@ -210,7 +210,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
         )
 
       (run-hook-with-args 'util/windows-side-window-hook window buffer (plist-get plist :flags))
-      (if (plist-get plist :select) window init-window)
+      window
       )))
 
 (defun util/windows--state-list-stash (frame state-fn)
@@ -329,7 +329,7 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
             (setq-local window-size-fixed fixed))
 
           (run-hook-with-args 'util/windows-popup-window-hook window buffer (plist-get plist :flags))
-          (if (plist-get plist :select) window init-window)
+          window
           ))
       )))
 
@@ -737,7 +737,7 @@ originally placed it recreates the sub frame."
         )
 
       (run-hook-with-args 'util/windows-aux-window-hook window buffer (plist-get plist :flags))
-      (if (plist-get plist :select) window init-window))
+      window)
     ))
 
 (defun util/windows--aux-window-cleanup (&optional frame)
