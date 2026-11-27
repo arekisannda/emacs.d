@@ -32,3 +32,5 @@
         '(("ja" . "en") ("en" . "ja") )))
 
 (use-package writegood :defer t)
+
+(use-package insert-ts :after (transient ts))

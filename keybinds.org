@@ -1670,10 +1670,6 @@
         (insert result))
     (calc-do-quick-calc t)))
 
-(defun +insert-unix-timestamp ()
-  (interactive)
-  (insert (format-time-string "%s")))
-
 (general-define-key
  :keymaps 'global
 
@@ -1702,7 +1698,7 @@
   "t"   '("insert template"  . yas-insert-snippet)
   "m"   '("calc eval"        . +quick-calc)
   "f"   '("insert nerd-icon" . nerd-icons-insert)
-  "u"   '("insert timestamp" . +insert-unix-timestamp)
+  "u"   '("insert timestamp" . insert-ts)
 
   "p"   (general-predicate-dispatch nil
           (require 'password-generator nil t) #'password-generator-paranoid)
