@@ -64,39 +64,53 @@
   ;;          )))
   :config
   (defun which-key--show-buffer-side-window-override (act-popup-dim)
-    "Show which-key buffer when popup type is side-window."
-    (when (and which-key-preserve-window-configuration
-               (not which-key--saved-window-configuration))
-      (setq which-key--saved-window-configuration (current-window-configuration)))
-    (let* ((height (car act-popup-dim))
-           (width (cdr act-popup-dim))
-           (alist `((window-width  . util/windows-popup-fit-window-to-buffer)
-                    (window-height . util/windows-popup-fit-window-to-buffer)
-                    (side          . ,which-key-side-window-location)
-                    (slot          . ,which-key-side-window-slot)))
-           window)
-      (which-key--debug-message "Allow imprecise fit: %s
+    "Show which-key buffer when popup type is side-window.
+Always shown in the parent frame when a sub frame is selected."
+    (let ((target (util/windows-sub-frame-parent-window)))
+      ;; Save the parent frame's configuration while the sub frame is
+      ;; still selected, so restoring it re-selects the sub frame.
+      (when (and which-key-preserve-window-configuration
+                 (not which-key--saved-window-configuration))
+        (setq which-key--saved-window-configuration
+              (current-window-configuration (window-frame target))))
+      (with-selected-window target
+        (let* ((height (car act-popup-dim))
+               (width (cdr act-popup-dim))
+               (alist `((window-width  . util/windows-popup-fit-window-to-buffer)
+                        (window-height . util/windows-popup-fit-window-to-buffer)
+                        (side          . ,which-key-side-window-location)
+                        (slot          . ,which-key-side-window-slot)))
+               window)
+          (which-key--debug-message "Allow imprecise fit: %s
 Display window alist: %s"
-                                which-key-allow-imprecise-window-fit
-                                alist)
-      ;; Previously used `display-buffer-in-major-side-window' here, but
-      ;; apparently that is meant to be an internal function. See emacs bug #24828
-      ;; and advice given there.
-      (setq window
-            (cond
-             ((eq which-key--multiple-locations t)
-              ;; possibly want to switch sides in this case so we can't reuse the window
-              (delete-windows-on which-key--buffer)
-              (display-buffer-in-side-window which-key--buffer alist))
-             ((get-buffer-window which-key--buffer)
-              (display-buffer-reuse-window which-key--buffer alist))
-             (t
-              (display-buffer-in-side-window which-key--buffer alist))
-             ))
+                                    which-key-allow-imprecise-window-fit
+                                    alist)
+          ;; Previously used `display-buffer-in-major-side-window' here, but
+          ;; apparently that is meant to be an internal function. See emacs bug #24828
+          ;; and advice given there.
+          (setq window
+                (cond
+                 ((eq which-key--multiple-locations t)
+                  ;; possibly want to switch sides in this case so we can't reuse the window
+                  (delete-windows-on which-key--buffer)
+                  (display-buffer-in-side-window which-key--buffer alist))
+                 ((get-buffer-window which-key--buffer)
+                  (display-buffer-reuse-window which-key--buffer alist))
+                 (t
+                  (display-buffer-in-side-window which-key--buffer alist))
+                 ))
 
-      (window-preserve-size window nil t)
-      (emacs-alt-face-setup window which-key--buffer)
-      ))
+          (window-preserve-size window nil t)
+          (emacs-alt-face-setup window which-key--buffer)
+          ))))
+
+  (defun +which-key--side-window-max-dimensions-parent (fn &rest args)
+    "Compute which-key side-window dimensions against the parent frame."
+    (with-selected-frame (window-frame (util/windows-sub-frame-parent-window))
+      (apply fn args)))
+
+  (advice-add #'which-key--side-window-max-dimensions :around
+              #'+which-key--side-window-max-dimensions-parent)
 
   (advice-add #'which-key--show-buffer-side-window :override #'which-key--show-buffer-side-window-override)
 

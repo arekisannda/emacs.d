@@ -127,6 +127,11 @@
   (util/windows-min-left-width 54)
   (treemacs-width util/windows-min-left-width)
   (shackle-default-rule nil)
+
+  (util/windows-sub-frame-allow-list
+   '("^ widget-choose$"
+     "^ \\*transient\\*$"))
+
   (shackle-disable-list
    `("^ \\*which-key\\*$"
      "^\\*Org Agenda .*\\*$"
@@ -409,9 +414,6 @@
       :custom util/windows-display-buffer-in-sub-frame
       :size +shackle-get-dimensions)
 
-     (("^\\*.*\\*$")
-      ,@(+shackle-display-popup-preset-select))
-
      ((prog-mode
        text-mode
        conf-mode
@@ -444,6 +446,10 @@
          outline-mode)
         :same t :select t)
        ))
+
+     (("^\\*.*\\*$")
+      ,@(+shackle-display-popup-preset-select))
+
      ))
   :config
   (util/dedup-add-to-list 'evil-motion-state-modes 'leetcode--problem-detail-mode)

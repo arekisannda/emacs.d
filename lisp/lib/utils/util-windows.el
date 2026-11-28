@@ -173,17 +173,20 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
 
       (cond
        ((setq window
-              (display-buffer-in-side-window
-               buffer
-               `(,@alist
-                 (side . ,side)
-                 (slot . ,slot)
-                 (inhibit-same-window . t)
-                 ,@(if (and size (functionp size)) (funcall size side)
-                     (list (cons 'window-height (and (cl-find side '(bottom top)) size))
-                           (cons 'window-width  (and (cl-find side '(right left)) size))))
-                 )
-               )))
+              ;; Side windows are always created in the parent frame when
+              ;; called from a sub frame; selection is restored afterwards.
+              (with-selected-window (util/windows-sub-frame-parent-window init-window)
+                (display-buffer-in-side-window
+                 buffer
+                 `(,@alist
+                   (side . ,side)
+                   (slot . ,slot)
+                   (inhibit-same-window . t)
+                   ,@(if (and size (functionp size)) (funcall size side)
+                       (list (cons 'window-height (and (cl-find side '(bottom top)) size))
+                             (cons 'window-width  (and (cl-find side '(right left)) size))))
+                   )
+                 ))))
        (t (user-error "Unable to create side window")))
 
       (with-current-buffer buffer
@@ -337,6 +340,15 @@ If the inititial window is not a side window, display BUFFER using `:fallback`"
   "Called when displaying buffer in a sub frame.
 Function takes two arguments WINDOW and BUFFER and optional FLAGS."
   :type 'hook)
+
+(defcustom util/windows-sub-frame-allow-list nil
+  "Buffers that may be displayed from a sub frame without hiding it.
+Each element is a string, matched against the buffer name as a regexp
+or exact name, or a symbol, matched against the buffer's major mode.
+Displaying any other buffer while a sub frame is selected hides the
+sub frame and displays the buffer from the parent frame."
+  :type '(repeat (choice (string :tag "Buffer name")
+                         (symbol :tag "Major mode"))))
 
 (defun util/windows-sub-frame-p (&optional frame)
   "Return non-nil if FRAME is a sub frame created by util-windows."
@@ -524,14 +536,26 @@ Use this for UI that should be shown relative to the parent frame
             return
           (frame-selected-window parent))))))
 
+(defun util/windows--sub-frame-allowed-p (buffer-or-name)
+  "Return non-nil if BUFFER-OR-NAME matches `util/windows-sub-frame-allow-list'."
+  (when-let* ((buffer (and buffer-or-name (get-buffer buffer-or-name))))
+    (let ((name (buffer-name buffer))
+          (mode (buffer-local-value 'major-mode buffer)))
+      (cl-some (lambda (e)
+                 (cond
+                  ((stringp e) (or (string-match-p e name) (string= e name)))
+                  ((symbolp e) (eq mode e))))
+               util/windows-sub-frame-allow-list))))
+
 (defun util/windows--sub-frame-redirect (fn &rest args)
   "Call FN with ARGS from the parent frame when a sub frame is selected.
-Keeps the sub frame restricted to its own buffer: the sub frame is
-hidden and everything else is displayed through the parent frame's
-window management."
+Unless the buffer (first of ARGS) is in `util/windows-sub-frame-allow-list',
+the sub frame is hidden and the buffer is displayed through the parent
+frame's window management."
   (let ((frame (selected-frame)))
     (when (and (util/windows-sub-frame-p frame)
-               (not (minibuffer-window-active-p (selected-window))))
+               (not (minibuffer-window-active-p (selected-window)))
+               (not (util/windows--sub-frame-allowed-p (car args))))
       (util/windows-hide-sub-frame frame))
     (apply fn args)))
 
